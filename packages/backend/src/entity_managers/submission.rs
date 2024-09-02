@@ -60,20 +60,33 @@ impl SubmissionManager {
     pub async fn list_submissions<T: ConnectionTrait>(
         conn: &T,
         form_id: PalformDatabaseID<IDForm>,
-        since: Option<PalformDatabaseID<IDSubmission>>,
+        since_id: Option<PalformDatabaseID<IDSubmission>>,
     ) -> Result<Vec<submission::Model>, DbErr> {
         let mut condition = Condition::all().add(submission::Column::FormId.eq(form_id));
 
-        if let Some(since) = since {
-            let since: NaiveDateTime = Submission::find_by_id(since)
+        if let Some(since_id) = since_id {
+            let mut since: Option<NaiveDateTime> = Submission::find_by_id(since_id)
                 .select_only()
                 .column(submission::Column::CreatedAt)
                 .into_tuple()
                 .one(conn)
-                .await?
-                .ok_or(DbErr::RecordNotFound("since".to_string()))?;
+                .await?;
 
-            condition = condition.add(submission::Column::CreatedAt.gt(since))
+            if since.is_none() {
+                since = DeletedSubmission::find_by_id(since_id)
+                    .select_only()
+                    .column(deleted_submission::Column::DeletedAt)
+                    .into_tuple()
+                    .one(conn)
+                    .await?;
+            }
+
+            // if we can't find the `since_id` either as a current submission or a deleted one,
+            // then just ignore the condition altogether. better being correct in this (rare) case than 
+            // doing some clever performance optimisation.
+            if let Some(since) = since {
+                condition = condition.add(submission::Column::CreatedAt.gt(since))
+            }
         }
 
         Submission::find()
