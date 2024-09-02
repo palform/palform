@@ -1,0 +1,12 @@
+[default]
+address = "127.0.0.1"
+limits = { file = "10GB" }
+
+[debug]
+port = 8000
+log_level = "normal"
+
+[release]
+address = "0.0.0.0"
+port = 8080
+log_level = "normal"

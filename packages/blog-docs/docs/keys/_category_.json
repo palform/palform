@@ -1,0 +1,8 @@
+{
+  "label": "Keys",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Encryption keys power the end-to-end encryption behind Palform"
+  }
+}

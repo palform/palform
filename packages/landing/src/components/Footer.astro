@@ -1,0 +1,38 @@
+---
+import ResponsivePadding from "./ResponsivePadding.astro";
+import FooterText from "./FooterText.astro";
+import FooterLink from "./FooterLink.astro";
+import LogoType from "./branding/LogoType.astro";
+---
+
+<footer class="mt-32 bg-primary-100 dark:bg-primary-950 py-4">
+    <ResponsivePadding>
+        <div class="flex justify-between gap-8 flex-col lg:flex-row">
+            <div>
+                <LogoType
+                    class="mt-2 fill-primary-800 stroke-primary-800 dark:fill-primary-200 dark:stroke-primary-200"
+                />
+            </div>
+            <div
+                class="lg:pt-2 flex justify-end gap-4 md:gap-10 flex-col md:flex-row"
+            >
+                <div>
+                    <FooterLink href="https://docs.palform.app">Docs & Support</FooterLink>
+                    <FooterLink href="https://docs.palform.app/roadmap">Roadmap</FooterLink>
+                </div>
+                <div>
+                    <FooterLink href="/legal/terms">Terms of Use</FooterLink>
+                    <FooterLink href="/legal/privacy">Privacy Policy</FooterLink
+                    >
+                </div>
+            </div>
+        </div>
+    </ResponsivePadding>
+    <hr class="border-t-primary-200 dark:border-t-primary-800 my-4" />
+    <ResponsivePadding>
+        <FooterText>
+            &copy; Palform Ltd. Registered in England (15796859)
+        </FooterText>
+        <FooterText> 12 Larke Rise, Manchester M20 2UL </FooterText>
+    </ResponsivePadding>
+</footer>

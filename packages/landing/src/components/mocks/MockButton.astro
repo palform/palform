@@ -1,0 +1,17 @@
+---
+interface Props {
+    class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<button
+    disabled
+    class:list={[
+        "text-gray-600 dark:text-gray-300 border dark:border-slate-600 px-4 py-2 rounded-lg shadow-sm bg-slate-50 dark:bg-slate-700",
+        className,
+    ]}
+>
+    <slot />
+</button>

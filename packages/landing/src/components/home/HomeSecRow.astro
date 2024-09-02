@@ -1,0 +1,30 @@
+---
+import ResponsivePadding from "../ResponsivePadding.astro";
+import HomeSecBadge from "../../components/home/HomeSecBadge.astro";
+import HomeSecHeading from "../../components/home/HomeSecHeading.astro";
+
+interface Props {
+    title: string;
+    badge?: string;
+    class?: string;
+}
+const { title, badge, class: className } = Astro.props;
+---
+
+<section class:list={["", className]}>
+    <ResponsivePadding>
+        <div class="flex items-center flex-col lg:flex-row">
+            <div class="w-full lg:w-3/5 lg:pr-16">
+                {badge && <HomeSecBadge>{badge}</HomeSecBadge>}
+                <HomeSecHeading size="normal" class="mt-4 mb-2">
+                    {title}
+                </HomeSecHeading>
+
+                <slot />
+            </div>
+            <div class="flex-1 mt-12 lg:mt-0 lg:pt-2">
+                <slot name="graphic" />
+            </div>
+        </div>
+    </ResponsivePadding>
+</section>

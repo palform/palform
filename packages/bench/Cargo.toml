@@ -1,0 +1,22 @@
+[package]
+name = "palform-benchmark-util"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+sea-orm = { version = "1.0", features = [
+    "sqlx-postgres",
+    "runtime-tokio-rustls",
+    "macros",
+] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0.0" }
+figment = { version = "0.10", features = ["env"] }
+rand = { version = "0.8.5", default-features = false, features = ["getrandom"] }
+chrono = "0.4"
+
+palform-entities = { path = "../entities" }
+palform-tsid = { path = "../tsid" }
+palform-client-common = { path = "../client-common", default-features = false, features = ["bench"] }

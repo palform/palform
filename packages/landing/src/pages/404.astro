@@ -1,0 +1,21 @@
+---
+import Html from "../layouts/Html.astro";
+import InfoPageTitle from "../components/info/InfoPageTitle.astro";
+import ResponsivePadding from "../components/ResponsivePadding.astro";
+import Navbar from "../components/Navbar.astro";
+import InfoPageParagraph from "../components/info/InfoPageParagraph.astro";
+---
+
+<Html title="Page not found">
+	<Navbar />
+
+	<ResponsivePadding class="mt-32">
+		<InfoPageTitle>Page not found :(</InfoPageTitle>
+		<InfoPageParagraph>
+			If something is broken, please <a
+				href="https://docs.palform.app/"
+				class="underline">let us know</a
+			>.
+		</InfoPageParagraph>
+	</ResponsivePadding>
+</Html>

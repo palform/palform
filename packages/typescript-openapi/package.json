@@ -1,0 +1,12 @@
+{
+  "name": "@paltiverse/palform-typescript-openapi",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "dependencies": {
+    "axios": "^1.6.8"
+  },
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.13.4"
+  }
+}

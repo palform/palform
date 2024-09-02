@@ -1,0 +1,36 @@
+---
+import "@fontsource-variable/archivo";
+import "@fontsource-variable/archivo/wdth-italic.css";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="description"
+			content="Build end-to-end encrypted forms with advanced enterprise-grade features in just a few simple clicks; no coding required."
+		/>
+		<meta name="viewport" content="width=device-width" />
+		<link rel="canonical" href={Astro.url} />
+		<link rel="icon" type="image/svg+xml" href="/logo.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<script
+			defer
+			data-domain="palform.app"
+			src="https://plausible.io/js/script.tagged-events.js"
+			is:inline></script>
+		<title>Palform &mdash; {title}</title>
+	</head>
+	<body class="bg-slate-50/50 dark:bg-slate-900">
+		<slot />
+		<Footer />
+	</body>
+</html>

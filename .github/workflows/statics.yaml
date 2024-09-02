@@ -1,0 +1,42 @@
+name: Build and deploy static marketing pages to Cloudflare
+on:
+  push:
+    branches: ["main"]
+concurrency:
+  group: statics-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - name: Add empty packages to allow partial dependency install
+        run: |
+          mkdir packages/analysis-js
+          touch packages/analysis-js/package.json
+          echo "{\"name\": \"@paltiverse/palform-analysis\"}" > packages/analysis-js/package.json
+
+          mkdir packages/client-js
+          touch packages/client-js/package.json
+          echo "{\"name\": \"@paltiverse/palform-client-common\"}" > packages/client-js/package.json
+      - name: Install frontend dependencies
+        run: bun install --frozen-lockfile
+      - name: Build landing page
+        run: bun run --cwd packages/landing build
+        env:
+          PUBLIC_BACKEND_URL: https://api.palform.app
+      - name: Deploy landing page to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy --project-name palform-landing --branch main --commit-dirty packages/landing/dist
+      - name: Build docs/blog
+        run: bun run --cwd packages/blog-docs build
+      - name: Deploy blog/docs to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy --project-name palform-blog-docs --branch main --commit-dirty packages/blog-docs/build

@@ -1,0 +1,59 @@
+[package]
+name = "palform-backend"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rocket = { version = "0.5.0", features = ["json", "uuid"] }
+rocket_cors = "0.6.0"
+sea-orm = { version = "1.0.0", features = [
+    "sqlx-postgres",
+    "runtime-tokio-rustls",
+    "macros",
+] }
+figment = { version = "0.10", features = ["env"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0.0" }
+openidconnect = { version = "3.5.0", features = ["reqwest", "rustls-tls"] }
+thiserror = "1.0.57"
+url = "2.5.0"
+rocket_okapi = { version = "0.8.0", features = ["rapidoc"] }
+chrono = "0.4"
+rand = "0.8"
+log = "0.4.21"
+base64 = "0.22.1"
+sequoia-openpgp = { version = "1.20.0", default-features = false, features = [
+    "crypto-rust",
+    "allow-variable-time-crypto",
+    "allow-experimental-crypto",
+] }
+lettre = {version = "0.11", default-features = false, features=["builder", "smtp-transport", "tokio1-rustls-tls"]}
+reqwest = { version = "0.12", default-features = false, features = ["json", "http2", "rustls-tls"] }
+rust-s3 = {version = "0.34", default-features = false, features = ["tokio-rustls-tls"]}
+argon2 = "0.5.3"
+validator = { version = "0.18.1", features = ["derive"] }
+totp-rs = { version = "5.5.1" }
+
+async-stripe = { version = "0.38", default-features = false, features = [
+    "runtime-tokio-hyper-rustls",
+    "billing",
+    "checkout",
+    "connect",
+    "webhook-events"
+], optional = true }
+
+keshvar = {version = "0.5.0", optional = true, features = ["emojis"]}
+
+palform-migration = { path = "../migration" }
+palform-entities = { path = "../entities" }
+palform-client-common = { path = "../client-common", default-features = false, features = [
+    "backend",
+] }
+palform-tsid = { path = "../tsid" }
+
+[features]
+default = ["saas", "country-metadata"]
+saas = ["dep:async-stripe"]
+country-metadata = ["dep:keshvar"]

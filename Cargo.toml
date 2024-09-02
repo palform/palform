@@ -1,0 +1,13 @@
+[workspace]
+members = [
+    "packages/backend",
+    "packages/migration",
+    "packages/entities",
+    "packages/client-common",
+    "packages/google-fonts-generator",
+    "packages/analysis",
+    "packages/tsid",
+    "packages/tsid-primitive",
+    "packages/bench",
+]
+resolver = "2"

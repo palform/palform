@@ -1,0 +1,20 @@
+---
+interface Props {
+    class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div
+    class:list={[
+        "ml-4 border-dotted border-l-2 border-l-primary-400 dark:border-l-primary-600 py-4",
+        className,
+    ]}
+>
+    <p
+        class="inline-block ml-4 p-2 rounded-lg bg-slate-50 dark:bg-gray-700 border dark:border-gray-600 text-gray-700 dark:text-gray-300"
+    >
+        <slot />
+    </p>
+</div>

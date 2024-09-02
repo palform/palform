@@ -1,0 +1,16 @@
+---
+interface Props {
+    class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<h2
+    class:list={[
+        "font-display text-2xl mb-4 text-gray-900 dark:text-gray-100",
+        className,
+    ]}
+>
+    <slot />
+</h2>

@@ -1,0 +1,41 @@
+name: Build and deploy app frontend to Netlify
+on:
+  push:
+    branches: ["main"]
+concurrency:
+  group: frontend-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - name: Configure Rust toolchain
+        run: rustup update stable && rustup default stable && rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Build Rust bindings for client-common
+        run: wasm-pack build -s paltiverse -d ../client-js --release packages/client-common --no-default-features --features frontend-js
+      - name: Build Rust bindings for analysis
+        run: wasm-pack build -s paltiverse -d ../analysis-js --release packages/analysis
+      - name: Install frontend dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build frontend app
+        run: bun run --cwd packages/frontend build
+        env:
+          VITE_FRONTEND_URL: https://dash.palform.app
+          VITE_URLS_BASE: https://palform.app
+          VITE_BACKEND_URL: https://api.palform.app
+          VITE_ENABLE_BILLING: "true"
+          VITE_MAPBOX_API_KEY: ${{ secrets.FRONTEND_MAPBOX_API_KEY }}
+          VITE_CAPTCHA_SITE_KEY: ${{ secrets.FRONTEND_CAPTCHA_SITE_KEY }}
+      - name: Deploy frontend to Netlify
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: "./packages/frontend/dist"
+          production-deploy: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

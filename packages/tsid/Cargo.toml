@@ -1,0 +1,25 @@
+[package]
+name = "palform-tsid"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+anyhow = "1.0.83"
+palform-tsid-primitive = { path = "../tsid-primitive", features = ["debug"] }
+serde = { version = "1.0", features = ["derive"], optional = true }
+sea-orm = { version = "1.0", default-features = false, optional = true }
+rocket = { version = "0.5.0", features = ["json"], optional = true }
+schemars = { version = "0.8.21", optional = true }
+ts-rs = { version = "9.0.1", optional = true }
+
+[features]
+default = ["sea-orm", "rocket", "serde", "schemars", "ts-rs"]
+sea-orm = ["dep:sea-orm"]
+rocket = ["dep:rocket"]
+serde = ["dep:serde"]
+schemars = ["dep:schemars"]
+ts-rs = ["dep:ts-rs"]

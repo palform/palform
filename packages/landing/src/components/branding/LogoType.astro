@@ -1,0 +1,11 @@
+---
+import logoType from "../../assets/logo_type.svg?raw";
+
+const { class: className } = Astro.props;
+---
+
+<svg
+    set:html={logoType}
+    class:list={["h-7", className]}
+    viewBox="0 0 304.07928 85.568403"
+/>

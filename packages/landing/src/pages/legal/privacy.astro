@@ -1,0 +1,211 @@
+---
+import InfoPageHeading from "../../components/info/InfoPageHeading.astro";
+import InfoPageList from "../../components/info/InfoPageList.astro";
+import InfoPageParagraph from "../../components/info/InfoPageParagraph.astro";
+import InfoPageTitle from "../../components/info/InfoPageTitle.astro";
+import Navbar from "../../components/Navbar.astro";
+import ResponsivePadding from "../../components/ResponsivePadding.astro";
+import Html from "../../layouts/Html.astro";
+---
+
+<Html title="Privacy Policy">
+	<Navbar />
+
+	<main class="w-full">
+		<ResponsivePadding class="mt-36">
+			<InfoPageTitle>Privacy Policy</InfoPageTitle>
+
+			<InfoPageParagraph>
+				Palform Ltd is a company registered in England (United Kingdom),
+				from here referred to as <strong>"us"</strong>, <strong
+					>"we"</strong
+				>, <strong>"our"</strong>, <strong>"Palform"</strong>, or the <strong
+					>"Company"</strong
+				>. Our registered company number is 15796859. Our registered
+				office is at 12 Larke Rise, Manchester M20 2UL, United Kingdom.
+				The website at palform.app and its subdomains (collectively the <strong
+					>"Site"</strong
+				>) are all operated by us.
+			</InfoPageParagraph>
+
+			<InfoPageParagraph>
+				This document sets out our approach to data protection, and your
+				rights and obligations in relation to your personal information.
+				If you do not agree with this document in its entirety, you must <strong
+					>immediately</strong
+				> stop using the Site.
+			</InfoPageParagraph>
+
+			<InfoPageParagraph>
+				This document shall be governed under the laws of England,
+				United Kingdom. Some terms may also make reference to European
+				Union law.
+			</InfoPageParagraph>
+
+			<InfoPageHeading>End-to-end encryption</InfoPageHeading>
+			<InfoPageParagraph>
+				Some personal information is stored by Palform in an end-to-end
+				encrypted format such that the Company is technically unable to
+				access it in its plaintext form. Such handling of data may still
+				constitute "processing" of the data by Palform under the
+				definitions in the UK Data Protection Act (DPA) 2018 and the EU
+				General Data Protection Regulation (GDPR).
+			</InfoPageParagraph>
+
+			<InfoPageHeading>What data do we process?</InfoPageHeading>
+			<InfoPageParagraph class="font-bold">
+				For form creators (administrative users):
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				<InfoPageList>
+					<li>
+						Your name, work email address, and a password. These
+						help us and your colleagues identify you and secure your
+						account. We will use your email address to send you
+						essential service updates (such as changes to our legal
+						documents). We will not (by default) use your email
+						address to send you marketing materials.
+					</li>
+					<li>
+						Payment information, including your full billing
+						address. This is only required when upgrading to a paid
+						plan. This data is shared with Stripe to facilitate
+						payments. You are required to read Stripe's Privacy
+						Policy prior to making a payment.
+					</li>
+					<li>
+						Your activity within the administrative dashboard (e.g.
+						creating/deleting certain resources) may be recorded if
+						your organisation uses audit logging. This information
+						will be visible to your organisation's administrator(s)
+						for a period of up to 30 days.
+					</li>
+					<li>
+						Your IP address and other semantic information about
+						your browsing activity may be collected by Cloudflare
+						for the essential purpose of facilitating a captcha on
+						our website, thereby improving security. Please refer to
+						Cloudflare's Privacy Policy.
+					</li>
+				</InfoPageList>
+			</InfoPageParagraph>
+			<InfoPageParagraph class="font-bold">
+				For form fillers (end users):
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				<InfoPageList>
+					<li>
+						Any information you fill in within a form created by an
+						organisation using the Site. As explained above, this
+						data is end-to-end ecnrypted and is therefore invisible
+						to Palform. Palform provides hosting and storage of this
+						information, while having zero access to its actual
+						plaintext contents. Administrative users with the
+						correct key(s) within the organisation that created the
+						form are able to decrypt your response and see its
+						contents. Palform is not responsible for the privacy
+						practices of companies creating forms on our Site.
+						Please ensure you agree to the end organisation's
+						privacy policies before submitting any forms.
+						<br />
+						<strong>Never submit passwords through Palform.</strong>
+						End-to-end encryption is not a suitably secure method of
+						password storage. Requesting passwords through Palform is
+						prohibited.
+						<br />
+						Form responses may be retained for an unlimited period of
+						time, depending on the authoring organisation's policies.
+					</li>
+					<li>
+						Any files you upload in a form. As above, these are also
+						end-to-end encrypted and stored separately, while being
+						attached to your form response itself.
+					</li>
+					<li>
+						Some forms may have a captcha to ensure additional
+						security. Your IP address and other semantic information
+						about your browsing activity may be collected by
+						Cloudflare for this purpose on our website. Please refer
+						to Cloudflare's Privacy Policy.
+					</li>
+				</InfoPageList>
+			</InfoPageParagraph>
+
+			<InfoPageHeading> What are your rights? </InfoPageHeading>
+			<InfoPageParagraph>
+				Under the UK DPA and the EU GDPR, you are able to exercise your
+				statutory rights in relation to your personal information. To
+				exercise any of these rights, please email dpa@palform.app. We
+				are legally required to respond within 28 days of receiving a
+				valid, reasonable request. We may assign a small additional
+				charge to particularly extensive requests.
+			</InfoPageParagraph>
+
+			<InfoPageParagraph>
+				Rights in relation to data submitted through our forms cannot be
+				exercised by contacting Palform, as we are unable to read or
+				modify encrypted information. We are also unable to delete data
+				in most cases, as we do not collect personally identifying
+				information that can be used to connect an encrypted response to
+				you (in most cases).
+			</InfoPageParagraph>
+
+			<InfoPageParagraph>
+				<strong>Right to access</strong>: you are able to access your
+				personal information at any time. For administrative users, this
+				can be done entirely through the administrative dashboard. If
+				there is any additional information that cannot be found on the
+				dashboard, please email dpa@palform.app. Similarly, for a
+				machine-readable format export of your personal information,
+				please email us.
+			</InfoPageParagraph>
+
+			<InfoPageParagraph>
+				<strong>Right to deletion</strong>: Administrative users are
+				able to delete their personal user accounts or their entire
+				organisations through our administrative dashboard. This can
+				only be done when all payments and other dependencies are fully
+				resolved. Payment information, including your billing address,
+				may be retained for a longer period in compliance with UK law.
+			</InfoPageParagraph>
+
+			<InfoPageParagraph>
+				<strong>Automated processing</strong>: Palform does not perform
+				automated decision-making using your personal data.
+			</InfoPageParagraph>
+
+			<InfoPageParagraph>
+				<strong>Right to rectification</strong>: Administrative users
+				are able to easily change their personal details and their
+				payment information from our administrative dashboard. Users
+				submitting forms are not able to rectify their form data through
+				Palform, and must instead contact the form's authoring
+				organisation to exercise such a request.
+			</InfoPageParagraph>
+
+			<InfoPageHeading>Complaints</InfoPageHeading>
+			<InfoPageParagraph>
+				If you feel we have mishandled your personal information or not
+				fulfilled our legal obligations, you may make a complaint.
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				First, you are required to submit your complaint to Palform, by
+				emailing dpa@palform.app. If you are not satisfied with our
+				response, you may make a further complaint to the relevant
+				supervisory authority. For Palform in the UK, this is the
+				Information Comissioner's Office.
+			</InfoPageParagraph>
+
+			<InfoPageHeading>Modifications</InfoPageHeading>
+			<InfoPageParagraph>
+				We may update this policy from time to time. We will inform you
+				by email at least 28 days prior to an update as long as you have
+				an active account on the Site.
+			</InfoPageParagraph>
+
+			<InfoPageParagraph>
+				This policy was last updated on 31/07/2024.
+			</InfoPageParagraph>
+		</ResponsivePadding>
+	</main>
+</Html>

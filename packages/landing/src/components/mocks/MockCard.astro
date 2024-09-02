@@ -1,0 +1,18 @@
+---
+interface Props {
+    lessPadding?: boolean;
+    class?: string;
+}
+
+const { lessPadding, class: className } = Astro.props;
+---
+
+<div
+    class:list={[
+        "rounded-xl border dark:border-slate-600 shadow-xl bg-gray-50 dark:bg-slate-800",
+        lessPadding ? "p-4" : "p-6",
+        className,
+    ]}
+>
+    <slot />
+</div>

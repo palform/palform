@@ -1,0 +1,18 @@
+---
+import ResponsivePadding from "../ResponsivePadding.astro";
+import Separator from "../Separator.astro";
+
+interface Props {
+    class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<ResponsivePadding class={className}>
+    <Separator class="mt-4 mb-8" />
+    <div class="grid lg:grid-cols-3">
+        <slot />
+    </div>
+    <Separator class="mt-8" />
+</ResponsivePadding>

@@ -1,0 +1,18 @@
+---
+interface Props {
+    center?: boolean;
+    class?: string;
+}
+
+const { center, class: className } = Astro.props;
+---
+
+<p
+    class:list={[
+        "text-slate-700 dark:text-gray-400 text-lg",
+        center && "xl:mx-20",
+        className,
+    ]}
+>
+    <slot />
+</p>

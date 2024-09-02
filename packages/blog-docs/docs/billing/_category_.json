@@ -1,0 +1,8 @@
+{
+  "label": "Billing and plans",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Our simple billing system is designed to scale with you and make up/downgrades easy"
+  }
+}

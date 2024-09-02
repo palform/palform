@@ -1,0 +1,43 @@
+<defs
+   id="defs1" />
+<g
+   id="layer1"
+   transform="translate(-190.07801,4.4236375)">
+   <g
+      id="g5-5"
+      transform="matrix(0.7111971,0,0,0.66295428,177.97666,-38.754812)"
+      style="stroke-width:9.01528;stroke-dasharray:none">
+      <rect
+         style="fill-opacity:0"
+         id="rect2-3"
+         width="47.823616"
+         height="47.823616"
+         x="94.90731"
+         y="105.4156"
+         ry="9.8800888" />
+      <path
+         style="fill:none;fill-opacity:0;fill-rule:nonzero"
+         d="M 107.29162,106.923 V 90.774845 c 0,-14.994962 23.055,-14.974901 23.055,0 v 16.176525"
+         id="path2-5" />
+   </g>
+   <text
+      xml:space="preserve"
+      style="font-weight:600;font-size:96px;font-family:Archivo;-inkscape-font-specification:'Archivo Semi-Bold'"
+      x="284.29092"
+      y="65.752365"
+      id="text2-2"><tspan
+         id="tspan2-7"
+         x="284.29092"
+         y="65.752365"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:96px;font-family:Archivo;-inkscape-font-specification:Archivo">lform</tspan></text>
+   <text
+      xml:space="preserve"
+      style="font-weight:600;font-size:96px;font-family:Archivo;-inkscape-font-specification:'Archivo Semi-Bold'"
+      x="183.45401"
+      y="64.536774"
+      id="text2"><tspan
+         id="tspan2"
+         x="183.45401"
+         y="64.536774"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:96px;font-family:Archivo;-inkscape-font-specification:Archivo">p</tspan></text>
+</g>

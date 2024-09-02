@@ -1,0 +1,15 @@
+---
+interface Props {
+    class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={["relative rounded-xl overflow-hidden", className]}>
+    <slot />
+    <div
+        class="absolute top-0 w-full h-full bg-gradient-to-b from-transparent to-slate-50 dark:to-slate-900"
+    >
+    </div>
+</div>

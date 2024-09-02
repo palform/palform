@@ -1,0 +1,12 @@
+---
+const { class: className } = Astro.props;
+---
+
+<ul
+    class:list={[
+        "list-disc list-inside space-y-2 mb-4 text-gray-700 dark:text-gray-200",
+        className,
+    ]}
+>
+    <slot />
+</ul>

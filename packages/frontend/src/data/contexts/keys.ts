@@ -1,0 +1,16 @@
+import { writable } from "svelte/store";
+import { privateKeyDb } from "../pouch";
+import { KeyResolver } from "@paltiverse/palform-client-common";
+
+export const privateKeyStore = writable<KeyResolver>();
+
+export async function getPrivateKeys() {
+    const keys = await privateKeyDb
+        .allDocs({ include_docs: true })
+        .then((resp) =>
+            resp.rows
+                .map((e) => e.doc!)
+                .filter((e) => typeof e.privateKey === "string"),
+        );
+    return keys.map((e) => e.privateKey);
+}

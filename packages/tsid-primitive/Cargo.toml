@@ -1,0 +1,36 @@
+[package]
+name = "palform-tsid-primitive"
+version = "0.2.0"
+edition = "2021"
+authors = ["Maciej Stępyra <jakudlaty@gmail.com>"]
+keywords = ["tsid", "sortable", "identifier", "generator"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/jakudlaty/tsid/"
+documentation = "https://docs.rs/tsid/"
+description = "A Rust library for generating Time-Sorted Unique Identifiers"
+publish = false
+
+[dependencies]
+rand = "0.8"
+serde = { version = "1", optional = true }
+bson = { version = "2", optional = true }
+lazy_static = "1.4.0"
+phf = { version = "0.11.2", features = ["macros"] }
+chrono = { version = "0.4", optional = true }
+
+[dev-dependencies]
+serde_json = { version = "1" }
+bson = "2.7.0"
+
+[features]
+default = ["debug"]
+debug = []
+bson_as_string = ["bson"]
+serde_as_string = ["serde"]
+
+[package.metadata.release]
+allow-branch = ["main"]
+
+[package.metadata]
+msrv = "1.67.1"

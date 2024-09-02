@@ -1,0 +1,16 @@
+---
+interface Props {
+    long?: boolean;
+    class?: string;
+}
+
+const { long, class: className } = Astro.props;
+const Element = long ? "textarea" : "input";
+---
+
+<Element
+    class:list={[
+        "block w-full bg-transparent border-2 dark:border-slate-600 resize-none rounded-lg min-h-10",
+        className,
+    ]}
+/>
