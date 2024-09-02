@@ -1,4 +1,4 @@
-# [Palform](https://palform.app)
+[![Palform logo](https://github.com/palform/palform/blob/main/readme_logo.png?raw=true)](https://palform.app)
 
 Palform is a form builder that's:
 
