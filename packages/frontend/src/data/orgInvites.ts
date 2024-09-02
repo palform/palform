@@ -1,5 +1,5 @@
 import { frontendURL } from "./common";
-import { copyGenericURL } from "./util/clipboard";
+import { copyGenericValue } from "./util/clipboard";
 
 export function formatOrgInviteLink(orgId: string, inviteId: string) {
     return new URL(
@@ -9,5 +9,5 @@ export function formatOrgInviteLink(orgId: string, inviteId: string) {
 }
 
 export async function copyOrgInviteLink(orgId: string, inviteId: string) {
-    await copyGenericURL(formatOrgInviteLink(orgId, inviteId));
+    await copyGenericValue(formatOrgInviteLink(orgId, inviteId));
 }

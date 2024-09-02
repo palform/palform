@@ -7,7 +7,7 @@
     <RoutedTabItem title="Overview" path="" />
     <RoutedTabItem title="Responses" path="responses" />
     <RoutedTabItem title="Edit" path="edit" />
-    <RoutedTabItem title="Share" path="tokens" />
+    <RoutedTabItem title="Publish" path="tokens" />
     <RoutedTabItem title="Export" path="export" />
     <RoutedTabItem title="Settings" path="settings" />
 </Tabs>

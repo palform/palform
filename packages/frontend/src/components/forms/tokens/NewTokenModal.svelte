@@ -25,7 +25,8 @@
     import { showFailureToast } from "../../../data/toast";
     import { isEntitled } from "../../../data/billing/entitlement";
     import { Link } from "svelte-routing";
-    import { copyGenericURL } from "../../../data/util/clipboard";
+    import { copyGenericValue } from "../../../data/util/clipboard";
+    import TokenEmbedOptions from "./TokenEmbedOptions.svelte";
 
     const orgCtx = getOrgContext();
     const respCtx = getResponsesContext();
@@ -66,7 +67,7 @@
     };
     $: onShortLinkCopy = async () => {
         if (!shortLinkValue || !$orgCtx.org.subdomain) return;
-        await copyGenericURL(
+        await copyGenericValue(
             formatShortLinkURL($orgCtx.org.subdomain, shortLinkValue)
         );
     };
@@ -82,49 +83,25 @@
 
 <Button class="mb-4" outline on:click={() => (modalOpen = true)}>
     <FontAwesomeIcon icon={faPlus} class="mr-2" />
-    Share form
+    Publish form
 </Button>
 
-<Modal bind:open={modalOpen} title="Share form" outsideclose>
+<Modal bind:open={modalOpen} title="Publish form" outsideclose>
     {#if justCreated}
         <Alert color="green">
-            Yay! You've created a share token. Copy the URL below and send it to
+            Yay! You've created a Share Token. Copy the URL below and send it to
             anyone you want to fill in your form.
         </Alert>
 
-        <Label class="mb-4">
-            Click to copy URL
-            <Input
-                class="mt-2"
-                readonly
-                value={formatFillTokenURL(
-                    $orgCtx.org.id,
-                    $respCtx.formId,
-                    justCreated
-                )}
-                on:click={onURLClick}
-            />
-        </Label>
+        <TokenEmbedOptions
+            fatID={justCreated}
+            shortLink={shortLinkValue || undefined}
+        />
 
-        {#if shortLinkValue && $orgCtx.org.subdomain}
-            <Label>
-                Click to copy short link
-                <Input
-                    class="mt-2"
-                    readonly
-                    value={formatShortLinkURL(
-                        $orgCtx.org.subdomain,
-                        shortLinkValue
-                    )}
-                    on:click={onShortLinkCopy}
-                />
-            </Label>
-        {/if}
-
-        <Button class="mt-4" on:click={closeModal}>Close</Button>
+        <Button class="mt-6" on:click={closeModal}>Close</Button>
     {:else}
         <p>
-            This will create a new share token (a unique URL) you can distribute
+            This will create a new Share Token (a unique URL) you can distribute
             to anyone who needs to fill your form.
         </p>
 
@@ -138,7 +115,7 @@
                     required
                 />
                 <Helper class="mt-2">
-                    Responses will be associated with the share token used to
+                    Responses will be associated with the Share Token used to
                     submit them. You can use clear nicknames to help segment
                     respondents.
                 </Helper>

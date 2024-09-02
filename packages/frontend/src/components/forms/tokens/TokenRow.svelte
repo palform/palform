@@ -1,12 +1,8 @@
 <script lang="ts">
     import type { APIFillToken } from "@paltiverse/palform-typescript-openapi";
-    import { TableBodyCell, TableBodyRow } from "flowbite-svelte";
+    import { Modal, TableBodyCell, TableBodyRow } from "flowbite-svelte";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { getResponsesContext } from "../../../data/contexts/results";
-    import {
-        copyFillToken,
-        formatShortLinkURL,
-    } from "../../../data/fillTokens";
     import { showToast } from "../../../data/toast";
     import { faCheck } from "@fortawesome/free-solid-svg-icons";
     import { APIs } from "../../../data/common";
@@ -14,7 +10,7 @@
     import { parseServerTime } from "../../../data/util/time";
     import TableSingleAction from "../../tables/TableSingleAction.svelte";
     import { DateTime } from "luxon";
-    import { copyGenericURL } from "../../../data/util/clipboard";
+    import TokenEmbedOptions from "./TokenEmbedOptions.svelte";
 
     export let token: APIFillToken;
 
@@ -45,36 +41,30 @@
         });
     };
 
-    $: copyURL = async (id: string) => {
-        await copyFillToken($orgCtx.org.id, $respCtx.formId, id);
-    };
+    let showViewLinkModal = false;
 </script>
+
+<Modal
+    outsideclose
+    title={`View link ${token.nickname}`}
+    bind:open={showViewLinkModal}
+>
+    <TokenEmbedOptions
+        fatID={token.id}
+        shortLink={token.short_link ?? undefined}
+    />
+</Modal>
 
 <TableBodyRow>
     <TableBodyCell>
         {token.nickname}
         <button
             class={`block hover:underline ${expired ? "text-red-600 line-through" : "text-primary-600"}`}
-            on:click={() => copyURL(token.id)}
             title="Copy shareable URL"
+            on:click={() => (showViewLinkModal = true)}
         >
-            Copy link
+            View link
         </button>
-        {#if token.short_link}
-            <button
-                class={`block hover:underline ${expired ? "text-red-600 line-through" : "text-primary-600"}`}
-                on:click={() =>
-                    copyGenericURL(
-                        formatShortLinkURL(
-                            $orgCtx.org.subdomain ?? "",
-                            token.short_link ?? ""
-                        )
-                    )}
-                title="Copy shareable URL"
-            >
-                Copy short link
-            </button>
-        {/if}
     </TableBodyCell>
     <TableBodyCell>
         {createdAt.toRelative()}

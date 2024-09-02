@@ -1,5 +1,5 @@
 import { frontendURL, urlsBase } from "./common";
-import { copyGenericURL } from "./util/clipboard";
+import { copyGenericValue } from "./util/clipboard";
 
 export function formatFillTokenURL(
     orgId: string,
@@ -23,5 +23,5 @@ export async function copyFillToken(
     formId: string,
     tokenId: string
 ) {
-    await copyGenericURL(formatFillTokenURL(orgId, formId, tokenId));
+    await copyGenericValue(formatFillTokenURL(orgId, formId, tokenId));
 }

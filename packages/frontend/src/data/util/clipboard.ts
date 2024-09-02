@@ -1,10 +1,10 @@
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { showToast } from "../toast";
 
-export async function copyGenericURL(url: string) {
+export async function copyGenericValue(url: string) {
     await navigator.clipboard.writeText(url);
     await showToast({
-        label: "Copied URL to clipboard!",
+        label: "Copied to clipboard!",
         icon: faLink,
     });
 }

@@ -7,21 +7,28 @@
     import AsyncOrganisationRouter from "./pages/orgs/AsyncOrganisationRouter.svelte";
     import OrganisationSwitcher from "./pages/orgs/OrganisationSwitcher.svelte";
     import AsyncAuthRouter from "./pages/auth/AsyncAuthRouter.svelte";
+    import { isInFrame } from "./data/util/iframe";
 
     export let url = "";
+    const isFrame = isInFrame();
 </script>
 
-<Router {url}>
-    <Route path="/auth/*" component={AsyncAuthRouter} />
+<div class={isFrame ? "" : "bg-slate-50/50 dark:bg-slate-900"}>
+    <Router {url}>
+        <Route path="/auth/*" component={AsyncAuthRouter} />
 
-    <Route path="/orgs/new" component={NewOrganisation} />
-    <Route path="/orgs/join/:orgId/:inviteId" component={JoinOrganisation} />
-    <Route path="/orgs/:orgId/*" component={AsyncOrganisationRouter} />
+        <Route path="/orgs/new" component={NewOrganisation} />
+        <Route
+            path="/orgs/join/:orgId/:inviteId"
+            component={JoinOrganisation}
+        />
+        <Route path="/orgs/:orgId/*" component={AsyncOrganisationRouter} />
 
-    <Route path="/:fillShortLink" component={FillForm} />
-    <Route path="/fill/:orgId/:formId" component={FillForm} />
+        <Route path="/:fillShortLink" component={FillForm} />
+        <Route path="/fill/:orgId/:formId" component={FillForm} />
 
-    <Route path="/" component={OrganisationSwitcher} />
-</Router>
+        <Route path="/" component={OrganisationSwitcher} />
+    </Router>
 
-<ImperativeToastManager />
+    <ImperativeToastManager />
+</div>

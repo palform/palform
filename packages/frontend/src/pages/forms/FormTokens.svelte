@@ -26,7 +26,7 @@
 
 {#if $respCtx.tokens.length === 0}
     <Alert color="blue">
-        <p>Sharing isn't set up for this form yet.</p>
+        <p>This form hasn't been published yet</p>
         <p>
             You'll need to create a Share Token to let people fill your form in.
             This will give you a URL you can easily distribute.
@@ -35,7 +35,7 @@
 {:else}
     <Table shadow>
         <TableHead>
-            <TableHeadCell>Share token</TableHeadCell>
+            <TableHeadCell>Link</TableHeadCell>
             <TableHeadCell>Created</TableHeadCell>
             <TableHeadCell>Expires</TableHeadCell>
             <TableHeadCell>
