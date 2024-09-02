@@ -43,6 +43,7 @@
                     notification_email: settings.email,
                     notification_webhook_url: settings.webhookURL,
                     end_configuration: $formCtx.end_configuration,
+                    enable_captcha: $formCtx.enable_captcha,
                 })
             );
             updateFormCtx(orgCtx, $formCtx.id, (f) => {
