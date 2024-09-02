@@ -20,6 +20,7 @@ async function getActiveAuthentication() {
             },
         },
         sort: ["expires"],
+        limit: 1,
     });
 
     if (activeAuths.docs.length === 0) return undefined;

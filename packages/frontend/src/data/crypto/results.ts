@@ -6,7 +6,7 @@ import type { ResponsesContext } from "../contexts/results";
 import * as Comlink from "comlink";
 import type { DecryptAllSubmissionsFunction } from "./decryptWorker";
 import { getPrivateKeys } from "../contexts/keys";
-import { decryptedSubmissionCacheDb } from "../pouch";
+import { decryptedSubmissionCacheDb, pouchInfiniteLimit } from "../pouch";
 import { DateTime } from "luxon";
 import { APIs } from "../common";
 import { parseServerTime } from "../util/time";
@@ -57,6 +57,7 @@ export async function downloadSubmissionsForForm(
                 created: { $gt: null },
             },
             sort: [{ created: "asc" }],
+            limit: pouchInfiniteLimit,
         })
     ).docs;
     const latestCachedSubmission =

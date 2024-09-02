@@ -77,3 +77,6 @@ export interface OrgVisitRecord {
 export const orgVisitDb = new PouchDB<OrgVisitRecord>("palform_org_visit", {
     auto_compaction: true,
 });
+
+// literally just a really big number
+export const pouchInfiniteLimit = 1_000_000_000;
