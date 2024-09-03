@@ -1,5 +1,12 @@
 <script lang="ts">
-    import { Button, ButtonGroup, Input, Label, Toggle } from "flowbite-svelte";
+    import {
+        Button,
+        ButtonGroup,
+        Helper,
+        Input,
+        Label,
+        Toggle,
+    } from "flowbite-svelte";
     import {
         deleteQuestion,
         getEditorCtx,
@@ -68,6 +75,7 @@
 
     let questionTitle = $question?.title ?? "";
     let questionDescription = $question?.description;
+    let questionInternalName = $question?.internal_name;
     let questionRequired = $question?.required ?? false;
 
     $: onEditClick = () => {
@@ -97,6 +105,7 @@
             ...$question,
             title: questionTitle,
             description: questionDescription,
+            internal_name: questionInternalName,
             required: questionRequired,
         });
 
@@ -257,6 +266,37 @@
                         <FontAwesomeIcon icon={faTrash} class="me-2" />
                         Delete description
                     </Button>
+                {/if}
+
+                {#if questionInternalName === null || questionInternalName === undefined}
+                    <Button
+                        size="xs"
+                        outline
+                        class="mt-"
+                        on:click={() => (questionInternalName = "")}
+                        disabled={$editorCtx.loading}
+                    >
+                        Add internal name
+                    </Button>
+                {:else}
+                    <Label class="mt-4">
+                        Internal name
+                        <ButtonGroup class="mt-2 flex">
+                            <Input
+                                disabled={$editorCtx.loading}
+                                bind:value={questionInternalName}
+                            />
+                            <Button
+                                disabled={$editorCtx.loading}
+                                on:click={() => (questionInternalName = null)}
+                            >
+                                <FontAwesomeIcon icon={faTrash} class="me-2" />
+                            </Button>
+                        </ButtonGroup>
+                        <Helper class="mt-2">
+                            Identifies this question in tables and exports
+                        </Helper>
+                    </Label>
                 {/if}
             </div>
         {/if}
