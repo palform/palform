@@ -138,6 +138,7 @@ impl QuestionManager {
         let new_question = APIQuestion {
             id: new_id,
             title: new_question.title,
+            internal_name: None,
             description: new_question.description,
             required: new_question.required,
             configuration: default_config,
@@ -157,6 +158,7 @@ impl QuestionManager {
         let updated_question = question::ActiveModel {
             id: Set(question.id),
             title: Set(question.title),
+            internal_name: Set(question.internal_name),
             description: Set(question.description),
             required: Set(question.required),
             configuration: Set(encoded_config),

@@ -45,6 +45,7 @@ mod m20240731_161124_branding_accent;
 mod m20240731_163640_branding_border_intensity;
 mod m20240802_092611_submission_deletion_log;
 mod m20240815_132308_branding_e2ee_badge;
+mod m20240903_110354_question_internal_name;
 
 pub struct Migrator;
 
@@ -97,6 +98,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240731_163640_branding_border_intensity::Migration),
             Box::new(m20240802_092611_submission_deletion_log::Migration),
             Box::new(m20240815_132308_branding_e2ee_badge::Migration),
+            Box::new(m20240903_110354_question_internal_name::Migration),
         ]
     }
 }

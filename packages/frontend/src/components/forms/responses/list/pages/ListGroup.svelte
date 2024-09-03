@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type { DecryptedSubmissionSuccess } from "../../../../data/crypto/results";
+    import type { DecryptedSubmissionSuccess } from "../../../../../data/crypto/results";
     import {
         ctxGetGroup,
         getGroupTitle,
         getResponsesContext,
-    } from "../../../../data/contexts/results";
+    } from "../../../../../data/contexts/results";
     import ListQuestion from "./ListQuestion.svelte";
 
     export let groupId: string;

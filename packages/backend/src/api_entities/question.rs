@@ -1,12 +1,18 @@
-use palform_client_common::form_management::question_types::{APIQuestion, APIQuestionConfiguration};
+use palform_client_common::form_management::question_types::{
+    APIQuestion, APIQuestionConfiguration,
+};
 use palform_entities::question;
-use palform_tsid::{resources::{IDQuestion, IDQuestionGroup}, tsid::PalformDatabaseID};
+use palform_tsid::{
+    resources::{IDQuestion, IDQuestionGroup},
+    tsid::PalformDatabaseID,
+};
 use sea_orm::FromQueryResult;
 
 #[derive(FromQueryResult, Clone)]
 pub struct QuestionWithEncodedConfiguration {
     pub id: PalformDatabaseID<IDQuestion>,
     pub title: String,
+    pub internal_name: Option<String>,
     pub description: Option<String>,
     pub required: bool,
     pub position: i32,
@@ -21,6 +27,7 @@ impl TryFrom<QuestionWithEncodedConfiguration> for APIQuestion {
         Ok(Self {
             id: value.id,
             title: value.title,
+            internal_name: value.internal_name,
             description: value.description,
             required: value.required,
             position: value.position,
@@ -43,6 +50,7 @@ impl From<question::Model> for QuestionWithEncodedConfiguration {
         Self {
             id: value.id,
             title: value.title,
+            internal_name: value.internal_name,
             description: value.description,
             required: value.required,
             position: value.position,

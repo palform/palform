@@ -16,6 +16,7 @@ pub struct Model {
     pub configuration: Json,
     pub position: i32,
     pub required: bool,
+    pub internal_name: Option<String>,
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: PalformDatabaseID<IDQuestion>,
     pub group_id: PalformDatabaseID<IDQuestionGroup>,

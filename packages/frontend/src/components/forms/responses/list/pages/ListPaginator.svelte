@@ -16,10 +16,10 @@
         TableBodyRow,
     } from "flowbite-svelte";
     import { DateTime } from "luxon";
-    import { getResponsesContext } from "../../../../data/contexts/results";
-    import { parseServerTime } from "../../../../data/util/time";
+    import { getResponsesContext } from "../../../../../data/contexts/results";
+    import { parseServerTime } from "../../../../../data/util/time";
     import VirtualList from "svelte-tiny-virtual-list";
-    import TableContainer from "../../../tables/TableContainer.svelte";
+    import TableContainer from "../../../../tables/TableContainer.svelte";
 
     export let currentIndex = 0;
     const ctx = getResponsesContext();

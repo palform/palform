@@ -15,6 +15,7 @@ use super::question_group::APIQuestionGroup;
 pub struct APIQuestion {
     pub id: PalformDatabaseID<IDQuestion>,
     pub title: String,
+    pub internal_name: Option<String>,
     pub description: Option<String>,
     pub required: bool,
     pub configuration: APIQuestionConfiguration,

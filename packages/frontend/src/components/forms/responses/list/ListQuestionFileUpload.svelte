@@ -10,6 +10,7 @@
 
     export let fileId: string;
     export let contentType: string;
+    export let compact: boolean;
     const orgCtx = getOrgContext();
     const formCtx = getResponsesContext();
 
@@ -46,10 +47,11 @@
 
 {#if fileId !== ""}
     <LoadingButton
-        buttonClass="mt-2"
         color="light"
         on:click={onDownloadClick}
         disabled={loading}
+        size={compact ? "xs" : "md"}
+        class={$$props.class}
         {loading}
     >
         <FontAwesomeIcon icon={faDownload} class="me-2" />

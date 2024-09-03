@@ -1698,6 +1698,12 @@ export interface APIQuestion {
      * @type {string}
      * @memberof APIQuestion
      */
+    'internal_name'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIQuestion
+     */
     'description'?: string | null;
     /**
      * 
