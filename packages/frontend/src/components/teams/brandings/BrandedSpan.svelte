@@ -1,10 +1,10 @@
 <script lang="ts">
-    import Color from "colorjs.io";
     import {
         getBaseREMFontSizeForBrand,
         getBrandCtx,
     } from "../../../data/contexts/brand";
     import { isDarkMode } from "../../../data/util/darkMode";
+    import { colorWithLightness } from "../../../data/util/color";
 
     const ctx = getBrandCtx();
     export let textLighter = false;
@@ -18,19 +18,19 @@
         : undefined;
     $: (() => {
         if ($ctx !== undefined && !ignoreColor) {
-            const c = new Color($ctx.primary_color);
             const isDark = isDarkMode();
 
-            c.mix
             if (textLighter) {
-                let color = c.clone();
-                color.hsv.v = isDark ? 120 : 40;
-                color.alpha = 0.7;
-                textColorOverride = color.toString({ format: "hex" });
+                textColorOverride = colorWithLightness(
+                    $ctx.primary_color,
+                    isDark ? 90 : 30,
+                    0.7
+                );
             } else {
-                let color = c.clone();
-                color.hsv.v = isDark ? 120 : 40;
-                textColorOverride = color.toString({ format: "hex" });
+                textColorOverride = colorWithLightness(
+                    $ctx.primary_color,
+                    isDark ? 70 : 15
+                );
             }
         } else {
             textColorOverride = undefined;

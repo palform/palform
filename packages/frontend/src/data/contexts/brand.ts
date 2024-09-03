@@ -86,11 +86,11 @@ export function getShadowAlphaForBrandBorder(brand?: BrandContext): number {
     if (!brand) return 0.4;
     switch (brand.border_shadow_intensity) {
         case "High":
-            return 0.8;
-        case "Medium":
-            return 0.4;
-        case "Low":
             return 0.2;
+        case "Medium":
+            return 0.1;
+        case "Low":
+            return 0.03;
         case "Off":
             return 0;
     }
