@@ -4,7 +4,7 @@ authors: [pal]
 
 # The 7 best form builders in 2024
 
-It's a hottly contested topic, and everyone has their own personal opinions! In the end, it boils down to what your use case is, who's filling out the forms, and how many responses you're expecting. Different form builders serve vastly different niches, and it's important to understand the differences.
+It's a hotly contested topic, and everyone has their own personal opinions! In the end, it boils down to what your use case is, who's filling out the forms, and how many responses you're expecting. Different form builders serve vastly different niches, and it's important to understand the differences.
 
 <!-- truncate-->
 
