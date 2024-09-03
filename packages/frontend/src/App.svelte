@@ -13,7 +13,7 @@
     const isFrame = isInFrame();
 </script>
 
-<div class={isFrame ? "" : "bg-slate-50/50 dark:bg-slate-900"}>
+<div class={`min-h-full ${isFrame ? "" : "bg-slate-50/50 dark:bg-slate-900"}`}>
     <Router {url}>
         <Route path="/auth/*" component={AsyncAuthRouter} />
 

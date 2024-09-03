@@ -7,10 +7,12 @@
     export let imagesWithFillToken = false;
 </script>
 
-<SvelteMarkdown
-    source={value}
-    renderers={{
-        link: MarkdownLink,
-        image: imagesWithFillToken ? MarkdownFormFillImage : undefined,
-    }}
-/>
+<div class="space-y-2">
+    <SvelteMarkdown
+        source={value}
+        renderers={{
+            link: MarkdownLink,
+            image: imagesWithFillToken ? MarkdownFormFillImage : undefined,
+        }}
+    />
+</div>

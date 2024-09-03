@@ -10,20 +10,46 @@ use rocket_okapi::{
 };
 use sea_orm::{DatabaseConnection, DbErr};
 use serde::Deserialize;
+use validator::{Validate, ValidationError};
 
 use crate::{
     api_entities::billing::entitlement::APIEntitlementRequest,
     audit::AuditManager,
-    auth::rbac::requests::APITokenOrgAdmin,
-    auth::tokens::APIAuthTokenSource,
+    auth::{rbac::requests::APITokenOrgAdmin, tokens::APIAuthTokenSource},
     entity_managers::{
         billing_entitlement_proxy::BillingEntitlementManager, orgs::OrganisationManager,
     },
-    rocket_util::from_org_id::FromOrgId,
+    rocket_util::{from_org_id::FromOrgId, validated::Validated},
 };
 
-#[derive(Deserialize, JsonSchema)]
+fn validate_subdomain(value: &str) -> Result<(), ValidationError> {
+    for char in value.chars() {
+        if (char < 'a' || char > 'z') && (char < '0' || char > '9') && char != '-' {
+            return Err(ValidationError::new("invalid subdomain"));
+        }
+    }
+
+    let first_char = value
+        .chars()
+        .next()
+        .ok_or(ValidationError::new("not enough characters"))?;
+
+    if first_char == '-' || (first_char >= '0' && first_char <= '9') {
+        return Err(ValidationError::new("invalid first character"));
+    }
+
+    Ok(())
+}
+
+#[derive(Deserialize, JsonSchema, Validate)]
 pub struct CreateSubdomainRequest {
+    #[validate(
+        custom(
+            function = "validate_subdomain",
+            message = "Only lowercase letters, numbers, and hyphens (except as the first character) are allowed"
+        ),
+        length(min = 3, max = 20, message = "Must be between 3 and 20 characters")
+    )]
     subdomain: String,
 }
 
@@ -32,7 +58,7 @@ pub struct CreateSubdomainRequest {
 pub async fn handler(
     org_id: PalformDatabaseID<IDOrganisation>,
     token: APITokenOrgAdmin,
-    request: Json<CreateSubdomainRequest>,
+    request: Validated<Json<CreateSubdomainRequest>>,
     db: &State<DatabaseConnection>,
     audit: FromOrgId<AuditManager>,
     m: FromOrgId<BillingEntitlementManager>,
