@@ -26,7 +26,7 @@ pub enum PalformS3Error {
 
 pub struct PalformS3Client<T: PalformS3Bucket> {
     bucket_type: PhantomData<T>,
-    pub bucket: Bucket,
+    pub bucket: Box<Bucket>,
 }
 
 impl<T: PalformS3Bucket> PalformS3Client<T> {
