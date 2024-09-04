@@ -27,7 +27,7 @@
     const orgCtx = getOrgContext();
     const cryptoDetailsEntitled = isEntitled("crypto_details");
 
-    let selectedSubmissionIndex = 0;
+    export let selectedSubmissionIndex = 0;
     $: selectedSubmission = $respCtx.submissions[selectedSubmissionIndex];
 
     let deleteLoading = false;

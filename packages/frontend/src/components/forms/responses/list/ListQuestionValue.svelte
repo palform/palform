@@ -34,6 +34,7 @@
         TableBody,
         TableBodyCell,
         TableBodyRow,
+        Tooltip,
     } from "flowbite-svelte";
     import { labelForQuestionDate } from "../../../../data/util/time";
     import { DateTime } from "luxon";
@@ -44,15 +45,23 @@
 </script>
 
 {#if qIsText(question.configuration)}
-    <p class="dark:text-gray-400">
+    <p
+        class={`dark:text-gray-400 ${compact ? "text-xs text-ellipsis line-clamp-2" : ""}`}
+    >
         {sGetText(questionSubmission.data).value}
     </p>
 {:else if qIsChoice(question.configuration)}
-    <ul class="list-disc list-inside">
-        {#each sGetChoice(questionSubmission.data).option as option}
-            <li class="dark:text-gray-400">{option}</li>
-        {/each}
-    </ul>
+    {#if compact}
+        <p class="dark:text-gray-400 text-xs text-ellipsis line-clamp-2">
+            {sGetChoice(questionSubmission.data).option.join(", ")}
+        </p>
+    {:else}
+        <ul class="list-disc list-inside">
+            {#each sGetChoice(questionSubmission.data).option as option}
+                <li class="dark:text-gray-400">{option}</li>
+            {/each}
+        </ul>
+    {/if}
 {:else if qIsScale(question.configuration)}
     {#if compact}
         <p class="dark:text-gray-400 font-mono">
@@ -69,6 +78,7 @@
     <ListQuestionAddress
         address={sGetAddress(questionSubmission.data).address}
         location={sGetAddress(questionSubmission.data).point}
+        {compact}
     />
 {:else if qIsPhoneNumber(question.configuration)}
     <p class="dark:text-gray-400">
@@ -88,22 +98,32 @@
         freeform={sGetSignature(questionSubmission.data).freeform}
         initial={sGetSignature(questionSubmission.data).initial}
         fullName={sGetSignature(questionSubmission.data).full_name}
+        {compact}
     />
 {:else if qIsChoiceMatrix(question.configuration)}
-    <TableContainer class="mt-2">
-        <Table divClass="" striped>
-            <TableBody>
-                {#each sGetChoiceMatrix(questionSubmission.data).options as [row, cols]}
-                    <TableBodyRow>
-                        <TableBodyCell>{row}</TableBodyCell>
-                        <TableBodyCell class="font-semibold">
-                            {cols.join(", ")}
-                        </TableBodyCell>
-                    </TableBodyRow>
-                {/each}
-            </TableBody>
-        </Table>
-    </TableContainer>
+    {#if compact}
+        <p class="dark:text-gray-400 underline decoration-dashed cursor-help">
+            Not rendered
+        </p>
+        <Tooltip placement="left">
+            Table is too big to render. Please see the individual view.
+        </Tooltip>
+    {:else}
+        <TableContainer class="mt-2">
+            <Table divClass="" striped>
+                <TableBody>
+                    {#each sGetChoiceMatrix(questionSubmission.data).options as [row, cols]}
+                        <TableBodyRow>
+                            <TableBodyCell>{row}</TableBodyCell>
+                            <TableBodyCell class="font-semibold">
+                                {cols.join(", ")}
+                            </TableBodyCell>
+                        </TableBodyRow>
+                    {/each}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    {/if}
 {:else if qIsDateTime(question.configuration)}
     <p class="dark:text-gray-400">
         {labelForQuestionDate(

@@ -9,6 +9,7 @@
     import ResponseTableField from "./ResponseTableField.svelte";
 
     export let submission: DecryptedSubmission;
+    export let submissionIndex: number;
     const respCtx = getResponsesContext();
 
     let observer: IntersectionObserver;
@@ -35,17 +36,31 @@
 </script>
 
 {#if submissionIsError(submission)}
-    <p>ERROR SUBMISSION (to do)</p>
+    <tr
+        class="h-12 bg-red-50 even:bg-red-100 dark:bg-red-950 dark:even:bg-red-900"
+        bind:this={trElement}
+    >
+        {#if inView}
+            <td
+                colspan={$respCtx.questions.length}
+                class="px-3 text-sm text-red-800 dark:text-red-200"
+            >
+                Failed to decrypt response
+            </td>
+        {/if}
+    </tr>
 {/if}
 
 {#if submissionIsSuccess(submission)}
     <tr
-        class={`h-12 ${inView ? "overflow-hidden even:bg-slate-50 dark:even:bg-slate-800" : ""}`}
+        class={inView
+            ? "overflow-hidden even:bg-slate-50 dark:even:bg-slate-800"
+            : "h-12"}
         bind:this={trElement}
     >
         {#if inView}
             {#each $respCtx.questions as question (question.id)}
-                <ResponseTableField {question} {submission} />
+                <ResponseTableField {question} {submission} {submissionIndex} />
             {/each}
         {/if}
     </tr>

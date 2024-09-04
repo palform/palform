@@ -51,10 +51,12 @@
         on:click={onDownloadClick}
         disabled={loading}
         size={compact ? "xs" : "md"}
-        class={$$props.class}
+        buttonClass={$$props.class}
         {loading}
     >
         <FontAwesomeIcon icon={faDownload} class="me-2" />
-        Download file
+        Download
+        {#if !compact}
+            file{/if}
     </LoadingButton>
 {/if}

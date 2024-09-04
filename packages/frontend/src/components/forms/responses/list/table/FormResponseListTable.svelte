@@ -19,8 +19,8 @@
             </tr>
         </thead>
         <tbody>
-            {#each $responsesCtx.submissions as submission}
-                <ResponseTableRow {submission} />
+            {#each $responsesCtx.submissions as submission, index}
+                <ResponseTableRow {submission} submissionIndex={index} />
             {/each}
         </tbody>
     </table>
