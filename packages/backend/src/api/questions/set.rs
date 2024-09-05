@@ -40,6 +40,16 @@ pub async fn handler(
         return Err(APIError::NotFound.into());
     }
 
+    if let Some(internal_name) = new_data.internal_name.clone() {
+        if !QuestionManager::validate_question_internal_name(internal_name) {
+            return Err(
+                APIError::BadRequest(
+                    "Internal name can only contain alphanumeric characters and underscores. First character cannot be a number.".to_string()
+                ).into()
+            );
+        }
+    }
+
     if QuestionManager::check_question_exist(&txn, question_id)
         .await
         .map_err(|e| e.to_internal_error())?

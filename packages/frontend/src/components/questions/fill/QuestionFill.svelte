@@ -6,6 +6,7 @@
         saveFormFill,
         selectQuestion,
         selectQuestionValidationErrors,
+        templateFillQuestionText,
     } from "../../../data/contexts/fill";
     import { Alert } from "flowbite-svelte";
     import {
@@ -68,7 +69,7 @@
 
             <label for={id} class="text-primary-800 dark:text-primary-300">
                 <BrandedSpan sizeGroup="h2">
-                    {question.title}
+                    {templateFillQuestionText(question.title)}
                 </BrandedSpan>
                 {#if question.required}
                     <span class="text-red-500 text-sm align-top ms-1">*</span>

@@ -125,12 +125,12 @@
             );
             await showSuccessToast("Question saved");
             dispatch("serverSync");
+            $editorCtx.currentlyEditing = undefined;
         } catch (e) {
             await showFailureToast(humaniseAPIError(e));
         }
 
         $editorCtx.loading = false;
-        $editorCtx.currentlyEditing = undefined;
     };
 
     $: onDeleteClick = async () => {
@@ -233,6 +233,12 @@
             <Label>
                 Title
                 <Input class="mt-2" bind:value={questionTitle} />
+                <Helper class="mt-2 text-gray-500 dark:text-gray-400">
+                    See <a
+                        href="https://docs.palform.app/forms/questions"
+                        class="underline">documentation</a
+                    > on how to use recall
+                </Helper>
             </Label>
         {/if}
 
@@ -302,8 +308,9 @@
                                 <FontAwesomeIcon icon={faTrash} class="me-2" />
                             </Button>
                         </ButtonGroup>
-                        <Helper class="mt-2">
-                            Identifies this question in tables and exports
+                        <Helper class="mt-2 text-gray-500 dark:text-gray-400">
+                            Identifies this question in recalls, tables, and
+                            exports
                         </Helper>
                     </Label>
                 {/if}

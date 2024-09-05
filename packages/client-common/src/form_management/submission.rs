@@ -1,7 +1,10 @@
 use std::{collections::HashMap, fmt::Display};
 
 use chrono::{DateTime, Local, SecondsFormat};
-use palform_tsid::{resources::{IDForm, IDQuestion, IDQuestionGroup}, tsid::PalformDatabaseID};
+use palform_tsid::{
+    resources::{IDForm, IDQuestion, IDQuestionGroup},
+    tsid::PalformDatabaseID,
+};
 use serde::{Deserialize, Serialize};
 
 use crate::address::{APIGenericAddress, APIGenericLocation};
@@ -167,6 +170,16 @@ impl Display for QuestionSubmissionData {
             }
         }
     }
+}
+
+#[cfg(feature = "frontend-js")]
+#[wasm_bindgen::prelude::wasm_bindgen]
+pub fn question_submission_data_to_string_js(
+    question_submission_data: wasm_bindgen::JsValue,
+) -> Result<String, wasm_bindgen::JsValue> {
+    let question_submission_data: QuestionSubmissionData =
+        serde_wasm_bindgen::from_value(question_submission_data)?;
+    Ok(question_submission_data.to_string())
 }
 
 impl TryFrom<APIQuestion> for QuestionSubmission {

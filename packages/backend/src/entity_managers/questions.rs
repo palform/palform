@@ -148,6 +148,32 @@ impl QuestionManager {
         Ok(new_question)
     }
 
+    pub fn validate_question_internal_name(internal_name: String) -> bool {
+        if internal_name.len() == 0 {
+            return false;
+        }
+
+        if internal_name
+            .chars()
+            .next()
+            .is_some_and(|v| v > '0' && v < '9')
+        {
+            return false;
+        }
+
+        for c in internal_name.chars() {
+            if !(c >= 'a' && c <= 'z')
+                && !(c >= 'A' && c <= 'Z')
+                && !(c >= '0' && c <= '9')
+                && !(c == '_')
+            {
+                return false;
+            }
+        }
+
+        true
+    }
+
     pub async fn set_question<T: ConnectionTrait>(
         conn: &T,
         group_id: PalformDatabaseID<IDQuestionGroup>,

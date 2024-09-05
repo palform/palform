@@ -5,6 +5,7 @@ import {
     type ValidationError,
     api_question_default_submission,
     next_question_group_step_js,
+    question_submission_data_to_string_js,
     question_submission_is_empty_js,
     validate_questions_js,
 } from "@paltiverse/palform-client-common";
@@ -199,6 +200,43 @@ export function selectQuestionValidationErrors(questionId: string) {
         ([_, validations]) =>
             validations.find((e) => e.question_id === questionId)
     );
+}
+
+export function templateFillQuestionText(text: string) {
+    const currentFill = get(formFillStore);
+    if (!currentFill) return;
+
+    const matches = [...text.matchAll(/{{\w+}}/g)];
+    let newText = `${text}`;
+
+    for (const match of matches) {
+        const withoutStart = match[0].substring(2);
+        const identifier = withoutStart.substring(0, withoutStart.length - 2);
+
+        const matchingQuestion = currentFill.form.q.find(
+            (e) => e.internal_name === identifier
+        );
+        if (!matchingQuestion) continue;
+
+        let replacedValue = "";
+
+        const matchingSubmission = currentFill.submission.questions.find(
+            (e) => e.question_id === matchingQuestion.id
+        );
+        if (matchingSubmission) {
+            replacedValue = question_submission_data_to_string_js(
+                matchingSubmission.data
+            );
+        }
+
+        newText = [
+            newText.substring(0, match.index),
+            replacedValue,
+            newText.substring(match.index + match[0].length),
+        ].join("");
+    }
+
+    return newText;
 }
 
 export function sGetText(s: QuestionSubmissionData) {
