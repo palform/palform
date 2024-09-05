@@ -27,6 +27,7 @@ pub struct CreateFormRequest {
     title: String,
     in_team: PalformDatabaseID<IDTeam>,
     branding_id: Option<PalformDatabaseID<IDFormBranding>>,
+    one_question_per_page: bool,
 }
 
 #[openapi(tag = "Forms", operation_id = "forms.create")]
@@ -74,6 +75,7 @@ pub async fn handler(
         request.editor_name.clone(),
         request.title.clone(),
         request.branding_id,
+        request.one_question_per_page,
     )
     .await
     .map_err(|e| e.to_internal_error())?;

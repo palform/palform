@@ -5,8 +5,6 @@
         ctxGetNextStep,
         fillSendStore,
         formFillStore,
-        resetGroup,
-        saveFormFill,
         validateQuestions,
     } from "../../../data/contexts/fill";
     import QuestionFill from "../../questions/fill/QuestionFill.svelte";
@@ -20,13 +18,6 @@
     const currentGroupQuestions = ctxGetCurrentGroupQuestions();
     const nextStep = ctxGetNextStep();
 
-    const clearForm = async (e: Event) => {
-        e.preventDefault();
-        if (!$currentGroup) return;
-        resetGroup($currentGroup.id);
-        await saveFormFill();
-    };
-
     let showCaptchaModal = false;
     $: onSubmit = async (e: Event, captchaValue?: string) => {
         e.preventDefault();
@@ -34,7 +25,10 @@
         if (!$formFillStore) return;
         if (!validateQuestions()) return;
 
-        if ($formFillStore.form.f.enable_captcha && captchaValue === undefined) {
+        if (
+            $formFillStore.form.f.enable_captcha &&
+            captchaValue === undefined
+        ) {
             showCaptchaModal = true;
             return;
         }
@@ -124,7 +118,7 @@
             <QuestionFill {question} />
         {/each}
 
-        <div class="space-1-2">
+        <div class="space-x-2">
             {#if $nextStep === undefined}
                 <BrandedButton
                     disabled={$fillSendStore?.loading}
@@ -140,14 +134,6 @@
                 <BrandedButton on:click={onPrevious} outline>Back</BrandedButton
                 >
             {/if}
-            <BrandedButton
-                on:click={clearForm}
-                disabled={$fillSendStore?.loading}
-                outline
-                type="reset"
-            >
-                Clear
-            </BrandedButton>
         </div>
     </form>
 

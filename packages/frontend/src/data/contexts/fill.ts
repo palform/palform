@@ -167,23 +167,6 @@ export function setQuestionValue(
     });
 }
 
-export function resetGroup(groupId: string) {
-    formFillStore.update((formFill) => {
-        if (!formFill) return;
-        for (let i = 0; i < formFill.submission.questions.length; i++) {
-            const q = formFill.form.q.find(
-                (e) => e.id === formFill.submission.questions[i].question_id
-            );
-            if (!q || qIsInfo(q.configuration) || q.group_id !== groupId)
-                continue;
-            formFill.submission.questions[i].data =
-                api_question_default_submission(q);
-        }
-        return formFill;
-    });
-    questionValidationStore.set([]);
-}
-
 export async function deleteFormFill() {
     const currentFill = get(formFillStore);
     if (!currentFill || !currentFill.submission._rev) return;

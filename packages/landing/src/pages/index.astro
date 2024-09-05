@@ -23,6 +23,8 @@ import ResponsivePadding from "../components/ResponsivePadding.astro";
 import Pricing from "../components/pricing/Pricing.svelte";
 import PricingFree from "../components/pricing/PricingFree.astro";
 import { Icon } from "astro-icon/components";
+import formStyleChooserImage from "../assets/form_style_chooser.png";
+import { Image } from "astro:assets";
 
 import "@fontsource/ibm-plex-serif/400.css";
 import "@fontsource/nunito/600.css";
@@ -112,6 +114,7 @@ import "@fontsource/kanit/600.css";
 			title="Beautiful forms in seconds"
 			badge="Interactive form editor"
 			class="mt-24"
+			id="features"
 		>
 			<HomeSecParagraph center>
 				Palforms are easy to build and always look pretty
@@ -204,6 +207,25 @@ import "@fontsource/kanit/600.css";
 			</Fragment>
 		</HomeSecRow>
 
+		<HomeSecRow class="mt-32" title="Choose your style">
+			<HomeSecParagraph>
+				One question at a time (like Typeform) or multiple questions per
+				page (like Google Forms). It's your choice!
+			</HomeSecParagraph>
+			<HomeSecParagraph>
+				Get both styles with one platform.
+			</HomeSecParagraph>
+			<Fragment slot="graphic">
+				<div class="flex w-full justify-end">
+					<Image
+						src={formStyleChooserImage}
+						alt="Two buttons: one to choose one question at a time, and the other to choose multiple questions per page."
+						width={350}
+					/>
+				</div>
+			</Fragment>
+		</HomeSecRow>
+
 		<HomeSecRow class="mt-32" title="Let your brand shine">
 			<HomeSecParagraph>
 				Create reusable branding schemes, customising everything from
@@ -273,6 +295,7 @@ import "@fontsource/kanit/600.css";
 			title="Your data should be yours"
 			badge="All-encompassing security"
 			class="mt-24"
+			id="security"
 		>
 			<HomeSecParagraph center>
 				Your users want privacy more than ever. Prove your dedication to
@@ -469,23 +492,6 @@ import "@fontsource/kanit/600.css";
 					</MockCard>
 				</MockContainer>
 			</Fragment>
-		</HomeSecRow>
-
-		<HomeSecRow class="mt-32" title="Ethics matter">
-			<HomeSecParagraph class="mt-2">
-				We're a small, honest startup; we avoid deceptive practices
-				designed to increase your dependence on our platform. Instead,
-				you can cancel your plan whenever you want without even speaking
-				to a human.
-			</HomeSecParagraph>
-			<HomeSecParagraph class="mt-2">
-				All of our code is fully open-source, so anyone can verify our
-				security claims.
-			</HomeSecParagraph>
-			<HomeSecParagraph class="mt-2">
-				If you need any help, we're only an email away! Basic support is
-				included in all plans, even the Free plan.
-			</HomeSecParagraph>
 		</HomeSecRow>
 
 		<HomeSecCenter

@@ -157,9 +157,9 @@
                         Cancel
                     </Button>
                 {/if}
-            {:else}
+            {:else if !$formCtx.one_question_per_page}
                 <h2 class="text-lg dark:text-gray-300">
-                    {getGroupTitle(group)}
+                    {getGroupTitle(false, $respCtx, group)}
                 </h2>
                 {#if group.description}
                     <p class="text-gray-600 dark:text-gray-400">
@@ -168,31 +168,35 @@
                 {/if}
             {/if}
         </div>
-        <div>
-            {#if !editing}
-                <Button
-                    color="light"
-                    outline
-                    size="sm"
-                    disabled={loading || !!$editorCtx.currentlyEditing}
-                    on:click={() => (editing = true)}
-                >
-                    <FontAwesomeIcon icon={faEdit} />
-                </Button>
-            {/if}
+        {#if !$formCtx.one_question_per_page}
+            <div>
+                {#if !editing}
+                    <Button
+                        color="light"
+                        outline
+                        size="sm"
+                        disabled={loading || !!$editorCtx.currentlyEditing}
+                        on:click={() => (editing = true)}
+                    >
+                        <FontAwesomeIcon icon={faEdit} />
+                    </Button>
+                {/if}
 
-            <LoadingButton
-                size="sm"
-                outline
-                color="red"
-                title="Delete section"
-                on:click={() => dispatch("delete")}
-                {loading}
-                disabled={loading || editing || !!$editorCtx.currentlyEditing}
-            >
-                <FontAwesomeIcon icon={faTrash} />
-            </LoadingButton>
-        </div>
+                <LoadingButton
+                    size="sm"
+                    outline
+                    color="red"
+                    title="Delete section"
+                    on:click={() => dispatch("delete")}
+                    {loading}
+                    disabled={loading ||
+                        editing ||
+                        !!$editorCtx.currentlyEditing}
+                >
+                    <FontAwesomeIcon icon={faTrash} />
+                </LoadingButton>
+            </div>
+        {/if}
     </div>
 
     {#if !editing}

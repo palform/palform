@@ -6,15 +6,21 @@
         getEditorCtx,
         insertQuestion,
     } from "../../../data/contexts/questionsEditing";
-    import { getResponsesContext } from "../../../data/contexts/results";
+    import {
+        getResponsesContext,
+        insertGroup,
+    } from "../../../data/contexts/results";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import NewQuestionType from "./NewQuestionType.svelte";
     import { createEventDispatcher } from "svelte";
 
+    // If groupId is undefined, this refers to group indexes. If groupId is defined, this refers to question indexes.
     export let beforeIndex: number;
     export let alertMode = false;
-    export let groupId: string;
+    // If undefined, a new group will be created for the question
+    export let groupId: string | undefined;
+
     const editorCtx = getEditorCtx();
     const formCtx = getResponsesContext();
     const orgCtx = getOrgContext();
@@ -26,13 +32,26 @@
         $editorCtx.loading = true;
 
         try {
+            let finalGroupId: string;
+            if (groupId === undefined) {
+                finalGroupId = await insertGroup(
+                    formCtx,
+                    $orgCtx.org.id,
+                    beforeIndex,
+                    null,
+                    null
+                );
+            } else {
+                finalGroupId = groupId;
+            }
+
             const newId = await insertQuestion(
                 editorCtx,
                 type,
-                beforeIndex,
+                groupId === undefined ? 0 : beforeIndex,
                 $orgCtx.org.id,
                 $formCtx.formId,
-                groupId
+                finalGroupId
             );
 
             await showSuccessToast("Added new question");
@@ -52,6 +71,7 @@
     outline={!alertMode}
     disabled={$editorCtx.loading || $editorCtx.currentlyEditing !== undefined}
     on:click={() => (showTypeSelectDropdown = true)}
+    class={$$props.class}
 >
     <FontAwesomeIcon icon={faPlus} class="me-2" />
     Add question

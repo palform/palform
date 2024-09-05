@@ -23,6 +23,7 @@ pub struct Model {
     pub id: PalformDatabaseID<IDForm>,
     pub branding_id: Option<PalformDatabaseID<IDFormBranding>>,
     pub team_id: PalformDatabaseID<IDTeam>,
+    pub one_question_per_page: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -997,6 +997,12 @@ export interface APIForm {
      * @memberof APIForm
      */
     'enable_captcha': boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof APIForm
+     */
+    'one_question_per_page': boolean;
 }
 /**
  * 
@@ -1331,6 +1337,12 @@ export interface APIFrontendForm {
      * @memberof APIFrontendForm
      */
     'enable_captcha': boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof APIFrontendForm
+     */
+    'one_question_per_page': boolean;
 }
 /**
  * 
@@ -2996,6 +3008,12 @@ export interface CreateFormRequest {
      * @memberof CreateFormRequest
      */
     'branding_id'?: string | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof CreateFormRequest
+     */
+    'one_question_per_page': boolean;
 }
 /**
  * 

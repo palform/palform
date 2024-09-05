@@ -7,7 +7,10 @@
         qgsIsJump,
         syncGroupConfig,
     } from "../../../../data/contexts/results";
-    import { getOrgContext } from "../../../../data/contexts/orgLayout";
+    import {
+        getFormCtx,
+        getOrgContext,
+    } from "../../../../data/contexts/orgLayout";
     import type {
         APIQuestionGroupStepStrategy,
         APIQuestionGroupStepStrategyJumpCase,
@@ -26,6 +29,7 @@
     export let groupId: string;
     const orgCtx = getOrgContext();
     const formCtx = getResponsesContext();
+    const formMetadataCtx = getFormCtx();
     const editorCtx = getEditorCtx();
     $: group = ctxGetGroup(groupId);
     $: currentConfig = $group?.step_strategy;
@@ -94,9 +98,16 @@
             on:change={onActionValueChange}
             disabled={!!$editorCtx.currentlyEditing}
             items={[
-                { name: "Go to next section", value: "NextPosition" },
                 {
-                    name: "Jump to section / submit form",
+                    name: $formMetadataCtx.one_question_per_page
+                        ? "Go to next question"
+                        : "Go to next section",
+                    value: "NextPosition",
+                },
+                {
+                    name: $formMetadataCtx.one_question_per_page
+                        ? "Jump to question / submit form"
+                        : "Jump to section / submit form",
                     value: "JumpToSection",
                 },
             ]}

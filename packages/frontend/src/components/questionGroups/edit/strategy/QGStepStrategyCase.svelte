@@ -10,11 +10,13 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faTrash } from "@fortawesome/free-solid-svg-icons";
     import { createEventDispatcher } from "svelte";
+    import { getFormCtx } from "../../../../data/contexts/orgLayout";
 
     export let strategyCase: APIQuestionGroupStepStrategyJumpCase;
     const formCtx = getResponsesContext();
+    const formMetadataCtx = getFormCtx();
     let targetGroup = $formCtx.groups.find(
-        (e) => e.id === strategyCase.target_group_id,
+        (e) => e.id === strategyCase.target_group_id
     );
 
     const dispatch = createEventDispatcher<{ delete: undefined }>();
@@ -26,7 +28,13 @@
         {#if targetGroup !== undefined}
             <span class="text-sm text-gray-800 dark:text-gray-300">Jump to</span
             >
-            <span class="dark:text-gray-100">{getGroupTitle(targetGroup)}</span>
+            <span class="dark:text-gray-100">
+                {getGroupTitle(
+                    $formMetadataCtx.one_question_per_page,
+                    $formCtx,
+                    targetGroup
+                )}
+            </span>
         {:else}
             <span class="dark:text-gray-100">Submit form</span>
         {/if}

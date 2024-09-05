@@ -69,7 +69,11 @@
     {#if $formFillStore?.form.b?.e2ee_badge || !$formFillStore?.form.b}
         <BrandingE2EeBadge />
     {/if}
-    <Main extraTight fullHeight>
+    <Main
+        extraTight
+        fullHeight
+        verticalCenter={$formFillStore?.form.f.one_question_per_page}
+    >
         {#if initLoading}
             <div class="text-center mb-10">
                 <Spinner size={14} />
@@ -91,9 +95,11 @@
                 />
             {/if}
 
-            <MainTitle className="mb-8">
-                {$formFillStore.form.f.title}
-            </MainTitle>
+            {#if !$formFillStore.form.f.one_question_per_page}
+                <MainTitle className="mb-8">
+                    {$formFillStore.form.f.title}
+                </MainTitle>
+            {/if}
 
             {#if $fillSendStore?.done}
                 <FormFillEndScreen on:restart={newSubmission} />
@@ -110,6 +116,10 @@
             {/if}
         {/if}
 
-        <FormFillFooter class="mt-6" />
+        <FormFillFooter
+            class={$formFillStore?.form.f.one_question_per_page
+                ? "fixed bottom-4 left-4 md:w-full w-40"
+                : "mt-6"}
+        />
     </Main>
 </BrandingContextProvider>

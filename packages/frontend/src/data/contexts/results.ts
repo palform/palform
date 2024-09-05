@@ -35,13 +35,13 @@ export function ctxGetGroup(groupId: string) {
         [readable(groupId), getResponsesContext()],
         ([groupId, ctx]) => {
             return ctx.groups.find((e) => e.id === groupId);
-        },
+        }
     );
 }
 export function ctxUpdateGroup(
     ctx: Writable<ResponsesContext>,
     groupId: string,
-    group: APIQuestionGroup,
+    group: APIQuestionGroup
 ) {
     ctx.update((ctx) => {
         const i = ctx.groups.findIndex((e) => e.id === groupId);
@@ -56,7 +56,7 @@ export function ctxGetQuestion(questionId: string) {
         [readable(questionId), getResponsesContext()],
         ([_, $ctx]) => {
             return $ctx.questions.find((q) => q.id === questionId);
-        },
+        }
     );
 }
 export function ctxSubmissionsForQuestion(questionId: string) {
@@ -64,18 +64,18 @@ export function ctxSubmissionsForQuestion(questionId: string) {
         [readable(questionId), getResponsesContext()],
         ([_, $ctx]) => {
             const successfulOnly = $ctx.submissions.filter((s) =>
-                submissionIsSuccess(s),
+                submissionIsSuccess(s)
             ) as DecryptedSubmissionSuccess[];
             return successfulOnly.flatMap((s) =>
-                s.questions.filter((q) => q.question_id === questionId),
+                s.questions.filter((q) => q.question_id === questionId)
             );
-        },
+        }
     );
 }
 
 export async function saveGroupsWithPositions(
     ctx: Writable<ResponsesContext>,
-    orgId: string,
+    orgId: string
 ) {
     const val = get(ctx);
     const api = await APIs.questionGroups();
@@ -96,7 +96,7 @@ export async function insertGroup(
     orgId: string,
     beforeIndex: number,
     title: string | null,
-    description: string | null,
+    description: string | null
 ) {
     const ctxVal = get(ctx);
 
@@ -106,7 +106,7 @@ export async function insertGroup(
         description,
     } as Omit<APIQuestionGroup, "id">;
     const resp = await APIs.questionGroups().then((a) =>
-        a.questionGroupsCreate(orgId, ctxVal.formId, obj),
+        a.questionGroupsCreate(orgId, ctxVal.formId, obj)
     );
     ctx.update((ctx) => {
         ctx.groups.splice(beforeIndex, 0, {
@@ -117,16 +117,18 @@ export async function insertGroup(
         return ctx;
     });
     await saveGroupsWithPositions(ctx, orgId);
+
+    return resp.data;
 }
 
 export async function deleteGroup(
     ctx: Writable<ResponsesContext>,
     orgId: string,
-    groupId: string,
+    groupId: string
 ) {
     const ctxVal = get(ctx);
     await APIs.questionGroups().then((a) =>
-        a.questionGroupsDelete(orgId, ctxVal.formId, groupId),
+        a.questionGroupsDelete(orgId, ctxVal.formId, groupId)
     );
     ctx.update((ctx) => {
         return {
@@ -140,26 +142,36 @@ export async function deleteGroup(
 export async function syncGroupConfig(
     ctx: Writable<ResponsesContext>,
     orgId: string,
-    groupId: string,
+    groupId: string
 ) {
     const ctxVal = get(ctx);
     const group = ctxVal.groups.find((e) => e.id === groupId);
     if (!group) return;
 
     await APIs.questionGroups().then((a) =>
-        a.questionGroupsSet(orgId, ctxVal.formId, groupId, group),
+        a.questionGroupsSet(orgId, ctxVal.formId, groupId, group)
     );
 }
 
 export function qgsIsJump(
-    t: APIQuestionGroupStepStrategy,
+    t: APIQuestionGroupStepStrategy
 ): t is APIQuestionGroupStepStrategyOneOf {
     return !(typeof t === "string");
 }
 
-export function getGroupTitle(group: APIQuestionGroup) {
-    if (!group.title) {
-        return `Section ${group.position + 1}`;
+export function getGroupTitle(
+    oqpp: boolean,
+    formCtx: ResponsesContext,
+    group: APIQuestionGroup
+) {
+    if (oqpp) {
+        const q = formCtx.questions.find((e) => e.group_id === group.id);
+        if (!q) return "Untitled";
+        return q.title;
+    } else {
+        if (!group.title) {
+            return `Section ${group.position + 1}`;
+        }
+        return group.title;
     }
-    return group.title;
 }

@@ -23,6 +23,7 @@ pub struct APIForm {
     pub auto_delete_submission_after_days: Option<i32>,
     pub end_configuration: APIFormEndConfiguration,
     pub enable_captcha: bool,
+    pub one_question_per_page: bool,
 }
 
 #[derive(Serialize, JsonSchema, FromQueryResult)]
@@ -34,6 +35,7 @@ pub struct APIFrontendForm {
     pub branding_id: Option<PalformDatabaseID<IDFormBranding>>,
     pub end_configuration: APIFormEndConfiguration,
     pub enable_captcha: bool,
+    pub one_question_per_page: bool,
 }
 
 #[derive(Serialize, JsonSchema)]

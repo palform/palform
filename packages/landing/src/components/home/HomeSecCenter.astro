@@ -13,9 +13,10 @@ const { title, id, badge, class: className } = Astro.props;
 ---
 
 <ResponsivePadding class:list={["text-center", className]}>
-    <section>
+    <section class="relative">
+        {id && <p class="invisible absolute -top-32" {id}></p>}
         {badge && <HomeSecBadge>{badge}</HomeSecBadge>}
-        <HomeSecHeading size="big" class="mt-3 mb-4" {id}>
+        <HomeSecHeading size="big" class="mt-3 mb-4">
             {title}
         </HomeSecHeading>
 

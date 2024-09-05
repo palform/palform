@@ -1,6 +1,6 @@
 use linfa::{traits::Fit, Dataset};
 use linfa_linear::{FittedLinearRegression, LinearRegression};
-use ndarray::{Array2, Axis};
+use ndarray::{Array2, Axis, Order};
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 
 use crate::{common::FormAnalysisManager, util::array::array2_to_vec};
@@ -40,7 +40,7 @@ impl FormAnalysisManager {
 
         let dataset = Dataset::new(
             from_row
-                .into_shape((from_row.len(), 1))
+                .to_shape(((from_row.len(), 1), Order::RowMajor))
                 .map_err(|e| JsValue::from(format!("build dataset: {}", e)))?
                 .to_owned(),
             target_row.to_owned(),

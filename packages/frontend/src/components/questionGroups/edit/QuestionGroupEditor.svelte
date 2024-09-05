@@ -12,7 +12,10 @@
         getResponsesContext,
     } from "../../../data/contexts/results";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
-    import { getOrgContext } from "../../../data/contexts/orgLayout";
+    import {
+        getFormCtx,
+        getOrgContext,
+    } from "../../../data/contexts/orgLayout";
     import QgContainer from "./QGContainer.svelte";
     import QgStepStrategyConfig from "./strategy/QGStepStrategyConfig.svelte";
 
@@ -21,7 +24,8 @@
 
     const editorContext = getEditorCtx();
     const orgCtx = getOrgContext();
-    const formCtx = getResponsesContext();
+    const respCtx = getResponsesContext();
+    const formCtx = getFormCtx();
     $: questionsInGroup = getEditorQuestionsInGroup(groupId);
     $: group = ctxGetGroup(groupId);
 
@@ -36,7 +40,7 @@
 
         $editorContext.loading = true;
         deleteLoading = true;
-        await deleteGroup(formCtx, $orgCtx.org.id, groupId);
+        await deleteGroup(respCtx, $orgCtx.org.id, groupId);
         await showSuccessToast("Section deleted");
         deleteLoading = false;
         $editorContext.loading = false;
@@ -47,22 +51,26 @@
     <QgContainer group={$group} loading={deleteLoading} on:delete={onDelete}>
         <div class="space-y-4 mb-4">
             {#each $questionsInGroup as question, index (question.id)}
-                <CreateQuestion
-                    {groupId}
-                    beforeIndex={index}
-                    on:create={(_) => dispatch("serverSync")}
-                />
+                {#if !$formCtx.one_question_per_page}
+                    <CreateQuestion
+                        {groupId}
+                        beforeIndex={index}
+                        on:create={(_) => dispatch("serverSync")}
+                    />
+                {/if}
                 <EditQuestion
                     questionId={question.id}
                     on:serverSync={() => dispatch("serverSync")}
                 />
             {/each}
         </div>
-        <CreateQuestion
-            {groupId}
-            beforeIndex={$questionsInGroup.length}
-            on:create={() => dispatch("serverSync")}
-        />
+        {#if !$formCtx.one_question_per_page}
+            <CreateQuestion
+                {groupId}
+                beforeIndex={$questionsInGroup.length}
+                on:create={() => dispatch("serverSync")}
+            />
+        {/if}
 
         <QgStepStrategyConfig {groupId} class="mt-4" />
     </QgContainer>

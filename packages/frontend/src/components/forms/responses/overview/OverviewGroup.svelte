@@ -1,14 +1,16 @@
 <script lang="ts">
-    import { slide } from "svelte/transition";
+    import { fade, slide } from "svelte/transition";
     import OverviewChart from "./OverviewChart.svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import {
         faChevronDown,
         faChevronRight,
     } from "@fortawesome/free-solid-svg-icons";
+    import { getFormCtx } from "../../../../data/contexts/orgLayout";
 
     export let groupTitle: string;
     export let questions: string[];
+    const formMetadataCtx = getFormCtx();
 
     let expanded = true;
 </script>
@@ -22,7 +24,12 @@
                 <FontAwesomeIcon icon={faChevronRight} />
             {/if}
         </span>
-        {groupTitle}
+
+        {#if !$formMetadataCtx.one_question_per_page || !expanded}
+            <span transition:fade>
+                {groupTitle}
+            </span>
+        {/if}
     </h2>
 </button>
 

@@ -14,9 +14,11 @@
     import QgStepStrategyNewCondition from "./QGStepStrategyNewCondition.svelte";
     import ConditionLabel from "./ConditionLabel.svelte";
     import { createEventDispatcher } from "svelte";
+    import { getFormCtx } from "../../../../data/contexts/orgLayout";
 
     export let fromGroupId: string;
     const formCtx = getResponsesContext();
+    const formMetadataCtx = getFormCtx();
 
     let showCreateModal = false;
 
@@ -25,7 +27,7 @@
     let conditions: APIQuestionGroupStepStrategyJumpCaseCondition[] = [];
 
     const onNewCondition = (
-        e: CustomEvent<APIQuestionGroupStepStrategyJumpCaseCondition>,
+        e: CustomEvent<APIQuestionGroupStepStrategyJumpCaseCondition>
     ) => {
         conditions = [...conditions, e.detail];
     };
@@ -43,7 +45,11 @@
         ...$formCtx.groups
             .filter((e) => e.id !== fromGroupId)
             .map((g) => ({
-                name: getGroupTitle(g),
+                name: getGroupTitle(
+                    $formMetadataCtx.one_question_per_page,
+                    $formCtx,
+                    g
+                ),
                 value: g.id,
             })),
         {
@@ -86,7 +92,9 @@
 
 <Modal outsideclose bind:open={showCreateModal} title="New jump case">
     <Label>
-        Jump to section
+        Jump to {$formMetadataCtx.one_question_per_page
+            ? "question"
+            : "section"}
         <Select class="mt-2" bind:value={targetGroupId} items={selectItems} />
     </Label>
 

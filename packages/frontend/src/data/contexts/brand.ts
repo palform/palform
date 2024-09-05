@@ -54,15 +54,15 @@ export function getBaseREMFontSizeForBrand(brand?: BrandContext): number {
     if (!brand) return 1;
     switch (brand.font_size) {
         case "Tiny":
-            return 0.7;
+            return 0.8;
         case "Small":
-            return 0.9;
-        case "Regular":
             return 1;
+        case "Regular":
+            return 1.15;
         case "Large":
-            return 1.1;
-        case "VeryLarge":
             return 1.3;
+        case "VeryLarge":
+            return 1.5;
     }
 }
 

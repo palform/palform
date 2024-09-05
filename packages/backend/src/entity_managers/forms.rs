@@ -199,6 +199,7 @@ impl FormManager {
         editor_name: String,
         title: String,
         branding_id: Option<PalformDatabaseID<IDFormBranding>>,
+        one_question_per_page: bool,
     ) -> Result<APIForm, DbErr> {
         let initial_end_config =
             Self::serialize_end_configuration(APIFormEndConfiguration::default())?;
@@ -209,6 +210,7 @@ impl FormManager {
             team_id: Set(team_id),
             branding_id: Set(branding_id),
             end_configuration: Set(initial_end_config),
+            one_question_per_page: Set(one_question_per_page),
             ..Default::default()
         };
         let form = new_form.insert(conn).await?;

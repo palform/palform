@@ -44,7 +44,10 @@
         getFormCtx,
         getOrgContext,
     } from "../../../data/contexts/orgLayout";
-    import { getResponsesContext } from "../../../data/contexts/results";
+    import {
+        deleteGroup,
+        getResponsesContext,
+    } from "../../../data/contexts/results";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import LoadingButton from "../../LoadingButton.svelte";
     import QeChoice from "./QEChoice.svelte";
@@ -134,15 +137,21 @@
         if (!$question) return;
         $editorCtx.loading = true;
         try {
+            const groupId = $question.group_id;
             await deleteQuestion(
                 editorCtx,
                 $orgCtx.org.id,
                 $formCtx.formId,
-                $question.group_id,
+                groupId,
                 questionId
             );
+
             await showSuccessToast("Question deleted");
             dispatch("serverSync");
+
+            if ($formMetadataCtx.one_question_per_page) {
+                await deleteGroup(formCtx, $orgCtx.org.id, groupId);
+            }
         } catch (e) {
             await showFailureToast(humaniseAPIError(e));
         }

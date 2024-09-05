@@ -29,6 +29,7 @@
 
     export let initialValue: (UpdateFormRequest & { id: string }) | undefined;
     export let initialTeamId: string | undefined = undefined;
+    export let oqpp: boolean | undefined = undefined;
 
     $: isNew = initialValue === undefined;
     let editorName = initialValue?.editor_name ?? "";
@@ -76,11 +77,14 @@
                 );
                 updateFormCtx(ctx, initialValue.id, updatedForm);
             } else {
+                if (oqpp === undefined) return;
+
                 const resp = await formsAPI.formsCreate($ctx.org.id, {
                     editor_name: editorName,
                     title: title,
                     in_team: teamId,
                     branding_id: brandingId === "DEFAULT" ? null : brandingId,
+                    one_question_per_page: oqpp,
                 });
                 await reloadInduction(ctx);
                 ctx.update((ctx) => {
@@ -180,11 +184,16 @@
     {/if}
 
     {#if !isNew}
-        <Toggle bind:checked={captcha} disabled={loading || !$isCaptchaEntitled}>
+        <Toggle
+            bind:checked={captcha}
+            disabled={loading || !$isCaptchaEntitled}
+        >
             Protect responses with captcha
         </Toggle>
         {#if !$isCaptchaEntitled}
-            <Tooltip placement="bottom-start">Please upgrade your plan to enable this feature</Tooltip>
+            <Tooltip placement="bottom-start"
+                >Please upgrade your plan to enable this feature</Tooltip
+            >
         {/if}
     {/if}
 

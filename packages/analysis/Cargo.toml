@@ -20,8 +20,8 @@ ts-rs = { version = "9.0.0", features = ["uuid-impl"] }
 getrandom = { version = "*", features = ["js"] }
 linfa = "0.7.0"
 linfa-linear = "0.7.0"
-ndarray = "0.15.6"
-ndarray-stats = "0.5.1"
+ndarray = "0.15"
+ndarray-stats = "0.5"
 rand = "0.8.5"
 interp = "1.0.3"
 

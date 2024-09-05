@@ -2,11 +2,9 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { getBrandCtx } from "../../../data/contexts/brand";
     import { faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-    import { DateTime } from "luxon";
 
     export let dummyLinks = false;
     const brandCtx = getBrandCtx();
-    const year = DateTime.now().year;
 </script>
 
 <footer class={$$props.class}>
@@ -58,10 +56,6 @@
                     Create secure forms for free with Palform
                     <FontAwesomeIcon icon={faUpRightFromSquare} />
                 </a>
-            </p>
-
-            <p class="mt-1 text-xs">
-                &copy; {year} Palform Ltd. registered company 15796859
             </p>
         </div>
     {/if}

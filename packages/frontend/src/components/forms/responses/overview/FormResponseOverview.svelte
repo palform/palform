@@ -1,7 +1,10 @@
 <script lang="ts">
     import { Alert, Button } from "flowbite-svelte";
     import { navigateEvent } from "../../../../utils/navigate";
-    import { getOrgContext } from "../../../../data/contexts/orgLayout";
+    import {
+        getFormCtx,
+        getOrgContext,
+    } from "../../../../data/contexts/orgLayout";
     import {
         getGroupTitle,
         getResponsesContext,
@@ -14,6 +17,7 @@
 
     const orgCtx = getOrgContext();
     const respCtx = getResponsesContext();
+    const formMetadataCtx = getFormCtx();
     $: groupedQuestions = $respCtx.groups.map((g) => ({
         group: g,
         questions: $respCtx.questions
@@ -51,8 +55,8 @@
             </svelte:fragment>
             <h2 class="text-lg">Failed to decrypt some responses</h2>
             <p>
-                We were unable to decrypt at least one response.
-                Check the "Responses" tab for more info.
+                We were unable to decrypt at least one response. Check the
+                "Responses" tab for more info.
             </p>
         </Alert>
     {/if}
@@ -60,7 +64,11 @@
     {#each groupedQuestions as group (group.group.id)}
         <li>
             <OverviewGroup
-                groupTitle={getGroupTitle(group.group)}
+                groupTitle={getGroupTitle(
+                    $formMetadataCtx.one_question_per_page,
+                    $respCtx,
+                    group.group
+                )}
                 questions={group.questions}
             />
         </li>

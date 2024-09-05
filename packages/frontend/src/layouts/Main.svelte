@@ -9,6 +9,7 @@
     export let fluid = false;
     export let extraTight = false;
     export let fullHeight = false;
+    export let verticalCenter = false;
 
     const brandCtx = getBrandCtx();
     $: showBrandImage =
@@ -16,10 +17,10 @@
 </script>
 
 <main
-    class={`py-8 px-4 ${fluid ? "" : extraTight ? "md:px-20 lg:px-[15%] xl:px-[25%] 2xl:px-[30%]" : "md:px-20 lg:px-[15%]"} ${fullHeight ? "min-h-full relative" : ""}`}
+    class={`py-8 px-4 ${fluid ? "" : extraTight ? "md:px-20 lg:px-[15%] xl:px-[25%] 2xl:px-[30%]" : "md:px-20 lg:px-[15%]"} ${fullHeight ? "min-h-full relative" : ""} ${verticalCenter ? "h-screen flex items-center" :""}`}
 >
     <div
-        class={showBrandImage ? "bg-slate-50 dark:bg-slate-900 p-8 " : ""}
+        class={`w-full ${showBrandImage ? "bg-slate-50 dark:bg-slate-900 p-8" : ""}`}
         style:border-radius={getRoundingAmountForBrand($brandCtx)}
     >
         {#if title !== undefined}
