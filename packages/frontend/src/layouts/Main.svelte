@@ -17,7 +17,8 @@
 </script>
 
 <main
-    class={`py-8 px-4 ${fluid ? "" : extraTight ? "md:px-20 lg:px-[15%] xl:px-[25%] 2xl:px-[30%]" : "md:px-20 lg:px-[15%]"} ${fullHeight ? "min-h-full relative" : ""} ${verticalCenter ? "h-screen flex items-center" :""}`}
+    class={`py-8 px-4 ${fluid ? "" : extraTight ? "md:px-20 lg:px-[15%] xl:px-[25%] 2xl:px-[30%]" : "md:px-20 lg:px-[15%]"} ${fullHeight ? "min-h-full relative" : ""} ${verticalCenter ? "h-screen flex" : ""}`}
+    style:align-items={verticalCenter ? "safe center" : undefined}
 >
     <div
         class={`w-full ${showBrandImage ? "bg-slate-50 dark:bg-slate-900 p-8" : ""}`}

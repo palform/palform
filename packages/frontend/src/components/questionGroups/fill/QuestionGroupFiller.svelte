@@ -118,7 +118,7 @@
             <QuestionFill {question} />
         {/each}
 
-        <div class="space-x-2">
+        <div class="space-x-2 !mb-10">
             {#if $nextStep === undefined}
                 <BrandedButton
                     disabled={$fillSendStore?.loading}
@@ -131,8 +131,9 @@
                 <BrandedButton type="submit">Next</BrandedButton>
             {/if}
             {#if $formFillStore.submission.groups_completed.length > 0}
-                <BrandedButton on:click={onPrevious} outline>Back</BrandedButton
-                >
+                <BrandedButton on:click={onPrevious} outline>
+                    Back
+                </BrandedButton>
             {/if}
         </div>
     </form>
