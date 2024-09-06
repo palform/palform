@@ -41,13 +41,13 @@
             let remSize: number;
             switch (sizeGroup) {
                 case "h1+":
-                    remSize = fsBase + 0.5;
+                    remSize = fsBase * 1.5;
                     break;
                 case "h1":
-                    remSize = fsBase + 0.25;
+                    remSize = fsBase * 1.25;
                     break;
                 case "h2":
-                    remSize = fsBase + 0.125;
+                    remSize = fsBase * 1.175;
                     break;
                 case "p":
                     remSize = fsBase;
