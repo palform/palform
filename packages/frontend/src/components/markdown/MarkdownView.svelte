@@ -14,5 +14,6 @@
             link: MarkdownLink,
             image: imagesWithFillToken ? MarkdownFormFillImage : undefined,
         }}
+        options={{ mangle: false }}
     />
 </div>
