@@ -1,14 +1,18 @@
 ---
+import type { HTMLAttributeAnchorTarget } from "svelte/elements";
+
 interface Props {
     href: string;
     light?: boolean;
     class?: string;
+    target?: HTMLAttributeAnchorTarget;
 }
-const { href, light, class: className } = Astro.props;
+const { href, light, target, class: className } = Astro.props;
 ---
 
 <a
     href={href}
+    target={target}
     class:list={[
         "inline-block px-6 py-3 rounded-full font-semibold transition-transform hover:scale-105 active:scale-95",
         light ? "bg-primary-100 text-primary-700" : "bg-primary-600 text-white",
