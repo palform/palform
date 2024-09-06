@@ -2,6 +2,7 @@
     import SvelteMarkdown from "svelte-markdown";
     import MarkdownLink from "./MarkdownLink.svelte";
     import MarkdownFormFillImage from "./MarkdownFormFillImage.svelte";
+    import MarkdownList from "./MarkdownList.svelte";
 
     export let value = "";
     export let imagesWithFillToken = false;
@@ -13,6 +14,7 @@
         renderers={{
             link: MarkdownLink,
             image: imagesWithFillToken ? MarkdownFormFillImage : undefined,
+            list: MarkdownList,
         }}
         options={{ mangle: false }}
     />
