@@ -6,6 +6,8 @@ authors: [pal]
 
 I'm Pal, the founder of [Palform](https://palform.app). It's a free Google Forms alternative that basically eliminates all of the pains and sorrows I'm about to detail in this post. And it [doesn't cost anything](https://palform.app/#pricing).
 
+<!-- truncate -->
+
 :::warning
 I'm by no means a GDPR expert, and this post is not legal advice. I've tried my best to research everything and provide evidence, but if I've made a mistake please email pal@palform.app.
 :::
@@ -48,7 +50,7 @@ If you're not using Google Forms within a Workspace account (i.e. just through a
 
 If your location is not set, **your data is likely to be stored in the US**. You don't really get much control.
 
-If your data is (or could potentially be) stored in the US, you _must_ comply with the EU-US Data Privacy Framework. You can complete an [online certification](https://www.dataprivacyframework.gov/) to check your compliance.
+If your data is (or could potentially be) stored in the US, you _must_ comply with the EU-US Data Privacy Framework, or have another mechanism for data transfers in place. You can complete an [online certification](https://www.dataprivacyframework.gov/) to check your compliance.
 
 ## Other problems
 
