@@ -1,0 +1,54 @@
+---
+import { Icon } from "astro-icon/components";
+import HeroContent from "../hero/HeroContent.astro";
+import HeroHeader from "../hero/HeroHeader.astro";
+import HeroParagraph from "../hero/HeroParagraph.astro";
+import HeroTitle from "../hero/HeroTitle.astro";
+import Button from "../Button.astro";
+import LittleIcons from "../LittleIcons.astro";
+---
+
+<HeroHeader>
+    <HeroContent class="md:max-w-[50%]">
+        <HeroTitle> Powerful privacy-first Google Forms alternative </HeroTitle>
+        <HeroParagraph>
+            Craft stunning forms with unparalleled security protections, and
+            never lose sleep to data breaches again. Start for free with
+            unlimited responses.
+        </HeroParagraph>
+        <div class="flex gap-4">
+            <Button
+                href="https://dash.palform.app"
+                class="plausible-event-name=Hero+Start"
+            >
+                Start for free
+            </Button>
+            <Button
+                href="https://pf.palform.app/sales"
+                light
+                class="plausible-event-name=Hero+Contact"
+            >
+                Contact us
+            </Button>
+        </div>
+
+        <LittleIcons class="!mt-4" />
+    </HeroContent>
+    <HeroContent class="flex-1 justify-end relative md:flex hidden">
+        <iframe
+            src="https://dash.palform.app/fill/org_0GYDWW6VM4C0E/form_0H6KNG7R9X8N5?f=fat_0H6KNK8BSXFKE"
+            height="650px"
+            class="border dark:border-gray-600 shadow-md dark:bg-slate-800/40 rounded-2xl p-4 2xl:w-[600px] xl:w-[500px] lg:w-[400px] w-[350px]"
+        ></iframe>
+
+        <div class="absolute right-12 -bottom-12 text-xl font-display">
+            <p class="align-middle text-gray-600 dark:text-gray-400">
+                Live demo!
+                <Icon
+                    name="fa6-solid:arrow-turn-up"
+                    class="inline-block ms-3 mb-1"
+                />
+            </p>
+        </div>
+    </HeroContent>
+</HeroHeader>

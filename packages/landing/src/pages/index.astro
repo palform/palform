@@ -1,535 +1,165 @@
 ---
-import Button from "../components/Button.astro";
+import { Image } from "astro:assets";
 import Navbar from "../components/Navbar.astro";
 import Html from "../layouts/Html.astro";
-import HomeSecCenter from "../components/home/HomeSecCenter.astro";
+import HomeHero from "../components/home/HomeHero.astro";
+import HomeSecHeading from "../components/home/HomeSecHeading.astro";
+import ResponsivePadding from "../components/ResponsivePadding.astro";
 import HomeSecParagraph from "../components/home/HomeSecParagraph.astro";
 import HomeSecRow from "../components/home/HomeSecRow.astro";
-import HomeSecTriFeature from "../components/home/HomeSecTriFeature.astro";
-import HomeSecTriFeatureItem from "../components/home/HomeSecTriFeatureItem.astro";
-import HomeSecCTA from "../components/home/HomeSecCTA.astro";
-import List from "../components/list/List.astro";
-import ListItem from "../components/list/ListItem.astro";
-import MockContainer from "../components/mocks/MockContainer.astro";
-import MockCard from "../components/mocks/MockCard.astro";
-import MockHeading from "../components/mocks/MockHeading.astro";
-import MockText from "../components/mocks/MockText.astro";
-import MockButton from "../components/mocks/MockButton.astro";
-import MockFadeOut from "../components/mocks/MockFadeOut.astro";
-import MockInput from "../components/mocks/MockInput.astro";
-import MockOption from "../components/mocks/MockOption.astro";
-import MockStepArrow from "../components/mocks/MockStepArrow.astro";
-import ResponsivePadding from "../components/ResponsivePadding.astro";
+import Button from "../components/Button.astro";
+
+import responsiveDarkModeImg from "../assets/responsive_dark_mode.png";
+import branchingRulesImg from "../assets/branching_rules.png";
+import brandModalImg from "../assets/brand_modal.png";
 import Pricing from "../components/pricing/Pricing.svelte";
 import PricingFree from "../components/pricing/PricingFree.astro";
-import { Icon } from "astro-icon/components";
-import formStyleChooserImage from "../assets/form_style_chooser.png";
-import { Image } from "astro:assets";
-
-import "@fontsource/ibm-plex-serif/400.css";
-import "@fontsource/nunito/600.css";
-import "@fontsource/kanit/600.css";
 ---
 
-<Html title="Free end-to-end encrypted form builder">
+<Html title="Powerful privacy-first alternative to Google Forms">
 	<Navbar />
-	<main class="w-full">
-		<section class="relative">
-			<div
-				class="absolute grid grid-cols-2 inset-0 opacity-40 z-0"
-				aria-hidden="true"
-			>
-				<div
-					class="h-56 blur-[106px] bg-gradient-to-br from-primary-600 to-blue-400"
-				>
-				</div>
-				<div
-					class="h-32 blur-[106px] bg-gradient-to-r from-green-400 to-emerald-600 dark:to-emeral-200"
-				>
-				</div>
-			</div>
 
-			<div class="px-6 md:px-12 xl:px-20 pt-40 lg:pt-64 relative">
-				<div class="flex justify-center items-center">
-					<div class="max-w-7xl lg:w-2/3 text-center">
-						<h1
-							class="text-5xl md:text-6xl font-bold xl:text-7xl xl:mx-10 font-display text-transparent bg-clip-text bg-gradient-to-t from-gray-900 dark:from-gray-500 to-gray-600 dark:to-gray-100"
-						>
-							Surveys your<br />
-							<span
-								class="text-transparent bg-clip-text bg-gradient-to-t from-primary-700 dark:from-primary-700 to-primary-500 dark:to-primary-400"
-								>customers can trust</span
-							>
-						</h1>
-						<p
-							class="mt-8 text-lg lg:text-xl text-gray-700 dark:text-gray-300 xl:mx-20"
-						>
-							Sophisticated Google Forms alternative: collect any
-							data, and get effortless insights with unprecedented
-							encryption and privacy.
-						</p>
-						<p
-							class="mt-2 font-semibold text-xl lg:text-2xl text-gray-700 dark:text-gray-300 xl:mx-20"
-						>
-							Unlimited responses for £0/month
-						</p>
-						<div class="mt-10 flex justify-center gap-6">
-							<Button
-								href="https://pf.palform.app/sales"
-								class="plausible-event-name=Live+Demo"
-								target="_blank"
-							>
-								Live demo
-							</Button>
-							<Button
-								href="https://dash.palform.app/auth/signup"
-								class="plausible-event-name=Get+Started"
-								light
-							>
-								Get started
-							</Button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
+	<main class="w-full pt-32">
+		<HomeHero />
 
-		<HomeSecTriFeature class="mt-48">
-			<HomeSecTriFeatureItem title="Increase form engagement">
-				Palforms are always lightweight and aesthetically pleasing, with
-				the simple elements making it engaging for anyone to fill them
-				in.
-			</HomeSecTriFeatureItem>
-			<HomeSecTriFeatureItem title="Instill confidence in your users">
-				Users are becoming increasingly aware of their data and privacy.
-				Give them an unprecendented level of trust, even when sharing
-				sensitive information.
-			</HomeSecTriFeatureItem>
-			<HomeSecTriFeatureItem title="Easier-than-ever GDPR compliance">
-				All Palforms are hosted in the EU. Combined with our encrypted
-				responses and other features, compliance has never been simpler.
-			</HomeSecTriFeatureItem>
-		</HomeSecTriFeature>
-
-		<HomeSecCenter
-			title="Beautiful forms in seconds"
-			badge="Interactive form editor"
-			class="mt-24"
-			id="features"
-		>
-			<HomeSecParagraph center>
-				Palforms are easy to build and always look pretty
-				out-of-the-box. Choose from our diverse question types and add
-				your custom branding to create an experience your users will
-				love. All without technical know-how.
+		<ResponsivePadding class="mt-32">
+			<HomeSecHeading size="big" id="features">
+				Stop compromising on privacy
+			</HomeSecHeading>
+			<HomeSecParagraph class="mt-4">
+				Google keeps <a
+					href="https://www.androidpolice.com/google-leak-data-privacy-breach/"
+					class="underline plausible-event-name=Evidence"
+					target="_blank">leaking data</a
+				> and <a
+					href="https://www.bbc.com/news/technology-63635380"
+					class="underline plausible-event-name=Evidence"
+					target="_blank">lying</a
+				> about their privacy policies. Your forms are unprofessional and
+				super invasive, so your customers don't trust them.
 			</HomeSecParagraph>
-		</HomeSecCenter>
-
-		<HomeSecRow
-			class="mt-32"
-			title="Super easy form building, no code required"
-		>
-			<HomeSecParagraph>
-				Best-in-class security shouldn't come at the cost of usability.
-				<List class="mt-4">
-					<ListItem>No code or training required</ListItem>
-					<ListItem>Powerful branching rules</ListItem>
-					<ListItem>Numerous versatile question types</ListItem>
-					<ListItem>
-						Response notifications via email or webhook
-					</ListItem>
-				</List>
-			</HomeSecParagraph>
-			<Fragment slot="graphic">
-				<MockContainer>
-					<MockCard>
-						<MockHeading> Where are you staying? </MockHeading>
-						<MockText>
-							Address near
-							<Icon
-								name="fa6-solid:location-pin"
-								class="inline-block"
-							/> Oxford Road, Manchester
-						</MockText>
-						<MockButton class="mt-2">Edit</MockButton>
-					</MockCard>
-
-					<MockButton class="mt-10">Add question</MockButton>
-
-					<MockFadeOut>
-						<MockCard class="mt-8">
-							<MockHeading>
-								Which other airlines did you consider?
-							</MockHeading>
-							<MockText>Choice of 8 options</MockText>
-							<MockButton class="mt-2">Edit</MockButton>
-						</MockCard>
-					</MockFadeOut>
-				</MockContainer>
-			</Fragment>
-		</HomeSecRow>
-
-		<HomeSecRow class="mt-32" title="Powerful branching rules">
-			<HomeSecParagraph>
-				Send users to specific pages depending on their responses and
-				target them with the right questions, every time. Clever
-				branching options are specialised to each question type, and
-				also require zero code.
-			</HomeSecParagraph>
-			<Fragment slot="graphic">
-				<MockContainer>
-					<MockCard>
-						<p>
-							<MockText class="inline">If</MockText>
-							<MockHeading class="inline"
-								>Phone number</MockHeading
-							>
-							<MockText class="inline">has calling code</MockText>
-							<MockHeading class="inline font-mono"
-								>+44</MockHeading
-							>
-						</p>
-						<p>
-							<MockText class="inline">jump to</MockText>
-							<MockHeading class="inline"
-								>British Customer Survey</MockHeading
-							>
-						</p>
-					</MockCard>
-					<MockCard class="mt-8">
-						<p>
-							<MockText class="inline">else</MockText>
-							<MockHeading class="inline">Submit Form</MockHeading
-							>
-						</p>
-					</MockCard>
-					<MockButton class="mt-8">Add rule</MockButton>
-				</MockContainer>
-			</Fragment>
-		</HomeSecRow>
-
-		<HomeSecRow class="mt-32" title="Choose your style">
-			<HomeSecParagraph>
-				One question at a time (like Typeform) or multiple questions per
-				page (like Google Forms). It's your choice!
-			</HomeSecParagraph>
-			<HomeSecParagraph>
-				Get both styles with one platform.
-			</HomeSecParagraph>
-			<Fragment slot="graphic">
-				<div class="flex w-full justify-end">
-					<Image
-						src={formStyleChooserImage}
-						alt="Two buttons: one to choose one question at a time, and the other to choose multiple questions per page."
-						width={350}
-					/>
-				</div>
-			</Fragment>
-		</HomeSecRow>
-
-		<HomeSecRow class="mt-32" title="Let your brand shine">
-			<HomeSecParagraph>
-				Create reusable branding schemes, customising everything from
-				fonts and colours to graphics and border rounding. Edit schemes
-				from one central place whenever your design needs a refresh.
-			</HomeSecParagraph>
-		</HomeSecRow>
-		<ResponsivePadding class="lg:mt-8">
-			<MockContainer>
-				<div class="grid lg:grid-cols-3 gap-8">
-					<MockCard
-						class="!shadow-sm !border-samplePlayful !rounded-3xl"
-					>
-						<MockHeading
-							class="!text-2xl font-samplePlayful !text-samplePlayful"
-						>
-							How old is your child?
-						</MockHeading>
-						<MockText class="font-samplePlayful mt-2 mb-3">
-							Our friendly daycare centre delivers specialised
-							care for each age group!
-						</MockText>
-						<MockInput class="mt-2" />
-					</MockCard>
-					<MockCard class="!rounded-none !shadow-sm">
-						<MockHeading class="font-sampleElegant">
-							Please describe your current investment portfolio
-						</MockHeading>
-						<MockText class="text-xs mt-2 mb-4">
-							We'll use this to assess your application.
-						</MockText>
-						<MockInput long class="mt-2 !rounded-none" />
-					</MockCard>
-					<MockCard class="!shadow-sm !border-sampleBrutal">
-						<MockHeading
-							class="!text-2xl font-sampleBrutal !text-sampleBrutal"
-						>
-							Which burger is your favourite?
-						</MockHeading>
-
-						<ul class="mt-4 space-y-2">
-							<MockOption>The Classic</MockOption>
-							<MockOption>The New Yorker</MockOption>
-							<MockOption>The Pizza Burger</MockOption>
-						</ul>
-					</MockCard>
-				</div>
-			</MockContainer>
-		</ResponsivePadding>
-		<ResponsivePadding class="mt-12">
-			<HomeSecParagraph class="xl:w-3/5">
-				Choose from the entire Google Fonts range and fine-tune design
-				variables to get the look you want.
+			<HomeSecParagraph class="mt-4">
+				<strong>That's why we built Palform.</strong> It's better-looking,
+				privacy-friendly, powerful, and open source. And it doesn't even
+				cost more than Google.
 			</HomeSecParagraph>
 		</ResponsivePadding>
 
-		<HomeSecCTA
-			title="Get started for free now"
-			class="mt-32"
-			href="https://dash.palform.app/auth/signup"
-		>
-			Set up Palform in just 10 minutes and revolutionise your form
-			management experience. Your users will love you for it.
-		</HomeSecCTA>
-
-		<HomeSecCenter
-			title="Your data should be yours"
-			badge="All-encompassing security"
-			class="mt-24"
-			id="security"
-		>
-			<HomeSecParagraph center>
-				Your users want privacy more than ever. Prove your dedication to
-				protecting their data and outshine your competitors.
-			</HomeSecParagraph>
-		</HomeSecCenter>
-
-		<HomeSecRow class="mt-32" title="End-to-end encrypted">
+		<HomeSecRow title="Beautiful designs" class="mt-20">
 			<HomeSecParagraph>
-				Our high-tech encryption runs (mostly) in the background, so you
-				can relax while we take care of security.
+				Just a few clicks in our intuitive editor, and you have
+				responsive dark-mode friendly forms that work on all devices.
 			</HomeSecParagraph>
-			<List class="mt-4">
-				<ListItem>Generate encryption keys in a single click</ListItem>
-				<ListItem>Secure defaults for your peace-of-mind</ListItem>
-				<ListItem>Backup your keys using a simple passphrase</ListItem>
-				<ListItem>Import your own PGP keys</ListItem>
-			</List>
-
 			<Fragment slot="graphic">
-				<MockContainer>
-					<MockCard lessPadding>
-						<MockHeading>User fills in form</MockHeading>
-					</MockCard>
-					<MockStepArrow>
-						<Icon
-							name="fa6-solid:lock"
-							class="inline-block text-green-600 me-1 ms-1 mb-1"
-						/>
-						Encrypted using your team's keys
-					</MockStepArrow>
-					<MockCard lessPadding>
-						<MockHeading>
-							Palform receives and stores the response
-						</MockHeading>
-						<MockText>
-							To us, it looks like random data; we can't see the
-							actual contents.
-						</MockText>
-					</MockCard>
-					<MockStepArrow>
-						Your browser downloads the encrypted data
-					</MockStepArrow>
-					<MockStepArrow class="!pt-0">
-						<Icon
-							name="fa6-solid:lock-open"
-							class="inline-block text-orange-600 me-1 ms-1 mb-1"
-						/>
-						Data is decrypted using your key
-					</MockStepArrow>
-					<MockCard lessPadding>
-						<MockHeading>
-							Responses shown in your dashboard
-						</MockHeading>
-					</MockCard>
-				</MockContainer>
+				<Image
+					src={responsiveDarkModeImg}
+					alt="A Palform in light mode on a desktop computer, and the same form in dark mode on a mobile device."
+				/>
 			</Fragment>
 		</HomeSecRow>
 
-		<HomeSecRow class="mt-32" title="True data ownership">
-			<HomeSecParagraph>
-				Each member of a team has their own key, thereby <em>proving</em
-				> who can see your form responses.
-			</HomeSecParagraph>
-
-			<List class="mt-4">
-				<ListItem>
-					View all keys that can decrypt a specific response
-				</ListItem>
-				<ListItem>
-					Users can only decrypt responses made while they are a
-					member
-				</ListItem>
-				<ListItem>Manage all your users' keys centrally</ListItem>
-				<ListItem>
-					Use keys server-side to decrypt responses in webhooks
-				</ListItem>
-				<ListItem>Open source code base</ListItem>
-			</List>
-
+		<HomeSecRow title="Powerful configuration" class="mt-20">
+			<div>
+				<HomeSecParagraph>
+					Set branching rules and recall responses to previous
+					questions to create truly personal experiences that your
+					users love.
+				</HomeSecParagraph>
+				<Button
+					href="https://pf.palform.app/one-at-a-time"
+					target="_blank"
+					class="mt-4 plausible-event-name=Branch+Demo"
+					light
+				>
+					Live demo
+				</Button>
+			</div>
 			<Fragment slot="graphic">
-				<MockContainer>
-					<MockHeading>Decrypting users</MockHeading>
-					<MockText class="mb-4">
-						Only these users can decrypt this response
-					</MockText>
-					<MockCard lessPadding>
-						<MockHeading>Zachary</MockHeading>
-						<MockText>Key ID <code>00FE9ABC9DEE0C</code></MockText>
-						<MockText>Expires in 1 week</MockText>
-						<MockButton class="mt-2"> Revoke </MockButton>
-					</MockCard>
-					<MockFadeOut>
-						<MockCard lessPadding class="mt-4">
-							<MockHeading>Marinka</MockHeading>
-							<MockText
-								>Key ID <code>195C1AD1082FCD</code></MockText
-							>
-							<MockText class="text-red-500 dark:text-red-300"
-								>Expired</MockText
-							>
-						</MockCard>
-					</MockFadeOut>
-				</MockContainer>
+				<Image
+					src={branchingRulesImg}
+					alt="Multiple branching rules applied to a question, with a button to delete each one and a button to add new rules. A new question button at the bottom of the image."
+				/>
 			</Fragment>
 		</HomeSecRow>
 
-		<HomeSecCenter
-			title="Enterprise ready"
-			badge="Scale confidently"
-			class="mt-44"
-		>
-			<HomeSecParagraph center>
-				We're not just a niche tool: Palform is designed to fit into
-				your organisation while having a smaller compliance burden than
-				other form systems.
-			</HomeSecParagraph>
-		</HomeSecCenter>
-
-		<HomeSecRow class="mt-32" title="Collaboration without compromise">
-			<HomeSecParagraph>
-				Group users into teams, each with their own permissions,
-				branding, assets, and more. Track audit logs for a 360&deg; view
-				of events organisation-wide.
-			</HomeSecParagraph>
+		<HomeSecRow title="Customise everything" class="mt-20">
+			<div>
+				<HomeSecParagraph>
+					Increase conversions by putting your brand front and center.
+					Look more professional by avoiding similar-looking Google
+					Forms.
+				</HomeSecParagraph>
+				<Button
+					href="https://pf.palform.app/highly-customised"
+					target="_blank"
+					class="mt-4 plausible-event-name=Brand+Demo"
+					light
+				>
+					Live demo
+				</Button>
+			</div>
 			<Fragment slot="graphic">
-				<MockContainer class="space-y-4">
-					<MockCard>
-						<MockHeading>
-							<strong>James</strong>
-							<span class="text-green-600 dark:text-green-300"
-								>created</span
-							> a new form
-						</MockHeading>
-						<MockText>3 minutes ago</MockText>
-					</MockCard>
-					<MockCard>
-						<MockHeading>
-							<strong>Tabitha</strong>
-							<span class="text-red-600 dark:text-red-300"
-								>left</span
-							> the Marketing team
-						</MockHeading>
-						<MockText>1 hour ago</MockText>
-					</MockCard>
-					<MockFadeOut>
-						<MockCard>
-							<MockHeading>
-								<strong>Julie</strong>
-								<span
-									class="text-orange-600 dark:text-orange-300"
-									>updated</span
-								> the Winter Survey form
-							</MockHeading>
-							<MockText>yesterday</MockText>
-						</MockCard>
-					</MockFadeOut>
-				</MockContainer>
+				<Image
+					src={brandModalImg}
+					alt="Modal with various settings to customise the font, scale, colour, and other design elements of the form. A live preview is shown on the right."
+					class="border rounded-xl shadow-sm"
+				/>
 			</Fragment>
 		</HomeSecRow>
 
-		<HomeSecTriFeature class="mt-32">
-			<HomeSecTriFeatureItem title="Automated data protection">
-				Automatically delete old responses to comply with data retention
-				limits
-			</HomeSecTriFeatureItem>
-			<HomeSecTriFeatureItem title="Hosted in the EU">
-				Palform is a British company; all server infrastructure is in
-				the EU, reducing the complexity of data transfers.
-			</HomeSecTriFeatureItem>
-			<HomeSecTriFeatureItem title="Durable for large-forms">
-				Have thousands of responses? Palform uses powerful client-side
-				caching to continue delivering smooth performance.
-			</HomeSecTriFeatureItem>
-		</HomeSecTriFeature>
-
-		<HomeSecRow class="mt-32" title="Add a captcha for extra security">
-			<HomeSecParagraph class="mt-2">
-				Prevent spam by adding a privacy-friendly Cloudflare captcha and
-				reduce your spam rate dramatically in just a single click.
+		<ResponsivePadding class="mt-32">
+			<HomeSecHeading size="big" id="compliance">
+				Fully GDPR compliant, unlike Google
+			</HomeSecHeading>
+			<HomeSecParagraph class="mt-4">
+				Still using Google Forms? Data could be stored in the US, which
+				is <strong>in violation of the GDPR</strong> unless you're following
+				a <a
+					href="https://measuredcollective.com/is-google-forms-gdpr-compliant/"
+					target="_blank"
+					class="underline plausible-event-name=Evidence"
+					>complex legal framework</a
+				>. That could mean a disastrous fine for your business, even if
+				you're not based in the EU.
 			</HomeSecParagraph>
-			<HomeSecParagraph class="mt-2">
-				Unlike competitors, Cloudflare Turnstile captchas don't require
-				a picture-based challenge, and so are less annoying.
+			<HomeSecParagraph class="mt-4">
+				With Palform, your data is <strong>end-to-end encrypted</strong
+				>, meaning no-one can see it. Not even us. We can't even give it
+				to a government if one wanted us to. It's also fully EU-hosted
+				🇪🇺!
 			</HomeSecParagraph>
-			<Fragment slot="graphic">
-				<MockContainer class="space-y-4">
-					<MockCard class="flex gap-4 items-center">
-						<div
-							class="h-8 w-8 border border-gray-400 bg-white rounded-sm"
-						>
-						</div>
-						<MockText>Verify you are human</MockText>
-					</MockCard>
-				</MockContainer>
-			</Fragment>
-		</HomeSecRow>
+		</ResponsivePadding>
 
-		<HomeSecCenter
-			title="Nonsense-free, affordable forms"
-			badge="Pricing"
-			class="mt-44"
-			id="pricing"
-		>
-			<PricingFree class="my-8" />
+		<ResponsivePadding class="mt-32">
+			<HomeSecHeading size="big" id="pricing">
+				Plans to suit everyone. Really.
+			</HomeSecHeading>
 
-			<HomeSecParagraph center>
-				Need more features? Set up now in 10 minutes, and cancel
-				whenever you want.
+			<PricingFree class="mt-8" />
+
+			<HomeSecParagraph class="mt-12 mb-4">
+				Need more features? Try one of our risk-free affordable plans.
 			</HomeSecParagraph>
-			<HomeSecParagraph class="text-sm mt-2">
-				Prices shown exclude VAT, which will be applied at checkout only
-				when needed.
-			</HomeSecParagraph>
-		</HomeSecCenter>
 
-		<ResponsivePadding class="mt-8">
 			<Pricing client:load />
 		</ResponsivePadding>
 
-		<HomeSecCenter
-			title="Need to talk to someone?"
-			badge="Contact us"
-			class="mt-32"
-		>
-			<HomeSecParagraph center>
-				We're always here to offer real, human support: whether you're
-				an existing user or you're interested in trying out Palform.
+		<ResponsivePadding class="mt-32">
+			<HomeSecHeading size="big"> Friendly support </HomeSecHeading>
+
+			<HomeSecParagraph class="mt-4">
+				Ever tried to get customer support from Google? With Palform,
+				you get proper human help, even on free plans. Chat to us now
+				and we'll help you get set up for free.
 			</HomeSecParagraph>
+
 			<Button
 				href="https://pf.palform.app/sales"
-				class="mt-8 plausible-event-name=Support">Get in touch</Button
+				target="_blank"
+				class="mt-4 plauible-event-name=Bottom+Contact"
 			>
-		</HomeSecCenter>
+				Contact us
+			</Button>
+		</ResponsivePadding>
 	</main>
 </Html>

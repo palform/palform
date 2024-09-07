@@ -9,13 +9,16 @@ const { size, id, class: classList } = Astro.props;
 const Element = size === "big" ? "h2" : "h3";
 ---
 
-<Element
-    class:list={[
-        "font-display dark:text-gray-100",
-        size === "big" ? "text-6xl" : "text-4xl",
-        classList,
-    ]}
-    {id}
->
-    <slot />
-</Element>
+<div class="relative">
+    {id && <p class="invisible -top-28 absolute" {id} />}
+
+    <Element
+        class:list={[
+            "font-display dark:text-gray-100",
+            size === "big" ? "text-5xl" : "text-4xl",
+            classList,
+        ]}
+    >
+        <slot />
+    </Element>
+</div>

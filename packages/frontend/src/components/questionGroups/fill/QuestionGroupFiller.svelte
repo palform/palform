@@ -118,7 +118,7 @@
             <QuestionFill {question} />
         {/each}
 
-        <div class="space-x-2 !mb-10">
+        <div class="space-x-2">
             {#if $nextStep === undefined}
                 <BrandedButton
                     disabled={$fillSendStore?.loading}

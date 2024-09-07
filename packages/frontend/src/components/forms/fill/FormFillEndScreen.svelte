@@ -1,5 +1,8 @@
 <script lang="ts">
-    import { faUndo } from "@fortawesome/free-solid-svg-icons";
+    import {
+        faUndo,
+        faUpRightFromSquare,
+    } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { Alert } from "flowbite-svelte";
     import { createEventDispatcher } from "svelte";
@@ -31,6 +34,22 @@
                 </BrandedSpan>
             </p>
         {/if}
+
+        {#if $formFillStore.form.b === undefined || $formFillStore.form.b?.include_palform_attribution}
+            <div class="mt-4 mb-2 text-gray-600 text-sm">
+                <p>
+                    <a
+                        href="https://palform.app"
+                        target="_blank"
+                        class="hover:underline text-primary-700"
+                    >
+                        Create secure forms for free with Palform
+                        <FontAwesomeIcon icon={faUpRightFromSquare} />
+                    </a>
+                </p>
+            </div>
+        {/if}
+
         <div class="flex items-center gap-3">
             {#if endConfiguration.redirect_to}
                 <BrandedButton

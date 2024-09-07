@@ -204,7 +204,7 @@ export function selectQuestionValidationErrors(questionId: string) {
 
 export function templateFillQuestionText(text: string) {
     const currentFill = get(formFillStore);
-    if (!currentFill) return;
+    if (!currentFill) return text;
 
     const matches = [...text.matchAll(/{{\w+}}/g)];
     let newText = `${text}`;

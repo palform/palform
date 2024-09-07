@@ -7,13 +7,11 @@
     import AsyncOrganisationRouter from "./pages/orgs/AsyncOrganisationRouter.svelte";
     import OrganisationSwitcher from "./pages/orgs/OrganisationSwitcher.svelte";
     import AsyncAuthRouter from "./pages/auth/AsyncAuthRouter.svelte";
-    import { isInFrame } from "./data/util/iframe";
 
     export let url = "";
-    const isFrame = isInFrame();
 </script>
 
-<div class={`min-h-full ${isFrame ? "" : "bg-slate-50/50 dark:bg-slate-900"}`}>
+<div class={`min-h-full h-full`}>
     <Router {url}>
         <Route path="/auth/*" component={AsyncAuthRouter} />
 

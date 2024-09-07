@@ -43,20 +43,4 @@
             {/if}
         </div>
     {/if}
-
-    {#if $brandCtx?.include_palform_attribution || $brandCtx === undefined}
-        <div class="mt-4 text-gray-600 text-sm">
-            <p>
-                <a
-                    href="https://palform.app"
-                    on:click={(e) => dummyLinks && e.preventDefault()}
-                    target="_blank"
-                    class="hover:underline text-primary-700"
-                >
-                    Create secure forms for free with Palform
-                    <FontAwesomeIcon icon={faUpRightFromSquare} />
-                </a>
-            </p>
-        </div>
-    {/if}
 </footer>

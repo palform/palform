@@ -107,7 +107,9 @@
 {/if}
 
 {#if $orgCtx !== undefined && $orgCtx.org !== undefined && $orgCtx.myTeams !== undefined && $orgCtx.forms !== undefined && $orgCtx.induction !== undefined && $orgCtx.amIAdmin !== undefined}
-    <div class="flex overflow-hidden h-screen w-full">
+    <div
+        class="flex overflow-hidden h-screen w-full bg-slate-50/50 dark:bg-slate-900"
+    >
         <div
             class={`h-screen bg-slate-100 dark:bg-slate-800 flex flex-col gap-2 transition-[max-width] w-72 overflow-hidden ${!sidebarIsMobile || mobileSidebarOpen ? "max-w-72 p-3" : "max-w-0 p-0"}`}
         >
