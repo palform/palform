@@ -4,7 +4,7 @@ authors: [pal]
 
 # Complying with GDPR as a Google Forms user is pretty hard
 
-I'm Pal, the founder of [Palform](https://palform.app). It's a free Google Forms alternative that basically eliminates all of the pains and sorrows I'm about to detail in this post. And it [doesn't cost anything](https://palform.app/#pricing).
+I'm Pal, the founder of [Palform](https://palform.app). It's a free Google Forms alternative that reduces some of the pains and sorrows I'm about to detail in this post. And it [doesn't cost anything](https://palform.app/#pricing).
 
 <!-- truncate -->
 
