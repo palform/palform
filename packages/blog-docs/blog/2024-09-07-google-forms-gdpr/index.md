@@ -32,7 +32,7 @@ Well, kind of yes, and kind of no.
 
 ### Transparency
 
-Google Forms, by default, does not provide a way to display your organisation's Privacy Policy in forms you create. It's up to you to ensure _every single_ form created by anyone has a dedicated field linking to your ddata handling practices.
+Google Forms, by default, does not provide a way to display your organisation's Privacy Policy in forms you create. It's up to you to ensure _every single_ form created by anyone has a dedicated field linking to your data handling practices.
 
 In fact, Google was [fined €50m in 2019](https://www.bbc.com/news/technology-46944696) for failing to provide the GDPR-mandated information. This can happen to your organisation, too! Not to scare you, but you _must_ ensure your Google Forms all have the correct information displayed.
 
