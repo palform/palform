@@ -6,6 +6,8 @@ authors: [pal]
 
 The ICO fee must be paid by all organisations and sole traders who process personal information, unless they are exempt.
 
+<!-- truncate -->
+
 Paying the data protection fee is important because it funds the ICO’s work providing advice and guidance about how to comply with the law – such as their online guidance, their telephone helpline, and their digital toolkits.
 
 Fines for an overdue payment can range between £400 and £4,000, so paying the fee on time is really important!

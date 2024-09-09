@@ -30,7 +30,7 @@ Two important requirements are:
 
 - **[Transparency](https://gdpr.algolia.com/gdpr-article-12)**. You need to provide a Privacy Policy or similar document, that details exactly how you process personal information, safeguards for protection, and the rights your users have.
 
-- **[Data location](https://gdpr.algolia.com/gdpr-article-44)**. Transferring the data of EU/UK citizens outside of the EU/UK (e.g. into US data centers) can involve additional complexity. For example, transferring data to the US is usually done by participating in the [Data Privacy Framework](https://www.dataprivacyframework.gov/key-requirements), which comes with several requirements. It's often easier to just keep data in the EU, unless you're a large corporation with specific requirements.
+- **[Data location](https://gdpr.algolia.com/gdpr-article-44)**. Transferring the data of EU/UK citizens outside of the EU/UK (e.g. into US data centers) can involve additional complexity. For example, transferring data to US companies is usually done by participating in the [Data Privacy Framework](https://www.dataprivacyframework.gov/key-requirements), which comes with several requirements. It's often easier to just keep data in the EU, unless you're a large corporation with specific requirements.
 
 ## Can I fulfill these requirements with Google Forms?
 
@@ -50,7 +50,7 @@ If you're not using Google Forms within a Workspace account (i.e. just through a
 
 If your location is not set, **your data is likely to be stored in the US**. You don't really get much control.
 
-If your data is (or could potentially be) stored in the US, you _must_ comply with the EU-US Data Privacy Framework, or have another mechanism for data transfers in place. You can complete an [online certification](https://www.dataprivacyframework.gov/) to check your compliance.
+Legally, this is not usually a problem, as Google is certified under the Data Privacy Framework, and so is a valid company to use as a data processor. However, many EU users might have concerns about transferring their data outside the EU, which could decrease their trust in your forms.
 
 ## Other problems
 

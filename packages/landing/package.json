@@ -23,7 +23,7 @@
     "@iconify-json/fa6-regular": "^1.2.0",
     "@iconify-json/fa6-solid": "^1.1.22",
     "@paltiverse/palform-typescript-openapi": "workspace:*",
-    "astro": "^4.11.0",
+    "astro": "^4.15.4",
     "astro-icon": "^1.1.0",
     "flowbite": "^2.4.1",
     "flowbite-svelte": "^0.46.13",

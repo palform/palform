@@ -1,17 +1,22 @@
 ---
+import { Icon } from "astro-icon/components";
+
 interface Props {
     title: string;
+    icon?: string;
 }
 
-const { title } = Astro.props;
+const { title, icon } = Astro.props;
 ---
 
 <div
     class="border-b dark:border-slate-600 lg:border-b-0 lg:border-r last:border-none py-6 first:pt-0 last:pb-0 lg:py-0 lg:px-8 first:pl-0 last:pr-0"
 >
-    <p class="font-display text-xl text-slate-800 dark:text-slate-200">
+    {icon && <Icon name={icon} class="block text-2xl text-primary-600 mb-2" />}
+
+    <h3 class="font-display text-xl text-slate-800 dark:text-slate-200">
         {title}
-    </p>
+    </h3>
     <p class="text-slate-500 dark:text-slate-400">
         <slot />
     </p>

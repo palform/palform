@@ -14,6 +14,8 @@ import branchingRulesImg from "../assets/branching_rules.png";
 import brandModalImg from "../assets/brand_modal.png";
 import Pricing from "../components/pricing/Pricing.svelte";
 import PricingFree from "../components/pricing/PricingFree.astro";
+import HomeSecTriFeature from "../components/home/HomeSecTriFeature.astro";
+import HomeSecTriFeatureItem from "../components/home/HomeSecTriFeatureItem.astro";
 ---
 
 <Html title="Powerful privacy-first alternative to Google Forms">
@@ -109,24 +111,48 @@ import PricingFree from "../components/pricing/PricingFree.astro";
 
 		<ResponsivePadding class="mt-32">
 			<HomeSecHeading size="big" id="compliance">
-				Fully GDPR compliant
+				End-to-end encrypted
 			</HomeSecHeading>
 			<HomeSecParagraph class="mt-4">
-				Still using Google Forms? Data could be stored in the US, which
-				might violate the GDPR unless you're following the <a
-					href="https://www.dataprivacyframework.gov/s/"
-					target="_blank"
-					class="underline plausible-event-name=Evidence"
-					>Data Privacy Framework</a
-				>. That could mean a fine for your business, even if you're not
-				based in the EU.
+				Unlike almost all other survey platforms, Palform <strong
+					>encrypts all your responses</strong
+				>, massively reducing the risk of data breaches and increasing
+				trust amongst your users.
 			</HomeSecParagraph>
 			<HomeSecParagraph class="mt-4">
-				With Palform, your data is <strong>end-to-end encrypted</strong
-				>, meaning no-one can see it. Not even us. We can't even give it
-				to a government if one wanted us to. It's also fully EU-hosted
-				🇪🇺!
+				Our servers are hosted in the EU 🇪🇺, and we use <a
+					href="https://docs.palform.app/blog/2024/09/09/security"
+					target="_blank"
+					class="underline">a range of security measures</a
+				> to protect your data. This way, you can trust Palform with even
+				your most sensitive forms.
 			</HomeSecParagraph>
+		</ResponsivePadding>
+
+		<ResponsivePadding class="mt-32">
+			<HomeSecTriFeature>
+				<HomeSecTriFeatureItem
+					title="Easy GDPR compliance"
+					icon="fa6-solid:section"
+				>
+					Auto-delete old form responses and manage org-wide Privacy
+					Policies in a few clicks
+				</HomeSecTriFeatureItem>
+				<HomeSecTriFeatureItem
+					title="Great for enterprise"
+					icon="fa6-solid:user-group"
+				>
+					Manage hundreds of users with hierarchical permissions and
+					an OIDC integration
+				</HomeSecTriFeatureItem>
+				<HomeSecTriFeatureItem
+					title="Insightful reports"
+					icon="fa6-solid:chart-pie"
+				>
+					Generate correlation analysis and beautiful graphs for your
+					data with no extra work
+				</HomeSecTriFeatureItem>
+			</HomeSecTriFeature>
 		</ResponsivePadding>
 
 		<ResponsivePadding class="mt-32">
