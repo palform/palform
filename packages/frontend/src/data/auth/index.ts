@@ -199,7 +199,7 @@ export async function apiWithAuth<T extends BaseAPI>(
         throw new UnauthenticatedError();
     }
 
-    return new api(new Configuration({ ...configuration, ...auth }));
+    return new api(new Configuration({ ...auth, ...configuration }));
 }
 
 export async function getUserId() {

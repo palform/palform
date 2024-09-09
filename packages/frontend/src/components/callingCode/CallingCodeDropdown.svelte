@@ -3,6 +3,7 @@
     import { Button, Dropdown, Search } from "flowbite-svelte";
     import { APIs } from "../../data/common";
     import { createEventDispatcher } from "svelte";
+    import { t } from "../../data/contexts/i18n";
 
     export let value = "";
     const dispatch = createEventDispatcher<{
@@ -35,7 +36,7 @@
 
 <Button color="light" class={$$props.class}>
     {#if value === ""}
-        Choose country
+        {t("phone_choose_country")}
     {:else}
         {value}
     {/if}
@@ -45,7 +46,12 @@
     bind:open={dropdownOpen}
 >
     <div slot="header" class="p-3">
-        <Search size="sm" bind:value={searchQuery} />
+        <Search
+            size="sm"
+            bind:value={searchQuery}
+            placeholder={t("phone_search")}
+            autofocus
+        />
     </div>
 
     {#each filteredCountries ?? [] as country (country.name)}

@@ -14,6 +14,7 @@
         AddressAutofillSuggestion,
         LngLatLike,
     } from "@mapbox/search-js-core";
+    import { t } from "../../data/contexts/i18n";
 
     export let countryCode: string | undefined = undefined;
     export let locationBias: LngLatLike | string | undefined = undefined;
@@ -54,7 +55,7 @@
         }
         timeout = setTimeout(() => {
             makeRequest();
-        }, 300) as unknown as number;
+        }, 100) as unknown as number;
     };
 
     const onAddressClick = async (suggestion: AddressAutofillSuggestion) => {
@@ -75,18 +76,20 @@
 
 <div class={$$props.class}>
     <Label>
-        Search for address
+        {t("address_search")}
         <Input
             bind:value={query}
             class="mt-1"
-            placeholder="Start typing..."
+            placeholder={t("address_start_typing")}
             on:input={onChange}
         />
     </Label>
 
     {#if suggestions.length > 0}
-        <InfoText class="mt-4">Please select the address</InfoText>
-        <div class="mt-4 rounded-lg border border-gray-300 dark:border-slate-600 overflow-hidden">
+        <InfoText class="mt-4">{t("address_select")}</InfoText>
+        <div
+            class="mt-4 rounded-lg border border-gray-300 dark:border-slate-600 overflow-hidden"
+        >
             {#each suggestions as suggestion (suggestion.action.id)}
                 <button
                     class="w-full px-4 py-2 bg-gray-50 dark:bg-slate-800 odd:bg-gray-100 dark:odd:bg-slate-900 hover:bg-gray-200 dark:hover:bg-gray-700 text-left dark:text-slate-300"

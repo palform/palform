@@ -34,6 +34,7 @@ import {
 import { apiWithAuth } from "./auth";
 import { AxiosError } from "axios";
 import { is_api_error_js } from "@paltiverse/palform-client-common";
+import { i18nAcceptLanguage, t } from "./contexts/i18n";
 
 export const urlsBase = import.meta.env.VITE_URLS_BASE as string;
 export const frontendURL = import.meta.env.VITE_FRONTEND_URL as string;
@@ -41,6 +42,11 @@ export const backendURL = import.meta.env.VITE_BACKEND_URL as string;
 
 export const baseAPIConfig = {
     basePath: backendURL,
+    baseOptions: {
+        headers: {
+            "Accept-Language": i18nAcceptLanguage(),
+        },
+    },
 } satisfies ConfigurationParameters;
 
 export const APIs = {
@@ -103,13 +109,17 @@ export function humaniseAPIError(e: any, resourceName = "That") {
             const d = e.response.data;
             if (isAPIError(d)) {
                 if (d === "Internal") {
-                    return "Something went wrong on the server; please try again.";
+                    return t("error_internal");
                 }
                 if (d === "NotAllowed") {
-                    return "You aren't allowed to do that.";
+                    return t("error_not_allowed");
                 }
                 if (d === "NotFound") {
-                    return `${resourceName} was not found`;
+                    return (
+                        t("error_not_found_1") +
+                        resourceName +
+                        t("error_not_found_2")
+                    );
                 }
                 if (typeof d === "string") {
                     return d;
@@ -123,17 +133,18 @@ export function humaniseAPIError(e: any, resourceName = "That") {
                 if ("CaptchaError" in d) {
                     return `Captcha: ${d.CaptchaError}`;
                 }
-                return `Please upgrade your plan: ${d.SubscriptionLimit}`;
+
+                return t("error_upgrade") + ": " + d.SubscriptionLimit;
             }
             if (e.response.status === 403) {
-                return "You aren't allowed to do that.";
+                return t("error_not_allowed");
             }
             if (e.response.status === 422) {
-                return "Your input was not valid.";
+                return t("error_invalid_input");
             }
         }
 
-        return "Failed to connect to server.";
+        return t("error_connection");
     }
     if (e instanceof Error) {
         return e.message;
@@ -143,5 +154,5 @@ export function humaniseAPIError(e: any, resourceName = "That") {
     }
 
     console.error(e);
-    return "Something went wrong. Please check the console.";
+    return t("error_console");
 }

@@ -16,6 +16,7 @@
     import TextButton from "../../TextButton.svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
+    import { t } from "../../../data/contexts/i18n";
 
     const dispatch = createEventDispatcher<{ change: undefined }>();
 
@@ -88,7 +89,7 @@
     <div class="w-full flex items-start gap-4 xl:gap-8">
         <div class="flex-1 space-y-4">
             <Label>
-                Address line 1
+                {t("address_line_1")}
                 <Input
                     class="mt-1"
                     value={value?.address.line1}
@@ -98,7 +99,7 @@
                 />
             </Label>
             <Label>
-                Address line 2
+                {t("address_line_2")}
                 <Input
                     class="mt-1"
                     value={value?.address.line2}
@@ -108,7 +109,7 @@
                 />
             </Label>
             <Label>
-                Postal/zip code
+                {t("address_zip_code")}
                 <Input
                     class="mt-1"
                     value={value?.address.postal_code}
@@ -123,7 +124,7 @@
         </div>
         <div class="flex-1 space-y-4">
             <Label>
-                City
+                {t("address_city")}
                 <Input
                     class="mt-1"
                     value={value?.address.locality}
@@ -133,7 +134,7 @@
                 />
             </Label>
             <Label>
-                Country
+                {t("address_country")}
                 <Select
                     class="mt-1"
                     items={countries ?? []}
@@ -156,6 +157,6 @@
         disabled={$fillSendStore?.loading}
     >
         <FontAwesomeIcon icon={faRotateRight} />
-        Search for new address
+        {t("address_new_search")}
     </TextButton>
 {/if}

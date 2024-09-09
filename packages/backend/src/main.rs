@@ -36,6 +36,9 @@ mod webhooks;
 #[cfg(feature = "saas")]
 mod billing;
 
+rust_i18n::i18n!("locales", fallback = "en");
+mod i18n;
+
 #[openapi(tag = "Meta", operation_id = "meta.health")]
 #[get("/healthz")]
 fn health() -> &'static str {

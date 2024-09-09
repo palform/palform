@@ -13,6 +13,7 @@
     import { humaniseAPIError } from "../../../data/common";
     import BrandedButton from "../../teams/brandings/BrandedButton.svelte";
     import FormFillCaptchaModal from "../../forms/fill/FormFillCaptchaModal.svelte";
+    import { t } from "../../../data/contexts/i18n";
 
     const currentGroup = ctxGetCurrentGroup();
     const currentGroupQuestions = ctxGetCurrentGroupQuestions();
@@ -125,14 +126,14 @@
                     loading={$fillSendStore?.loading}
                     type="submit"
                 >
-                    Submit
+                    {t("submit")}
                 </BrandedButton>
             {:else}
-                <BrandedButton type="submit">Next</BrandedButton>
+                <BrandedButton type="submit">{t("next")}</BrandedButton>
             {/if}
             {#if $formFillStore.submission.groups_completed.length > 0}
                 <BrandedButton on:click={onPrevious} outline>
-                    Back
+                    {t("back")}
                 </BrandedButton>
             {/if}
         </div>

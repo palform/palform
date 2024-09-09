@@ -7049,10 +7049,11 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
          * 
          * @param {string} subdomain 
          * @param {string} shortLink 
+         * @param {string} [acceptLanguage] Defaults to &#x60;en&#x60;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsExchangeShortLink: async (subdomain: string, shortLink: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        formsExchangeShortLink: async (subdomain: string, shortLink: string, acceptLanguage?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'subdomain' is not null or undefined
             assertParamExists('formsExchangeShortLink', 'subdomain', subdomain)
             // verify required parameter 'shortLink' is not null or undefined
@@ -7071,6 +7072,10 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            if (acceptLanguage != null) {
+                localVarHeaderParameter['Accept-Language'] = String(acceptLanguage);
+            }
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -7088,10 +7093,11 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
          * @param {string} formId 
          * @param {string} body 
          * @param {string} [xCaptchaResponse] Response from the Cloudflare Turnstile captcha
+         * @param {string} [acceptLanguage] Defaults to &#x60;en&#x60;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsFill: async (orgId: string, formId: string, body: string, xCaptchaResponse?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        formsFill: async (orgId: string, formId: string, body: string, xCaptchaResponse?: string, acceptLanguage?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'orgId' is not null or undefined
             assertParamExists('formsFill', 'orgId', orgId)
             // verify required parameter 'formId' is not null or undefined
@@ -7117,6 +7123,10 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
 
             if (xCaptchaResponse != null) {
                 localVarHeaderParameter['X-Captcha-Response'] = String(xCaptchaResponse);
+            }
+
+            if (acceptLanguage != null) {
+                localVarHeaderParameter['Accept-Language'] = String(acceptLanguage);
             }
 
 
@@ -7472,11 +7482,12 @@ export const FormsApiFp = function(configuration?: Configuration) {
          * 
          * @param {string} subdomain 
          * @param {string} shortLink 
+         * @param {string} [acceptLanguage] Defaults to &#x60;en&#x60;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async formsExchangeShortLink(subdomain: string, shortLink: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIExchangedShortLink>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.formsExchangeShortLink(subdomain, shortLink, options);
+        async formsExchangeShortLink(subdomain: string, shortLink: string, acceptLanguage?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIExchangedShortLink>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.formsExchangeShortLink(subdomain, shortLink, acceptLanguage, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormsApi.formsExchangeShortLink']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -7487,11 +7498,12 @@ export const FormsApiFp = function(configuration?: Configuration) {
          * @param {string} formId 
          * @param {string} body 
          * @param {string} [xCaptchaResponse] Response from the Cloudflare Turnstile captcha
+         * @param {string} [acceptLanguage] Defaults to &#x60;en&#x60;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async formsFill(orgId: string, formId: string, body: string, xCaptchaResponse?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.formsFill(orgId, formId, body, xCaptchaResponse, options);
+        async formsFill(orgId: string, formId: string, body: string, xCaptchaResponse?: string, acceptLanguage?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.formsFill(orgId, formId, body, xCaptchaResponse, acceptLanguage, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormsApi.formsFill']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -7623,11 +7635,12 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
          * 
          * @param {string} subdomain 
          * @param {string} shortLink 
+         * @param {string} [acceptLanguage] Defaults to &#x60;en&#x60;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsExchangeShortLink(subdomain: string, shortLink: string, options?: any): AxiosPromise<APIExchangedShortLink> {
-            return localVarFp.formsExchangeShortLink(subdomain, shortLink, options).then((request) => request(axios, basePath));
+        formsExchangeShortLink(subdomain: string, shortLink: string, acceptLanguage?: string, options?: any): AxiosPromise<APIExchangedShortLink> {
+            return localVarFp.formsExchangeShortLink(subdomain, shortLink, acceptLanguage, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -7635,11 +7648,12 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
          * @param {string} formId 
          * @param {string} body 
          * @param {string} [xCaptchaResponse] Response from the Cloudflare Turnstile captcha
+         * @param {string} [acceptLanguage] Defaults to &#x60;en&#x60;
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsFill(orgId: string, formId: string, body: string, xCaptchaResponse?: string, options?: any): AxiosPromise<void> {
-            return localVarFp.formsFill(orgId, formId, body, xCaptchaResponse, options).then((request) => request(axios, basePath));
+        formsFill(orgId: string, formId: string, body: string, xCaptchaResponse?: string, acceptLanguage?: string, options?: any): AxiosPromise<void> {
+            return localVarFp.formsFill(orgId, formId, body, xCaptchaResponse, acceptLanguage, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -7751,12 +7765,13 @@ export class FormsApi extends BaseAPI {
      * 
      * @param {string} subdomain 
      * @param {string} shortLink 
+     * @param {string} [acceptLanguage] Defaults to &#x60;en&#x60;
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FormsApi
      */
-    public formsExchangeShortLink(subdomain: string, shortLink: string, options?: RawAxiosRequestConfig) {
-        return FormsApiFp(this.configuration).formsExchangeShortLink(subdomain, shortLink, options).then((request) => request(this.axios, this.basePath));
+    public formsExchangeShortLink(subdomain: string, shortLink: string, acceptLanguage?: string, options?: RawAxiosRequestConfig) {
+        return FormsApiFp(this.configuration).formsExchangeShortLink(subdomain, shortLink, acceptLanguage, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -7765,12 +7780,13 @@ export class FormsApi extends BaseAPI {
      * @param {string} formId 
      * @param {string} body 
      * @param {string} [xCaptchaResponse] Response from the Cloudflare Turnstile captcha
+     * @param {string} [acceptLanguage] Defaults to &#x60;en&#x60;
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FormsApi
      */
-    public formsFill(orgId: string, formId: string, body: string, xCaptchaResponse?: string, options?: RawAxiosRequestConfig) {
-        return FormsApiFp(this.configuration).formsFill(orgId, formId, body, xCaptchaResponse, options).then((request) => request(this.axios, this.basePath));
+    public formsFill(orgId: string, formId: string, body: string, xCaptchaResponse?: string, acceptLanguage?: string, options?: RawAxiosRequestConfig) {
+        return FormsApiFp(this.configuration).formsFill(orgId, formId, body, xCaptchaResponse, acceptLanguage, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

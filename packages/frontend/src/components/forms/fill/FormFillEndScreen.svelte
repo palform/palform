@@ -10,6 +10,7 @@
     import { formFillStore } from "../../../data/contexts/fill";
     import MarkdownView from "../../markdown/MarkdownView.svelte";
     import BrandedSpan from "../../teams/brandings/BrandedSpan.svelte";
+    import { t } from "../../../data/contexts/i18n";
 
     const dispatch = createEventDispatcher<{ restart: undefined }>();
     const endConfiguration = $formFillStore?.form.f.end_configuration;
@@ -43,7 +44,7 @@
                         target="_blank"
                         class="hover:underline text-primary-700"
                     >
-                        Create secure forms for free with Palform
+                        {t("form_end_attribution")}
                         <FontAwesomeIcon icon={faUpRightFromSquare} />
                     </a>
                 </p>
@@ -57,7 +58,7 @@
                     on:click={onContinueClick}
                     disabled={redirecting}
                 >
-                    Continue
+                    {t("form_end_continue")}
                 </BrandedButton>
             {/if}
             {#if endConfiguration.show_restart}
@@ -68,7 +69,7 @@
                     disabled={redirecting}
                 >
                     <FontAwesomeIcon icon={faUndo} class="me-2" />
-                    Complete again
+                    {t("form_end_restart")}
                 </BrandedButton>
             {/if}
         </div>

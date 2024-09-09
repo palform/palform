@@ -17,7 +17,9 @@ use crate::{
         orgs::{OrganisationManager, OrganisationSubmissionBehaviour},
         submission::SubmissionManager,
     },
+    i18n::request::I18NManager,
     mail::client::PalformMailClient,
+    pt,
 };
 
 #[openapi(tag = "Forms", operation_id = "forms.fill")]
@@ -30,13 +32,14 @@ pub async fn handler(
     captcha: Option<VerifiedCaptcha>,
     db: &State<DatabaseConnection>,
     mail_client: &State<PalformMailClient>,
+    i18n: I18NManager,
 ) -> Result<(), (Status, Json<APIError>)> {
     let submission_behaviour = OrganisationManager::get_org_submission_block(db.inner(), org_id)
         .await
         .map_internal_error()?;
 
     if submission_behaviour == OrganisationSubmissionBehaviour::Block {
-        return Err(APIError::BadRequest("This organisation has exceeded their monthly response limit. Your response cannot be submitted.".to_string()).into());
+        return Err(APIError::BadRequest(pt!(i18n, "fill_response_limit",)).into());
     }
 
     if captcha.is_none()
@@ -44,10 +47,7 @@ pub async fn handler(
             .await
             .map_internal_error()?
     {
-        return Err(APIError::BadRequest(
-            "Please complete the captcha to submit this form".to_string(),
-        )
-        .into());
+        return Err(APIError::BadRequest(pt!(i18n, "fill_missing_captcha",)).into());
     }
 
     let data_repr = CryptoSubmissionRepr::from_pem_string(data.clone())

@@ -21,7 +21,8 @@
     import { backendURL } from "../../../data/common";
     import { showFailureToast } from "../../../data/toast";
     import { encryptSubmissionAsset } from "../../../data/crypto/submissions";
-    import TextButton from "../../TextButton.svelte";
+    import { t } from "../../../data/contexts/i18n";
+    import QfClearButton from "./QFClearButton.svelte";
 
     const brandCtx = getBrandCtx();
     const dispatch = createEventDispatcher<{ change: undefined }>();
@@ -151,7 +152,7 @@
         {#if uploading}
             <Spinner />
             <p class="text-gray-500 dark:text-gray-300 text-sm mt-2">
-                Uploading, please wait...
+                {t("file_uploading")}
             </p>
         {:else if value.file_id}
             <FontAwesomeIcon
@@ -159,16 +160,14 @@
                 class="text-green-400 text-3xl mb-2"
             />
             <p class="text-gray-500 dark:text-gray-300 text-sm">
-                File uploaded! Click or drag and drop to change.
+                {t("file_uploaded")}
             </p>
 
             <p class="mt-1">
-                <TextButton
-                    on:click={onClear}
+                <QfClearButton
                     disabled={$fillSendStore?.loading}
-                >
-                    Clear
-                </TextButton>
+                    on:click={onClear}
+                />
             </p>
         {:else}
             <FontAwesomeIcon
@@ -176,17 +175,17 @@
                 class="text-gray-400 text-3xl mb-2"
             />
             <p class="text-gray-500 dark:text-gray-300 text-sm mb-1">
-                <strong>Click to upload</strong> or drag and drop
+                <strong>{t("file_upload_1")}</strong>{t("file_upload_2")}
             </p>
             <p class="text-gray-500 dark:text-gray-300 text-sm">
                 {#if config.file_upload.allowed_types.includes("Any")}
-                    All files accepted
+                    {t("file_accepted_all")}
                 {:else}
                     {#each config.file_upload.allowed_types as fileType, index}
                         {fileType}s{#if index !== allowedTypeCount - 1},&nbsp;{/if}
                     {/each}
                 {/if}
-                (max 10GB)
+                ({t("file_max_size")})
             </p>
         {/if}
     </Dropzone>

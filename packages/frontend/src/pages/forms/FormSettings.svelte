@@ -2,6 +2,7 @@
     import FormDangerDelete from "../../components/forms/settings/FormDangerDelete.svelte";
     import FormDangerMove from "../../components/forms/settings/FormDangerMove.svelte";
     import FormEndConfiguration from "../../components/forms/settings/FormEndConfiguration.svelte";
+    import FormLanguage from "../../components/forms/settings/FormLanguage.svelte";
     import FormNotificationConfig from "../../components/forms/settings/FormNotificationConfig.svelte";
     import FormSettingsForm from "../../components/forms/settings/FormSettingsForm.svelte";
     import FormSubmissionAutoDelete from "../../components/forms/settings/FormSubmissionAutoDelete.svelte";
@@ -36,6 +37,9 @@
 
 <SectionSeparator />
 <FormSubmissionAutoDelete />
+
+<SectionSeparator />
+<FormLanguage />
 
 <SectionSeparator />
 <DangerZone />

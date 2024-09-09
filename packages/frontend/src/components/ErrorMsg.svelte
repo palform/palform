@@ -6,6 +6,7 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { Alert, Button } from "flowbite-svelte";
     import { createEventDispatcher } from "svelte";
+    import { t } from "../data/contexts/i18n";
 
     export let e: any;
     export let targetDescriptor: string | undefined = undefined;
@@ -18,7 +19,10 @@
     <span slot="icon">
         <FontAwesomeIcon icon={faExclamationCircle} />
     </span>
-    <p class="font-bold text-lg">Failed to load {targetDescriptor ?? ""}</p>
+    <p class="font-bold text-lg">
+        {t("failed_to_load")}
+        {targetDescriptor ?? ""}
+    </p>
     <p>
         {e}
     </p>
@@ -31,7 +35,7 @@
             on:click={() => dispatch("retry")}
         >
             <FontAwesomeIcon icon={faRefresh} class="me-2" />
-            Try again
+            {t("try_again")}
         </Button>
     {/if}
 </Alert>

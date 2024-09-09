@@ -8,6 +8,7 @@
     import { createEventDispatcher } from "svelte";
     import { Input } from "flowbite-svelte";
     import CallingCodeDropdown from "../../callingCode/CallingCodeDropdown.svelte";
+    import { t } from "../../../data/contexts/i18n";
 
     const dispatch = createEventDispatcher<{ change: undefined }>();
     export let id: string;
@@ -56,7 +57,7 @@
         value={value.number}
         on:input={onNumberInput}
         placeholder={value.calling_code === ""
-            ? "Please choose a country"
-            : "Please enter a phone number"}
+            ? t("phone_pls_choose_country")
+            : t("phone_enter_number")}
     />
 </div>

@@ -15,12 +15,13 @@
         setQuestionValue,
         sGetSignature,
     } from "../../../data/contexts/fill";
-    import TextButton from "../../TextButton.svelte";
     import {
         getBrandCtx,
         getRoundingAmountForBrand,
     } from "../../../data/contexts/brand";
     import BrandedButton from "../../teams/brandings/BrandedButton.svelte";
+    import { t } from "../../../data/contexts/i18n";
+    import QfClearButton from "./QFClearButton.svelte";
 
     export let id: string;
     export let config: APIQuestionConfigurationOneOf7;
@@ -102,7 +103,7 @@
 
 {#if (onlyOne && config.signature.allow_initial) || selectedMethod === "initial" || value.initial.length > 0}
     <Label>
-        Initials
+        {t("signature_initials")}
         <Input class="mt-1" value={value.initial} on:input={onUpdateInitials} />
     </Label>
 
@@ -122,9 +123,9 @@
             type="button"
         >
             {#if value.freeform.length > 0}
-                Signed! Tap to edit
+                {t("signature_signed_tap_to_edit")}
             {:else}
-                Tap to sign
+                {t("signature_tap_to_sign")}
             {/if}
         </button>
 
@@ -132,7 +133,7 @@
             <PaintCanvas points={value.freeform} on:update={onUpdateFreeform} />
 
             <BrandedButton outline on:click={() => (modalOpen = false)}>
-                Done
+                {t("field_done")}
             </BrandedButton>
         </Modal>
     {:else}
@@ -140,7 +141,7 @@
     {/if}
 {:else if (onlyOne && config.signature.allow_full_name) || selectedMethod === "full_name" || value.full_name.length > 0}
     <Label>
-        Full name
+        {t("signature_full_name")}
         <Input
             class="mt-1"
             value={value.full_name}
@@ -148,7 +149,7 @@
         />
     </Label>
 {:else if selectedMethod === null}
-    <InfoText>How would you like to sign?</InfoText>
+    <InfoText>{t("signature_question")}</InfoText>
 
     <div
         class={`mt-2 w-full grid ${supportedMethodCount === 2 ? "grid-cols-2" : "grid-cols-3"} gap-3`}
@@ -157,7 +158,7 @@
             <Button color="light" on:click={() => selectMethod("initial")}>
                 <div>
                     <FontAwesomeIcon icon={faA} size="xl" class="mb-1" />
-                    <span class="block">Initial</span>
+                    <span class="block">{t("signature_initial")}</span>
                 </div>
             </Button>
         {/if}
@@ -169,7 +170,7 @@
                         size="xl"
                         class="mb-1"
                     />
-                    <span class="block">Draw</span>
+                    <span class="block">{t("signature_draw")}</span>
                 </div>
             </Button>
         {/if}
@@ -177,7 +178,7 @@
             <Button color="light" on:click={() => selectMethod("full_name")}>
                 <div>
                     <FontAwesomeIcon icon={faICursor} size="xl" class="mb-1" />
-                    <span class="block">Full name</span>
+                    <span class="block">{t("signature_full_name")}</span>
                 </div>
             </Button>
         {/if}
@@ -185,10 +186,5 @@
 {/if}
 
 {#if value.initial.length > 0 || value.freeform.length > 0 || value.full_name.length > 0 || selectedMethod !== null}
-    <TextButton
-        class="mt-2 text-xs !text-gray-600 !dark:text-gray-400"
-        on:click={onClear}
-    >
-        Clear
-    </TextButton>
+    <QfClearButton class="mt-2" on:click={onClear} />
 {/if}

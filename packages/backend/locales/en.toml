@@ -1,0 +1,3 @@
+fill_response_limit = "This organisation has reached their response limit, so your response cannot be submitted. Please contact the organisation."
+fill_missing_captcha = "Please complete the captcha to submit this form."
+fill_form_expired = "This form has expired and can no longer be filled."

@@ -10,6 +10,7 @@
     import { Modal } from "flowbite-svelte";
     import TextButton from "../../TextButton.svelte";
     import { formFillStore } from "../../../data/contexts/fill";
+    import { t } from "../../../data/contexts/i18n";
 
     const brandCtx = getBrandCtx();
     const isDark = isDarkMode();
@@ -41,28 +42,31 @@
             <FontAwesomeIcon icon={faLock} size="md" />
         </span>
         <span class="leading-tight"
-            >Encrypted<br /><span class="text-xs">by Palform</span></span
+            >{t("encrypted_badge_1")}<br /><span class="text-xs"
+                >{t("encrypted_badge_2")}</span
+            ></span
         >
     </button>
 </div>
 
-<Modal title="Encrypted response" bind:open={showModal} outsideclose>
+<Modal title={t("encrypted_modal_title")} bind:open={showModal} outsideclose>
     <p>
-        This form is hosted by <TextButton
+        {t("encrypted_modal_1")}<TextButton
             class="inline !text-base"
             href="https://palform.app/?utm_source=encrypt_modal"
             target="_blank">Palform</TextButton
-        >.
+        >{t("encrypted_modal_2")}.
     </p>
 
     <p>
-        Your response will be <strong>end-to-end encrypted</strong>, so only the
-        form's owner (<strong>{$formFillStore?.form.o}</strong>) will be able to
-        see any information you submit.
+        {t("encrypted_modal_3")}(<strong>{$formFillStore?.form.o}</strong>){t(
+            "encrypted_modal_4"
+        )}.
     </p>
 
     <p>
-        If you need any help, please contact {$formFillStore?.form.o} or email Palform
-        at <strong>responses@palform.app</strong>.
+        {t("encrypted_modal_5")}{$formFillStore?.form.o}{t(
+            "encrypted_modal_6"
+        )}<strong>dpo@palform.app</strong>{t("encrypted_modal_7")}.
     </p>
 </Modal>

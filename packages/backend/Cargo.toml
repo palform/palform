@@ -45,6 +45,8 @@ rust-s3 = { version = "0.35", default-features = false, features = [
 argon2 = "0.5.3"
 validator = { version = "0.18", features = ["derive"] }
 totp-rs = { version = "5.6" }
+rust-i18n = { version = "3" }
+accept-language = { version = "3" }
 
 async-stripe = { version = "0.39", default-features = false, features = [
     "runtime-tokio-hyper-rustls",
