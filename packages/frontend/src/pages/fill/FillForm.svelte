@@ -8,7 +8,7 @@
         deleteFormFill,
         loadFormFillFromShortLink,
     } from "../../data/contexts/fill";
-    import { Alert, Spinner } from "flowbite-svelte";
+    import { Alert } from "flowbite-svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
     import { onMount } from "svelte";
@@ -21,6 +21,7 @@
     import FormFillEndScreen from "../../components/forms/fill/FormFillEndScreen.svelte";
     import FormFillFooter from "../../components/forms/fill/FormFillFooter.svelte";
     import BrandingE2EeBadge from "../../components/teams/brandings/BrandingE2EEBadge.svelte";
+    import FormFillLoading from "../../components/forms/fill/FormFillLoading.svelte";
 
     export let orgId: string | undefined;
     export let formId: string | undefined;
@@ -59,6 +60,10 @@
     };
 </script>
 
+{#if initLoading}
+    <FormFillLoading />
+{/if}
+
 <BrandingContextProvider ctx={$formFillStore?.form.b}>
     {#if $formFillStore?.form.b?.background_image_asset_id}
         <ImageAsset
@@ -74,11 +79,7 @@
         fullHeight
         verticalCenter={$formFillStore?.form.f.one_question_per_page}
     >
-        {#if initLoading}
-            <div class="text-center mb-10">
-                <Spinner size={14} />
-            </div>
-        {:else if initError}
+        {#if initError}
             <ErrorMsg
                 e={initError}
                 retryable
