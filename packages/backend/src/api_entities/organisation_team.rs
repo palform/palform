@@ -25,6 +25,7 @@ pub struct APIOrganisationTeamMembership {
 #[derive(Serialize, JsonSchema, FromQueryResult)]
 pub struct APIOrganisationTeamMember {
     pub user_id: PalformDatabaseID<IDAdminUser>,
-    pub user_display_name: String,
+    pub user_display_name: Option<String>,
+    pub user_email: String,
     pub role: OrganisationMemberRoleEnum,
 }

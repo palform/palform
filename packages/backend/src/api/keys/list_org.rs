@@ -41,6 +41,7 @@ pub async fn handler(
                 key_fingerprint: key_data.fingerprint().to_hex(),
                 user_id: key.user_id,
                 user_display_name: key.user_display_name.clone(),
+                user_email: key.user_email.clone(),
                 created_at: key.created_at,
                 expires_at: key.expires_at,
             })

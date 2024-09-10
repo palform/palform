@@ -28,7 +28,7 @@
     let loading = true;
     $: APIs.submissions()
         .then((a) =>
-            a.submissionsCrypto($orgCtx.org.id, $respCtx.formId, submissionId),
+            a.submissionsCrypto($orgCtx.org.id, $respCtx.formId, submissionId)
         )
         .then((resp) => {
             details = resp.data;
@@ -72,16 +72,21 @@
                                     {key.Known.key_fingerprint}
                                 </TableBodyCell>
                                 <TableBodyCell>
-                                    {key.Known.user_display_name}
+                                    {#if key.Known.user_display_name}
+                                        <span class="font-medium block">
+                                            {key.Known.user_display_name}
+                                        </span>
+                                    {/if}
+                                    {key.Known.user_email}
                                 </TableBodyCell>
                                 <TableBodyCell>
                                     {parseServerTime(
-                                        key.Known.created_at,
+                                        key.Known.created_at
                                     ).toLocaleString(DateTime.DATETIME_MED)}
                                 </TableBodyCell>
                                 <TableBodyCell>
                                     {parseServerTime(
-                                        key.Known.expires_at,
+                                        key.Known.expires_at
                                     ).toLocaleString(DateTime.DATETIME_MED)}
                                 </TableBodyCell>
                             {:else}

@@ -57,6 +57,7 @@ fn filter_certs_containing_key_ids(
                 id: key.id,
                 user_id: key.user_id,
                 user_display_name: key.user_display_name,
+                user_email: key.user_email,
                 created_at: key.created_at,
                 expires_at: key.expires_at,
                 key_fingerprint: repr.fingerprint().to_hex(),

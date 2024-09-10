@@ -36,8 +36,8 @@
                     $orgCtx.org.id,
                     teamId,
                     member.user_id,
-                    roleValue,
-                ),
+                    roleValue
+                )
             );
             await showSuccessToast("Saved role");
             dispatch("update", roleValue);
@@ -55,8 +55,8 @@
                 a.organisationTeamMembersDelete(
                     $orgCtx.org.id,
                     teamId,
-                    member.user_id,
-                ),
+                    member.user_id
+                )
             );
             await showSuccessToast("Removed user from team");
             dispatch("delete");
@@ -68,7 +68,12 @@
 
 <TableBodyRow>
     <TableBodyCell>
-        {member.user_display_name}
+        {#if member.user_display_name}
+            <span class="block font-medium">
+                {member.user_display_name}
+            </span>
+        {/if}
+        {member.user_email}
     </TableBodyCell>
     <TableBodyCell>
         {member.user_id}

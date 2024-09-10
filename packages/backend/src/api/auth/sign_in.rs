@@ -89,12 +89,10 @@ pub async fn handler(
 
             let mut org_id = None::<PalformDatabaseID<IDOrganisation>>;
             if create_initial_org.to_owned() {
-                let new_org_id = OrganisationManager::create(
-                    &txn,
-                    format!("{}'s organisation", user.display_name),
-                )
-                .await
-                .map_internal_error()?;
+                let new_org_id =
+                    OrganisationManager::create(&txn, "Unnamed organisation".to_string())
+                        .await
+                        .map_internal_error()?;
                 org_id = Some(new_org_id);
 
                 OrganisationManager::bootstrap_new_org(&txn, new_org_id, user.id, stripe)

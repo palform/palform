@@ -43,7 +43,8 @@ pub struct UserKeyWithIdentity {
     pub id: PalformDatabaseID<IDAdminPublicKey>,
     pub public_key: Vec<u8>,
     pub user_id: PalformDatabaseID<IDAdminUser>,
-    pub user_display_name: String,
+    pub user_email: String,
+    pub user_display_name: Option<String>,
     pub created_at: NaiveDateTime,
     pub expires_at: NaiveDateTime,
 }
@@ -53,7 +54,8 @@ pub struct APIUserKeyWithIdentity {
     pub id: PalformDatabaseID<IDAdminPublicKey>,
     pub key_fingerprint: String,
     pub user_id: PalformDatabaseID<IDAdminUser>,
-    pub user_display_name: String,
+    pub user_email: String,
+    pub user_display_name: Option<String>,
     pub created_at: NaiveDateTime,
     pub expires_at: NaiveDateTime,
 }

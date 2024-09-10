@@ -65,8 +65,11 @@
 </script>
 
 <TableBodyRow>
-    <TableBodyCell class="font-medium">
-        {member.user_display_name}
+    <TableBodyCell>
+        {#if member.user_display_name}
+            <span class="block font-medium">{member.user_display_name}</span>
+        {/if}
+        {member.user_email}
     </TableBodyCell>
     <TableBodyCell>
         {member.user_id}

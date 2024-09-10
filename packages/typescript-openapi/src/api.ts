@@ -40,7 +40,7 @@ export interface APIAdminUser {
      * @type {string}
      * @memberof APIAdminUser
      */
-    'display_name': string;
+    'display_name'?: string | null;
     /**
      * 
      * @type {string}
@@ -1380,7 +1380,13 @@ export interface APIOrgMember {
      * @type {string}
      * @memberof APIOrgMember
      */
-    'user_display_name': string;
+    'user_display_name'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIOrgMember
+     */
+    'user_email': string;
     /**
      * 
      * @type {string}
@@ -1650,7 +1656,13 @@ export interface APIOrganisationTeamMember {
      * @type {string}
      * @memberof APIOrganisationTeamMember
      */
-    'user_display_name': string;
+    'user_display_name'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIOrganisationTeamMember
+     */
+    'user_email': string;
     /**
      * 
      * @type {OrganisationMemberRoleEnum}
@@ -2740,7 +2752,13 @@ export interface APIUserKeyWithIdentity {
      * @type {string}
      * @memberof APIUserKeyWithIdentity
      */
-    'user_display_name': string;
+    'user_email': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIUserKeyWithIdentity
+     */
+    'user_display_name'?: string | null;
     /**
      * 
      * @type {string}
@@ -3066,12 +3084,6 @@ export interface CreateTeamRequest {
  * @interface CreateUserRequest
  */
 export interface CreateUserRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateUserRequest
-     */
-    'display_name': string;
     /**
      * 
      * @type {string}
@@ -3759,7 +3771,7 @@ export interface UpdateAdminUserRequest {
      * @type {string}
      * @memberof UpdateAdminUserRequest
      */
-    'display_name': string;
+    'display_name'?: string | null;
 }
 /**
  * 

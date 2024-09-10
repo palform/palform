@@ -68,8 +68,8 @@
     <TableContainer class="mt-4">
         <Table divClass="">
             <TableHead>
-                <TableHeadCell>Display name</TableHeadCell>
-                <TableHeadCell>User ID</TableHeadCell>
+                <TableHeadCell>User</TableHeadCell>
+                <TableHeadCell>ID</TableHeadCell>
                 <TableHeadCell>Organisation Admin</TableHeadCell>
                 <TableHeadCell>
                     <span class="sr-only">Actions</span>

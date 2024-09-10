@@ -38,6 +38,7 @@ impl OrganisationMembersManager {
                 organisation_membership::Relation::AdminUser.def(),
             )
             .column_as(admin_user::Column::DisplayName, "user_display_name")
+            .column_as(admin_user::Column::Email, "user_email")
             .into_model()
             .all(conn)
             .await

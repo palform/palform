@@ -77,7 +77,7 @@
 </script>
 
 {#if isOrgLogin}
-    <AuthCard title="Log in to Palform">
+    <AuthCard title="Welcome back">
         <InfoText class="mb-4">
             Sign in with your organisation to continue.
         </InfoText>
@@ -86,7 +86,7 @@
         </LoadingButton>
     </AuthCard>
 {:else}
-    <AuthCard title="Log in to Palform">
+    <AuthCard title="Welcome back">
         <form class="space-y-6" on:submit={onSignInClick}>
             <Label>
                 Email address

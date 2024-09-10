@@ -29,7 +29,7 @@
         try {
             await APIs.adminUsers().then((a) =>
                 a.adminUsersUpdate({
-                    display_name: profile!.display_name,
+                    display_name: profile!.display_name || null,
                 })
             );
             await showSuccessToast("Saved");

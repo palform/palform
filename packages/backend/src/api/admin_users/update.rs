@@ -5,19 +5,22 @@ use rocket_okapi::okapi::schemars::{self, JsonSchema};
 use rocket_okapi::openapi;
 use sea_orm::DatabaseConnection;
 use serde::Deserialize;
+use validator::Validate;
 
 use crate::auth::tokens::{APIAuthToken, APIAuthTokenSource, APIAuthTokenSourcePersonal};
 use crate::entity_managers::admin_users::AdminUserManager;
+use crate::rocket_util::validated::Validated;
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, Validate)]
 pub struct UpdateAdminUserRequest {
-    pub display_name: String,
+    #[validate(length(min = 1, max = 40, message = "must be between 1 and 40 characters"))]
+    pub display_name: Option<String>,
 }
 
 #[openapi(tag = "Admin Users", operation_id = "admin_users.update")]
 #[patch("/users/me", data = "<data>")]
 pub async fn handler(
-    data: Json<UpdateAdminUserRequest>,
+    data: Validated<Json<UpdateAdminUserRequest>>,
     token: APIAuthToken<APIAuthTokenSourcePersonal>,
     db: &State<DatabaseConnection>,
 ) -> Result<(), APIErrorWithStatus> {

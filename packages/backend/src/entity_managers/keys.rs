@@ -103,6 +103,7 @@ impl UserKeyManager {
                 admin_public_key::Relation::AdminUser.def(),
             )
             .column_as(admin_user::Column::DisplayName, "user_display_name")
+            .column_as(admin_user::Column::Email, "user_email")
             .filter(admin_public_key::Column::OrganisationId.eq(organisation_id))
             .into_model::<UserKeyWithIdentity>()
             .all(conn)

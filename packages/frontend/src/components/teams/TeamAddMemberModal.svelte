@@ -37,7 +37,7 @@
         .then((a) => a.organisationMembersList($orgCtx.org.id))
         .then((resp) => {
             members = resp.data.filter(
-                (e) => !existingTeamMemberIds.includes(e.user_id),
+                (e) => !existingTeamMemberIds.includes(e.user_id)
             );
             membersLoading = false;
         });
@@ -54,16 +54,17 @@
                 a.organisationTeamMembersAdd($orgCtx.org.id, teamId, {
                     user_ids: selectedMemberIds,
                     role,
-                }),
+                })
             );
             await showSuccessToast("Member added");
 
             for (const userId of selectedMemberIds) {
+                const member = members.find((e) => e.user_id === userId)!;
+
                 dispatch("add", {
                     user_id: userId,
-                    user_display_name:
-                        members.find((e) => e.user_id === userId)
-                            ?.user_display_name ?? "",
+                    user_email: member.user_email,
+                    user_display_name: member.user_display_name,
                     role,
                 });
             }
@@ -96,7 +97,11 @@
                 class="mt-1"
                 disabled={addLoading}
                 items={members.map((e) => ({
-                    name: e.user_display_name,
+                    name:
+                        e.user_email +
+                        (e.user_display_name
+                            ? ` (${e.user_display_name})`
+                            : ""),
                     value: e.user_id,
                 }))}
                 bind:value={selectedMemberIds}

@@ -32,7 +32,10 @@
 
 <TableBodyRow>
     <TableBodyCell>
-        {key.user_display_name}
+        {#if key.user_display_name}
+            <span class="block">{key.user_display_name}</span>
+        {/if}
+        {key.user_email}
         <span class="block text-xs font-mono">
             {key.user_id}
         </span>

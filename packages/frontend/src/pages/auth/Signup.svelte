@@ -9,7 +9,6 @@
     import TextButton from "../../components/TextButton.svelte";
     import PasswordPicker from "../../components/password/PasswordPicker.svelte";
 
-    let displayName = "";
     let email = "";
     let password = "";
     let captcha = "";
@@ -27,7 +26,6 @@
         loading = true;
         try {
             await APIs.auth.authSignUp(captcha, {
-                display_name: displayName,
                 email,
                 password,
             });
@@ -48,25 +46,8 @@
         </InfoText>
     </AuthCard>
 {:else}
-    <AuthCard title="Sign up for Palform">
-        <InfoText>All fields are required</InfoText>
-
+    <AuthCard title="Create an account">
         <form class="mt-4 space-y-6" on:submit={onSignUpClick}>
-            <Label>
-                Your name
-                <Input
-                    class="mt-2"
-                    required
-                    bind:value={displayName}
-                    disabled={loading}
-                />
-                <Helper class="mt-2">
-                    We'll show this name in your organisations to help your
-                    coworkers find you. It can be different from your legal name
-                    for billing purposes.
-                </Helper>
-            </Label>
-
             <Label>
                 Your email address
                 <Input
@@ -76,21 +57,20 @@
                     bind:value={email}
                     disabled={loading}
                 />
+                <Helper class="mt-2">
+                    We'll only use this to send account updates, and never
+                    marketing emails.
+                </Helper>
             </Label>
 
             <Label>
-                Password
+                Create a password
                 <PasswordPicker
                     bind:value={password}
                     class="mt-2"
                     required
                     disabled={loading}
                 />
-                <Helper class="mt-2">
-                    We'll set up your account with a password for now. If you
-                    need to, you can set up an organisation with OpenID Connect
-                    later.
-                </Helper>
             </Label>
 
             {#if !loading}
@@ -101,13 +81,17 @@
             {/if}
 
             <Checkbox required>
-                I agree with the&nbsp;<TextButton
-                    href="https://palform.app/legal/terms"
-                    >Terms of Use</TextButton
-                >&nbsp;and&nbsp;<TextButton
-                    href="https://palform.app/legal/privacy"
-                    >Privacy Policy</TextButton
-                >.
+                <span>
+                    I agree with the&nbsp;<TextButton
+                        inline
+                        href="https://palform.app/legal/terms"
+                        >Terms of Use</TextButton
+                    >&nbsp;and&nbsp;<TextButton
+                        inline
+                        href="https://palform.app/legal/privacy"
+                        >Privacy Policy</TextButton
+                    >.
+                </span>
             </Checkbox>
 
             <LoadingButton type="submit" disabled={loading} {loading}>

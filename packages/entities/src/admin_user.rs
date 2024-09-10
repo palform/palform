@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "admin_user")]
 pub struct Model {
-    pub display_name: String,
+    pub display_name: Option<String>,
     #[sea_orm(unique)]
     pub email: String,
     pub created_at: DateTime,

@@ -121,7 +121,6 @@ impl AdminUserManager {
 
     pub async fn create_user<T: ConnectionTrait>(
         conn: &T,
-        display_name: String,
         email: String,
         password: String,
     ) -> Result<PalformDatabaseID<IDAdminUser>, AdminUserManagementError> {
@@ -131,7 +130,6 @@ impl AdminUserManager {
         let id = PalformDatabaseID::<IDAdminUser>::random();
         let new_user = admin_user::ActiveModel {
             id: Set(id.clone()),
-            display_name: Set(display_name),
             email: Set(email),
             manual_auth_email_verified: Set(Some(false)),
             manual_auth_password_hash: Set(Some(password_hash)),
@@ -152,7 +150,7 @@ impl AdminUserManager {
         let id = PalformDatabaseID::<IDAdminUser>::random();
         let new_user = admin_user::ActiveModel {
             id: Set(id.clone()),
-            display_name: Set(display_name),
+            display_name: Set(Some(display_name)),
             email: Set(email),
             org_auth_organisation_id: Set(Some(org_id)),
             org_auth_sub: Set(Some(sub)),
@@ -197,7 +195,7 @@ impl AdminUserManager {
     pub async fn update_user_profile<T: ConnectionTrait>(
         conn: &T,
         user_id: PalformDatabaseID<IDAdminUser>,
-        display_name: String,
+        display_name: Option<String>,
     ) -> Result<(), DbErr> {
         let updated_user = admin_user::ActiveModel {
             id: Set(user_id),

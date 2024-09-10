@@ -163,6 +163,7 @@ impl OrganisationTeamsManager {
             )
             .column_as(admin_user::Column::Id, "user_id")
             .column_as(admin_user::Column::DisplayName, "user_display_name")
+            .column_as(admin_user::Column::Email, "user_email")
             .into_model()
             .all(conn)
             .await

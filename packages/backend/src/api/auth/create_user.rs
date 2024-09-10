@@ -18,8 +18,6 @@ use crate::rocket_util::validated::Validated;
 #[derive(Debug, Deserialize, JsonSchema, Validate)]
 #[serde(crate = "rocket::serde")]
 pub struct CreateUserRequest {
-    #[validate(length(min = 1, max = 40, message = "must be between 1 and 40 characters"))]
-    display_name: String,
     #[validate(email(message = "was not a valid email"))]
     email: String,
     #[validate(length(min = 12, max = 60, message = "must be between 12 and 60 characters"))]
@@ -52,7 +50,6 @@ pub async fn handler(
 
     let new_user_id = AdminUserManager::create_user(
         &txn,
-        request.display_name.clone(),
         request.email.clone(),
         request.password.clone(),
     )
