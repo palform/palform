@@ -47,6 +47,11 @@ const config: Config = {
             xslt: true,
           },
         },
+        sitemap: {
+          lastmod: "datetime",
+          changefreq: "daily",
+          filename: "sitemap.xml",
+        },
       } satisfies Preset.Options,
     ],
   ],

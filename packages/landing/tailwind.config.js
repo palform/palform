@@ -31,7 +31,7 @@ export default {
             },
             fontFamily: {
                 sans: ["Fira Code Variable", defaultTheme.fontFamily.sans],
-                display: "Archivo Variable",
+                display: ["Archivo Variable", defaultTheme.fontFamily.sans],
                 sampleElegant: "IBM Plex Serif",
                 samplePlayful: "Nunito",
                 sampleBrutal: "Kanit",
