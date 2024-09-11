@@ -649,7 +649,10 @@ impl<'a> BillingManager<'a> {
                 trial_end: Some(Scheduled::now()),
                 items,
             },
-            expand: Some(vec!["lines.data.price.product".to_string()]),
+            expand: Some(vec![
+                "lines.data.price.product".to_string(),
+                "discounts".to_string(),
+            ]),
         };
         let invoice = InvoiceOverride::create_preview(&self.stripe, req).await?;
 
