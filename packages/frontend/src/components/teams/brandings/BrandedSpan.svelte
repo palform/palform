@@ -64,7 +64,7 @@
 <svelte:head>
     {#if $ctx}
         <link
-            href={`https://fonts.googleapis.com/css?family=${$ctx.google_font.replaceAll(" ", "+")}&display=block`}
+            href={`https://fonts.bunny.net/css?family=${$ctx.google_font.replaceAll(" ", "+")}&display=block`}
             rel="stylesheet"
         />
     {/if}
