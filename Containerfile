@@ -12,7 +12,6 @@ COPY packages/entities packages/entities
 COPY packages/migration packages/migration
 COPY packages/google-fonts-generator packages/google-fonts-generator
 COPY packages/tsid packages/tsid
-COPY packages/tsid-primitive packages/tsid-primitive
 COPY Cargo.toml Cargo.lock Rocket.toml ./
 
 RUN cargo install --path packages/backend --profile release
