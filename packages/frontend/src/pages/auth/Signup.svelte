@@ -39,7 +39,6 @@
 
 {#if signUpComplete}
     <AuthCard title="Verify your email">
-        <InfoText>Thanks for signing up!</InfoText>
         <InfoText>
             We've sent a message to <strong>{email}</strong> with a link. Please
             click it within the next 15 minutes to verify your email address.

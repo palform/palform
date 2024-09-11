@@ -36,10 +36,7 @@
     $: onRegister = async () => {
         const granted = await navigator.storage.persisted();
         if (!granted) {
-            if (
-                browserAgent.browser.name === "Chrome" ||
-                browserAgent.browser.name === "Chromium"
-            ) {
+            if (browserAgent.browser.name !== "Firefox") {
                 await navigator.storage.persist();
             } else {
                 showPersistenceModal = true;
