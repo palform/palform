@@ -707,27 +707,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bson"
-version = "2.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d8a88e82b9106923b5c4d6edfca9e7db958d4e98a478ec115022e81b9b38e2c8"
-dependencies = [
- "ahash 0.8.11",
- "base64 0.13.1",
- "bitvec",
- "hex",
- "indexmap 2.5.0",
- "js-sys",
- "once_cell",
- "rand 0.8.5",
- "serde",
- "serde_bytes",
- "serde_json",
- "time",
- "uuid",
-]
-
-[[package]]
 name = "bstr"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3367,7 +3346,6 @@ dependencies = [
  "palform-entities",
  "palform-migration",
  "palform-tsid",
- "palform-tsid-primitive",
  "rand 0.8.5",
  "reqwest 0.12.7",
  "rocket",
@@ -3460,26 +3438,7 @@ dependencies = [
 name = "palform-tsid"
 version = "0.1.0"
 dependencies = [
- "anyhow",
- "palform-tsid-primitive",
- "rocket",
- "schemars",
- "sea-orm",
- "serde",
- "ts-rs",
-]
-
-[[package]]
-name = "palform-tsid-primitive"
-version = "0.2.0"
-dependencies = [
- "bson",
- "chrono",
- "lazy_static",
- "phf",
- "rand 0.8.5",
- "serde",
- "serde_json",
+ "prefixed-tsid",
 ]
 
 [[package]]
@@ -3744,6 +3703,21 @@ name = "precomputed-hash"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "925383efa346730478fb4838dbe9137d2a47675ad789c546d150a6e1dd4ab31c"
+
+[[package]]
+name = "prefixed-tsid"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bed731fcf5cf418a167fe4d0f7a511d7687418e76e96f398179da4fd9d21db04"
+dependencies = [
+ "anyhow",
+ "rocket",
+ "schemars",
+ "sea-orm",
+ "serde",
+ "ts-rs",
+ "tsid",
+]
 
 [[package]]
 name = "primeorder"
@@ -5034,15 +5008,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "serde_bytes"
-version = "0.11.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "387cc504cb06bb40a96c8e04e951fe01854cf6bc921053c954e4a606d9675c6a"
-dependencies = [
- "serde",
-]
-
-[[package]]
 name = "serde_derive"
 version = "1.0.210"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5070,7 +5035,6 @@ version = "1.0.128"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ff5456707a1de34e7e37f2a6fd3d3f808c318259cbd01ab6377795054b483d8"
 dependencies = [
- "indexmap 2.5.0",
  "itoa",
  "memchr",
  "ryu",
@@ -6158,6 +6122,19 @@ dependencies = [
  "quote",
  "syn 2.0.77",
  "termcolor",
+]
+
+[[package]]
+name = "tsid"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e4dcff500431321d1e953098d479813a96c4a4264ed53635a94d8c9406d75a7e"
+dependencies = [
+ "chrono",
+ "getrandom 0.2.15",
+ "lazy_static",
+ "phf",
+ "rand 0.8.5",
 ]
 
 [[package]]

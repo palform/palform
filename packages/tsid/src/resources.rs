@@ -1,20 +1,6 @@
-use std::hash::Hash;
+use prefixed_tsid::{id_resource_type, resources::TSIDResource};
 
-pub trait PalformIDResource: Eq + PartialEq + Clone + Copy + Hash + Send {
-    fn prefix() -> Option<String>;
-}
-
-macro_rules! id_resource_type {
-    ($struct_name: ident, $prefix: literal) => {
-        #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash)]
-        pub struct $struct_name;
-        impl PalformIDResource for $struct_name {
-            fn prefix() -> Option<String> {
-                Some($prefix.to_owned())
-            }
-        }
-    };
-}
+pub use prefixed_tsid::resources::IDUnknown;
 
 id_resource_type!(IDAdminPublicKey, "admin_pk");
 id_resource_type!(IDAdminUser, "user");
@@ -39,11 +25,3 @@ id_resource_type!(IDSubmission, "sub");
 id_resource_type!(IDSubmissionFile, "subf");
 id_resource_type!(IDTeam, "team");
 id_resource_type!(IDTeamAsset, "tas");
-
-#[derive(Eq, PartialEq, Clone, Copy, Debug, Hash)]
-pub struct IDUnknown;
-impl PalformIDResource for IDUnknown {
-    fn prefix() -> Option<String> {
-        None
-    }
-}

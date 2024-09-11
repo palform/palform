@@ -64,7 +64,6 @@ palform-client-common = { path = "../client-common", default-features = false, f
     "backend",
 ] }
 palform-tsid = { path = "../tsid" }
-palform-tsid-primitive = { path = "../tsid-primitive" }
 
 [features]
 default = ["saas", "country-metadata"]

@@ -7,7 +7,6 @@ members = [
     "packages/google-fonts-generator",
     "packages/analysis",
     "packages/tsid",
-    "packages/tsid-primitive",
     "packages/bench",
 ]
 resolver = "2"
