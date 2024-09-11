@@ -5,7 +5,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 const config: Config = {
   title: "Palform",
   tagline: "Build beautiful end-to-end encrypted forms for free",
-  favicon: "/img/logo.svg",
+  favicon: "/favicon.ico",
 
   // Set the production url of your site here
   url: "https://docs.palform.app",
