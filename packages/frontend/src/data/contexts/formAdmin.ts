@@ -76,8 +76,9 @@ export function getGroupTitle(
         if (!q) return "Untitled";
         return q.title;
     } else {
+        const groupIndex = formCtx.groups.findIndex((e) => e.id === group.id);
         if (!group.title) {
-            return `Section TODO`;
+            return `Section ${groupIndex + 1}`;
         }
         return group.title;
     }
