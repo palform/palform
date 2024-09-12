@@ -5,10 +5,34 @@
     import BigAlertText from "../../components/induction/bigAlert/BigAlertText.svelte";
     import KeyRegisterForm from "../../components/keys/KeyRegisterForm.svelte";
     import { getOrgContext } from "../../data/contexts/orgLayout";
+    import { APIs } from "../../data/common";
 
     const orgCtx = getOrgContext();
-    $: onKeyRegistered = () => {
-        navigate(`/orgs/${$orgCtx.org.id}/induction`);
+    $: onKeyRegistered = async () => {
+        const firstAdminTeam = $orgCtx.myTeams.find(
+            (e) => e.my_role === "Admin" || e.my_role === "Editor"
+        );
+        if (firstAdminTeam) {
+            const firstFormResp = await APIs.forms().then((a) =>
+                a.formsCreate($orgCtx.org.id, {
+                    in_team: firstAdminTeam.team_id,
+                    title: "My first form",
+                    editor_name: "My first form",
+                    one_question_per_page: true,
+                })
+            );
+
+            orgCtx.update((ctx) => {
+                return {
+                    ...ctx,
+                    forms: [firstFormResp.data, ...ctx.forms],
+                };
+            });
+
+            navigate(`/orgs/${$orgCtx.org.id}/forms/${firstFormResp.data.id}/`);
+        } else {
+            navigate(`/orgs/${$orgCtx.org.id}/induction`);
+        }
     };
 </script>
 
@@ -29,4 +53,4 @@
     </BigAlertText>
 </BigAlert>
 
-<KeyRegisterForm on:done={onKeyRegistered} showInfo={false} />
+<KeyRegisterForm on:done={onKeyRegistered} showInfo={false} autoCreate />

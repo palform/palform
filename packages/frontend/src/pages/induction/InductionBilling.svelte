@@ -2,7 +2,6 @@
     import { Button } from "flowbite-svelte";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import InitiatePlan from "../../components/billing/InitiatePlan.svelte";
-    import TextButton from "../../components/TextButton.svelte";
     import { navigate } from "svelte-routing";
     import BigAlert from "../../components/induction/bigAlert/BigAlert.svelte";
     import BigAlertText from "../../components/induction/bigAlert/BigAlertText.svelte";
@@ -52,9 +51,9 @@
             plan and upgrade at any time!
         </BigAlertText>
 
-        <TextButton on:click={onFreePlanClick} class="mt-2">
+        <Button on:click={onFreePlanClick} class="mt-4">
             Continue on free plan
-        </TextButton>
+        </Button>
     </BigAlert>
 
     <InitiatePlan callbackPath="/induction/billing-complete" />

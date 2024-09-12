@@ -21,7 +21,10 @@
 </script>
 
 <Modal title="Enable browser storage" bind:open outsideclose>
-    <p>We need permission to save your new key in your browser long-term.</p>
+    <p>
+        We need permission to save your encryption key in your browser
+        long-term.
+    </p>
     <p>
         When you click the button below, your browser will prompt for
         permission. Please accept the prompt to continue.

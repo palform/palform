@@ -17,12 +17,14 @@
     } from "../../data/contexts/orgLayout";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
     import { registerKey } from "../../data/crypto/keyManager";
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
     import BackupNew from "./backup/BackupNew.svelte";
     import KeyPersistenceModal from "./KeyPersistenceModal.svelte";
     import { UAParser } from "ua-parser-js";
 
     export let showInfo = true;
+    export let autoCreate = false;
+
     const ctx = getOrgContext();
     const browserSupport = !!(navigator.storage && navigator.storage.persist);
     const dispatch = createEventDispatcher<{ done: string }>();
@@ -53,9 +55,12 @@
             await reloadGlobalAlert(ctx);
             await reloadInduction(ctx);
 
-            await showSuccessToast(
-                "Key created successfully! Make sure to create a backup."
-            );
+            if (!autoCreate) {
+                await showSuccessToast(
+                    "Key created successfully! Make sure to create a backup."
+                );
+            }
+
             backupKeyId = id;
         } catch (e) {
             showFailureToast(e);
@@ -68,6 +73,12 @@
         if (!backupKeyId) return;
         dispatch("done", backupKeyId);
     };
+
+    onMount(() => {
+        if (autoCreate) {
+            onRegister();
+        }
+    });
 </script>
 
 <KeyPersistenceModal bind:open={showPersistenceModal} on:granted={onRegister} />
@@ -110,37 +121,39 @@
         </Alert>
     {/if}
 
-    <form class="mt-4">
-        <LoadingButton
-            loading={registerLoading}
-            disabled={registerLoading}
-            on:click={onRegister}
-            buttonClass="mt-4"
-        >
-            Generate my key
-        </LoadingButton>
+    {#if !autoCreate}
+        <form class="mt-4">
+            <LoadingButton
+                loading={registerLoading}
+                disabled={registerLoading}
+                on:click={onRegister}
+                buttonClass="mt-4"
+            >
+                Generate my key
+            </LoadingButton>
 
-        <Accordion flush class="mt-2">
-            <AccordionItem>
-                <span slot="header" class="text-sm">Advanced</span>
-                <fieldset>
-                    <Label for="expiry" class="mb-2">Expires</Label>
-                    <Select
-                        id="expiry"
-                        disabled={registerLoading}
-                        items={[
-                            { value: 30, name: "in 1 month" },
-                            { value: 60, name: "in 2 months" },
-                            { value: 180, name: "in 6 months" },
-                            { value: 365, name: "in 1 year" },
-                            { value: 730, name: "in 2 years" },
-                            { value: 1825, name: "in 5 years" },
-                            { value: 0, name: "Never" },
-                        ]}
-                        bind:value={expirationDays}
-                    />
-                </fieldset>
-            </AccordionItem>
-        </Accordion>
-    </form>
+            <Accordion flush class="mt-2">
+                <AccordionItem>
+                    <span slot="header" class="text-sm">Advanced</span>
+                    <fieldset>
+                        <Label for="expiry" class="mb-2">Expires</Label>
+                        <Select
+                            id="expiry"
+                            disabled={registerLoading}
+                            items={[
+                                { value: 30, name: "in 1 month" },
+                                { value: 60, name: "in 2 months" },
+                                { value: 180, name: "in 6 months" },
+                                { value: 365, name: "in 1 year" },
+                                { value: 730, name: "in 2 years" },
+                                { value: 1825, name: "in 5 years" },
+                                { value: 0, name: "Never" },
+                            ]}
+                            bind:value={expirationDays}
+                        />
+                    </fieldset>
+                </AccordionItem>
+            </Accordion>
+        </form>
+    {/if}
 {/if}

@@ -26,22 +26,18 @@
     };
 </script>
 
-<InfoText>
-    You'll need this password whenever you want to add Palform to a new device
-    or if the key accidentally gets erased from your browser.
-</InfoText>
-<InfoText class="font-medium">
-    You could lose your form responses if this password gets lost!
-</InfoText>
-
-<Label class="mt-4">
+<Label class="mt-4 text-lg">
     Your key password
-    <Input class="mt-2" readonly value={recoveryPhrase} />
+    <Input class="mt-2" size="lg" readonly value={recoveryPhrase} />
     <Helper class="mt-2"></Helper>
     <Helper class="font-medium"></Helper>
 </Label>
 
-<InfoText class="mt-4">
+<InfoText class="font-medium mt-4">
+    You could lose your form responses if this password gets lost!
+</InfoText>
+
+<InfoText class="mt-2">
     We recommend saving this in your password manager, or alternatively printing
     it out or writing it down.
 </InfoText>

@@ -13,6 +13,7 @@
         faTimesCircle,
     } from "@fortawesome/free-solid-svg-icons";
     import { showFailureToast } from "../../data/toast";
+    import { Mutex } from "async-mutex";
 
     const formEditorCtx = getFormEditorCtx();
     const formAdminCtx = getFormAdminContext();
@@ -22,7 +23,10 @@
     let error = false;
     onMount(() => {
         let timeout: number | null = null;
-        const unsub = formEditorCtx.subscribe(() => {
+        const mutex = new Mutex();
+
+        const unsub = formEditorCtx.subscribe(async () => {
+            await mutex.acquire();
             if (timeout) {
                 clearTimeout(timeout);
                 timeout = null;
@@ -46,6 +50,7 @@
                 syncing = false;
                 timeout = null;
             }, 200) as unknown as number;
+            mutex.release();
         });
 
         return () => {

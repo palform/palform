@@ -8,7 +8,7 @@
         Toggle,
     } from "flowbite-svelte";
     import {
-        deleteGroup as deleteQuestionGroup,
+        deleteGroup,
         deleteQuestion,
         getEditorQuestion,
         getFormEditorCtx,
@@ -38,9 +38,7 @@
     } from "@fortawesome/free-solid-svg-icons";
     import QeText from "./QEText.svelte";
     import type { APIQuestionConfiguration } from "@paltiverse/palform-typescript-openapi";
-    import { humaniseAPIError } from "../../../data/common";
     import { getFormCtx } from "../../../data/contexts/orgLayout";
-    import { showFailureToast } from "../../../data/toast";
     import LoadingButton from "../../LoadingButton.svelte";
     import QeChoice from "./QEChoice.svelte";
     import CardBoxSubtitle from "../../cardBox/CardBoxSubtitle.svelte";
@@ -55,6 +53,7 @@
     import QuestionTypeLabel from "./QuestionTypeLabel.svelte";
     import QeDateTime from "./QEDateTime.svelte";
     import QeHidden from "./QEHidden.svelte";
+    import { get } from "svelte/store";
 
     export let questionId: string;
     const question = getEditorQuestion(questionId);
@@ -93,17 +92,13 @@
 
     $: onDeleteClick = async () => {
         if (!$question) return;
-        try {
-            const groupId = $question.group_id;
-            deleteQuestion(formEditorCtx, groupId, questionId);
 
-            if ($formMetadataCtx.one_question_per_page) {
-                deleteQuestionGroup(formEditorCtx, groupId);
-            }
-        } catch (e) {
-            await showFailureToast(humaniseAPIError(e));
+        const groupId = $question.group_id;
+        deleteQuestion(formEditorCtx, groupId, questionId);
+
+        if ($formMetadataCtx.one_question_per_page) {
+            deleteGroup(formEditorCtx, groupId);
         }
-        $formEditorCtx.loading = false;
     };
 
     $: questionIndex =
