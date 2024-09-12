@@ -22,6 +22,7 @@
         getFormEditorCtx,
         updateQuestionGroup,
     } from "../../../data/contexts/formEditor";
+    import { fade, scale } from "svelte/transition";
 
     export let group: APIQuestionGroup;
 

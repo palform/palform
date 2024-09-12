@@ -12,6 +12,7 @@
         getEditorQuestionsInGroup,
         getFormEditorCtx,
     } from "../../../data/contexts/formEditor";
+    import { slide } from "svelte/transition";
 
     export let groupId: string;
     const dispatch = createEventDispatcher<{ serverSync: undefined }>();
@@ -38,19 +39,22 @@
     <QgContainer group={$group} on:delete={onDelete}>
         <div class="space-y-4 mb-4">
             {#each $questionsInGroup as question, index (question.id)}
-                {#if !$formMetadataCtx.one_question_per_page}
-                    <CreateQuestion
-                        {groupId}
-                        beforeIndex={index}
-                        on:create={(_) => dispatch("serverSync")}
+                <div transition:slide class="space-y-4">
+                    {#if !$formMetadataCtx.one_question_per_page}
+                        <CreateQuestion
+                            {groupId}
+                            beforeIndex={index}
+                            on:create={(_) => dispatch("serverSync")}
+                        />
+                    {/if}
+                    <EditQuestion
+                        questionId={question.id}
+                        on:serverSync={() => dispatch("serverSync")}
                     />
-                {/if}
-                <EditQuestion
-                    questionId={question.id}
-                    on:serverSync={() => dispatch("serverSync")}
-                />
+                </div>
             {/each}
         </div>
+
         {#if !$formMetadataCtx.one_question_per_page}
             <CreateQuestion
                 {groupId}

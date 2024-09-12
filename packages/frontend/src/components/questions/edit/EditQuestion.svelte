@@ -53,7 +53,6 @@
     import QuestionTypeLabel from "./QuestionTypeLabel.svelte";
     import QeDateTime from "./QEDateTime.svelte";
     import QeHidden from "./QEHidden.svelte";
-    import { get } from "svelte/store";
 
     export let questionId: string;
     const question = getEditorQuestion(questionId);
@@ -151,7 +150,7 @@
         {:else}
             <Label>
                 Title
-                <Input class="mt-2" bind:value={questionTitle} />
+                <Input class="mt-2" bind:value={questionTitle} autofocus />
                 <Helper class="mt-2 text-gray-500 dark:text-gray-400">
                     See <a
                         href="https://docs.palform.app/forms/questions"
