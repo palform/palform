@@ -1,13 +1,16 @@
 use chrono::{Duration, Utc};
 use palform_client_common::form_management::form_end::APIFormEndConfiguration;
-use palform_entities::{form, organisation, prelude::*, submission, team, team_membership};
+use palform_entities::{
+    deleted_submission, form, organisation, prelude::*, submission, team, team_membership,
+};
+use palform_migration::all;
 use palform_tsid::{
-    resources::{IDAdminUser, IDForm, IDFormBranding, IDOrganisation, IDTeam},
+    resources::{IDAdminUser, IDForm, IDFormBranding, IDOrganisation, IDSubmission, IDTeam},
     tsid::PalformDatabaseID,
 };
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, Condition, ConnectionTrait, DbErr, EntityTrait, FromQueryResult,
-    JoinType, PaginatorTrait, QueryFilter, QuerySelect, RelationTrait, Set,
+    ActiveModelTrait, ColumnTrait, ConnectionTrait, DbErr, EntityTrait, FromQueryResult, JoinType,
+    PaginatorTrait, QueryFilter, QuerySelect, RelationTrait, Set,
 };
 use thiserror::Error;
 
@@ -272,14 +275,32 @@ impl FormManager {
             ))?;
             let cut_off_date = (Utc::now() - Duration::days(days.into())).naive_utc();
 
-            Submission::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(submission::Column::FormId.eq(form_id))
-                        .add(submission::Column::CreatedAt.lt(cut_off_date)),
-                )
-                .exec(conn)
+            let delete_ids: Vec<PalformDatabaseID<IDSubmission>> = Submission::find()
+                .filter(all![
+                    submission::Column::FormId.eq(form_id),
+                    submission::Column::CreatedAt.lt(cut_off_date)
+                ])
+                .select_only()
+                .column(submission::Column::Id)
+                .into_tuple()
+                .all(conn)
                 .await?;
+
+            for delete_id in &delete_ids {
+                let new_deletion = deleted_submission::ActiveModel {
+                    id: Set(delete_id.clone()),
+                    form_id: Set(form_id),
+                    ..Default::default()
+                };
+                new_deletion.insert(conn).await?;
+            }
+
+            if !delete_ids.is_empty() {
+                Submission::delete_many()
+                    .filter(submission::Column::Id.is_in(delete_ids))
+                    .exec(conn)
+                    .await?;
+            }
         }
 
         Ok(())
