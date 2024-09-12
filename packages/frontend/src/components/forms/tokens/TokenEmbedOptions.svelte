@@ -13,16 +13,20 @@
         formatShortLinkURL,
     } from "../../../data/fillTokens";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
-    import { getResponsesContext } from "../../../data/contexts/results";
     import { copyGenericValue } from "../../../data/util/clipboard";
+    import { getFormAdminContext } from "../../../data/contexts/formAdmin";
 
     export let fatID: string;
     export let shortLink: string | undefined;
 
     const orgCtx = getOrgContext();
-    const respCtx = getResponsesContext();
+    const formAdmiNCtx = getFormAdminContext();
 
-    $: longURL = formatFillTokenURL($orgCtx.org.id, $respCtx.formId, fatID);
+    $: longURL = formatFillTokenURL(
+        $orgCtx.org.id,
+        $formAdmiNCtx.formId,
+        fatID
+    );
 
     let frameHeight = 800;
     let frameWidth = 600;

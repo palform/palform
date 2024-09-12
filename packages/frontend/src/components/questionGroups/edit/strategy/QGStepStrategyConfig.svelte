@@ -1,16 +1,6 @@
 <script lang="ts">
     import { Label, Select } from "flowbite-svelte";
-    import {
-        ctxGetGroup,
-        ctxUpdateGroup,
-        getResponsesContext,
-        qgsIsJump,
-        syncGroupConfig,
-    } from "../../../../data/contexts/results";
-    import {
-        getFormCtx,
-        getOrgContext,
-    } from "../../../../data/contexts/orgLayout";
+    import { getFormCtx } from "../../../../data/contexts/orgLayout";
     import type {
         APIQuestionGroupStepStrategy,
         APIQuestionGroupStepStrategyJumpCase,
@@ -23,14 +13,21 @@
         faChevronDown,
         faChevronRight,
     } from "@fortawesome/free-solid-svg-icons";
-    import { getEditorCtx } from "../../../../data/contexts/questionsEditing";
     import InfoText from "../../../type/InfoText.svelte";
+    import {
+        getFormEditorCtx,
+        updateQuestionGroup,
+    } from "../../../../data/contexts/formEditor";
+    import {
+        ctxGetGroup,
+        qgsIsJump,
+    } from "../../../../data/contexts/formAdmin";
 
     export let groupId: string;
-    const orgCtx = getOrgContext();
-    const formCtx = getResponsesContext();
+
     const formMetadataCtx = getFormCtx();
-    const editorCtx = getEditorCtx();
+    const formEditorCtx = getFormEditorCtx();
+
     $: group = ctxGetGroup(groupId);
     $: currentConfig = $group?.step_strategy;
 
@@ -38,10 +35,6 @@
         currentConfig !== undefined && qgsIsJump(currentConfig)
             ? "JumpToSection"
             : "NextPosition";
-
-    $: onChange = async () => {
-        await syncGroupConfig(formCtx, $orgCtx.org.id, groupId);
-    };
 
     let showJumpCases = false;
     $: onActionValueChange = async (e: Event) => {
@@ -57,34 +50,31 @@
             showJumpCases = true;
         }
 
-        ctxUpdateGroup(formCtx, groupId, {
+        updateQuestionGroup(formEditorCtx, {
             ...$group,
             step_strategy: strategy,
         });
-        await onChange();
     };
 
     $: onNewJumpCase = async (
         e: CustomEvent<APIQuestionGroupStepStrategyJumpCase>
     ) => {
         if (!$group || !currentConfig || !qgsIsJump(currentConfig)) return;
-        ctxUpdateGroup(formCtx, groupId, {
+        updateQuestionGroup(formEditorCtx, {
             ...$group,
             step_strategy: {
                 JumpToSection: [...currentConfig.JumpToSection, e.detail],
             },
         });
-        await onChange();
     };
 
     $: onDeleteJumpCase = async (index: number) => {
         if (!$group || !currentConfig || !qgsIsJump(currentConfig)) return;
         currentConfig.JumpToSection.splice(index, 1);
-        ctxUpdateGroup(formCtx, groupId, {
+        updateQuestionGroup(formEditorCtx, {
             ...$group,
             step_strategy: currentConfig,
         });
-        await onChange();
     };
 </script>
 
@@ -96,7 +86,7 @@
             size="sm"
             value={currentActionValue}
             on:change={onActionValueChange}
-            disabled={!!$editorCtx.currentlyEditing}
+            disabled={!!$formEditorCtx.currentlyEditing}
             items={[
                 {
                     name: $formMetadataCtx.one_question_per_page
@@ -118,7 +108,7 @@
         <button
             class="mt-2 text-sm text-slate-700 dark:text-slate-300"
             on:click={() => (showJumpCases = !showJumpCases)}
-            disabled={!!$editorCtx.currentlyEditing}
+            disabled={!!$formEditorCtx.currentlyEditing}
         >
             <span class="inline-block w-4 me-1">
                 {#if showJumpCases}
@@ -129,7 +119,7 @@
             </span>
             Configure jumping
         </button>
-        {#if showJumpCases && !$editorCtx.currentlyEditing}
+        {#if showJumpCases && !$formEditorCtx.currentlyEditing}
             <div transition:slide>
                 {#if currentConfig.JumpToSection.length > 0}
                     <div class="mt-4 space-y-2">

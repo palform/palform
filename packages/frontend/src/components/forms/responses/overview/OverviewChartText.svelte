@@ -3,14 +3,16 @@
     import {
         ctxGetQuestion,
         ctxSubmissionsForQuestion,
-    } from "../../../../data/contexts/results";
-    import { qIsText } from "../../../../data/contexts/questionsEditing";
+    } from "../../../../data/contexts/formAdmin";
+    import { qIsText } from "../../../../data/contexts/formEditor";
 
     export let questionId: string;
     $: question = ctxGetQuestion(questionId);
     $: submissions = ctxSubmissionsForQuestion(questionId);
 
-    $: validSubmissions = $submissions.filter(e => sGetText(e.data).value.length >0)
+    $: validSubmissions = $submissions.filter(
+        (e) => sGetText(e.data).value.length > 0
+    );
     $: submissionsToShow = validSubmissions.slice(0, 100);
 </script>
 
@@ -25,7 +27,6 @@
                 {sGetText(submission.data).value}
             </p>
         {/each}
-
     </div>
 
     {#if validSubmissions.length > 100}

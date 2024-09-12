@@ -19,7 +19,6 @@ pub struct APIQuestion {
     pub description: Option<String>,
     pub required: bool,
     pub configuration: APIQuestionConfiguration,
-    pub position: i32,
     pub group_id: PalformDatabaseID<IDQuestionGroup>,
 }
 

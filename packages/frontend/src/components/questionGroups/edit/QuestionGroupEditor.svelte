@@ -1,35 +1,26 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import {
-        getEditorCtx,
-        getEditorQuestionsInGroup,
-    } from "../../../data/contexts/questionsEditing";
     import CreateQuestion from "../../questions/edit/CreateQuestion.svelte";
     import EditQuestion from "../../questions/edit/EditQuestion.svelte";
-    import {
-        ctxGetGroup,
-        deleteGroup,
-        getResponsesContext,
-    } from "../../../data/contexts/results";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
-    import {
-        getFormCtx,
-        getOrgContext,
-    } from "../../../data/contexts/orgLayout";
+    import { getFormCtx } from "../../../data/contexts/orgLayout";
     import QgContainer from "./QGContainer.svelte";
     import QgStepStrategyConfig from "./strategy/QGStepStrategyConfig.svelte";
+    import {
+        deleteGroup,
+        getEditorQuestionGroup,
+        getEditorQuestionsInGroup,
+        getFormEditorCtx,
+    } from "../../../data/contexts/formEditor";
 
     export let groupId: string;
     const dispatch = createEventDispatcher<{ serverSync: undefined }>();
 
-    const editorContext = getEditorCtx();
-    const orgCtx = getOrgContext();
-    const respCtx = getResponsesContext();
-    const formCtx = getFormCtx();
+    const formEditorCtx = getFormEditorCtx();
+    const formMetadataCtx = getFormCtx();
     $: questionsInGroup = getEditorQuestionsInGroup(groupId);
-    $: group = ctxGetGroup(groupId);
+    $: group = getEditorQuestionGroup(groupId);
 
-    let deleteLoading = false;
     $: onDelete = async () => {
         if ($questionsInGroup.length > 0) {
             await showFailureToast(
@@ -38,20 +29,16 @@
             return;
         }
 
-        $editorContext.loading = true;
-        deleteLoading = true;
-        await deleteGroup(respCtx, $orgCtx.org.id, groupId);
+        deleteGroup(formEditorCtx, groupId);
         await showSuccessToast("Section deleted");
-        deleteLoading = false;
-        $editorContext.loading = false;
     };
 </script>
 
 {#if $group !== undefined}
-    <QgContainer group={$group} loading={deleteLoading} on:delete={onDelete}>
+    <QgContainer group={$group} on:delete={onDelete}>
         <div class="space-y-4 mb-4">
             {#each $questionsInGroup as question, index (question.id)}
-                {#if !$formCtx.one_question_per_page}
+                {#if !$formMetadataCtx.one_question_per_page}
                     <CreateQuestion
                         {groupId}
                         beforeIndex={index}
@@ -64,7 +51,7 @@
                 />
             {/each}
         </div>
-        {#if !$formCtx.one_question_per_page}
+        {#if !$formMetadataCtx.one_question_per_page}
             <CreateQuestion
                 {groupId}
                 beforeIndex={$questionsInGroup.length}

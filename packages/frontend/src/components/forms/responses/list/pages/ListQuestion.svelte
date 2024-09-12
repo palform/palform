@@ -1,14 +1,14 @@
 <script lang="ts">
     import type { QuestionSubmission } from "@paltiverse/palform-client-js-extra-types/QuestionSubmission";
-    import { getResponsesContext } from "../../../../../data/contexts/results";
     import CardBox from "../../../../cardBox/CardBox.svelte";
     import CardBoxTitle from "../../../../cardBox/CardBoxTitle.svelte";
     import ListQuestionValue from "../ListQuestionValue.svelte";
+    import { getFormAdminContext } from "../../../../../data/contexts/formAdmin";
 
     export let questionSubmission: QuestionSubmission;
-    const ctx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
 
-    $: question = $ctx.questions.find(
+    $: question = $formAdminCtx.questions.find(
         (e) => e.id === questionSubmission.question_id
     );
 </script>

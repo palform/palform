@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { APIQuestionConfiguration } from "@paltiverse/palform-typescript-openapi";
-    import { humanQuestionTypeLabel } from "../../../data/contexts/questionsEditing";
+    import { humanQuestionTypeLabel } from "../../../data/contexts/formEditor";
 
     export let configuration: APIQuestionConfiguration;
 </script>

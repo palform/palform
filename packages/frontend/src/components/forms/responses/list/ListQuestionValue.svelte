@@ -12,7 +12,7 @@
         qIsScale,
         qIsSignature,
         qIsText,
-    } from "../../../../data/contexts/questionsEditing";
+    } from "../../../../data/contexts/formEditor";
     import {
         sGetAddress,
         sGetChoice,

@@ -9,15 +9,13 @@
     import DangerZone from "../../components/type/DangerZone.svelte";
     import SectionSeparator from "../../components/type/SectionSeparator.svelte";
     import { getFormCtx } from "../../data/contexts/orgLayout";
-    import { getResponsesContext } from "../../data/contexts/results";
 
-    const respCtx = getResponsesContext();
     const formCtx = getFormCtx();
 </script>
 
 <FormSettingsForm
     initialValue={{
-        id: $respCtx.formId,
+        id: $formCtx.id,
         editor_name: $formCtx.editor_name,
         title: $formCtx.title,
         branding_id: $formCtx.branding_id,

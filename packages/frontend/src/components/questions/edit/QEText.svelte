@@ -5,13 +5,10 @@
     } from "@paltiverse/palform-typescript-openapi";
     import { Label, Select, Toggle } from "flowbite-svelte";
     import { createEventDispatcher } from "svelte";
-    import {
-        getEditorCtx,
-        type QuestionEditEvents,
-    } from "../../../data/contexts/questionsEditing";
+    import { getFormEditorCtx, type QuestionEditEvents } from "../../../data/contexts/formEditor";
 
     export let config: APIQuestionConfigurationOneOf1;
-    const ctx = getEditorCtx();
+    const ctx = getFormEditorCtx();
     const dispatch = createEventDispatcher<QuestionEditEvents>();
 
     $: onUpdate = () => {

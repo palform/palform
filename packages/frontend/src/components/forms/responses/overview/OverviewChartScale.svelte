@@ -1,12 +1,12 @@
 <script lang="ts">
     import { Chart } from "flowbite-svelte";
-    import { qIsScale } from "../../../../data/contexts/questionsEditing";
+    import { sGetScale } from "../../../../data/contexts/fill";
+    import { genScaleList } from "../../../../data/util/scaleList";
     import {
         ctxGetQuestion,
         ctxSubmissionsForQuestion,
-    } from "../../../../data/contexts/results";
-    import { sGetScale } from "../../../../data/contexts/fill";
-    import { genScaleList } from "../../../../data/util/scaleList";
+    } from "../../../../data/contexts/formAdmin";
+    import { qIsScale } from "../../../../data/contexts/formEditor";
 
     export let questionId: string;
 

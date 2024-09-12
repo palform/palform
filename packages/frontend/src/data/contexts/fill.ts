@@ -12,7 +12,7 @@ import {
 import type { QuestionSubmissionData } from "@paltiverse/palform-client-js-extra-types/QuestionSubmissionData";
 import { Mutex } from "async-mutex";
 import type { APIFormWithQuestions } from "@paltiverse/palform-typescript-openapi";
-import { qIsInfo } from "../contexts/questionsEditing";
+import { qIsInfo } from "./formEditor";
 
 const formFillSaveMutex = new Mutex();
 export interface FormFillContext {

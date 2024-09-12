@@ -8,23 +8,23 @@
         TableHeadCell,
     } from "flowbite-svelte";
     import NewTokenModal from "../../components/forms/tokens/NewTokenModal.svelte";
-    import { getResponsesContext } from "../../data/contexts/results";
     import TokenRow from "../../components/forms/tokens/TokenRow.svelte";
+    import { getFormAdminContext } from "../../data/contexts/formAdmin";
 
-    const respCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
 
     $: insertNewToken = (newToken: CustomEvent<APIFillToken>) => {
-        $respCtx.tokens = [...$respCtx.tokens, newToken.detail];
+        $formAdminCtx.tokens = [...$formAdminCtx.tokens, newToken.detail];
     };
 
     $: onTokenDelete = (id: string) => {
-        $respCtx.tokens = $respCtx.tokens.filter((e) => e.id !== id);
+        $formAdminCtx.tokens = $formAdminCtx.tokens.filter((e) => e.id !== id);
     };
 </script>
 
 <NewTokenModal on:newToken={insertNewToken} />
 
-{#if $respCtx.tokens.length === 0}
+{#if $formAdminCtx.tokens.length === 0}
     <Alert color="blue">
         <p>This form hasn't been published yet</p>
         <p>
@@ -43,7 +43,7 @@
             </TableHeadCell>
         </TableHead>
         <TableBody>
-            {#each $respCtx.tokens as token (token.id)}
+            {#each $formAdminCtx.tokens as token (token.id)}
                 <TokenRow {token} on:delete={() => onTokenDelete(token.id)} />
             {/each}
         </TableBody>

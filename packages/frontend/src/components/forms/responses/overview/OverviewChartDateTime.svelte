@@ -1,13 +1,13 @@
 <script lang="ts">
     import { DateTime } from "luxon";
     import { sGetDateTime } from "../../../../data/contexts/fill";
+    import { labelForQuestionDate } from "../../../../data/util/time";
+    import { Chart } from "flowbite-svelte";
     import {
         ctxGetQuestion,
         ctxSubmissionsForQuestion,
-    } from "../../../../data/contexts/results";
-    import { qIsDateTime } from "../../../../data/contexts/questionsEditing";
-    import { labelForQuestionDate } from "../../../../data/util/time";
-    import { Chart } from "flowbite-svelte";
+    } from "../../../../data/contexts/formAdmin";
+    import { qIsDateTime } from "../../../../data/contexts/formEditor";
 
     export let questionId: string;
 
@@ -23,7 +23,7 @@
     $: labels = $submissions
         .map((e) => sGetDateTime(e.data).value)
         .filter((e) => e.length > 0)
-        .map(e => DateTime.fromISO(e))
+        .map((e) => DateTime.fromISO(e))
         .toSorted((a, b) => a.toMillis() - b.toMillis())
         .map((e) => {
             return labelForQuestionDate(questionConfig!, e);

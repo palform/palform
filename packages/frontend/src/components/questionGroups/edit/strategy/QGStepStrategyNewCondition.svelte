@@ -1,7 +1,6 @@
 <script lang="ts">
     import { faPlus } from "@fortawesome/free-solid-svg-icons";
     import { Button, Label, Select } from "flowbite-svelte";
-    import { getResponsesContext } from "../../../../data/contexts/results";
     import {
         qIsAddress,
         qIsChoice,
@@ -11,7 +10,7 @@
         qIsPhoneNumber,
         qIsScale,
         qIsText,
-    } from "../../../../data/contexts/questionsEditing";
+    } from "../../../../data/contexts/formEditor";
     import StrategyConfigText from "./conditionTypes/StrategyConfigText.svelte";
     import { createEventDispatcher } from "svelte";
     import type {
@@ -26,13 +25,14 @@
     import StrategyConfigChoiceMatrix from "./conditionTypes/StrategyConfigChoiceMatrix.svelte";
     import StrategyConfigDateTime from "./conditionTypes/StrategyConfigDateTime.svelte";
     import StrategyConfigHidden from "./conditionTypes/StrategyConfigHidden.svelte";
+    import { getFormAdminContext } from "../../../../data/contexts/formAdmin";
 
     export let fromGroupId: string;
-    const formCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
     let isAdding = false;
 
     let questionId = "";
-    $: question = $formCtx.questions.find((e) => e.id === questionId);
+    $: question = $formAdminCtx.questions.find((e) => e.id === questionId);
 
     const dispatch = createEventDispatcher<{
         create: APIQuestionGroupStepStrategyJumpCaseCondition;
@@ -73,7 +73,7 @@
             <Select
                 class="mt-2"
                 bind:value={questionId}
-                items={$formCtx.questions
+                items={$formAdminCtx.questions
                     .filter((e) => e.group_id === fromGroupId)
                     .map((q) => ({ name: q.title, value: q.id }))}
             />

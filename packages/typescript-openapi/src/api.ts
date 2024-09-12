@@ -1743,12 +1743,6 @@ export interface APIQuestion {
     'configuration': APIQuestionConfiguration;
     /**
      * 
-     * @type {number}
-     * @memberof APIQuestion
-     */
-    'position': number;
-    /**
-     * 
      * @type {string}
      * @memberof APIQuestion
      */
@@ -2145,12 +2139,6 @@ export interface APIQuestionGroup {
      * @memberof APIQuestionGroup
      */
     'id': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof APIQuestionGroup
-     */
-    'position': number;
     /**
      * 
      * @type {string}
@@ -2568,6 +2556,25 @@ export const APIQuestionTextValidator = {
 export type APIQuestionTextValidator = typeof APIQuestionTextValidator[keyof typeof APIQuestionTextValidator];
 
 
+/**
+ * 
+ * @export
+ * @interface APISaveQuestionsRequest
+ */
+export interface APISaveQuestionsRequest {
+    /**
+     * 
+     * @type {Array<APIQuestion>}
+     * @memberof APISaveQuestionsRequest
+     */
+    'questions': Array<APIQuestion>;
+    /**
+     * 
+     * @type {Array<APIQuestionGroup>}
+     * @memberof APISaveQuestionsRequest
+     */
+    'groups': Array<APIQuestionGroup>;
+}
 /**
  * 
  * @export
@@ -3036,25 +3043,6 @@ export interface CreateFormRequest {
 /**
  * 
  * @export
- * @interface CreateQuestionRequest
- */
-export interface CreateQuestionRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateQuestionRequest
-     */
-    'question_type': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof CreateQuestionRequest
-     */
-    'position': number;
-}
-/**
- * 
- * @export
  * @interface CreateSubdomainRequest
  */
 export interface CreateSubdomainRequest {
@@ -3387,31 +3375,6 @@ export interface NewOrganisationRequest {
      * @memberof NewOrganisationRequest
      */
     'display_name': string;
-}
-/**
- * 
- * @export
- * @interface NewQuestionGroupRequest
- */
-export interface NewQuestionGroupRequest {
-    /**
-     * 
-     * @type {number}
-     * @memberof NewQuestionGroupRequest
-     */
-    'position': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof NewQuestionGroupRequest
-     */
-    'title'?: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof NewQuestionGroupRequest
-     */
-    'description'?: string | null;
 }
 /**
  * 
@@ -10989,98 +10952,6 @@ export const QuestionGroupsApiAxiosParamCreator = function (configuration?: Conf
          * 
          * @param {string} orgId 
          * @param {string} formId 
-         * @param {NewQuestionGroupRequest} newQuestionGroupRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        questionGroupsCreate: async (orgId: string, formId: string, newQuestionGroupRequest: NewQuestionGroupRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('questionGroupsCreate', 'orgId', orgId)
-            // verify required parameter 'formId' is not null or undefined
-            assertParamExists('questionGroupsCreate', 'formId', formId)
-            // verify required parameter 'newQuestionGroupRequest' is not null or undefined
-            assertParamExists('questionGroupsCreate', 'newQuestionGroupRequest', newQuestionGroupRequest)
-            const localVarPath = `/users/me/orgs/{org_id}/forms/{form_id}/groups`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication APIAuthTokenWithRole_Editor_OrgViewAndTeamRoleFromForm_Any required
-            // http basic authentication required
-            setBasicAuthToObject(localVarRequestOptions, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(newQuestionGroupRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        questionGroupsDelete: async (orgId: string, formId: string, questionGroupId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('questionGroupsDelete', 'orgId', orgId)
-            // verify required parameter 'formId' is not null or undefined
-            assertParamExists('questionGroupsDelete', 'formId', formId)
-            // verify required parameter 'questionGroupId' is not null or undefined
-            assertParamExists('questionGroupsDelete', 'questionGroupId', questionGroupId)
-            const localVarPath = `/users/me/orgs/{org_id}/forms/{form_id}/groups/{question_group_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
-                .replace(`{${"question_group_id"}}`, encodeURIComponent(String(questionGroupId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication APIAuthTokenWithRole_Editor_OrgViewAndTeamRoleFromForm_Any required
-            // http basic authentication required
-            setBasicAuthToObject(localVarRequestOptions, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -11118,57 +10989,6 @@ export const QuestionGroupsApiAxiosParamCreator = function (configuration?: Conf
                 options: localVarRequestOptions,
             };
         },
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {APIQuestionGroup} aPIQuestionGroup 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        questionGroupsSet: async (orgId: string, formId: string, questionGroupId: string, aPIQuestionGroup: APIQuestionGroup, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('questionGroupsSet', 'orgId', orgId)
-            // verify required parameter 'formId' is not null or undefined
-            assertParamExists('questionGroupsSet', 'formId', formId)
-            // verify required parameter 'questionGroupId' is not null or undefined
-            assertParamExists('questionGroupsSet', 'questionGroupId', questionGroupId)
-            // verify required parameter 'aPIQuestionGroup' is not null or undefined
-            assertParamExists('questionGroupsSet', 'aPIQuestionGroup', aPIQuestionGroup)
-            const localVarPath = `/users/me/orgs/{org_id}/forms/{form_id}/groups/{question_group_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
-                .replace(`{${"question_group_id"}}`, encodeURIComponent(String(questionGroupId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication APIAuthTokenWithRole_Editor_OrgViewAndTeamRoleFromForm_Any required
-            // http basic authentication required
-            setBasicAuthToObject(localVarRequestOptions, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(aPIQuestionGroup, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
@@ -11183,34 +11003,6 @@ export const QuestionGroupsApiFp = function(configuration?: Configuration) {
          * 
          * @param {string} orgId 
          * @param {string} formId 
-         * @param {NewQuestionGroupRequest} newQuestionGroupRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async questionGroupsCreate(orgId: string, formId: string, newQuestionGroupRequest: NewQuestionGroupRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.questionGroupsCreate(orgId, formId, newQuestionGroupRequest, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['QuestionGroupsApi.questionGroupsCreate']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async questionGroupsDelete(orgId: string, formId: string, questionGroupId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.questionGroupsDelete(orgId, formId, questionGroupId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['QuestionGroupsApi.questionGroupsDelete']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -11218,21 +11010,6 @@ export const QuestionGroupsApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.questionGroupsList(orgId, formId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QuestionGroupsApi.questionGroupsList']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {APIQuestionGroup} aPIQuestionGroup 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async questionGroupsSet(orgId: string, formId: string, questionGroupId: string, aPIQuestionGroup: APIQuestionGroup, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.questionGroupsSet(orgId, formId, questionGroupId, aPIQuestionGroup, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['QuestionGroupsApi.questionGroupsSet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -11249,45 +11026,11 @@ export const QuestionGroupsApiFactory = function (configuration?: Configuration,
          * 
          * @param {string} orgId 
          * @param {string} formId 
-         * @param {NewQuestionGroupRequest} newQuestionGroupRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        questionGroupsCreate(orgId: string, formId: string, newQuestionGroupRequest: NewQuestionGroupRequest, options?: any): AxiosPromise<string> {
-            return localVarFp.questionGroupsCreate(orgId, formId, newQuestionGroupRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        questionGroupsDelete(orgId: string, formId: string, questionGroupId: string, options?: any): AxiosPromise<void> {
-            return localVarFp.questionGroupsDelete(orgId, formId, questionGroupId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         questionGroupsList(orgId: string, formId: string, options?: any): AxiosPromise<Array<APIQuestionGroup>> {
             return localVarFp.questionGroupsList(orgId, formId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {APIQuestionGroup} aPIQuestionGroup 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        questionGroupsSet(orgId: string, formId: string, questionGroupId: string, aPIQuestionGroup: APIQuestionGroup, options?: any): AxiosPromise<void> {
-            return localVarFp.questionGroupsSet(orgId, formId, questionGroupId, aPIQuestionGroup, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -11303,52 +11046,12 @@ export class QuestionGroupsApi extends BaseAPI {
      * 
      * @param {string} orgId 
      * @param {string} formId 
-     * @param {NewQuestionGroupRequest} newQuestionGroupRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof QuestionGroupsApi
-     */
-    public questionGroupsCreate(orgId: string, formId: string, newQuestionGroupRequest: NewQuestionGroupRequest, options?: RawAxiosRequestConfig) {
-        return QuestionGroupsApiFp(this.configuration).questionGroupsCreate(orgId, formId, newQuestionGroupRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} orgId 
-     * @param {string} formId 
-     * @param {string} questionGroupId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof QuestionGroupsApi
-     */
-    public questionGroupsDelete(orgId: string, formId: string, questionGroupId: string, options?: RawAxiosRequestConfig) {
-        return QuestionGroupsApiFp(this.configuration).questionGroupsDelete(orgId, formId, questionGroupId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} orgId 
-     * @param {string} formId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof QuestionGroupsApi
      */
     public questionGroupsList(orgId: string, formId: string, options?: RawAxiosRequestConfig) {
         return QuestionGroupsApiFp(this.configuration).questionGroupsList(orgId, formId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} orgId 
-     * @param {string} formId 
-     * @param {string} questionGroupId 
-     * @param {APIQuestionGroup} aPIQuestionGroup 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof QuestionGroupsApi
-     */
-    public questionGroupsSet(orgId: string, formId: string, questionGroupId: string, aPIQuestionGroup: APIQuestionGroup, options?: RawAxiosRequestConfig) {
-        return QuestionGroupsApiFp(this.configuration).questionGroupsSet(orgId, formId, questionGroupId, aPIQuestionGroup, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -11360,106 +11063,6 @@ export class QuestionGroupsApi extends BaseAPI {
  */
 export const QuestionsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {CreateQuestionRequest} createQuestionRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        questionsCreate: async (orgId: string, formId: string, questionGroupId: string, createQuestionRequest: CreateQuestionRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('questionsCreate', 'orgId', orgId)
-            // verify required parameter 'formId' is not null or undefined
-            assertParamExists('questionsCreate', 'formId', formId)
-            // verify required parameter 'questionGroupId' is not null or undefined
-            assertParamExists('questionsCreate', 'questionGroupId', questionGroupId)
-            // verify required parameter 'createQuestionRequest' is not null or undefined
-            assertParamExists('questionsCreate', 'createQuestionRequest', createQuestionRequest)
-            const localVarPath = `/users/me/orgs/{_org_id}/forms/{form_id}/groups/{question_group_id}/questions`
-                .replace(`{${"_org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
-                .replace(`{${"question_group_id"}}`, encodeURIComponent(String(questionGroupId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication APIAuthTokenWithRole_Editor_OrgViewAndTeamRoleFromForm_Any required
-            // http basic authentication required
-            setBasicAuthToObject(localVarRequestOptions, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createQuestionRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {string} questionId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        questionsDelete: async (orgId: string, formId: string, questionGroupId: string, questionId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('questionsDelete', 'orgId', orgId)
-            // verify required parameter 'formId' is not null or undefined
-            assertParamExists('questionsDelete', 'formId', formId)
-            // verify required parameter 'questionGroupId' is not null or undefined
-            assertParamExists('questionsDelete', 'questionGroupId', questionGroupId)
-            // verify required parameter 'questionId' is not null or undefined
-            assertParamExists('questionsDelete', 'questionId', questionId)
-            const localVarPath = `/users/me/orgs/{org_id}/forms/{form_id}/groups/{question_group_id}/questions/{question_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
-                .replace(`{${"question_group_id"}}`, encodeURIComponent(String(questionGroupId)))
-                .replace(`{${"question_id"}}`, encodeURIComponent(String(questionId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication APIAuthTokenWithRole_Editor_OrgViewAndTeamRoleFromForm_Any required
-            // http basic authentication required
-            setBasicAuthToObject(localVarRequestOptions, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
         /**
          * 
          * @param {string} orgId 
@@ -11554,28 +11157,20 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
          * 
          * @param {string} orgId 
          * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {string} questionId 
-         * @param {APIQuestion} aPIQuestion 
+         * @param {APISaveQuestionsRequest} aPISaveQuestionsRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        questionsSet: async (orgId: string, formId: string, questionGroupId: string, questionId: string, aPIQuestion: APIQuestion, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        questionsSave: async (orgId: string, formId: string, aPISaveQuestionsRequest: APISaveQuestionsRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('questionsSet', 'orgId', orgId)
+            assertParamExists('questionsSave', 'orgId', orgId)
             // verify required parameter 'formId' is not null or undefined
-            assertParamExists('questionsSet', 'formId', formId)
-            // verify required parameter 'questionGroupId' is not null or undefined
-            assertParamExists('questionsSet', 'questionGroupId', questionGroupId)
-            // verify required parameter 'questionId' is not null or undefined
-            assertParamExists('questionsSet', 'questionId', questionId)
-            // verify required parameter 'aPIQuestion' is not null or undefined
-            assertParamExists('questionsSet', 'aPIQuestion', aPIQuestion)
-            const localVarPath = `/users/me/orgs/{_org_id}/forms/{form_id}/groups/{question_group_id}/questions/{question_id}`
-                .replace(`{${"_org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
-                .replace(`{${"question_group_id"}}`, encodeURIComponent(String(questionGroupId)))
-                .replace(`{${"question_id"}}`, encodeURIComponent(String(questionId)));
+            assertParamExists('questionsSave', 'formId', formId)
+            // verify required parameter 'aPISaveQuestionsRequest' is not null or undefined
+            assertParamExists('questionsSave', 'aPISaveQuestionsRequest', aPISaveQuestionsRequest)
+            const localVarPath = `/users/me/orgs/{org_id}/forms/{form_id}/save`
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -11583,7 +11178,7 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -11598,7 +11193,7 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(aPIQuestion, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(aPISaveQuestionsRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -11615,36 +11210,6 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
 export const QuestionsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = QuestionsApiAxiosParamCreator(configuration)
     return {
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {CreateQuestionRequest} createQuestionRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async questionsCreate(orgId: string, formId: string, questionGroupId: string, createQuestionRequest: CreateQuestionRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIQuestion>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.questionsCreate(orgId, formId, questionGroupId, createQuestionRequest, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['QuestionsApi.questionsCreate']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {string} questionId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async questionsDelete(orgId: string, formId: string, questionGroupId: string, questionId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.questionsDelete(orgId, formId, questionGroupId, questionId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['QuestionsApi.questionsDelete']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
         /**
          * 
          * @param {string} orgId 
@@ -11677,16 +11242,14 @@ export const QuestionsApiFp = function(configuration?: Configuration) {
          * 
          * @param {string} orgId 
          * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {string} questionId 
-         * @param {APIQuestion} aPIQuestion 
+         * @param {APISaveQuestionsRequest} aPISaveQuestionsRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async questionsSet(orgId: string, formId: string, questionGroupId: string, questionId: string, aPIQuestion: APIQuestion, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIQuestion>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.questionsSet(orgId, formId, questionGroupId, questionId, aPIQuestion, options);
+        async questionsSave(orgId: string, formId: string, aPISaveQuestionsRequest: APISaveQuestionsRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.questionsSave(orgId, formId, aPISaveQuestionsRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['QuestionsApi.questionsSet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['QuestionsApi.questionsSave']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -11699,30 +11262,6 @@ export const QuestionsApiFp = function(configuration?: Configuration) {
 export const QuestionsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = QuestionsApiFp(configuration)
     return {
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {CreateQuestionRequest} createQuestionRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        questionsCreate(orgId: string, formId: string, questionGroupId: string, createQuestionRequest: CreateQuestionRequest, options?: any): AxiosPromise<APIQuestion> {
-            return localVarFp.questionsCreate(orgId, formId, questionGroupId, createQuestionRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} orgId 
-         * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {string} questionId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        questionsDelete(orgId: string, formId: string, questionGroupId: string, questionId: string, options?: any): AxiosPromise<void> {
-            return localVarFp.questionsDelete(orgId, formId, questionGroupId, questionId, options).then((request) => request(axios, basePath));
-        },
         /**
          * 
          * @param {string} orgId 
@@ -11749,14 +11288,12 @@ export const QuestionsApiFactory = function (configuration?: Configuration, base
          * 
          * @param {string} orgId 
          * @param {string} formId 
-         * @param {string} questionGroupId 
-         * @param {string} questionId 
-         * @param {APIQuestion} aPIQuestion 
+         * @param {APISaveQuestionsRequest} aPISaveQuestionsRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        questionsSet(orgId: string, formId: string, questionGroupId: string, questionId: string, aPIQuestion: APIQuestion, options?: any): AxiosPromise<APIQuestion> {
-            return localVarFp.questionsSet(orgId, formId, questionGroupId, questionId, aPIQuestion, options).then((request) => request(axios, basePath));
+        questionsSave(orgId: string, formId: string, aPISaveQuestionsRequest: APISaveQuestionsRequest, options?: any): AxiosPromise<void> {
+            return localVarFp.questionsSave(orgId, formId, aPISaveQuestionsRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -11768,34 +11305,6 @@ export const QuestionsApiFactory = function (configuration?: Configuration, base
  * @extends {BaseAPI}
  */
 export class QuestionsApi extends BaseAPI {
-    /**
-     * 
-     * @param {string} orgId 
-     * @param {string} formId 
-     * @param {string} questionGroupId 
-     * @param {CreateQuestionRequest} createQuestionRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof QuestionsApi
-     */
-    public questionsCreate(orgId: string, formId: string, questionGroupId: string, createQuestionRequest: CreateQuestionRequest, options?: RawAxiosRequestConfig) {
-        return QuestionsApiFp(this.configuration).questionsCreate(orgId, formId, questionGroupId, createQuestionRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} orgId 
-     * @param {string} formId 
-     * @param {string} questionGroupId 
-     * @param {string} questionId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof QuestionsApi
-     */
-    public questionsDelete(orgId: string, formId: string, questionGroupId: string, questionId: string, options?: RawAxiosRequestConfig) {
-        return QuestionsApiFp(this.configuration).questionsDelete(orgId, formId, questionGroupId, questionId, options).then((request) => request(this.axios, this.basePath));
-    }
-
     /**
      * 
      * @param {string} orgId 
@@ -11826,15 +11335,13 @@ export class QuestionsApi extends BaseAPI {
      * 
      * @param {string} orgId 
      * @param {string} formId 
-     * @param {string} questionGroupId 
-     * @param {string} questionId 
-     * @param {APIQuestion} aPIQuestion 
+     * @param {APISaveQuestionsRequest} aPISaveQuestionsRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof QuestionsApi
      */
-    public questionsSet(orgId: string, formId: string, questionGroupId: string, questionId: string, aPIQuestion: APIQuestion, options?: RawAxiosRequestConfig) {
-        return QuestionsApiFp(this.configuration).questionsSet(orgId, formId, questionGroupId, questionId, aPIQuestion, options).then((request) => request(this.axios, this.basePath));
+    public questionsSave(orgId: string, formId: string, aPISaveQuestionsRequest: APISaveQuestionsRequest, options?: RawAxiosRequestConfig) {
+        return QuestionsApiFp(this.configuration).questionsSave(orgId, formId, aPISaveQuestionsRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

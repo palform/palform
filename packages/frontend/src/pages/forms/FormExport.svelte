@@ -6,13 +6,13 @@
         type ExportSubmissionsConfig,
     } from "../../data/export";
     import LoadingButton from "../../components/LoadingButton.svelte";
-    import { getResponsesContext } from "../../data/contexts/results";
     import { showFailureToast } from "../../data/toast";
     import { isEntitled } from "../../data/billing/entitlement";
     import { navigate } from "svelte-routing";
     import { getOrgContext } from "../../data/contexts/orgLayout";
+    import { getFormAdminContext } from "../../data/contexts/formAdmin";
 
-    const formCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
     const orgCtx = getOrgContext();
     const entitled = isEntitled("export");
     let format: ExportSubmissionsConfig["format"] = "CSV";
@@ -24,7 +24,7 @@
         loading = true;
 
         try {
-            exportFormSubmissions($formCtx, {
+            exportFormSubmissions($formAdminCtx, {
                 format,
                 use_question_ids: useQuestionIDs,
                 use_group_ids: useSectionIDs,

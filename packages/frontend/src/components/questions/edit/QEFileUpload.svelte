@@ -3,15 +3,15 @@
         APIQuestionFileUploadType,
         type APIQuestionConfigurationOneOf6,
     } from "@paltiverse/palform-typescript-openapi";
-    import {
-        getEditorCtx,
-        type QuestionEditEvents,
-    } from "../../../data/contexts/questionsEditing";
     import { createEventDispatcher } from "svelte";
     import { Label, MultiSelect } from "flowbite-svelte";
+    import {
+        getFormEditorCtx,
+        type QuestionEditEvents,
+    } from "../../../data/contexts/formEditor";
 
     export let config: APIQuestionConfigurationOneOf6;
-    const ctx = getEditorCtx();
+    const ctx = getFormEditorCtx();
     const dispatch = createEventDispatcher<QuestionEditEvents>();
 
     const possibleTypes = Object.values(APIQuestionFileUploadType).map((e) => ({

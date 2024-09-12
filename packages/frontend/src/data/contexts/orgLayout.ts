@@ -13,10 +13,10 @@ import {
     type Readable,
     type Writable,
 } from "svelte/store";
-import { getResponsesContext } from "./results";
 import { APIs } from "../common";
 import { orgVisitDb } from "../pouch";
 import { DateTime } from "luxon";
+import { getFormAdminContext } from "./formAdmin";
 
 export interface GlobalWarningMessage {
     message: string;
@@ -45,7 +45,7 @@ export function getFormCtx(formId?: undefined): Readable<APIForm>;
 export function getFormCtx(formId?: string) {
     return derived(
         [
-            formId === undefined ? getResponsesContext() : readable(formId),
+            formId === undefined ? getFormAdminContext() : readable(formId),
             getOrgContext(),
         ],
         ([$d, $ctx]) => {

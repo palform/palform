@@ -1,18 +1,19 @@
 <script lang="ts">
     import type { APIQuestionGroupStepStrategyJumpCaseCondition } from "@paltiverse/palform-typescript-openapi";
-    import { getResponsesContext } from "../../../../data/contexts/results";
     import { Button } from "flowbite-svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faTrash } from "@fortawesome/free-solid-svg-icons";
     import { createEventDispatcher } from "svelte";
     import { matcherLabel } from "../../../../data/util/stepStrategyConditions";
+    import { getFormAdminContext } from "../../../../data/contexts/formAdmin";
 
     export let condition: APIQuestionGroupStepStrategyJumpCaseCondition;
     export let showDelete = false;
-    const formCtx = getResponsesContext();
 
-    $: question = $formCtx.questions.find(
-        (e) => e.id === condition.question_id,
+    const formAdminCtx = getFormAdminContext();
+
+    $: question = $formAdminCtx.questions.find(
+        (e) => e.id === condition.question_id
     );
 
     const dispatch = createEventDispatcher<{ delete: undefined }>();

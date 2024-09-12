@@ -23,13 +23,14 @@
 
     const entitled = isEntitled("submission_auto_delete");
     const orgCtx = getOrgContext();
-    const formCtx = getFormCtx();
+    const formMetadataCtx = getFormCtx();
+
     const onBillingContinueClick = () => {
         navigate(`/orgs/${$orgCtx.org.id}/settings/billing`);
     };
 
-    let autoDeleteToggle = !!$formCtx.auto_delete_submission_after_days;
-    let newDayCount = $formCtx.auto_delete_submission_after_days ?? 30;
+    let autoDeleteToggle = !!$formMetadataCtx.auto_delete_submission_after_days;
+    let newDayCount = $formMetadataCtx.auto_delete_submission_after_days ?? 30;
     let loading = false;
     $: onToggleChange = async () => {
         loading = true;
@@ -38,9 +39,13 @@
         };
         try {
             await APIs.forms().then((a) =>
-                a.formsSetAutoDelete($orgCtx.org.id, $formCtx.id, newValue)
+                a.formsSetAutoDelete(
+                    $orgCtx.org.id,
+                    $formMetadataCtx.id,
+                    newValue
+                )
             );
-            updateFormCtx(orgCtx, $formCtx.id, (ctx) => {
+            updateFormCtx(orgCtx, $formMetadataCtx.id, (ctx) => {
                 ctx.auto_delete_submission_after_days = newValue.days;
             });
             newDayCount = newValue.days ?? 30;
@@ -54,12 +59,12 @@
         loading = true;
         try {
             await APIs.forms().then((a) =>
-                a.formsSetAutoDelete($orgCtx.org.id, $formCtx.id, {
+                a.formsSetAutoDelete($orgCtx.org.id, $formMetadataCtx.id, {
                     days: newDayCount,
                 })
             );
             await showSuccessToast("Saved");
-            updateFormCtx(orgCtx, $formCtx.id, (ctx) => {
+            updateFormCtx(orgCtx, $formMetadataCtx.id, (ctx) => {
                 ctx.auto_delete_submission_after_days = newDayCount;
             });
         } catch (e) {
@@ -100,7 +105,7 @@
             </div>
         </Label>
 
-        {#if newDayCount !== $formCtx.auto_delete_submission_after_days}
+        {#if newDayCount !== $formMetadataCtx.auto_delete_submission_after_days}
             <LoadingButton
                 buttonClass="mt-4"
                 {loading}

@@ -8,9 +8,10 @@
         Toggle,
     } from "flowbite-svelte";
     import {
+        deleteGroup as deleteQuestionGroup,
         deleteQuestion,
-        getEditorCtx,
         getEditorQuestion,
+        getFormEditorCtx,
         qIsAddress,
         qIsChoice,
         qIsChoiceMatrix,
@@ -23,8 +24,9 @@
         qIsScale,
         qIsSignature,
         qIsText,
-        saveQuestionsWithPositions,
-    } from "../../../data/contexts/questionsEditing";
+        updateQuestion,
+        moveQuestion,
+    } from "../../../data/contexts/formEditor";
     import CardBox from "../../cardBox/CardBox.svelte";
     import CardBoxTitle from "../../cardBox/CardBoxTitle.svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
@@ -35,23 +37,12 @@
         faTrash,
     } from "@fortawesome/free-solid-svg-icons";
     import QeText from "./QEText.svelte";
-    import type {
-        APIQuestion,
-        APIQuestionConfiguration,
-    } from "@paltiverse/palform-typescript-openapi";
-    import { APIs, humaniseAPIError } from "../../../data/common";
-    import {
-        getFormCtx,
-        getOrgContext,
-    } from "../../../data/contexts/orgLayout";
-    import {
-        deleteGroup,
-        getResponsesContext,
-    } from "../../../data/contexts/results";
-    import { showFailureToast, showSuccessToast } from "../../../data/toast";
+    import type { APIQuestionConfiguration } from "@paltiverse/palform-typescript-openapi";
+    import { humaniseAPIError } from "../../../data/common";
+    import { getFormCtx } from "../../../data/contexts/orgLayout";
+    import { showFailureToast } from "../../../data/toast";
     import LoadingButton from "../../LoadingButton.svelte";
     import QeChoice from "./QEChoice.svelte";
-    import { createEventDispatcher } from "svelte";
     import CardBoxSubtitle from "../../cardBox/CardBoxSubtitle.svelte";
     import QeScale from "./QEScale.svelte";
     import QeAddress from "./QEAddress.svelte";
@@ -67,137 +58,68 @@
 
     export let questionId: string;
     const question = getEditorQuestion(questionId);
-    const orgCtx = getOrgContext();
-    const formCtx = getResponsesContext();
     const formMetadataCtx = getFormCtx();
-    const editorCtx = getEditorCtx();
-    $: editing = $editorCtx.currentlyEditing === questionId;
-    $: otherEditing = $editorCtx.currentlyEditing !== undefined && !editing;
+    const formEditorCtx = getFormEditorCtx();
 
-    const dispatch = createEventDispatcher<{ serverSync: undefined }>();
+    $: editing = $formEditorCtx.currentlyEditing === questionId;
+    $: otherEditing = $formEditorCtx.currentlyEditing !== undefined && !editing;
 
     let questionTitle = $question?.title ?? "";
     let questionDescription = $question?.description;
     let questionInternalName = $question?.internal_name;
     let questionRequired = $question?.required ?? false;
 
-    $: onEditClick = () => {
-        $editorCtx.currentlyEditing = questionId;
-    };
-
-    $: onQuestionUpdate = (q: APIQuestion) => {
-        if (!$question) return;
-        editorCtx.update((ctx) => {
-            const i = ctx.questions[$question.group_id].findIndex(
-                (e) => e.id === $question.id
-            );
-            ctx.questions[$question.group_id][i] = q;
-            return ctx;
-        });
-    };
-
+    let questionConfiguration = $question?.configuration;
     const onConfigUpdate = (e: CustomEvent<APIQuestionConfiguration>) =>
-        onQuestionUpdate({
-            ...$question!,
-            configuration: e.detail,
-        });
+        (questionConfiguration = e.detail);
+
+    $: onEditClick = () => {
+        $formEditorCtx.currentlyEditing = questionId;
+    };
 
     $: onSaveClick = async () => {
-        if ($question === undefined) return;
-        onQuestionUpdate({
+        if ($question === undefined || questionConfiguration === undefined)
+            return;
+        updateQuestion(formEditorCtx, {
             ...$question,
             title: questionTitle,
             description: questionDescription,
             internal_name: questionInternalName,
             required: questionRequired,
+            configuration: questionConfiguration,
         });
-
-        $editorCtx.loading = true;
-        try {
-            await APIs.questions().then((a) =>
-                a.questionsSet(
-                    $orgCtx.org.id,
-                    $formCtx.formId,
-                    $question.group_id,
-                    questionId,
-                    $question
-                )
-            );
-            await showSuccessToast("Question saved");
-            dispatch("serverSync");
-            $editorCtx.currentlyEditing = undefined;
-        } catch (e) {
-            await showFailureToast(humaniseAPIError(e));
-        }
-
-        $editorCtx.loading = false;
+        $formEditorCtx.currentlyEditing = undefined;
     };
 
     $: onDeleteClick = async () => {
         if (!$question) return;
-        $editorCtx.loading = true;
         try {
             const groupId = $question.group_id;
-            await deleteQuestion(
-                editorCtx,
-                $orgCtx.org.id,
-                $formCtx.formId,
-                groupId,
-                questionId
-            );
-
-            await showSuccessToast("Question deleted");
-            dispatch("serverSync");
+            deleteQuestion(formEditorCtx, groupId, questionId);
 
             if ($formMetadataCtx.one_question_per_page) {
-                await deleteGroup(formCtx, $orgCtx.org.id, groupId);
+                deleteQuestionGroup(formEditorCtx, groupId);
             }
         } catch (e) {
             await showFailureToast(humaniseAPIError(e));
         }
-        $editorCtx.loading = false;
+        $formEditorCtx.loading = false;
     };
 
     $: questionIndex =
         $question &&
-        $editorCtx.questions[$question.group_id].findIndex(
+        $formEditorCtx.questions[$question.group_id].findIndex(
             (e) => e.id === $question.id
         );
     $: canMoveUp = questionIndex && questionIndex > 0;
     $: canMoveDown =
         $question &&
-        questionIndex !== $editorCtx.questions[$question?.group_id].length - 1;
+        questionIndex !==
+            $formEditorCtx.questions[$question?.group_id].length - 1;
 
     $: onMoveClick = async (direction: "up" | "down") => {
         if (!$question) return;
-        editorCtx.update((ctx) => {
-            const i = ctx.questions[$question.group_id].findIndex(
-                (e) => e.id === $question.id
-            );
-            if (
-                (direction === "up" && i === 0) ||
-                (direction === "down" &&
-                    i === ctx.questions[$question.group_id].length - 1)
-            )
-                return ctx;
-
-            ctx.questions[$question.group_id].splice(i, 1);
-            ctx.questions[$question.group_id].splice(
-                direction === "up" ? i - 1 : i + 1,
-                0,
-                $question
-            );
-            return ctx;
-        });
-        $editorCtx.loading = true;
-        await saveQuestionsWithPositions(
-            editorCtx,
-            $orgCtx.org.id,
-            $formCtx.formId,
-            $question.group_id
-        );
-        $editorCtx.loading = false;
-        dispatch("serverSync");
+        moveQuestion(formEditorCtx, $question, direction);
     };
 </script>
 
@@ -215,14 +137,16 @@
                 <ButtonGroup>
                     <Button
                         color="light"
-                        disabled={!canMoveUp || !!$editorCtx.currentlyEditing}
+                        disabled={!canMoveUp ||
+                            !!$formEditorCtx.currentlyEditing}
                         on:click={() => onMoveClick("up")}
                     >
                         <FontAwesomeIcon icon={faArrowUp} />
                     </Button>
                     <Button
                         color="light"
-                        disabled={!canMoveDown || !!$editorCtx.currentlyEditing}
+                        disabled={!canMoveDown ||
+                            !!$formEditorCtx.currentlyEditing}
                         on:click={() => onMoveClick("down")}
                     >
                         <FontAwesomeIcon icon={faArrowDown} />
@@ -256,7 +180,7 @@
                         outline
                         class="mt-2"
                         on:click={() => (questionDescription = "")}
-                        disabled={$editorCtx.loading}
+                        disabled={$formEditorCtx.loading}
                     >
                         Add description
                     </Button>
@@ -264,7 +188,7 @@
                     <Label for="question-description">Description</Label>
                     <MarkdownEditor
                         bind:value={questionDescription}
-                        disabled={$editorCtx.loading}
+                        disabled={$formEditorCtx.loading}
                         imageTeamId={$formMetadataCtx.team_id}
                         imageFormId={$formMetadataCtx.id}
                         class="flex-1 mt-2"
@@ -273,7 +197,7 @@
                     <Button
                         title="Delete description"
                         on:click={() => (questionDescription = null)}
-                        disabled={$editorCtx.loading}
+                        disabled={$formEditorCtx.loading}
                         class="mt-3"
                         outline
                         size="xs"
@@ -289,7 +213,7 @@
                         outline
                         class="mt-"
                         on:click={() => (questionInternalName = "")}
-                        disabled={$editorCtx.loading}
+                        disabled={$formEditorCtx.loading}
                     >
                         Add internal name
                     </Button>
@@ -298,11 +222,11 @@
                         Internal name
                         <ButtonGroup class="mt-2 flex">
                             <Input
-                                disabled={$editorCtx.loading}
+                                disabled={$formEditorCtx.loading}
                                 bind:value={questionInternalName}
                             />
                             <Button
-                                disabled={$editorCtx.loading}
+                                disabled={$formEditorCtx.loading}
                                 on:click={() => (questionInternalName = null)}
                             >
                                 <FontAwesomeIcon icon={faTrash} class="me-2" />
@@ -321,7 +245,7 @@
             <Toggle
                 bind:checked={questionRequired}
                 class="mt-4 mb-2"
-                disabled={$editorCtx.loading}
+                disabled={$formEditorCtx.loading}
             >
                 Required
             </Toggle>
@@ -337,7 +261,7 @@
                     size="sm"
                     outline
                     on:click={onEditClick}
-                    disabled={$editorCtx.loading || otherEditing}
+                    disabled={$formEditorCtx.loading || otherEditing}
                 >
                     <FontAwesomeIcon icon={faEdit} class="me-2" />
                     Edit
@@ -347,7 +271,7 @@
                     size="sm"
                     outline
                     on:click={onDeleteClick}
-                    disabled={$editorCtx.loading || otherEditing}
+                    disabled={$formEditorCtx.loading || otherEditing}
                 >
                     <FontAwesomeIcon icon={faTrash} class="me-2" />
                     Delete
@@ -412,8 +336,8 @@
                 buttonClass="mt-2"
                 size="sm"
                 on:click={onSaveClick}
-                loading={$editorCtx.loading}
-                disabled={$editorCtx.loading}
+                loading={$formEditorCtx.loading}
+                disabled={$formEditorCtx.loading}
             >
                 Save
             </LoadingButton>

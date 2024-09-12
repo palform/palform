@@ -14,7 +14,6 @@ use super::submission::{QuestionSubmission, QuestionSubmissionData};
 #[derive(Clone, Serialize, Deserialize)]
 pub struct APIQuestionGroup {
     pub id: PalformDatabaseID<IDQuestionGroup>,
-    pub position: i32,
     pub title: Option<String>,
     pub description: Option<String>,
     pub step_strategy: APIQuestionGroupStepStrategy,

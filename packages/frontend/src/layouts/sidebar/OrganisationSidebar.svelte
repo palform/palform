@@ -29,6 +29,9 @@
     import TextButton from "../../components/TextButton.svelte";
     import { Button } from "flowbite-svelte";
     import { onMount } from "svelte";
+    import { enable_debug_hook_js } from "@paltiverse/palform-client-common";
+
+    enable_debug_hook_js();
 
     export let orgId: string;
     const orgCtx = writable<OrgContext>(

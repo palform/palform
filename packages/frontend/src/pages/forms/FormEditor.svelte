@@ -1,36 +1,35 @@
 <script lang="ts">
-    import {
-        setEditorContext,
-        setQuestionsInEditorContext,
-        type EditorContext,
-    } from "../../data/contexts/questionsEditing";
-    import { getResponsesContext } from "../../data/contexts/results";
     import { writable } from "svelte/store";
     import { Alert } from "flowbite-svelte";
     import CreateQuestionGroup from "../../components/questionGroups/edit/CreateQuestionGroup.svelte";
     import QuestionGroupEditor from "../../components/questionGroups/edit/QuestionGroupEditor.svelte";
     import FormQuestionLimitWarning from "../../components/forms/FormQuestionLimitWarning.svelte";
     import { getFormCtx } from "../../data/contexts/orgLayout";
+    import { getFormAdminContext } from "../../data/contexts/formAdmin";
+    import {
+        setFormEditorContext,
+        initialiseEditorContext,
+        type FormEditorContext,
+    } from "../../data/contexts/formEditor";
+    import FormAutosave from "../../components/forms/FormAutosave.svelte";
 
-    const respCtx = getResponsesContext();
-    const formCtx = getFormCtx();
+    const formAdminCtx = getFormAdminContext();
+    const formMetadataCtx = getFormCtx();
 
-    let editorContext = writable<EditorContext>({
+    let formEditorCtx = writable<FormEditorContext>({
         questions: {},
+        groups: [],
         loading: false,
+        dirty: false,
         currentlyEditing: undefined,
     });
-    setEditorContext(editorContext);
-    setQuestionsInEditorContext(editorContext, $respCtx.questions);
-
-    const onServerSync = () => {
-        $respCtx.questions = Object.values($editorContext.questions).flat();
-    };
+    setFormEditorContext(formEditorCtx);
+    initialiseEditorContext(formEditorCtx, $formAdminCtx);
 </script>
 
-{#if $respCtx.groups.length === 0}
+{#if $formEditorCtx.groups.length === 0}
     <Alert border class="mb-4">
-        {#if $formCtx.one_question_per_page}
+        {#if $formMetadataCtx.one_question_per_page}
             <h2 class="text-lg">Create your first question</h2>
             <p>
                 To start creating your Palform, you'll need to write some
@@ -49,28 +48,18 @@
             <p>Each question lives inside a section: think of them as pages.</p>
         {/if}
 
-        <CreateQuestionGroup
-            beforeIndex={0}
-            alertMode
-            class="mt-2"
-            on:create={onServerSync}
-        />
+        <CreateQuestionGroup beforeIndex={0} alertMode class="mt-2" />
     </Alert>
 {:else}
     <div class="space-y-4 2xl:px-[20%]">
+        <FormAutosave />
         <FormQuestionLimitWarning class="!mt-6 !mb-4" />
 
-        {#each $respCtx.groups as group, index (group.id)}
-            <CreateQuestionGroup beforeIndex={index} on:create={onServerSync} />
-            <QuestionGroupEditor
-                groupId={group.id}
-                on:serverSync={onServerSync}
-            />
+        {#each $formEditorCtx.groups as group, index (group.id)}
+            <CreateQuestionGroup beforeIndex={index} />
+            <QuestionGroupEditor groupId={group.id} />
         {/each}
 
-        <CreateQuestionGroup
-            beforeIndex={$respCtx.groups.length}
-            on:create={onServerSync}
-        />
+        <CreateQuestionGroup beforeIndex={$formAdminCtx.groups.length} />
     </div>
 {/if}

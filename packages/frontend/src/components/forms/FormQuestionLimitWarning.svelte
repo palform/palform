@@ -1,14 +1,14 @@
 <script lang="ts">
     import { Alert, Button, Progressbar } from "flowbite-svelte";
     import { getOrgContext } from "../../data/contexts/orgLayout";
-    import { getResponsesContext } from "../../data/contexts/results";
     import { navigate } from "svelte-routing";
     import { rangeLerp } from "../../data/util/lerp";
+    import { getFormAdminContext } from "../../data/contexts/formAdmin";
 
     const orgCtx = getOrgContext();
-    const formCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
     $: countLimit = $orgCtx.entitlements?.question_per_form_count;
-    $: currentCount = $formCtx.questions.length;
+    $: currentCount = $formAdminCtx.questions.length;
     $: progressValue = countLimit
         ? rangeLerp(0, countLimit, 0, 100, currentCount)
         : 0;
@@ -19,7 +19,11 @@
 </script>
 
 {#if countLimit}
-    <Alert color={currentCount !== countLimit ? "light" : "primary"} border class={$$props.class}>
+    <Alert
+        color={currentCount !== countLimit ? "light" : "primary"}
+        border
+        class={$$props.class}
+    >
         <Progressbar class="mb-2" progress={progressValue} />
         {#if currentCount === countLimit}
             <p class="text-lg">

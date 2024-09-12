@@ -12,23 +12,27 @@
     } from "flowbite-svelte";
     import { DateTime } from "luxon";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
-    import { getResponsesContext } from "../../../data/contexts/results";
     import { APIs } from "../../../data/common";
     import { parseServerTime } from "../../../data/util/time";
     import { isKnownKey } from "../../../data/crypto/details";
     import TableContainer from "../../tables/TableContainer.svelte";
     import { showFailureToast } from "../../../data/toast";
+    import { getFormAdminContext } from "../../../data/contexts/formAdmin";
 
     export let submissionId: string;
 
     const orgCtx = getOrgContext();
-    const respCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
 
     let details: SubmissionCryptoDetailsResponse | undefined;
     let loading = true;
     $: APIs.submissions()
         .then((a) =>
-            a.submissionsCrypto($orgCtx.org.id, $respCtx.formId, submissionId)
+            a.submissionsCrypto(
+                $orgCtx.org.id,
+                $formAdminCtx.formId,
+                submissionId
+            )
         )
         .then((resp) => {
             details = resp.data;

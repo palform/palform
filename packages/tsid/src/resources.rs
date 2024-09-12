@@ -1,6 +1,7 @@
-use prefixed_tsid::{id_resource_type, resources::TSIDResource};
+use prefixed_tsid::id_resource_type;
 
 pub use prefixed_tsid::resources::IDUnknown;
+pub use prefixed_tsid::resources::TSIDResource;
 
 id_resource_type!(IDAdminPublicKey, "admin_pk");
 id_resource_type!(IDAdminUser, "user");

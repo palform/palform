@@ -5,8 +5,7 @@ use palform_tsid::{
     tsid::PalformDatabaseID,
 };
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, ConnectionTrait, DbErr, EntityTrait, PaginatorTrait,
-    QueryFilter, QueryOrder, Set,
+    ColumnTrait, ConnectionTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
 };
 
 use crate::api_entities::question_group::QuestionGroupWithEncodedStrategy;
@@ -49,50 +48,5 @@ impl QuestionGroupManager {
         })?;
 
         Ok(resp)
-    }
-
-    pub async fn create<T: ConnectionTrait>(
-        conn: &T,
-        form_id: PalformDatabaseID<IDForm>,
-        position: i32,
-        title: Option<String>,
-        description: Option<String>,
-    ) -> Result<PalformDatabaseID<IDQuestionGroup>, DbErr> {
-        let new_group = question_group::ActiveModel {
-            id: Set(PalformDatabaseID::<IDQuestionGroup>::random()),
-            position: Set(position),
-            title: Set(title),
-            description: Set(description),
-            form_id: Set(form_id),
-            ..Default::default()
-        };
-        let resp = new_group.insert(conn).await?;
-        Ok(resp.id)
-    }
-
-    pub async fn update<T: ConnectionTrait>(conn: &T, data: APIQuestionGroup) -> Result<(), DbErr> {
-        let strategy = serde_json::to_value(data.step_strategy).map_err(|e| DbErr::TryIntoErr {
-            from: "APIQuestionGroup",
-            into: "Json",
-            source: e.into(),
-        })?;
-
-        let updated_group = question_group::ActiveModel {
-            id: Set(data.id),
-            position: Set(data.position),
-            title: Set(data.title),
-            description: Set(data.description),
-            step_strategy: Set(strategy),
-            ..Default::default()
-        };
-        updated_group.update(conn).await?;
-        Ok(())
-    }
-
-    pub async fn delete<T: ConnectionTrait>(
-        conn: &T,
-        id: PalformDatabaseID<IDQuestionGroup>,
-    ) -> Result<(), DbErr> {
-        QuestionGroup::delete_by_id(id).exec(conn).await.map(|_| ())
     }
 }

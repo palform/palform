@@ -11,10 +11,11 @@
     import LoadingButton from "../../LoadingButton.svelte";
 
     const orgCtx = getOrgContext();
-    const formCtx = getFormCtx();
+    const formMetadataCtx = getFormCtx();
+
     let settings = {
-        email: $formCtx.notification_email,
-        webhookURL: $formCtx.notification_webhook_url,
+        email: $formMetadataCtx.notification_email,
+        webhookURL: $formMetadataCtx.notification_webhook_url,
     };
 
     let enableWebhook = !!settings.webhookURL;
@@ -28,25 +29,25 @@
     };
 
     $: changed =
-        settings.email !== $formCtx.notification_email ||
-        settings.webhookURL !== $formCtx.notification_webhook_url;
+        settings.email !== $formMetadataCtx.notification_email ||
+        settings.webhookURL !== $formMetadataCtx.notification_webhook_url;
 
     let saveLoading = false;
     $: onSave = async () => {
         saveLoading = true;
         try {
             await APIs.forms().then((a) =>
-                a.formsUpdate($orgCtx.org.id, $formCtx.id, {
-                    editor_name: $formCtx.editor_name,
-                    title: $formCtx.title,
-                    branding_id: $formCtx.branding_id,
+                a.formsUpdate($orgCtx.org.id, $formMetadataCtx.id, {
+                    editor_name: $formMetadataCtx.editor_name,
+                    title: $formMetadataCtx.title,
+                    branding_id: $formMetadataCtx.branding_id,
                     notification_email: settings.email,
                     notification_webhook_url: settings.webhookURL,
-                    end_configuration: $formCtx.end_configuration,
-                    enable_captcha: $formCtx.enable_captcha,
+                    end_configuration: $formMetadataCtx.end_configuration,
+                    enable_captcha: $formMetadataCtx.enable_captcha,
                 })
             );
-            updateFormCtx(orgCtx, $formCtx.id, (f) => {
+            updateFormCtx(orgCtx, $formMetadataCtx.id, (f) => {
                 f.notification_email = settings.email;
                 f.notification_webhook_url = settings.webhookURL;
             });

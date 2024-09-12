@@ -2,18 +2,14 @@
     import { faPlus } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { Button, Modal } from "flowbite-svelte";
-    import {
-        getEditorCtx,
-        insertQuestion,
-    } from "../../../data/contexts/questionsEditing";
-    import {
-        getResponsesContext,
-        insertGroup,
-    } from "../../../data/contexts/results";
-    import { getOrgContext } from "../../../data/contexts/orgLayout";
-    import { showFailureToast, showSuccessToast } from "../../../data/toast";
+    import { showFailureToast } from "../../../data/toast";
     import NewQuestionType from "./NewQuestionType.svelte";
     import { createEventDispatcher } from "svelte";
+    import {
+        getFormEditorCtx,
+        insertQuestion,
+        insertQuestionGroup,
+    } from "../../../data/contexts/formEditor";
 
     // If groupId is undefined, this refers to group indexes. If groupId is defined, this refers to question indexes.
     export let beforeIndex: number;
@@ -21,22 +17,19 @@
     // If undefined, a new group will be created for the question
     export let groupId: string | undefined;
 
-    const editorCtx = getEditorCtx();
-    const formCtx = getResponsesContext();
-    const orgCtx = getOrgContext();
+    const formEditorCtx = getFormEditorCtx();
     let showTypeSelectDropdown = false;
 
     const dispatch = createEventDispatcher<{ create: undefined }>();
 
     $: onAddTypeClick = async (type: string) => {
-        $editorCtx.loading = true;
+        $formEditorCtx.loading = true;
 
         try {
             let finalGroupId: string;
             if (groupId === undefined) {
-                finalGroupId = await insertGroup(
-                    formCtx,
-                    $orgCtx.org.id,
+                finalGroupId = insertQuestionGroup(
+                    formEditorCtx,
                     beforeIndex,
                     null,
                     null
@@ -45,23 +38,20 @@
                 finalGroupId = groupId;
             }
 
-            const newId = await insertQuestion(
-                editorCtx,
+            const newId = insertQuestion(
+                formEditorCtx,
                 type,
                 groupId === undefined ? 0 : beforeIndex,
-                $orgCtx.org.id,
-                $formCtx.formId,
                 finalGroupId
             );
 
-            await showSuccessToast("Added new question");
-            $editorCtx.currentlyEditing = newId;
+            $formEditorCtx.currentlyEditing = newId;
             showTypeSelectDropdown = false;
             dispatch("create");
         } catch (e) {
             await showFailureToast(e);
         }
-        $editorCtx.loading = false;
+        $formEditorCtx.loading = false;
     };
 </script>
 
@@ -69,7 +59,8 @@
     color={alertMode ? "primary" : "light"}
     size={alertMode ? "sm" : "xs"}
     outline={!alertMode}
-    disabled={$editorCtx.loading || $editorCtx.currentlyEditing !== undefined}
+    disabled={$formEditorCtx.loading ||
+        $formEditorCtx.currentlyEditing !== undefined}
     on:click={() => (showTypeSelectDropdown = true)}
     class={$$props.class}
 >

@@ -10,10 +10,6 @@
     import FormTabs from "../../components/forms/FormTabs.svelte";
     import MainTitle from "../../layouts/MainTitle.svelte";
     import FormSettings from "./FormSettings.svelte";
-    import {
-        setResponsesContext,
-        type ResponsesContext,
-    } from "../../data/contexts/results";
     import { getFormCtx, getOrgContext } from "../../data/contexts/orgLayout";
     import FormExport from "./FormExport.svelte";
     import { downloadSubmissionsForForm } from "../../data/crypto/results";
@@ -26,10 +22,14 @@
     import { showFailureToast } from "../../data/toast";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+    import {
+        setFormAdminContext,
+        type FormAdminContext,
+    } from "../../data/contexts/formAdmin";
 
     export let formId: string;
-    const responsesStore = writable<ResponsesContext>();
-    setResponsesContext(responsesStore);
+    const formAdminStore = writable<FormAdminContext>();
+    setFormAdminContext(formAdminStore);
 
     const orgCtx = getOrgContext();
 
@@ -48,7 +48,7 @@
             $orgCtx.org.id,
             formId,
             submissionsTracker,
-            responsesStore,
+            formAdminStore,
             submissionsTerminateHandle
         )
             .then(() => (submissionsLoading = false))
@@ -73,8 +73,8 @@
     $: APIs.questions()
         .then((a) => a.questionsList($orgCtx.org.id, formId))
         .then((resp) => {
-            $responsesStore.formId = formId;
-            $responsesStore.questions = resp.data;
+            $formAdminStore.formId = formId;
+            $formAdminStore.questions = resp.data;
             formLoading = false;
         });
 
@@ -82,8 +82,8 @@
         if (!submissionsLoading && !formLoading) {
             initCorrelationContext(
                 formId,
-                $responsesStore.questions,
-                $responsesStore.submissions,
+                $formAdminStore.questions,
+                $formAdminStore.submissions,
                 correlationCtx
             );
         }
@@ -93,7 +93,7 @@
     $: APIs.questionGroups()
         .then((a) => a.questionGroupsList($orgCtx.org.id, formId))
         .then((resp) => {
-            $responsesStore.groups = resp.data;
+            $formAdminStore.groups = resp.data;
             groupsLoading = false;
         });
 
@@ -101,14 +101,14 @@
     $: APIs.fillTokens()
         .then((a) => a.fillAccessTokensList($orgCtx.org.id, formId))
         .then((resp) => {
-            $responsesStore.tokens = resp.data;
+            $formAdminStore.tokens = resp.data;
             tokensLoading = false;
         });
 
     $: formCtx = getFormCtx(formId);
 </script>
 
-{#if formLoading || submissionsLoading || groupsLoading || tokensLoading || $responsesStore === undefined || $formCtx === undefined}
+{#if formLoading || submissionsLoading || groupsLoading || tokensLoading || $formAdminStore === undefined || $formCtx === undefined}
     <div class="text-center">
         {#if $submissionsTracker !== undefined}
             <Progressbar

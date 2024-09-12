@@ -1,9 +1,5 @@
 <script lang="ts">
     import {
-        ctxGetQuestion,
-        ctxSubmissionsForQuestion,
-    } from "../../../../data/contexts/results";
-    import {
         qIsAddress,
         qIsChoice,
         qIsChoiceMatrix,
@@ -12,7 +8,7 @@
         qIsPhoneNumber,
         qIsScale,
         qIsText,
-    } from "../../../../data/contexts/questionsEditing";
+    } from "../../../../data/contexts/formEditor";
     import CardBox from "../../../cardBox/CardBox.svelte";
     import CardBoxTitle from "../../../cardBox/CardBoxTitle.svelte";
     import OverviewChartChoice from "./OverviewChartChoice.svelte";
@@ -26,6 +22,10 @@
     import OverviewChartChoiceMatrix from "./OverviewChartChoiceMatrix.svelte";
     import OverviewChartDateTime from "./OverviewChartDateTime.svelte";
     import OverviewChartHidden from "./OverviewChartHidden.svelte";
+    import {
+        ctxGetQuestion,
+        ctxSubmissionsForQuestion,
+    } from "../../../../data/contexts/formAdmin";
 
     export let questionId: string;
 

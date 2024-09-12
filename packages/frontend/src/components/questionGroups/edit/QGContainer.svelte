@@ -5,11 +5,6 @@
     import { createEventDispatcher } from "svelte";
     import LoadingButton from "../../LoadingButton.svelte";
     import {
-        ctxUpdateGroup,
-        getGroupTitle,
-        getResponsesContext,
-    } from "../../../data/contexts/results";
-    import {
         Button,
         ButtonGroup,
         Input,
@@ -17,52 +12,43 @@
         Textarea,
         Tooltip,
     } from "flowbite-svelte";
-    import { APIs } from "../../../data/common";
+    import { getFormCtx } from "../../../data/contexts/orgLayout";
+    import { showFailureToast } from "../../../data/toast";
     import {
-        getFormCtx,
-        getOrgContext,
-    } from "../../../data/contexts/orgLayout";
-    import { showFailureToast, showSuccessToast } from "../../../data/toast";
-    import { getEditorCtx } from "../../../data/contexts/questionsEditing";
+        getFormAdminContext,
+        getGroupTitle,
+    } from "../../../data/contexts/formAdmin";
+    import {
+        getFormEditorCtx,
+        updateQuestionGroup,
+    } from "../../../data/contexts/formEditor";
 
     export let group: APIQuestionGroup;
-    export let loading: boolean;
+
     const dispatch = createEventDispatcher<{
         delete: undefined;
     }>();
-    const orgCtx = getOrgContext();
-    const formCtx = getFormCtx();
-    const respCtx = getResponsesContext();
-    const editorCtx = getEditorCtx();
+
+    const formMetadataCtx = getFormCtx();
+    const formAdminCtx = getFormAdminContext();
+    const formEditorCtx = getFormEditorCtx();
 
     let groupTitle = group.title;
     let groupDescription = group.description;
 
     let editing = false;
     $: onSaveClick = async () => {
-        loading = true;
         try {
             const updatedGroup = {
                 ...group,
                 title: groupTitle,
                 description: groupDescription,
             };
-            await APIs.questionGroups().then((a) =>
-                a.questionGroupsSet(
-                    $orgCtx.org.id,
-                    $formCtx.id,
-                    group.id,
-                    updatedGroup
-                )
-            );
-            ctxUpdateGroup(respCtx, group.id, updatedGroup);
-            await showSuccessToast("Group details saved");
+            updateQuestionGroup(formEditorCtx, updatedGroup);
             editing = false;
         } catch (e) {
             await showFailureToast(e);
         }
-
-        loading = false;
     };
     $: changed =
         groupTitle !== group.title || groupDescription !== group.description;
@@ -79,10 +65,7 @@
                         <Label class="flex-1">
                             Title
                             <ButtonGroup class="flex mt-1">
-                                <Input
-                                    bind:value={groupTitle}
-                                    disabled={loading}
-                                />
+                                <Input bind:value={groupTitle} />
                                 <Button
                                     color="light"
                                     outline
@@ -95,11 +78,7 @@
                         </Label>
                     </div>
                 {:else}
-                    <Button
-                        size="sm"
-                        on:click={() => (groupTitle = "")}
-                        disabled={loading}
-                    >
+                    <Button size="sm" on:click={() => (groupTitle = "")}>
                         <FontAwesomeIcon icon={faPlus} class="me-2" />
                         Add title
                     </Button>
@@ -112,10 +91,7 @@
                         <Label class="flex-1">
                             Description
                             <ButtonGroup class="flex mt-1">
-                                <Textarea
-                                    bind:value={groupDescription}
-                                    disabled={loading}
-                                />
+                                <Textarea bind:value={groupDescription} />
                                 <Button
                                     color="light"
                                     outline
@@ -128,11 +104,7 @@
                         </Label>
                     </div>
                 {:else}
-                    <Button
-                        size="sm"
-                        on:click={() => (groupDescription = "")}
-                        disabled={loading}
-                    >
+                    <Button size="sm" on:click={() => (groupDescription = "")}>
                         <FontAwesomeIcon icon={faPlus} class="me-2" />
                         Add description
                     </Button>
@@ -142,8 +114,6 @@
                     <LoadingButton
                         buttonClass="mt-4 block"
                         on:click={onSaveClick}
-                        disabled={loading}
-                        {loading}
                     >
                         Save
                     </LoadingButton>
@@ -157,9 +127,9 @@
                         Cancel
                     </Button>
                 {/if}
-            {:else if !$formCtx.one_question_per_page}
+            {:else if !$formMetadataCtx.one_question_per_page}
                 <h2 class="text-lg dark:text-gray-300">
-                    {getGroupTitle(false, $respCtx, group)}
+                    {getGroupTitle(false, $formAdminCtx, group)}
                 </h2>
                 {#if group.description}
                     <p class="text-gray-600 dark:text-gray-400">
@@ -168,14 +138,14 @@
                 {/if}
             {/if}
         </div>
-        {#if !$formCtx.one_question_per_page}
+        {#if !$formMetadataCtx.one_question_per_page}
             <div>
                 {#if !editing}
                     <Button
                         color="light"
                         outline
                         size="sm"
-                        disabled={loading || !!$editorCtx.currentlyEditing}
+                        disabled={!!$formEditorCtx.currentlyEditing}
                         on:click={() => (editing = true)}
                     >
                         <FontAwesomeIcon icon={faEdit} />
@@ -188,10 +158,7 @@
                     color="red"
                     title="Delete section"
                     on:click={() => dispatch("delete")}
-                    {loading}
-                    disabled={loading ||
-                        editing ||
-                        !!$editorCtx.currentlyEditing}
+                    disabled={editing || !!$formEditorCtx.currentlyEditing}
                 >
                     <FontAwesomeIcon icon={faTrash} />
                 </LoadingButton>

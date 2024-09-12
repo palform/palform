@@ -21,7 +21,7 @@
         qIsScale,
         qIsSignature,
         qIsText,
-    } from "../../../data/contexts/questionsEditing";
+    } from "../../../data/contexts/formEditor";
     import CardBox from "../../cardBox/CardBox.svelte";
     import CardBoxSubtitle from "../../cardBox/CardBoxSubtitle.svelte";
     import BrandedSpan from "../../teams/brandings/BrandedSpan.svelte";

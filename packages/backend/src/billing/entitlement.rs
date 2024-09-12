@@ -32,7 +32,7 @@ impl INTERNALBillingEntitlementManager {
         Self { org_id }
     }
 
-    async fn get_org_entitlement<T: ConnectionTrait>(
+    pub async fn get_org_entitlement<T: ConnectionTrait>(
         &self,
         conn: &T,
     ) -> Result<organisation_feature_entitlement::Model, DbErr> {

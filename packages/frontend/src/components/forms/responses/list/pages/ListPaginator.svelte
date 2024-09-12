@@ -16,15 +16,15 @@
         TableBodyRow,
     } from "flowbite-svelte";
     import { DateTime } from "luxon";
-    import { getResponsesContext } from "../../../../../data/contexts/results";
     import { parseServerTime } from "../../../../../data/util/time";
     import VirtualList from "svelte-tiny-virtual-list";
     import TableContainer from "../../../../tables/TableContainer.svelte";
+    import { getFormAdminContext } from "../../../../../data/contexts/formAdmin";
 
     export let currentIndex = 0;
-    const ctx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
 
-    $: maxIndex = $ctx.submissions.length - 1;
+    $: maxIndex = $formAdminCtx.submissions.length - 1;
     const next = () => {
         currentIndex++;
     };
@@ -82,7 +82,7 @@
             <TableBody>
                 <VirtualList
                     height={300}
-                    itemCount={$ctx.submissions.length}
+                    itemCount={$formAdminCtx.submissions.length}
                     itemSize={75}
                     scrollToIndex={currentIndex}
                 >
@@ -96,7 +96,7 @@
                         </TableBodyCell>
                         <TableBodyCell>
                             {parseServerTime(
-                                $ctx.submissions[index].createdAt,
+                                $formAdminCtx.submissions[index].createdAt
                             ).toLocaleString(DateTime.DATETIME_MED)}
                         </TableBodyCell>
                         <TableBodyCell>

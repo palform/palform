@@ -2,10 +2,6 @@
     import { faPlus } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { Alert, Button, Label, Modal, Select } from "flowbite-svelte";
-    import {
-        getGroupTitle,
-        getResponsesContext,
-    } from "../../../../data/contexts/results";
     import InfoText from "../../../type/InfoText.svelte";
     import type {
         APIQuestionGroupStepStrategyJumpCase,
@@ -15,9 +11,10 @@
     import ConditionLabel from "./ConditionLabel.svelte";
     import { createEventDispatcher } from "svelte";
     import { getFormCtx } from "../../../../data/contexts/orgLayout";
+    import { getFormAdminContext, getGroupTitle } from "../../../../data/contexts/formAdmin";
 
     export let fromGroupId: string;
-    const formCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
     const formMetadataCtx = getFormCtx();
 
     let showCreateModal = false;
@@ -42,12 +39,12 @@
     }>();
 
     $: selectItems = [
-        ...$formCtx.groups
+        ...$formAdminCtx.groups
             .filter((e) => e.id !== fromGroupId)
             .map((g) => ({
                 name: getGroupTitle(
                     $formMetadataCtx.one_question_per_page,
-                    $formCtx,
+                    $formAdminCtx,
                     g
                 ),
                 value: g.id,

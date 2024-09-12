@@ -9,7 +9,6 @@ pub struct QuestionGroupWithEncodedStrategy {
     id: PalformDatabaseID<IDQuestionGroup>,
     title: Option<String>,
     description: Option<String>,
-    position: i32,
     step_strategy: sea_orm::JsonValue,
 }
 
@@ -20,7 +19,6 @@ impl TryFrom<QuestionGroupWithEncodedStrategy> for APIQuestionGroup {
             serde_json::from_value::<APIQuestionGroupStepStrategy>(value.step_strategy)?;
         Ok(Self {
             id: value.id,
-            position: value.position,
             title: value.title,
             description: value.description,
             step_strategy: parsed_strategy,

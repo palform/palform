@@ -1,14 +1,11 @@
 <script lang="ts">
     import type { APIQuestionConfigurationOneOf10 } from "@paltiverse/palform-typescript-openapi";
-    import {
-        getEditorCtx,
-        type QuestionEditEvents,
-    } from "../../../data/contexts/questionsEditing";
     import { createEventDispatcher } from "svelte";
     import { Helper, Input, Label } from "flowbite-svelte";
+    import { getFormEditorCtx, type QuestionEditEvents } from "../../../data/contexts/formEditor";
 
     export let config: APIQuestionConfigurationOneOf10;
-    const ctx = getEditorCtx();
+    const ctx = getFormEditorCtx();
     const dispatch = createEventDispatcher<QuestionEditEvents>();
 
     $: onUpdate = () => {

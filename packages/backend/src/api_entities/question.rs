@@ -15,7 +15,6 @@ pub struct QuestionWithEncodedConfiguration {
     pub internal_name: Option<String>,
     pub description: Option<String>,
     pub required: bool,
-    pub position: i32,
     pub group_id: PalformDatabaseID<IDQuestionGroup>,
     pub configuration: sea_orm::JsonValue,
 }
@@ -30,7 +29,6 @@ impl TryFrom<QuestionWithEncodedConfiguration> for APIQuestion {
             internal_name: value.internal_name,
             description: value.description,
             required: value.required,
-            position: value.position,
             group_id: value.group_id,
             configuration: config,
         })
@@ -53,7 +51,6 @@ impl From<question::Model> for QuestionWithEncodedConfiguration {
             internal_name: value.internal_name,
             description: value.description,
             required: value.required,
-            position: value.position,
             group_id: value.group_id,
             configuration: value.configuration,
         }

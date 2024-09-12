@@ -2,20 +2,19 @@
     import type { APIFillToken } from "@paltiverse/palform-typescript-openapi";
     import { Modal, TableBodyCell, TableBodyRow } from "flowbite-svelte";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
-    import { getResponsesContext } from "../../../data/contexts/results";
-    import { showToast } from "../../../data/toast";
-    import { faCheck } from "@fortawesome/free-solid-svg-icons";
+    import { showSuccessToast } from "../../../data/toast";
     import { APIs } from "../../../data/common";
     import { createEventDispatcher } from "svelte";
     import { parseServerTime } from "../../../data/util/time";
     import TableSingleAction from "../../tables/TableSingleAction.svelte";
     import { DateTime } from "luxon";
     import TokenEmbedOptions from "./TokenEmbedOptions.svelte";
+    import { getFormAdminContext } from "../../../data/contexts/formAdmin";
 
     export let token: APIFillToken;
 
     const orgCtx = getOrgContext();
-    const respCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
 
     const dispatch = createEventDispatcher<{ delete: undefined }>();
 
@@ -29,16 +28,14 @@
     $: onDeleteClick = async (id: string) => {
         deleteLoading = true;
         await APIs.fillTokens().then((a) =>
-            a.fillAccessTokensDelete($orgCtx.org.id, $respCtx.formId, id)
+            a.fillAccessTokensDelete($orgCtx.org.id, $formAdminCtx.formId, id)
         );
         dispatch("delete");
         deleteLoading = false;
 
-        await showToast({
-            label: "Token deleted! Anyone with that link can no longer fill in your form.",
-            color: "green",
-            icon: faCheck,
-        });
+        await showSuccessToast(
+            "Token deleted! Anyone with that link can no longer fill in your form."
+        );
     };
 
     let showViewLinkModal = false;

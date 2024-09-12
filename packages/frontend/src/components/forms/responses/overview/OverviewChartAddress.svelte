@@ -1,6 +1,6 @@
 <script lang="ts">
     import { sGetAddress, sIsNonEmpty } from "../../../../data/contexts/fill";
-    import { ctxSubmissionsForQuestion } from "../../../../data/contexts/results";
+    import { ctxSubmissionsForQuestion } from "../../../../data/contexts/formAdmin";
     import OpenLayersMap from "../../../map/OpenLayersMap.svelte";
 
     export let questionId: string;

@@ -12,24 +12,18 @@
     import { faPlus } from "@fortawesome/free-solid-svg-icons";
     import LoadingButton from "../../LoadingButton.svelte";
     import { APIs } from "../../../data/common";
-    import {
-        copyFillToken,
-        formatFillTokenURL,
-        formatShortLinkURL,
-    } from "../../../data/fillTokens";
     import { createEventDispatcher } from "svelte";
     import type { APIFillToken } from "@paltiverse/palform-typescript-openapi";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
-    import { getResponsesContext } from "../../../data/contexts/results";
     import expiryTimeOptions from "../../../data/util/expiryTimeOptions";
     import { showFailureToast } from "../../../data/toast";
     import { isEntitled } from "../../../data/billing/entitlement";
     import { Link } from "svelte-routing";
-    import { copyGenericValue } from "../../../data/util/clipboard";
     import TokenEmbedOptions from "./TokenEmbedOptions.svelte";
+    import { getFormAdminContext } from "../../../data/contexts/formAdmin";
 
     const orgCtx = getOrgContext();
-    const respCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
     const subdomainEntitled = isEntitled("subdomain");
 
     let modalOpen = false;
@@ -46,7 +40,7 @@
         loading = true;
         try {
             const resp = await APIs.fillTokens().then((a) =>
-                a.fillAccessTokensCreate($orgCtx.org.id, $respCtx.formId, {
+                a.fillAccessTokensCreate($orgCtx.org.id, $formAdminCtx.formId, {
                     expires_in_seconds:
                         expiryValue === null ? null : expiryValue * 60,
                     nickname: nicknameValue,
@@ -59,17 +53,6 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
-
-    $: onURLClick = async () => {
-        if (!justCreated) return;
-        await copyFillToken($orgCtx.org.id, $respCtx.formId, justCreated);
-    };
-    $: onShortLinkCopy = async () => {
-        if (!shortLinkValue || !$orgCtx.org.subdomain) return;
-        await copyGenericValue(
-            formatShortLinkURL($orgCtx.org.subdomain, shortLinkValue)
-        );
     };
 
     const closeModal = () => {

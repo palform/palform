@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { getResponsesContext } from "../../../../../data/contexts/results";
+    import { getFormAdminContext } from "../../../../../data/contexts/formAdmin";
     import ResponseTableRow from "./ResponseTableRow.svelte";
 
-    const responsesCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
 </script>
 
 <div class="overflow-y-auto rounded-lg border dark:border-gray-700">
     <table class="w-full">
         <thead>
             <tr class="bg-slate-100 dark:bg-slate-700">
-                {#each $responsesCtx.questions as question}
+                {#each $formAdminCtx.questions as question}
                     <th
                         class="text-left dark:text-gray-300 py-2 px-3 font-display font-medium text-sm"
                     >
@@ -19,7 +19,7 @@
             </tr>
         </thead>
         <tbody>
-            {#each $responsesCtx.submissions as submission, index}
+            {#each $formAdminCtx.submissions as submission, index}
                 <ResponseTableRow {submission} submissionIndex={index} />
             {/each}
         </tbody>

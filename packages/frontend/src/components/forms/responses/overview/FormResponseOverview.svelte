@@ -5,27 +5,29 @@
         getFormCtx,
         getOrgContext,
     } from "../../../../data/contexts/orgLayout";
-    import {
-        getGroupTitle,
-        getResponsesContext,
-    } from "../../../../data/contexts/results";
-    import { qIsInfo } from "../../../../data/contexts/questionsEditing";
     import OverviewGroup from "./OverviewGroup.svelte";
     import { submissionIsError } from "../../../../data/crypto/results";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faWarning } from "@fortawesome/free-solid-svg-icons";
+    import {
+        getFormAdminContext,
+        getGroupTitle,
+    } from "../../../../data/contexts/formAdmin";
+    import { qIsInfo } from "../../../../data/contexts/formEditor";
 
     const orgCtx = getOrgContext();
-    const respCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
     const formMetadataCtx = getFormCtx();
-    $: groupedQuestions = $respCtx.groups.map((g) => ({
+    $: groupedQuestions = $formAdminCtx.groups.map((g) => ({
         group: g,
-        questions: $respCtx.questions
+        questions: $formAdminCtx.questions
             .filter((q) => !qIsInfo(q.configuration) && q.group_id === g.id)
             .map((q) => q.id),
     }));
 
-    $: hasSomeFailure = $respCtx.submissions.some((e) => submissionIsError(e));
+    $: hasSomeFailure = $formAdminCtx.submissions.some((e) =>
+        submissionIsError(e)
+    );
 </script>
 
 <ol class="space-y-4">
@@ -40,7 +42,7 @@
             <Button
                 class="mt-2"
                 size="sm"
-                href={`/orgs/${$orgCtx.org.id}/forms/${$respCtx.formId}/edit`}
+                href={`/orgs/${$orgCtx.org.id}/forms/${$formAdminCtx.formId}/edit`}
                 on:click={navigateEvent}
             >
                 Edit form
@@ -66,7 +68,7 @@
             <OverviewGroup
                 groupTitle={getGroupTitle(
                     $formMetadataCtx.one_question_per_page,
-                    $respCtx,
+                    $formAdminCtx,
                     group.group
                 )}
                 questions={group.questions}

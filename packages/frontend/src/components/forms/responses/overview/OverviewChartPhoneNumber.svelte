@@ -4,7 +4,7 @@
     import {
         ctxGetQuestion,
         ctxSubmissionsForQuestion,
-    } from "../../../../data/contexts/results";
+    } from "../../../../data/contexts/formAdmin";
 
     export let questionId: string;
 

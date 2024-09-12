@@ -13,11 +13,11 @@
     import type { APIForm } from "@paltiverse/palform-typescript-openapi";
 
     const orgCtx = getOrgContext();
-    const formCtx = getFormCtx();
+    const formMetadataCtx = getFormCtx();
 
-    let message = $formCtx.end_configuration.message ?? "";
-    let showRestart = $formCtx.end_configuration.show_restart;
-    let redirectURL = $formCtx.end_configuration.redirect_to;
+    let message = $formMetadataCtx.end_configuration.message ?? "";
+    let showRestart = $formMetadataCtx.end_configuration.show_restart;
+    let redirectURL = $formMetadataCtx.end_configuration.redirect_to;
 
     $: onRedirectToggleClick = (e: Event) => {
         const t = e.target as HTMLInputElement;
@@ -29,9 +29,9 @@
     };
 
     $: hasChanged =
-        message !== $formCtx.end_configuration.message ||
-        showRestart !== $formCtx.end_configuration.show_restart ||
-        redirectURL !== $formCtx.end_configuration.redirect_to;
+        message !== $formMetadataCtx.end_configuration.message ||
+        showRestart !== $formMetadataCtx.end_configuration.show_restart ||
+        redirectURL !== $formMetadataCtx.end_configuration.redirect_to;
 
     let loading = false;
     $: onSaveClick = async () => {
@@ -39,7 +39,7 @@
 
         try {
             const updatedForm = {
-                ...$formCtx,
+                ...$formMetadataCtx,
                 end_configuration: {
                     message,
                     show_restart: showRestart,
@@ -48,10 +48,10 @@
             } as APIForm;
 
             await APIs.forms().then((a) =>
-                a.formsUpdate($orgCtx.org.id, $formCtx.id, updatedForm)
+                a.formsUpdate($orgCtx.org.id, $formMetadataCtx.id, updatedForm)
             );
 
-            updateFormCtx(orgCtx, $formCtx.id, updatedForm);
+            updateFormCtx(orgCtx, $formMetadataCtx.id, updatedForm);
             await showSuccessToast("End page configuration saved");
             loading = false;
         } catch (e) {

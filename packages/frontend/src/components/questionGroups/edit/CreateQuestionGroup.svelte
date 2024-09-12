@@ -1,34 +1,23 @@
 <script lang="ts">
     import { faPlus } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-    import LoadingButton from "../../LoadingButton.svelte";
-    import {
-        getFormCtx,
-        getOrgContext,
-    } from "../../../data/contexts/orgLayout";
-    import {
-        getResponsesContext,
-        insertGroup,
-    } from "../../../data/contexts/results";
-    import { showSuccessToast } from "../../../data/toast";
-    import { getEditorCtx } from "../../../data/contexts/questionsEditing";
+    import { getFormCtx } from "../../../data/contexts/orgLayout";
     import CreateQuestion from "../../questions/edit/CreateQuestion.svelte";
+    import {
+        getFormEditorCtx,
+        insertQuestionGroup,
+    } from "../../../data/contexts/formEditor";
+    import { Button } from "flowbite-svelte";
 
     export let beforeIndex: number;
     export let alertMode = false;
-    const orgCtx = getOrgContext();
-    const respCtx = getResponsesContext();
-    const editorCtx = getEditorCtx();
+    const formEditorCtx = getFormEditorCtx();
     const formCtx = getFormCtx();
 
     let showModal = false;
-    let addLoading = false;
 
     $: onAddClick = async () => {
-        addLoading = true;
-        await insertGroup(respCtx, $orgCtx.org.id, beforeIndex, null, null);
-        await showSuccessToast("Section created");
-        addLoading = false;
+        insertQuestionGroup(formEditorCtx, beforeIndex, null, null);
         showModal = false;
     };
 </script>
@@ -42,16 +31,16 @@
         on:create
     />
 {:else}
-    <LoadingButton
+    <Button
         on:click={onAddClick}
         outline={!alertMode}
         color={alertMode ? "primary" : "light"}
         size={alertMode ? "sm" : "xs"}
-        disabled={$editorCtx.loading ||
-            $editorCtx.currentlyEditing !== undefined}
-        buttonClass={$$props.class}
+        disabled={$formEditorCtx.loading ||
+            $formEditorCtx.currentlyEditing !== undefined}
+        class={$$props.class}
     >
         <FontAwesomeIcon icon={faPlus} class="me-2" />
         Add section
-    </LoadingButton>
+    </Button>
 {/if}

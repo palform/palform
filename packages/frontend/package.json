@@ -54,6 +54,7 @@
     "svelte-turnstile": "^0.8.0",
     "svelty-picker": "^5.2.9",
     "tailwindcss": "^3.4.10",
+    "tsid-ts": "^0.0.9",
     "tslib": "^2.7.0",
     "typescript": "^5.5.4",
     "typescript-svelte-plugin": "^0.3.41",

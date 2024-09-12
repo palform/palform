@@ -1,16 +1,16 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
-    import { getResponsesContext } from "../../../../../data/contexts/results";
     import {
         submissionIsError,
         submissionIsSuccess,
         type DecryptedSubmission,
     } from "../../../../../data/crypto/results";
     import ResponseTableField from "./ResponseTableField.svelte";
+    import { getFormAdminContext } from "../../../../../data/contexts/formAdmin";
 
     export let submission: DecryptedSubmission;
     export let submissionIndex: number;
-    const respCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
 
     let observer: IntersectionObserver;
     let trElement: HTMLTableRowElement;
@@ -42,7 +42,7 @@
     >
         {#if inView}
             <td
-                colspan={$respCtx.questions.length}
+                colspan={$formAdminCtx.questions.length}
                 class="px-3 text-sm text-red-800 dark:text-red-200"
             >
                 Failed to decrypt response
@@ -59,7 +59,7 @@
         bind:this={trElement}
     >
         {#if inView}
-            {#each $respCtx.questions as question (question.id)}
+            {#each $formAdminCtx.questions as question (question.id)}
                 <ResponseTableField {question} {submission} {submissionIndex} />
             {/each}
         {/if}

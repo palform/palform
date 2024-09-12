@@ -1,17 +1,14 @@
 <script lang="ts">
     import type { APIQuestionConfigurationOneOf9 } from "@paltiverse/palform-typescript-openapi";
-    import {
-        getEditorCtx,
-        type QuestionEditEvents,
-    } from "../../../data/contexts/questionsEditing";
     import { createEventDispatcher } from "svelte";
     import { Alert, Button, Label, Toggle } from "flowbite-svelte";
     import { DateTime } from "luxon";
     import TextButton from "../../TextButton.svelte";
     import DateTimePicker from "../../datePicker/DateTimePicker.svelte";
+    import { getFormEditorCtx, type QuestionEditEvents } from "../../../data/contexts/formEditor";
 
     export let config: APIQuestionConfigurationOneOf9;
-    const ctx = getEditorCtx();
+    const ctx = getFormEditorCtx();
     const dispatch = createEventDispatcher<QuestionEditEvents>();
 
     $: onUpdate = () => {

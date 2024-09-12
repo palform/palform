@@ -1,9 +1,5 @@
 <script lang="ts">
     import type { APIQuestionGroupStepStrategyJumpCase } from "@paltiverse/palform-typescript-openapi";
-    import {
-        getGroupTitle,
-        getResponsesContext,
-    } from "../../../../data/contexts/results";
     import { extractConditionList } from "../../../../data/util/stepStrategyConditions";
     import ConditionLabel from "./ConditionLabel.svelte";
     import { Button } from "flowbite-svelte";
@@ -11,11 +7,15 @@
     import { faTrash } from "@fortawesome/free-solid-svg-icons";
     import { createEventDispatcher } from "svelte";
     import { getFormCtx } from "../../../../data/contexts/orgLayout";
+    import {
+        getFormAdminContext,
+        getGroupTitle,
+    } from "../../../../data/contexts/formAdmin";
 
     export let strategyCase: APIQuestionGroupStepStrategyJumpCase;
-    const formCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
     const formMetadataCtx = getFormCtx();
-    let targetGroup = $formCtx.groups.find(
+    let targetGroup = $formAdminCtx.groups.find(
         (e) => e.id === strategyCase.target_group_id
     );
 
@@ -31,7 +31,7 @@
             <span class="dark:text-gray-100">
                 {getGroupTitle(
                     $formMetadataCtx.one_question_per_page,
-                    $formCtx,
+                    $formAdminCtx,
                     targetGroup
                 )}
             </span>

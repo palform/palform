@@ -4,15 +4,15 @@
     import { faDownload } from "@fortawesome/free-solid-svg-icons";
     import { APIs } from "../../../../data/common";
     import { getOrgContext } from "../../../../data/contexts/orgLayout";
-    import { getResponsesContext } from "../../../../data/contexts/results";
     import { decryptSubmissionAsset } from "../../../../data/crypto/submissions";
     import { showFailureToast } from "../../../../data/toast";
+    import { getFormAdminContext } from "../../../../data/contexts/formAdmin";
 
     export let fileId: string;
     export let contentType: string;
     export let compact: boolean;
     const orgCtx = getOrgContext();
-    const formCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
 
     let loading = false;
     $: onDownloadClick = async () => {
@@ -22,7 +22,7 @@
             const resp = await APIs.submissionAssets().then((a) =>
                 a.submissionAssetsGetLink(
                     $orgCtx.org.id,
-                    $formCtx.formId,
+                    $formAdminCtx.formId,
                     fileId
                 )
             );

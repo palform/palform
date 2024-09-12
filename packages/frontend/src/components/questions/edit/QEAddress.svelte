@@ -1,8 +1,5 @@
 <script lang="ts">
     import type { APIQuestionConfigurationOneOf4 } from "@paltiverse/palform-typescript-openapi";
-    import {
-        type QuestionEditEvents,
-    } from "../../../data/contexts/questionsEditing";
     import { createEventDispatcher } from "svelte";
     import {
         Helper,
@@ -13,6 +10,7 @@
     import AddressSearch from "../../addressSearch/AddressSearch.svelte";
     import type { APIGenericLocation } from "@paltiverse/palform-client-js-extra-types/APIGenericLocation";
     import TextButton from "../../TextButton.svelte";
+    import type { QuestionEditEvents } from "../../../data/contexts/formEditor";
 
     export let config: APIQuestionConfigurationOneOf4;
     const dispatch = createEventDispatcher<QuestionEditEvents>();

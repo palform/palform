@@ -8,7 +8,6 @@
         showFailureToast,
         showSuccessToast,
     } from "../../../../../data/toast";
-    import { getResponsesContext } from "../../../../../data/contexts/results";
     import { getOrgContext } from "../../../../../data/contexts/orgLayout";
     import {
         submissionIsError,
@@ -22,13 +21,14 @@
     import { isEntitled } from "../../../../../data/billing/entitlement";
     import MissingEntitlementTooltip from "../../../../billing/entitlement/MissingEntitlementTooltip.svelte";
     import { parseServerTime } from "../../../../../data/util/time";
+    import { getFormAdminContext } from "../../../../../data/contexts/formAdmin";
 
-    const respCtx = getResponsesContext();
+    const formAdminCtx = getFormAdminContext();
     const orgCtx = getOrgContext();
     const cryptoDetailsEntitled = isEntitled("crypto_details");
 
     export let selectedSubmissionIndex = 0;
-    $: selectedSubmission = $respCtx.submissions[selectedSubmissionIndex];
+    $: selectedSubmission = $formAdminCtx.submissions[selectedSubmissionIndex];
 
     let deleteLoading = false;
     $: deleteSubmission = async (submissionId: string) => {
@@ -37,11 +37,11 @@
             await APIs.submissions().then((a) =>
                 a.submissionsDelete(
                     $orgCtx.org.id,
-                    $respCtx.formId,
+                    $formAdminCtx.formId,
                     submissionId
                 )
             );
-            respCtx.update((ctx) => {
+            formAdminCtx.update((ctx) => {
                 return {
                     ...ctx,
                     submissions: ctx.submissions.filter(
@@ -60,7 +60,7 @@
 
     $: fillToken =
         selectedSubmission &&
-        $respCtx.tokens.find((e) => selectedSubmission.forToken === e.id);
+        $formAdminCtx.tokens.find((e) => selectedSubmission.forToken === e.id);
 
     let showCryptoModal = false;
 </script>

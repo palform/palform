@@ -1,11 +1,8 @@
 <script lang="ts">
     import { Chart } from "flowbite-svelte";
-    import {
-        ctxGetQuestion,
-        ctxSubmissionsForQuestion,
-    } from "../../../../data/contexts/results";
     import { sGetChoice } from "../../../../data/contexts/fill";
-    import { qIsChoice } from "../../../../data/contexts/questionsEditing";
+    import { ctxGetQuestion, ctxSubmissionsForQuestion } from "../../../../data/contexts/formAdmin";
+    import { qIsChoice } from "../../../../data/contexts/formEditor";
 
     export let questionId: string;
 

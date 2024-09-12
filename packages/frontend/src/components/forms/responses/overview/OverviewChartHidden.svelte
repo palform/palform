@@ -1,9 +1,7 @@
 <script lang="ts">
     import { Chart } from "flowbite-svelte";
     import { sGetHidden } from "../../../../data/contexts/fill";
-    import {
-        ctxSubmissionsForQuestion,
-    } from "../../../../data/contexts/results";
+    import { ctxSubmissionsForQuestion } from "../../../../data/contexts/formAdmin";
 
     export let questionId: string;
 

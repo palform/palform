@@ -2,7 +2,7 @@ build_analysis:
 	wasm-pack build -s paltiverse -d ../analysis-js --dev packages/analysis
 
 build_client_common:
-	wasm-pack build -s paltiverse -d ../client-js --dev packages/client-common --no-default-features --features frontend-js
+	wasm-pack build -s paltiverse -d ../client-js --dev packages/client-common --no-default-features --features frontend-js,debug
 
 entities:
 	sea-orm-cli generate entity -l -o packages/entities/src --with-serde both --enum-extra-derives "schemars::JsonSchema"

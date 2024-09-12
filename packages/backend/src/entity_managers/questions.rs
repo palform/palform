@@ -1,5 +1,7 @@
-use palform_client_common::form_management::question_types::{
-    APIQuestion, APIQuestionConfiguration,
+use std::collections::HashSet;
+
+use palform_client_common::form_management::{
+    question_group::APIQuestionGroup, question_types::APIQuestion,
 };
 use palform_entities::{prelude::*, question, question_group};
 use palform_tsid::{
@@ -30,16 +32,8 @@ pub enum SetQuestionError {
     DBError(#[from] DbErr),
     #[error("Encode config: {0}")]
     EncodeError(#[from] serde_json::Error),
-}
-
-#[derive(Debug, Error)]
-pub enum CreateQuestionError {
-    #[error("Database: {0}")]
-    DBError(#[from] DbErr),
-    #[error("Encode config: {0}")]
-    EncodeError(#[from] serde_json::Error),
-    #[error("Unrecognised type for question: {0}")]
-    CreateDefault(String),
+    #[error("{0}")]
+    ValidationError(String),
 }
 
 pub struct QuestionManager;
@@ -90,64 +84,6 @@ impl QuestionManager {
             .await
     }
 
-    pub async fn check_question_exist<T: ConnectionTrait>(
-        conn: &T,
-        question_id: PalformDatabaseID<IDQuestion>,
-    ) -> Result<bool, DbErr> {
-        Question::find_by_id(question_id)
-            .count(conn)
-            .await
-            .map(|c| c == 1)
-    }
-
-    pub async fn verify_question_group<T: ConnectionTrait>(
-        conn: &T,
-        question_id: PalformDatabaseID<IDQuestion>,
-        question_group_id: PalformDatabaseID<IDQuestionGroup>,
-    ) -> Result<bool, DbErr> {
-        Question::find_by_id(question_id)
-            .filter(question::Column::GroupId.eq(question_group_id))
-            .count(conn)
-            .await
-            .map(|c| c == 1)
-    }
-
-    pub async fn create_default_question<T: ConnectionTrait>(
-        conn: &T,
-        group_id: PalformDatabaseID<IDQuestionGroup>,
-        question_type: String,
-        position: i32,
-    ) -> Result<APIQuestion, CreateQuestionError> {
-        let default_config = APIQuestionConfiguration::default_for_type(question_type.clone())
-            .map_err(|_| CreateQuestionError::CreateDefault(question_type))?;
-        let encoded_config =
-            QuestionWithEncodedConfiguration::encode_config(default_config.clone())?;
-        let new_id = PalformDatabaseID::<IDQuestion>::random();
-        let new_question = question::ActiveModel {
-            id: Set(new_id),
-            title: Set("Untitled".to_string()),
-            description: Set(None),
-            required: Set(false),
-            configuration: Set(encoded_config),
-            position: Set(position),
-            group_id: Set(group_id),
-            ..Default::default()
-        };
-
-        let new_question = new_question.insert(conn).await?;
-        let new_question = APIQuestion {
-            id: new_id,
-            title: new_question.title,
-            internal_name: None,
-            description: new_question.description,
-            required: new_question.required,
-            configuration: default_config,
-            position,
-            group_id,
-        };
-        Ok(new_question)
-    }
-
     pub fn validate_question_internal_name(internal_name: String) -> bool {
         if internal_name.len() == 0 {
             return false;
@@ -174,37 +110,141 @@ impl QuestionManager {
         true
     }
 
-    pub async fn set_question<T: ConnectionTrait>(
+    pub async fn save_questions_and_groups<T: ConnectionTrait>(
         conn: &T,
-        group_id: PalformDatabaseID<IDQuestionGroup>,
-        question: APIQuestion,
-    ) -> Result<APIQuestion, SetQuestionError> {
-        let encoded_config =
-            QuestionWithEncodedConfiguration::encode_config(question.configuration)?;
-        let updated_question = question::ActiveModel {
-            id: Set(question.id),
-            title: Set(question.title),
-            internal_name: Set(question.internal_name),
-            description: Set(question.description),
-            required: Set(question.required),
-            configuration: Set(encoded_config),
-            position: Set(question.position),
-            group_id: Set(group_id),
-            ..Default::default()
-        };
+        form_id: PalformDatabaseID<IDForm>,
+        groups: Vec<APIQuestionGroup>,
+        questions: Vec<APIQuestion>,
+    ) -> Result<(), SetQuestionError> {
+        let current_question_ids: Vec<PalformDatabaseID<IDQuestion>> = Question::find()
+            .select_only()
+            .column(question::Column::Id)
+            .join(JoinType::InnerJoin, question::Relation::QuestionGroup.def())
+            .filter(question_group::Column::FormId.eq(form_id))
+            .into_tuple()
+            .all(conn)
+            .await?;
+        let current_question_ids =
+            HashSet::<PalformDatabaseID<IDQuestion>>::from_iter(current_question_ids);
 
-        let question = updated_question.update(conn).await?;
-        APIQuestion::try_from(QuestionWithEncodedConfiguration::from(question))
-            .map_err(|e| SetQuestionError::EncodeError(e))
-    }
+        let current_group_ids: Vec<PalformDatabaseID<IDQuestionGroup>> = QuestionGroup::find()
+            .select_only()
+            .column(question_group::Column::Id)
+            .filter(question_group::Column::FormId.eq(form_id))
+            .into_tuple()
+            .all(conn)
+            .await?;
+        let current_group_ids =
+            HashSet::<PalformDatabaseID<IDQuestionGroup>>::from_iter(current_group_ids);
 
-    pub async fn delete_question<T: ConnectionTrait>(
-        conn: &T,
-        question_id: PalformDatabaseID<IDQuestion>,
-    ) -> Result<(), DbErr> {
-        Question::delete_by_id(question_id)
-            .exec(conn)
-            .await
-            .map(|_| ())
+        let encoded_groups: Result<
+            Vec<(
+                PalformDatabaseID<IDQuestionGroup>,
+                question_group::ActiveModel,
+            )>,
+            SetQuestionError,
+        > = groups
+            .iter()
+            .enumerate()
+            .map(|(i, g)| {
+                let step_strategy = serde_json::to_value(g.step_strategy.clone())
+                    .map_err(|e| SetQuestionError::EncodeError(e))?;
+
+                Ok((
+                    g.id,
+                    question_group::ActiveModel {
+                        id: Set(g.id),
+                        position: Set(i as i32),
+                        title: Set(g.title.clone()),
+                        description: Set(g.description.clone()),
+                        step_strategy: Set(step_strategy),
+                        form_id: Set(form_id),
+                        ..Default::default()
+                    },
+                ))
+            })
+            .collect();
+        let encoded_groups = encoded_groups?;
+
+        let encoded_questions: Result<
+            Vec<(PalformDatabaseID<IDQuestion>, question::ActiveModel)>,
+            SetQuestionError,
+        > = questions
+            .iter()
+            .enumerate()
+            .map(|(i, q)| {
+                let configuration =
+                    QuestionWithEncodedConfiguration::encode_config(q.configuration.clone())
+                        .map_err(|e| SetQuestionError::EncodeError(e))?;
+
+                if let Some(internal_name) = q.internal_name.clone() {
+                    if !Self::validate_question_internal_name(internal_name) {
+                        return Err(SetQuestionError::ValidationError(
+                            "invalid internal name".to_string(),
+                        ));
+                    }
+                }
+
+                Ok((
+                    q.id,
+                    question::ActiveModel {
+                        id: Set(q.id),
+                        title: Set(q.title.clone()),
+                        internal_name: Set(q.internal_name.clone()),
+                        description: Set(q.description.clone()),
+                        required: Set(q.required),
+                        configuration: Set(configuration),
+                        position: Set(i as i32),
+                        group_id: Set(q.group_id),
+                        ..Default::default()
+                    },
+                ))
+            })
+            .collect();
+        let encoded_questions = encoded_questions?;
+
+        let mut seen_group_ids = HashSet::<PalformDatabaseID<IDQuestionGroup>>::new();
+        for (group_id, group) in encoded_groups {
+            seen_group_ids.insert(group_id);
+            if current_group_ids.contains(&group_id) {
+                group.update(conn).await?;
+            } else {
+                group.insert(conn).await?;
+            }
+        }
+
+        let deleted_group_ids: Vec<PalformDatabaseID<IDQuestionGroup>> = current_group_ids
+            .difference(&seen_group_ids)
+            .cloned()
+            .collect();
+        if !deleted_group_ids.is_empty() {
+            QuestionGroup::delete_many()
+                .filter(question_group::Column::Id.is_in(deleted_group_ids))
+                .exec(conn)
+                .await?;
+        }
+
+        let mut seen_question_ids = HashSet::<PalformDatabaseID<IDQuestion>>::new();
+        for (question_id, question) in encoded_questions {
+            seen_question_ids.insert(question_id);
+            if current_question_ids.contains(&question_id) {
+                question.update(conn).await?;
+            } else {
+                question.insert(conn).await?;
+            }
+        }
+
+        let deleted_question_ids: Vec<PalformDatabaseID<IDQuestion>> = current_question_ids
+            .difference(&seen_question_ids)
+            .cloned()
+            .collect();
+        if !deleted_question_ids.is_empty() {
+            Question::delete_many()
+                .filter(question::Column::Id.is_in(deleted_question_ids))
+                .exec(conn)
+                .await?;
+        }
+
+        Ok(())
     }
 }

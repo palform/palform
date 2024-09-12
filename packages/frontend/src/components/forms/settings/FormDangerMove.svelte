@@ -12,14 +12,15 @@
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
 
     const orgCtx = getOrgContext();
-    const formCtx = getFormCtx();
+    const formMetadataCtx = getFormCtx();
+
     let showModal = false;
     let selectedTeam = "";
     $: selectItems = $orgCtx.myTeams
         .filter(
             (e) =>
-                e.team_id !== $formCtx.team_id &&
-                (e.my_role === "Editor" || e.my_role === "Admin"),
+                e.team_id !== $formMetadataCtx.team_id &&
+                (e.my_role === "Editor" || e.my_role === "Admin")
         )
         .map((t) => ({
             name: t.name,
@@ -32,10 +33,14 @@
         loading = true;
         try {
             await APIs.forms().then((a) =>
-                a.formsRelocate($orgCtx.org.id, $formCtx.id, selectedTeam),
+                a.formsRelocate(
+                    $orgCtx.org.id,
+                    $formMetadataCtx.id,
+                    selectedTeam
+                )
             );
             await showSuccessToast("Form moved");
-            updateFormCtx(orgCtx, $formCtx.id, (ctx) => {
+            updateFormCtx(orgCtx, $formMetadataCtx.id, (ctx) => {
                 ctx.team_id = selectedTeam;
             });
             showModal = false;
