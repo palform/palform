@@ -33,7 +33,6 @@
     import {
         faArrowDown,
         faArrowUp,
-        faEdit,
         faTrash,
     } from "@fortawesome/free-solid-svg-icons";
     import QeText from "./QEText.svelte";
@@ -60,7 +59,6 @@
     const formEditorCtx = getFormEditorCtx();
 
     $: editing = $formEditorCtx.currentlyEditing === questionId;
-    $: otherEditing = $formEditorCtx.currentlyEditing !== undefined && !editing;
 
     let questionTitle = $question?.title ?? "";
     let questionDescription = $question?.description;
@@ -89,7 +87,8 @@
         $formEditorCtx.currentlyEditing = undefined;
     };
 
-    $: onDeleteClick = async () => {
+    $: onDeleteClick = async (e: Event) => {
+        e.stopPropagation();
         if (!$question) return;
 
         const groupId = $question.group_id;
@@ -118,7 +117,12 @@
 </script>
 
 {#if $question}
-    <CardBox>
+    <CardBox
+        element="button"
+        class={`block w-full text-left ${editing ? "" : "hover:scale-[1.02] active:scale-[0.98] transition-transform"}`}
+        on:click={onEditClick}
+        disabled={editing}
+    >
         {#if !editing}
             <div class="flex justify-between items-start">
                 <CardBoxTitle>
@@ -131,9 +135,19 @@
                 <ButtonGroup>
                     <Button
                         color="light"
+                        disabled={!!$formEditorCtx.currentlyEditing}
+                        on:click={onDeleteClick}
+                    >
+                        <FontAwesomeIcon icon={faTrash} />
+                    </Button>
+                    <Button
+                        color="light"
                         disabled={!canMoveUp ||
                             !!$formEditorCtx.currentlyEditing}
-                        on:click={() => onMoveClick("up")}
+                        on:click={(e) => {
+                            e.stopPropagation();
+                            onMoveClick("up");
+                        }}
                     >
                         <FontAwesomeIcon icon={faArrowUp} />
                     </Button>
@@ -141,7 +155,10 @@
                         color="light"
                         disabled={!canMoveDown ||
                             !!$formEditorCtx.currentlyEditing}
-                        on:click={() => onMoveClick("down")}
+                        on:click={(e) => {
+                            e.stopPropagation();
+                            onMoveClick("down");
+                        }}
                     >
                         <FontAwesomeIcon icon={faArrowDown} />
                     </Button>
@@ -249,29 +266,7 @@
             <QuestionTypeLabel configuration={$question.configuration} />
         {/if}
 
-        {#if !editing}
-            <div class="mt-2">
-                <Button
-                    size="sm"
-                    outline
-                    on:click={onEditClick}
-                    disabled={$formEditorCtx.loading || otherEditing}
-                >
-                    <FontAwesomeIcon icon={faEdit} class="me-2" />
-                    Edit
-                </Button>
-
-                <Button
-                    size="sm"
-                    outline
-                    on:click={onDeleteClick}
-                    disabled={$formEditorCtx.loading || otherEditing}
-                >
-                    <FontAwesomeIcon icon={faTrash} class="me-2" />
-                    Delete
-                </Button>
-            </div>
-        {:else if !qIsMeta($question.configuration)}
+        {#if editing && !qIsMeta($question.configuration)}
             <div
                 class="bg-slate-50/40 dark:bg-slate-800 border dark:border-slate-700 p-4 mt-4 mb-2 rounded-lg"
             >

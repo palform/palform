@@ -12,7 +12,7 @@
         getEditorQuestionsInGroup,
         getFormEditorCtx,
     } from "../../../data/contexts/formEditor";
-    import { slide } from "svelte/transition";
+    import { flip } from "svelte/animate";
 
     export let groupId: string;
     const dispatch = createEventDispatcher<{ serverSync: undefined }>();
@@ -39,7 +39,14 @@
     <QgContainer group={$group} on:delete={onDelete}>
         <div class="space-y-4 mb-4">
             {#each $questionsInGroup as question, index (question.id)}
-                <div transition:slide class="space-y-4">
+                <div
+                    animate:flip={{
+                        duration: $formMetadataCtx.one_question_per_page
+                            ? 0
+                            : 200,
+                    }}
+                    class="space-y-4"
+                >
                     {#if !$formMetadataCtx.one_question_per_page}
                         <CreateQuestion
                             {groupId}

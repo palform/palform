@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { fade } from "svelte/transition";
     import {
         getBrandCtx,
         getLightnessForBrandBorder,
@@ -12,10 +11,10 @@
 
     export let backgroundColor: string = "";
     export let errorState = false;
-    export let fadeIn = false;
-    export let fadeOut = false;
     export let neutralBorder = false;
     export let ignorePadding = false;
+    export let element: "div" | "button" = "div";
+    export let disabled = false;
 
     const brandCtx = getBrandCtx();
     let borderColorOverride: string | undefined = undefined;
@@ -52,7 +51,11 @@
     })();
 </script>
 
-<div
+<svelte:element
+    this={element}
+    on:click
+    {disabled}
+    role={element === "button" ? "button" : ""}
     class={`border ${neutralBorder ? "border-slate-200 dark:border-slate-600" : ""} shadow-sm ${$$props.class ?? ""}`}
     style:background-color={backgroundColor}
     style:border-color={borderColorOverride}
@@ -61,12 +64,6 @@
     style:padding={ignorePadding
         ? undefined
         : getPaddingAmountForBrand($brandCtx)}
-    in:fade={{
-        duration: fadeIn ? 100 : 0,
-    }}
-    out:fade={{
-        duration: fadeOut ? 100 : 0,
-    }}
 >
     <slot />
-</div>
+</svelte:element>

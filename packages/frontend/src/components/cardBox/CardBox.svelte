@@ -5,6 +5,8 @@
     export let errorState = false;
     export let fadeIn = false;
     export let fadeOut = false;
+    export let element = "div";
+    export let disabled = false;
 </script>
 
 <GenericBrandBox
@@ -12,6 +14,9 @@
     {backgroundColor}
     {fadeIn}
     {fadeOut}
+    {element}
+    on:click
+    {disabled}
 >
     <slot />
 </GenericBrandBox>
