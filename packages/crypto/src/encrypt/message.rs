@@ -1,14 +1,15 @@
 use std::io::Write;
 
-use crate::{form_management::submission::InProgressSubmission, policy::recipient_cert_policy};
-
 use anyhow::anyhow;
+use palform_client_common::form_management::submission::InProgressSubmission;
 use sequoia_openpgp::{
     armor::{Kind, Reader, ReaderMode, Writer},
     parse::Parse,
     serialize::stream::{Encryptor2, LiteralWriter, Message},
     Cert,
 };
+
+use crate::policy::recipient_cert_policy;
 
 fn encrypt_anything(data: &[u8], recipient_certs: Vec<String>) -> Result<Vec<u8>, anyhow::Error> {
     let policy = recipient_cert_policy();

@@ -4,9 +4,9 @@
     import { faDownload } from "@fortawesome/free-solid-svg-icons";
     import { APIs } from "../../../../data/common";
     import { getOrgContext } from "../../../../data/contexts/orgLayout";
-    import { decryptSubmissionAsset } from "../../../../data/crypto/submissions";
     import { showFailureToast } from "../../../../data/toast";
     import { getFormAdminContext } from "../../../../data/contexts/formAdmin";
+    import { decryptSubmissionAsset } from "../../../../data/crypto/results";
 
     export let fileId: string;
     export let contentType: string;

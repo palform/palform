@@ -12,12 +12,11 @@
     import { parseServerTime } from "../../data/util/time";
     import { APIs } from "../../data/common";
     import { createEventDispatcher } from "svelte";
-    import { showToast } from "../../data/toast";
-    import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+    import { showFailureToast, showSuccessToast } from "../../data/toast";
     import {
         KeyMetadata,
         get_key_metadata_js,
-    } from "@paltiverse/palform-client-common";
+    } from "@paltiverse/palform-crypto";
     import {
         deleteLocalKey,
         downloadPrivateKey,
@@ -54,17 +53,9 @@
             }
 
             dispatch("deleted");
-            await showToast({
-                color: "green",
-                icon: faCheck,
-                label: "Key deleted!",
-            });
+            await showSuccessToast("Key deleted!");
         } catch (e) {
-            await showToast({
-                color: "red",
-                icon: faTimes,
-                label: "Failed to delete key: " + e,
-            });
+            await showFailureToast(e);
         }
         loading = false;
     };

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use palform_client_common::policy::recipient_cert_policy;
+use palform_crypto::policy::recipient_cert_policy;
 use palform_tsid::resources::{IDForm, IDOrganisation, IDSubmission};
 use palform_tsid::tsid::PalformDatabaseID;
 use rocket::{get, http::Status, serde::json::Json, State};

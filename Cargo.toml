@@ -4,6 +4,7 @@ members = [
     "packages/migration",
     "packages/entities",
     "packages/client-common",
+    "packages/crypto",
     "packages/google-fonts-generator",
     "packages/analysis",
     "packages/tsid",
@@ -15,6 +16,9 @@ resolver = "2"
 lto = true
 
 [profile.release.package.palform-client-common]
+opt-level = 's'
+
+[profile.release.package.palform-crypto]
 opt-level = 's'
 
 [profile.release.package.palform-analysis]

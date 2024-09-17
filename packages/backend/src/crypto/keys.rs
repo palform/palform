@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use chrono::{DateTime, Utc};
-use palform_client_common::{
+use palform_crypto::{
     keys::{
         encryption_key::resolve_encryption_key,
         parse::{public_key_from_pem, secret_key_from_pem},

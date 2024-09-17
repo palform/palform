@@ -1,6 +1,7 @@
 use super::key_resolver::KeyResolver;
-use crate::{form_management::submission::InProgressSubmission, policy::recipient_cert_policy};
+use crate::policy::recipient_cert_policy;
 use anyhow::anyhow;
+use palform_client_common::form_management::submission::InProgressSubmission;
 use sequoia_openpgp::parse::{stream::DecryptorBuilder, Parse};
 use std::io::Read;
 

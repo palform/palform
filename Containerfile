@@ -8,6 +8,7 @@ COPY packages/backend packages/backend
 COPY packages/analysis packages/analysis
 COPY packages/bench packages/bench
 COPY packages/client-common packages/client-common
+COPY packages/crypto packages/crypto
 COPY packages/entities packages/entities
 COPY packages/migration packages/migration
 COPY packages/google-fonts-generator packages/google-fonts-generator

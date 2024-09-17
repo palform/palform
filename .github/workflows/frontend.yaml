@@ -17,6 +17,8 @@ jobs:
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Build Rust bindings for client-common
         run: wasm-pack build -s paltiverse -d ../client-js --release packages/client-common --no-default-features --features frontend-js
+      - name: Build Rust bindings for crypto
+        run: wasm-pack build -s paltiverse -d ../crypto-js --release packages/crypto --no-default-features --features frontend-js
       - name: Build Rust bindings for analysis
         run: wasm-pack build -s paltiverse -d ../analysis-js --release packages/analysis
       - name: Install frontend dependencies

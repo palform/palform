@@ -7,7 +7,7 @@ import {
     generate_certificate_js,
     get_key_metadata_js,
     strip_secret_bits_js,
-} from "@paltiverse/palform-client-common";
+} from "@paltiverse/palform-crypto";
 import downloadFile from "../util/downloadFile";
 
 export async function findKey(

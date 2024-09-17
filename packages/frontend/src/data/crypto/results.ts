@@ -2,7 +2,6 @@ import type { QuestionSubmission } from "@paltiverse/palform-client-js-extra-typ
 import type { APISubmission } from "@paltiverse/palform-typescript-openapi";
 import DecryptWorker from "./decryptWorker?worker";
 import type { Readable, Writable } from "svelte/store";
-import type { ResponsesContext } from "../contexts/results";
 import * as Comlink from "comlink";
 import type { DecryptAllSubmissionsFunction } from "./decryptWorker";
 import { getPrivateKeys } from "../contexts/keys";
@@ -10,6 +9,8 @@ import { decryptedSubmissionCacheDb, pouchInfiniteLimit } from "../pouch";
 import { DateTime } from "luxon";
 import { APIs } from "../common";
 import { parseServerTime } from "../util/time";
+import type { FormAdminContext } from "../contexts/formAdmin";
+import { decrypt_blob_js, KeyResolver } from "@paltiverse/palform-crypto";
 
 export interface DecryptedSubmissionBase {
     id: string;
@@ -47,7 +48,7 @@ export async function downloadSubmissionsForForm(
     orgId: string,
     formId: string,
     statusUpdate: Writable<{ total: number; done: number } | undefined>,
-    responsesCtx: Writable<ResponsesContext>,
+    formAdminCtx: Writable<FormAdminContext>,
     terminateHandle: Readable<boolean>
 ) {
     const allCachedSubmissions = (
@@ -137,9 +138,15 @@ export async function downloadSubmissionsForForm(
         return aDate === bDate ? 0 : aDate < bDate ? -1 : 1;
     });
 
-    responsesCtx.update((ctx) => {
+    formAdminCtx.update((ctx) => {
         return { ...ctx, submissions: flatResp };
     });
+}
+
+export async function decryptSubmissionAsset(data: string) {
+    const keyPEMs = await getPrivateKeys();
+    const resolver = new KeyResolver(keyPEMs);
+    return decrypt_blob_js(data, resolver);
 }
 
 export function submissionIsError(

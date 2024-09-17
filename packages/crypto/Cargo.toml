@@ -1,0 +1,36 @@
+[package]
+name = "palform-crypto"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+serde = { version = "1.0.201", features = ["derive"] }
+serde_json = { version = "1.0.117" }
+anyhow = "1.0.83"
+sequoia-openpgp = { version = "1.20.0", default-features = false, features = [
+    "crypto-rust",
+    "allow-variable-time-crypto",
+    "allow-experimental-crypto",
+] }
+rand = { version = "0.8.5", default-features = false, features = ["getrandom"] }
+csv = "1.3.0"
+
+serde-wasm-bindgen = { version = "0.6.5", optional = true }
+wasm-bindgen = { version = "0.2.92", features = ["serde"], optional = true }
+getrandom = { version = "0.2", features = ["js"], optional = true }
+
+palform-client-common = { path = "../client-common", default-features = false }
+
+[features]
+default = ["frontend-js"]
+frontend-js = [
+    "dep:serde-wasm-bindgen",
+    "dep:wasm-bindgen",
+    "dep:getrandom",
+    "palform-client-common/frontend-js",
+]

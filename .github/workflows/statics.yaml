@@ -20,6 +20,10 @@ jobs:
           mkdir packages/client-js
           touch packages/client-js/package.json
           echo "{\"name\": \"@paltiverse/palform-client-common\"}" > packages/client-js/package.json
+
+          mkdir packages/crypto-js
+          touch packages/crypto-js/package.json
+          echo "{\"name\": \"@paltiverse/palform-crypto\"}" > packages/crypto-js/package.json
       - name: Install frontend dependencies
         run: bun install --frozen-lockfile
       - name: Build landing page

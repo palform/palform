@@ -1,13 +1,7 @@
-import {
-    decrypt_blob_js,
-    encrypt_blob_js,
-    encrypt_submission_js,
-    KeyResolver,
-} from "@paltiverse/palform-client-common";
 import type { InProgressSubmissionRecord } from "../pouch";
 import type { InProgressSubmission } from "@paltiverse/palform-client-js-extra-types/InProgressSubmission";
 import { APIs } from "../common";
-import { getPrivateKeys } from "../contexts/keys";
+import { createMessage, readKey } from "openpgp";
 
 async function getFormKeys(
     orgId: string,
@@ -24,6 +18,17 @@ async function getFormKeys(
     return resp.data;
 }
 
+async function encryptAnything(data: Uint8Array, keys: string[]) {
+    const parsedKeys = await Promise.all(
+        keys.map((e) => readKey({ armoredKey: e }))
+    );
+
+    const message = await createMessage({ binary: data });
+    const encrypted = await message.encrypt(parsedKeys);
+
+    return encrypted;
+}
+
 export async function encryptSubmissionAsset(
     file: File,
     orgId: string,
@@ -38,13 +43,8 @@ export async function encryptSubmissionAsset(
     }
 
     const fileData = new Uint8Array(await file.arrayBuffer());
-    return encrypt_blob_js(fileData, formKeys);
-}
-
-export async function decryptSubmissionAsset(data: string) {
-    const keyPEMs = await getPrivateKeys();
-    const resolver = new KeyResolver(keyPEMs);
-    return decrypt_blob_js(data, resolver);
+    const encryptedData = await encryptAnything(fileData, formKeys);
+    return new TextEncoder().encode(encryptedData.armor());
 }
 
 export async function sendSubmission(
@@ -67,14 +67,19 @@ export async function sendSubmission(
         questions: submission.questions,
         groups_completed: [...submission.groups_completed, lastGroupId],
     };
-    const encryptedSubmission = encrypt_submission_js(
-        submissionToEncrypt,
+
+    const encodedSubmission = new TextEncoder().encode(
+        JSON.stringify(submissionToEncrypt)
+    );
+    const encryptedSubmission = await encryptAnything(
+        encodedSubmission,
         formKeys
     );
+
     await APIs.fill(fillAccessToken).forms.formsFill(
         orgId,
         formId,
-        encryptedSubmission,
-        captchaValue,
+        encryptedSubmission.armor(),
+        captchaValue
     );
 }

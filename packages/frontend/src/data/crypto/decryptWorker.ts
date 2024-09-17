@@ -14,7 +14,7 @@ async function decryptAllSubmissions(
     cacheSubmission: (submission: DecryptedSubmissionSuccess) => Promise<void>
 ) {
     const { decrypt_decode_submission_js, KeyResolver } = await import(
-        "@paltiverse/palform-client-common"
+        "@paltiverse/palform-crypto"
     );
 
     const resolver = new KeyResolver(keyPEMs);

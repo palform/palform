@@ -1,12 +1,12 @@
 <script lang="ts">
     import { Checkbox, Helper, Input, Label } from "flowbite-svelte";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
-    import { generate_passphrase_js } from "@paltiverse/palform-client-common";
     import LoadingButton from "../../LoadingButton.svelte";
     import { backupKey } from "../../../data/crypto/keyManager";
     import { showSuccessToast } from "../../../data/toast";
     import { createEventDispatcher } from "svelte";
     import InfoText from "../../type/InfoText.svelte";
+    import { generate_passphrase_js } from "@paltiverse/palform-crypto";
 
     export let keyId: string;
     const orgCtx = getOrgContext();
