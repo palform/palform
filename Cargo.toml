@@ -10,3 +10,15 @@ members = [
     "packages/bench",
 ]
 resolver = "2"
+
+[profile.release]
+lto = true
+
+[profile.release.package.palform-client-common]
+opt-level = 's'
+
+[profile.release.package.palform-analysis]
+opt-level = 's'
+
+[profile.release.package.palform-backend]
+opt-level = 3
