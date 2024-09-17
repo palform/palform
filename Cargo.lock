@@ -1927,19 +1927,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gloo-console"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a17868f56b4a24f677b17c8cb69958385102fa879418052d60b50bc1727e261"
-dependencies = [
- "gloo-utils",
- "js-sys",
- "serde",
- "wasm-bindgen",
- "web-sys",
-]
-
-[[package]]
 name = "gloo-timers"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1949,19 +1936,6 @@ dependencies = [
  "futures-core",
  "js-sys",
  "wasm-bindgen",
-]
-
-[[package]]
-name = "gloo-utils"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0b5555354113b18c547c1d3a98fbf7fb32a9ff4f6fa112ce823a21641a0ba3aa"
-dependencies = [
- "js-sys",
- "serde",
- "serde_json",
- "wasm-bindgen",
- "web-sys",
 ]
 
 [[package]]
@@ -3337,19 +3311,13 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "getrandom 0.2.15",
- "gloo-console",
  "interp",
  "linfa",
  "linfa-linear",
  "ndarray 0.15.6",
  "ndarray-stats",
  "palform-client-common",
- "rand 0.8.5",
- "serde",
  "serde-wasm-bindgen",
- "serde_json",
- "ts-rs",
- "uuid",
  "wasm-bindgen",
 ]
 
@@ -3414,15 +3382,11 @@ dependencies = [
  "console_error_panic_hook",
  "csv",
  "geo",
- "getrandom 0.2.15",
- "gloo-console",
  "log",
  "palform-tsid",
- "rand 0.8.5",
  "rocket",
  "schemars",
  "sea-orm",
- "sequoia-openpgp",
  "serde",
  "serde-wasm-bindgen",
  "serde_json",
@@ -3453,7 +3417,6 @@ name = "palform-entities"
 version = "0.1.0"
 dependencies = [
  "palform-tsid",
- "schemars",
  "sea-orm",
  "serde",
 ]
@@ -4727,13 +4690,11 @@ version = "0.8.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09c024468a378b7e36765cd36702b7a90cc3cba11654f6685c8f233408e89e92"
 dependencies = [
- "chrono",
  "dyn-clone",
  "indexmap 1.9.3",
  "schemars_derive",
  "serde",
  "serde_json",
- "uuid",
 ]
 
 [[package]]
@@ -6349,7 +6310,6 @@ version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "81dfa00651efa65069b0b6b651f4aaa31ba9e3c3ce0137aaad053604ee7e0314"
 dependencies = [
- "getrandom 0.2.15",
  "serde",
 ]
 

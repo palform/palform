@@ -8,22 +8,17 @@ path = "src/lib.rs"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-serde = { version = "1.0.201", features = ["derive"] }
-serde_json = { version = "1.0.117" }
-uuid = { version = "1.8.0", features = ["v4", "serde"] }
 anyhow = "1.0.83"
 
 serde-wasm-bindgen = { version = "0.6.5" }
 wasm-bindgen = { version = "0.2.92", features = ["serde"] }
-gloo-console = { version = "0.3.0" }
-ts-rs = { version = "9.0.0", features = ["uuid-impl"] }
 getrandom = { version = "*", features = ["js"] }
 linfa = "0.7.0"
 linfa-linear = "0.7.0"
+interp = "1.0.3"
+# waiting to upgrade: https://github.com/rust-ml/linfa/issues/357
 ndarray = "0.15"
 ndarray-stats = "0.5"
-rand = "0.8.5"
-interp = "1.0.3"
 
 palform-client-common = { path = "../client-common", default-features = false, features = [
     "frontend-js",
