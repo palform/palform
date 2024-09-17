@@ -2,16 +2,14 @@
     import { APIs, backendURL } from "../../../data/common";
     import { formFillStore } from "../../../data/contexts/fill";
     import { Body } from "svelte-body";
-    import { getOrgContext } from "../../../data/contexts/orgLayout";
 
     export let id: string;
+    export let orgId: string | undefined = undefined;
     export let teamId: string | undefined = undefined;
     export let height: string | undefined = undefined;
     export let width: string | undefined = undefined;
     export let alt: string | undefined = undefined;
     export let asBodyBackground = false;
-
-    const orgCtx = getOrgContext();
 
     $: assetUrl = $formFillStore
         ? backendURL +
@@ -21,10 +19,14 @@
     let resolvedAssetUrl: string | undefined = undefined;
 
     $: (async () => {
-        if (assetUrl === undefined && teamId !== undefined) {
+        if (
+            assetUrl === undefined &&
+            teamId !== undefined &&
+            orgId !== undefined
+        ) {
             resolvedAssetUrl = undefined;
             const resp = await APIs.teamAssets().then((a) =>
-                a.organisationTeamAssetGet($orgCtx.org.id, teamId, id)
+                a.organisationTeamAssetGet(orgId, teamId, id)
             );
             resolvedAssetUrl = resp.data;
         }

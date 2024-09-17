@@ -8,4 +8,5 @@ edition = "2021"
 [dependencies]
 sea-orm = "1.0"
 serde = { version = "1.0", features = ["derive"] }
+schemars = { version = "0.8.17", features = ["chrono"] }
 palform-tsid = { path = "../tsid", features = ["sea-orm"] }

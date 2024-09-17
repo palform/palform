@@ -3417,6 +3417,7 @@ name = "palform-entities"
 version = "0.1.0"
 dependencies = [
  "palform-tsid",
+ "schemars",
  "sea-orm",
  "serde",
 ]
@@ -4690,6 +4691,7 @@ version = "0.8.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09c024468a378b7e36765cd36702b7a90cc3cba11654f6685c8f233408e89e92"
 dependencies = [
+ "chrono",
  "dyn-clone",
  "indexmap 1.9.3",
  "schemars_derive",

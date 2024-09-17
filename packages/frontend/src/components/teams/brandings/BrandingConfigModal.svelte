@@ -500,6 +500,7 @@
                         <ImageAsset
                             id={backgroundId}
                             teamId={$teamCtx.team.id}
+                            orgId={$orgCtx.org.id}
                         />
                     </div>
                 {/if}
@@ -532,6 +533,7 @@
                                 <ImageAsset
                                     id={logoId}
                                     teamId={$teamCtx.team.id}
+                                    orgId={$orgCtx.org.id}
                                     width="140px"
                                 />
                             {/if}
