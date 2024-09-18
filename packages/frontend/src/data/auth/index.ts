@@ -8,7 +8,7 @@ import {
     type NewAPIAuthToken,
 } from "@paltiverse/palform-typescript-openapi";
 import { navigate } from "svelte-routing";
-import { showSuccessToast } from "../toast";
+import { showFailureToast } from "../toast";
 import { AxiosError } from "axios";
 import {
     clearOIDCVariables,
@@ -173,7 +173,7 @@ export async function apiWithAuth<T extends BaseAPI>(
 ): Promise<T> {
     const auth = await getCredentials();
     if (!auth) {
-        await showSuccessToast("Please sign in to continue");
+        await showFailureToast("Please sign in to continue");
         navigate("/auth/login");
         throw new UnauthenticatedError();
     }
