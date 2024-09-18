@@ -1,6 +1,6 @@
 import type { SocialAuthService } from "@paltiverse/palform-typescript-openapi";
 import googleLogo from "../../assets/social_auth/google.png";
-import { APIs, urlsBase } from "../common";
+import { APIs, frontendURL } from "../common";
 import {
     clearOIDCVariables,
     getOIDCVariables,
@@ -27,7 +27,7 @@ export function socialAuthServiceIcon(service: SocialAuthService) {
 }
 
 function socialAuthRedirectURL(service: SocialAuthService) {
-    return new URL(`/auth/social/${service}/callback`, urlsBase);
+    return new URL(`/auth/social/${service}/callback`, frontendURL);
 }
 
 export async function startSocialAuth(service: SocialAuthService) {
