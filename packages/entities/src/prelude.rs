@@ -20,6 +20,7 @@ pub use super::organisation_invite::Entity as OrganisationInvite;
 pub use super::organisation_membership::Entity as OrganisationMembership;
 pub use super::question::Entity as Question;
 pub use super::question_group::Entity as QuestionGroup;
+pub use super::social_auth_connection::Entity as SocialAuthConnection;
 pub use super::submission::Entity as Submission;
 pub use super::team::Entity as Team;
 pub use super::team_asset::Entity as TeamAsset;

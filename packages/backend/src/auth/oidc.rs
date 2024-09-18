@@ -9,10 +9,9 @@ use openidconnect::{
         CoreTokenType,
     },
     reqwest::async_http_client,
-    AdditionalClaims, AuthorizationCode, Client, ClientId, ClientSecret, CsrfToken,
-    EmptyExtraTokenFields, IdTokenClaims, IdTokenFields, IssuerUrl, Nonce, OAuth2TokenResponse,
-    RedirectUrl, Scope, StandardErrorResponse, StandardTokenResponse, TokenResponse,
-    UserInfoClaims,
+    AdditionalClaims, Client, ClientId, ClientSecret, CsrfToken, EmptyExtraTokenFields,
+    IdTokenClaims, IdTokenFields, IssuerUrl, Nonce, RedirectUrl, Scope, StandardErrorResponse,
+    StandardTokenResponse,
 };
 use palform_entities::sea_orm_active_enums::OrganisationMemberRoleEnum;
 use palform_tsid::{
@@ -30,7 +29,7 @@ use crate::{
         organisation_auth_team_mapping::APIOrganisationAuthTeamMapping,
         organisation_team::APIOrganisationTeamMembership,
     },
-    auth::tokens::{IssueTokenError, NewAPIAuthToken, TokenManager},
+    auth::tokens::{NewAPIAuthToken, TokenManager},
     entity_managers::{
         admin_users::{AdminUserManagementError, AdminUserManager},
         organisation_auth_config::OrganisationAuthConfigManager,
@@ -40,6 +39,8 @@ use crate::{
     },
     rocket_util::from_org_id::FromOrgIdTrait,
 };
+
+use super::oidc_common::{oidc_common_token_exchange, TokenExchangeError};
 
 #[derive(Debug, Error)]
 pub enum GetClientError {
@@ -51,30 +52,6 @@ pub enum GetClientError {
     ParseURL(#[from] openidconnect::url::ParseError),
     #[error("Discovery: {0}")]
     DiscoveryError(String),
-}
-
-#[derive(Debug, Error)]
-pub enum TokenExchangeError {
-    #[error("Parse URL: {0}")]
-    ParseURL(#[from] openidconnect::url::ParseError),
-    #[error("Exchange: {0}")]
-    ExchangeError(String),
-    #[error("Server did not return ID Token")]
-    NoIDToken,
-    #[error("Invalid claims returned by server: {0}")]
-    InvalidClaims(String),
-    #[error("Database error: {0}")]
-    GetUser(DbErr),
-    #[error("Issuing token: {0}")]
-    IssueToken(#[from] IssueTokenError),
-    #[error("Requesting user info: {0}")]
-    UserInfoError(String),
-    #[error("Creating user: {0}")]
-    CreateUserError(#[from] AdminUserManagementError),
-    #[error("Mapping user into teams: {0}")]
-    TeamMappingError(String),
-    #[error("Conflict with existing user: {0}")]
-    UserConflict(String),
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -326,57 +303,25 @@ impl OIDCManager {
         conn: &T,
         auth_code: String,
         nonce: String,
-        redirect_url: &str,
+        redirect_url: String,
     ) -> Result<(NewAPIAuthToken, PalformDatabaseID<IDAdminUser>), TokenExchangeError> {
-        let token_resp = self
-            .client
-            .clone()
-            .set_redirect_uri(RedirectUrl::new(redirect_url.to_string())?)
-            .exchange_code(AuthorizationCode::new(auth_code))
-            .request_async(async_http_client)
-            .await
-            .map_err(|e| TokenExchangeError::ExchangeError(e.to_string()))?;
+        let result = oidc_common_token_exchange(
+            conn,
+            self.client.clone(),
+            auth_code,
+            nonce,
+            redirect_url,
+            Some(self.org_id),
+            None,
+        )
+        .await?;
 
-        let id_token = token_resp.id_token().ok_or(TokenExchangeError::NoIDToken)?;
-        let id_token_claims = id_token
-            .claims(&self.client.id_token_verifier(), &Nonce::new(nonce))
-            .map_err(|e| TokenExchangeError::InvalidClaims(e.to_string()))?;
-
-        let string_sub_id = id_token_claims.subject().as_str();
-        let mut existing_user_id =
-            AdminUserManager::get_user_by_sub(conn, self.org_id.clone(), string_sub_id.to_string())
-                .await
-                .map_err(|e| TokenExchangeError::GetUser(e))?
-                .map(|v| v.id);
-
-        let user_info: UserInfoClaims<GroupsClaim, CoreGenderClaim> = self
-            .client
-            .user_info(
-                token_resp.access_token().to_owned(),
-                Some(id_token_claims.subject().to_owned()),
-            )
-            .map_err(|e| TokenExchangeError::UserInfoError(e.to_string()))?
-            .request_async(async_http_client)
-            .await
-            .map_err(|e| TokenExchangeError::UserInfoError(e.to_string()))?;
-
-        let user_email = user_info.email().ok_or(TokenExchangeError::InvalidClaims(
-            "No email claim returned".to_string(),
-        ))?;
-
-        let email_matched_user = AdminUserManager::get_user_by_email(conn, user_email.to_string())
-            .await
-            .map_err(|e| {
-                TokenExchangeError::UserInfoError(format!(
-                    "check for existing user with matching email: {}",
-                    e
-                ))
-            })?;
-
-        if let Some(email_matched_user) = email_matched_user {
+        let mut user_id = result.sub_matched_user.map(|v| v.id);
+        if let Some(email_matched_user) = result.email_matched_user {
             if let Some(user_org_id) = email_matched_user.org_auth_organisation_id {
-                if email_matched_user.org_auth_sub.is_some()
-                    && email_matched_user.org_auth_sub != Some(string_sub_id.to_owned())
+                if email_matched_user
+                    .org_auth_sub
+                    .is_some_and(|v| v != result.sub.to_owned())
                     && user_org_id == self.org_id
                 {
                     return Err(TokenExchangeError::UserConflict(
@@ -386,26 +331,27 @@ impl OIDCManager {
                 }
             }
 
-            if existing_user_id.is_none() {
+            if user_id.is_none() && email_matched_user.org_auth_organisation_id.is_none() {
                 AdminUserManager::associate_user_with_org(
                     conn,
                     email_matched_user.id,
                     self.org_id,
-                    string_sub_id.to_owned(),
+                    result.sub.to_owned(),
                 )
                 .await
                 .map_err(|e| {
                     TokenExchangeError::CreateUserError(AdminUserManagementError::DBError(e))
                 })?;
-                existing_user_id = Some(email_matched_user.id)
+                user_id = Some(email_matched_user.id)
             }
         }
 
         let token_user_id: PalformDatabaseID<IDAdminUser>;
-        if let Some(existing_user_id) = existing_user_id {
-            token_user_id = existing_user_id;
+        if let Some(user_id) = user_id {
+            token_user_id = user_id;
         } else {
-            let user_display_name = user_info
+            let user_display_name = result
+                .user_info
                 .nickname()
                 .ok_or(TokenExchangeError::InvalidClaims(
                     "No name claim returned".to_string(),
@@ -418,9 +364,9 @@ impl OIDCManager {
             token_user_id = AdminUserManager::create_user_for_org(
                 conn,
                 user_display_name.to_string(),
-                user_email.to_string(),
+                result.email,
                 self.org_id,
-                string_sub_id.to_string(),
+                result.sub,
             )
             .await?;
 
@@ -431,7 +377,8 @@ impl OIDCManager {
                 })?;
         }
 
-        self.map_teams(conn, token_user_id, id_token_claims).await?;
+        self.map_teams(conn, token_user_id, &result.raw_claims)
+            .await?;
         let auth_token = TokenManager::issue_token(conn, token_user_id).await?;
         Ok((auth_token, token_user_id))
     }

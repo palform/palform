@@ -12,6 +12,7 @@
     import { navigate } from "svelte-routing";
     import Captcha from "../../components/captcha/Captcha.svelte";
     import TextButton from "../../components/TextButton.svelte";
+    import SocialAuthButtons from "../../components/auth/SocialAuthButtons.svelte";
 
     let loading = false;
     const isOrgLogin = getOrgSubdomain();
@@ -121,9 +122,15 @@
                 />
             {/if}
 
-            <LoadingButton {loading} disabled={loading} type="submit">
-                Sign in
-            </LoadingButton>
+            <div class="space-y-4">
+                <LoadingButton {loading} disabled={loading} type="submit" buttonClass="w-full">
+                    Sign in
+                </LoadingButton>
+                <p class="text-sm text-center text-gray-500 dark:text-gray-400">
+                    or
+                </p>
+                <SocialAuthButtons prefix="Sign in with" />
+            </div>
         </form>
 
         <svelte:fragment slot="footer">

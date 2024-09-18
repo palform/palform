@@ -8,9 +8,13 @@ import {
     type NewAPIAuthToken,
 } from "@paltiverse/palform-typescript-openapi";
 import { navigate } from "svelte-routing";
-import { showToast } from "../toast";
-import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
+import { showSuccessToast } from "../toast";
 import { AxiosError } from "axios";
+import {
+    clearOIDCVariables,
+    getOIDCVariables,
+    saveOIDCVariables,
+} from "./variables";
 
 async function getActiveAuthentication() {
     const activeAuths = await authDb.find({
@@ -19,7 +23,7 @@ async function getActiveAuthentication() {
                 $gte: DateTime.now().toMillis(),
             },
         },
-        sort: ["expires"],
+        sort: [{ expires: "desc" }],
         limit: 1,
     });
 
@@ -40,22 +44,6 @@ export async function isSignedIn() {
     return (await getActiveAuthentication()) !== undefined;
 }
 
-interface OIDCVariables {
-    state: string;
-    nonce: string;
-}
-
-function saveOIDCVariables(variables: OIDCVariables) {
-    sessionStorage.setItem("oidc", JSON.stringify(variables));
-}
-function getOIDCVariables() {
-    const item = sessionStorage.getItem("oidc");
-    if (item === null) return null;
-    return JSON.parse(item) as OIDCVariables;
-}
-function clearOIDCVariables() {
-    sessionStorage.removeItem("oidc");
-}
 function redirectURL(subdomain: string) {
     const url = new URL("/auth/callback", urlsBase);
     if (window.location.hostname !== "localhost") {
@@ -97,7 +85,7 @@ export async function getSignInURL() {
     if (!orgId) return;
 
     const response = await APIs.auth.authStart(orgId, redirectURL(subdomain));
-    saveOIDCVariables({
+    saveOIDCVariables("org", {
         state: response.data.state,
         nonce: response.data.nonce,
     });
@@ -109,11 +97,11 @@ export async function performAuthCallback(
     code: string,
     state: string
 ) {
-    const vars = getOIDCVariables();
+    const vars = getOIDCVariables("org");
     if (!vars) throw new Error("Session missing; please restart signing in");
     const subdomain = getOrgSubdomain();
     if (!subdomain) throw new Error("Could not find organisation");
-    clearOIDCVariables();
+    clearOIDCVariables("org");
 
     if (state !== vars.state)
         throw new Error("State does not match! Please restart signing in");
@@ -123,12 +111,7 @@ export async function performAuthCallback(
         nonce: vars.nonce,
         redirect_url: redirectURL(subdomain),
     });
-    await authDb.put({
-        _id: response.data.token.id,
-        tokenSecret: response.data.token.secret,
-        created: DateTime.now().toMillis(),
-        expires: DateTime.fromISO(response.data.token.expires_at).toMillis(),
-    });
+    await saveAuthToken(response.data.token);
 }
 
 export async function saveAuthToken(token: NewAPIAuthToken) {
@@ -190,11 +173,7 @@ export async function apiWithAuth<T extends BaseAPI>(
 ): Promise<T> {
     const auth = await getCredentials();
     if (!auth) {
-        await showToast({
-            label: "Please sign in to continue",
-            color: "red",
-            icon: faRightToBracket,
-        });
+        await showSuccessToast("Please sign in to continue");
         navigate("/auth/login");
         throw new UnauthenticatedError();
     }

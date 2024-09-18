@@ -1,6 +1,8 @@
 use figment::{providers::Env, Figment};
 use serde::Deserialize;
 
+use crate::auth::social::SocialAuthService;
+
 #[derive(Debug, Deserialize, Clone)]
 pub struct Config {
     pub cors_origin: String,
@@ -26,11 +28,20 @@ pub struct Config {
 
     pub captcha_secret_key: String,
     pub skip_captcha: bool,
+    pub social_auth_providers: Vec<ConfigSocialAuthProvider>,
 
     #[cfg(feature = "saas")]
     pub stripe_secret_key: String,
     #[cfg(feature = "saas")]
     pub stripe_webhook_secret: String,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct ConfigSocialAuthProvider {
+    pub service: SocialAuthService,
+    pub discovery_url: String,
+    pub client_id: String,
+    pub client_secret: String,
 }
 
 impl Config {

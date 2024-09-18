@@ -3322,6 +3322,19 @@ export interface JoinOrganisationRequest {
 /**
  * 
  * @export
+ * @interface ListSocialAuthProvidersResponse
+ */
+export interface ListSocialAuthProvidersResponse {
+    /**
+     * 
+     * @type {Array<SocialAuthService>}
+     * @memberof ListSocialAuthProvidersResponse
+     */
+    'available_providers': Array<SocialAuthService>;
+}
+/**
+ * 
+ * @export
  * @interface NewAPIAuthToken
  */
 export interface NewAPIAuthToken {
@@ -3662,6 +3675,71 @@ export interface SignInResponseOneOfDone {
 /**
  * 
  * @export
+ * @interface SocialAuthCallbackRequest
+ */
+export interface SocialAuthCallbackRequest {
+    /**
+     * 
+     * @type {SocialAuthService}
+     * @memberof SocialAuthCallbackRequest
+     */
+    'service': SocialAuthService;
+    /**
+     * 
+     * @type {string}
+     * @memberof SocialAuthCallbackRequest
+     */
+    'nonce': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SocialAuthCallbackRequest
+     */
+    'code': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SocialAuthCallbackRequest
+     */
+    'redirect_url': string;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface SocialAuthCallbackResponse
+ */
+export interface SocialAuthCallbackResponse {
+    /**
+     * 
+     * @type {NewAPIAuthToken}
+     * @memberof SocialAuthCallbackResponse
+     */
+    'token': NewAPIAuthToken;
+    /**
+     * 
+     * @type {string}
+     * @memberof SocialAuthCallbackResponse
+     */
+    'new_org_id'?: string | null;
+}
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const SocialAuthService = {
+    Google: 'Google'
+} as const;
+
+export type SocialAuthService = typeof SocialAuthService[keyof typeof SocialAuthService];
+
+
+/**
+ * 
+ * @export
  * @interface StartAuthResponse
  */
 export interface StartAuthResponse {
@@ -3681,6 +3759,52 @@ export interface StartAuthResponse {
      * 
      * @type {string}
      * @memberof StartAuthResponse
+     */
+    'nonce': string;
+}
+/**
+ * 
+ * @export
+ * @interface StartSocialAuthRequest
+ */
+export interface StartSocialAuthRequest {
+    /**
+     * 
+     * @type {SocialAuthService}
+     * @memberof StartSocialAuthRequest
+     */
+    'service': SocialAuthService;
+    /**
+     * 
+     * @type {string}
+     * @memberof StartSocialAuthRequest
+     */
+    'redirect_url': string;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface StartSocialAuthResponse
+ */
+export interface StartSocialAuthResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof StartSocialAuthResponse
+     */
+    'url': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof StartSocialAuthResponse
+     */
+    'state': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof StartSocialAuthResponse
      */
     'nonce': string;
 }
@@ -4189,6 +4313,105 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             };
         },
         /**
+         * 
+         * @param {SocialAuthCallbackRequest} socialAuthCallbackRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authSocialCallback: async (socialAuthCallbackRequest: SocialAuthCallbackRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'socialAuthCallbackRequest' is not null or undefined
+            assertParamExists('authSocialCallback', 'socialAuthCallbackRequest', socialAuthCallbackRequest)
+            const localVarPath = `/auth/social/callback`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(socialAuthCallbackRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authSocialList: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/auth/social/providers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {StartSocialAuthRequest} startSocialAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authSocialStart: async (startSocialAuthRequest: StartSocialAuthRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'startSocialAuthRequest' is not null or undefined
+            assertParamExists('authSocialStart', 'startSocialAuthRequest', startSocialAuthRequest)
+            const localVarPath = `/auth/social/start`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(startSocialAuthRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Start authentication flow  Generate an OIDC URL with the configured provider to start authentication
          * @param {string} orgId 
          * @param {string} redirectUrl 
@@ -4355,6 +4578,41 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * 
+         * @param {SocialAuthCallbackRequest} socialAuthCallbackRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async authSocialCallback(socialAuthCallbackRequest: SocialAuthCallbackRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SocialAuthCallbackResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.authSocialCallback(socialAuthCallbackRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthenticationApi.authSocialCallback']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async authSocialList(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListSocialAuthProvidersResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.authSocialList(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthenticationApi.authSocialList']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {StartSocialAuthRequest} startSocialAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async authSocialStart(startSocialAuthRequest: StartSocialAuthRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StartSocialAuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.authSocialStart(startSocialAuthRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthenticationApi.authSocialStart']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Start authentication flow  Generate an OIDC URL with the configured provider to start authentication
          * @param {string} orgId 
          * @param {string} redirectUrl 
@@ -4439,6 +4697,32 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
             return localVarFp.authSignUp(xCaptchaResponse, createUserRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * 
+         * @param {SocialAuthCallbackRequest} socialAuthCallbackRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authSocialCallback(socialAuthCallbackRequest: SocialAuthCallbackRequest, options?: any): AxiosPromise<SocialAuthCallbackResponse> {
+            return localVarFp.authSocialCallback(socialAuthCallbackRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authSocialList(options?: any): AxiosPromise<ListSocialAuthProvidersResponse> {
+            return localVarFp.authSocialList(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {StartSocialAuthRequest} startSocialAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authSocialStart(startSocialAuthRequest: StartSocialAuthRequest, options?: any): AxiosPromise<StartSocialAuthResponse> {
+            return localVarFp.authSocialStart(startSocialAuthRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Start authentication flow  Generate an OIDC URL with the configured provider to start authentication
          * @param {string} orgId 
          * @param {string} redirectUrl 
@@ -4519,6 +4803,38 @@ export class AuthenticationApi extends BaseAPI {
      */
     public authSignUp(xCaptchaResponse: string, createUserRequest: CreateUserRequest, options?: RawAxiosRequestConfig) {
         return AuthenticationApiFp(this.configuration).authSignUp(xCaptchaResponse, createUserRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {SocialAuthCallbackRequest} socialAuthCallbackRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public authSocialCallback(socialAuthCallbackRequest: SocialAuthCallbackRequest, options?: RawAxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).authSocialCallback(socialAuthCallbackRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public authSocialList(options?: RawAxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).authSocialList(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {StartSocialAuthRequest} startSocialAuthRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public authSocialStart(startSocialAuthRequest: StartSocialAuthRequest, options?: RawAxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).authSocialStart(startSocialAuthRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

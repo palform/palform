@@ -23,6 +23,7 @@ pub mod organisation_membership;
 pub mod question;
 pub mod question_group;
 pub mod sea_orm_active_enums;
+pub mod social_auth_connection;
 pub mod submission;
 pub mod team;
 pub mod team_asset;

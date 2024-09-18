@@ -15,5 +15,6 @@ pub mod organisation_teams;
 pub mod orgs;
 pub mod question_groups;
 pub mod questions;
+pub mod social_auth_connections;
 pub mod submission;
 pub mod team_assets;

@@ -7,20 +7,16 @@
     import VerifyEmailCallback from "./VerifyEmailCallback.svelte";
     import StartPasswordReset from "./StartPasswordReset.svelte";
     import ResetPassword from "./ResetPassword.svelte";
+    import SocialCallback from "./SocialCallback.svelte";
 </script>
 
 <Router>
     <Route path="/login" component={Login} />
     <Route path="/login/tfa/:sessionId" component={SecondFactor} />
     <Route path="/callback" component={Callback} />
+    <Route path="/social/:providerName/callback" component={SocialCallback} />
     <Route path="/signup" component={Signup} />
-    <Route
-        path="/verify/:verificationId"
-        component={VerifyEmailCallback}
-    />
+    <Route path="/verify/:verificationId" component={VerifyEmailCallback} />
     <Route path="/reset/password" component={StartPasswordReset} />
-    <Route
-        path="/reset/password/:verificationId"
-        component={ResetPassword}
-    />
+    <Route path="/reset/password/:verificationId" component={ResetPassword} />
 </Router>

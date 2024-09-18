@@ -56,7 +56,7 @@ pub async fn handler(
             &txn,
             request.auth_code.clone(),
             request.nonce.clone(),
-            request.redirect_url.as_str(),
+            request.redirect_url.clone(),
         )
         .await
         .map_err(|e| APIError::BadRequest(e.to_string()))?;

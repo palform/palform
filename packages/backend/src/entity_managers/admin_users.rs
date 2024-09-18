@@ -2,18 +2,19 @@ use argon2::{
     password_hash::{PasswordHasher, SaltString},
     Argon2, PasswordHash, PasswordVerifier,
 };
-use palform_entities::{admin_user, prelude::*};
+use palform_entities::{admin_user, prelude::*, social_auth_connection};
 use palform_tsid::{
     resources::{IDAdminUser, IDOrganisation},
     tsid::PalformDatabaseID,
 };
 use rand::rngs::OsRng;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, Condition, ConnectionTrait, DbErr, EntityTrait, QueryFilter, Set,
+    ActiveModelTrait, ColumnTrait, Condition, ConnectionTrait, DbErr, EntityTrait, JoinType,
+    QueryFilter, QuerySelect, RelationTrait, Set,
 };
 use thiserror::Error;
 
-use crate::api_entities::admin_users::APIAdminUser;
+use crate::{api_entities::admin_users::APIAdminUser, auth::social::SocialAuthService};
 
 #[derive(Debug, Error)]
 pub enum AdminUserManagementError {
@@ -39,18 +40,37 @@ impl AdminUserManager {
 
     pub async fn get_user_by_sub<T: ConnectionTrait>(
         conn: &T,
-        org_id: PalformDatabaseID<IDOrganisation>,
+        org_id: Option<PalformDatabaseID<IDOrganisation>>,
+        service: Option<SocialAuthService>,
         sub: String,
-    ) -> Result<Option<APIAdminUser>, DbErr> {
-        AdminUser::find()
-            .filter(
-                Condition::all()
-                    .add(admin_user::Column::OrgAuthSub.eq(Some(sub)))
-                    .add(admin_user::Column::OrgAuthOrganisationId.eq(Some(org_id))),
-            )
-            .into_model()
-            .one(conn)
-            .await
+    ) -> Result<Option<admin_user::Model>, DbErr> {
+        if let Some(org_id) = org_id {
+            AdminUser::find()
+                .filter(
+                    Condition::all()
+                        .add(admin_user::Column::OrgAuthSub.eq(Some(sub)))
+                        .add(admin_user::Column::OrgAuthOrganisationId.eq(Some(org_id))),
+                )
+                .one(conn)
+                .await
+        } else if let Some(service) = service {
+            AdminUser::find()
+                .join(
+                    JoinType::InnerJoin,
+                    admin_user::Relation::SocialAuthConnection.def(),
+                )
+                .filter(
+                    Condition::all()
+                        .add(social_auth_connection::Column::Sub.eq(sub))
+                        .add(social_auth_connection::Column::Service.eq(service.to_string())),
+                )
+                .one(conn)
+                .await
+        } else {
+            return Err(DbErr::Custom(
+                "Either org_id or service must be specified".to_string(),
+            ));
+        }
     }
 
     pub async fn get_user_by_email<T: ConnectionTrait>(
@@ -136,6 +156,20 @@ impl AdminUserManager {
             ..Default::default()
         };
 
+        new_user.insert(conn).await?;
+        Ok(id)
+    }
+
+    pub async fn create_user_without_auth<T: ConnectionTrait>(
+        conn: &T,
+        email: String,
+    ) -> Result<PalformDatabaseID<IDAdminUser>, AdminUserManagementError> {
+        let id = PalformDatabaseID::<IDAdminUser>::random();
+        let new_user = admin_user::ActiveModel {
+            id: Set(id.clone()),
+            email: Set(email),
+            ..Default::default()
+        };
         new_user.insert(conn).await?;
         Ok(id)
     }

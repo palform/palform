@@ -8,6 +8,7 @@
     import Captcha from "../../components/captcha/Captcha.svelte";
     import TextButton from "../../components/TextButton.svelte";
     import PasswordPicker from "../../components/password/PasswordPicker.svelte";
+    import SocialAuthButtons from "../../components/auth/SocialAuthButtons.svelte";
 
     let email = "";
     let password = "";
@@ -93,9 +94,20 @@
                 </span>
             </Checkbox>
 
-            <LoadingButton type="submit" disabled={loading} {loading}>
-                Sign up
-            </LoadingButton>
+            <div class="space-y-4">
+                <LoadingButton
+                    type="submit"
+                    disabled={loading}
+                    {loading}
+                    buttonClass="w-full"
+                >
+                    Sign up
+                </LoadingButton>
+                <p class="text-sm text-center text-gray-500 dark:text-gray-400">
+                    or
+                </p>
+                <SocialAuthButtons prefix="Sign up with" />
+            </div>
         </form>
 
         <svelte:fragment slot="footer">
