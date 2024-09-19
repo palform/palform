@@ -2,9 +2,9 @@
     import { Alert, Button } from "flowbite-svelte";
     import { isEntitled } from "../../../data/billing/entitlement";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
-    import { navigateEvent } from "../../../utils/navigate";
     import AuthSettings from "./AuthSettings.svelte";
     import AuthSettingsIntro from "../../../components/orgs/auth/AuthSettingsIntro.svelte";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     const entitled = isEntitled("oidc");
     const orgCtx = getOrgContext();

@@ -15,7 +15,7 @@
     } from "flowbite-svelte";
     import TeamMappingNewModal from "../../../components/orgs/auth/mappings/TeamMappingNewModal.svelte";
     import TeamMappingRow from "../../../components/orgs/auth/mappings/TeamMappingRow.svelte";
-    import { navigateEvent } from "../../../utils/navigate";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     const orgCtx = getOrgContext();
     let mappings: APIOrganisationAuthTeamMapping[] | undefined = undefined;

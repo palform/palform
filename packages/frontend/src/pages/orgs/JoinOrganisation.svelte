@@ -6,12 +6,10 @@
     import ErrorMsg from "../../components/ErrorMsg.svelte";
     import { parseServerTime } from "../../data/util/time";
     import LoadingButton from "../../components/LoadingButton.svelte";
-    import { navigateEvent } from "../../utils/navigate";
     import { showFailureToast, showToast } from "../../data/toast";
-    import {
-        faChampagneGlasses,
-    } from "@fortawesome/free-solid-svg-icons";
+    import { faChampagneGlasses } from "@fortawesome/free-solid-svg-icons";
     import { navigate } from "svelte-routing";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     export let orgId: string;
     export let inviteId: string;
@@ -39,7 +37,7 @@
             await APIs.orgMembers().then((a) =>
                 a.organisationMembersJoin(orgId, {
                     invite_id: inviteId,
-                }),
+                })
             );
 
             await showToast({
@@ -77,7 +75,7 @@
             </p>
             <p>
                 This invite expires {parseServerTime(
-                    preview.expires_at,
+                    preview.expires_at
                 ).toRelative()}.
             </p>
 

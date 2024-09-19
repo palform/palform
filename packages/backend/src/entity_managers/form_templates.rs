@@ -2,7 +2,7 @@ use palform_entities::{
     form, form_template, form_template_category, form_template_category_assignment, prelude::*,
     team,
 };
-use palform_migration::Expr;
+use palform_migration::{Expr, SimpleExpr};
 use palform_tsid::{
     resources::{IDForm, IDFormTemplateCategory},
     tsid::PalformDatabaseID,
@@ -31,6 +31,7 @@ impl FormTemplatesManager {
                 "template_count",
             )
             .group_by(form_template_category::Column::Id)
+            .order_by_desc(SimpleExpr::Custom("template_count".to_string()))
             .into_model()
             .all(conn)
             .await
@@ -69,7 +70,25 @@ impl FormTemplatesManager {
             .column_as(form::Column::EditorName, "name")
             .column_as(form::Column::Id, "id")
             .column_as(team::Column::OrganisationId, "organisation_id")
+            .order_by_desc(form_template::Column::Views)
             .filter(form_template_category_assignment::Column::CategoryId.eq(category_id))
+            .into_model()
+            .all(conn)
+            .await
+    }
+
+    pub async fn list_top_across_categories<T: ConnectionTrait>(
+        conn: &T,
+        top_n: u64,
+    ) -> Result<Vec<APIFormTemplate>, DbErr> {
+        FormTemplate::find()
+            .join(JoinType::InnerJoin, form_template::Relation::Form.def())
+            .join(JoinType::InnerJoin, form::Relation::Team.def())
+            .column_as(form::Column::EditorName, "name")
+            .column_as(form::Column::Id, "id")
+            .column_as(team::Column::OrganisationId, "organisation_id")
+            .order_by_desc(form_template::Column::Views)
+            .limit(top_n)
             .into_model()
             .all(conn)
             .await

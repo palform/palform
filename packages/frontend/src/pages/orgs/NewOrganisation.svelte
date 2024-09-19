@@ -2,18 +2,13 @@
     import { Alert, Button, Helper, Input, Label } from "flowbite-svelte";
     import Main from "../../layouts/Main.svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-    import {
-        faCheck,
-        faHome,
-        faInfoCircle,
-        faTimes,
-    } from "@fortawesome/free-solid-svg-icons";
+    import { faHome, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
     import MainTitle from "../../layouts/MainTitle.svelte";
-    import { navigateEvent } from "../../utils/navigate";
     import LoadingButton from "../../components/LoadingButton.svelte";
-    import { APIs, humaniseAPIError } from "../../data/common";
-    import { showToast } from "../../data/toast";
+    import { APIs } from "../../data/common";
+    import { showFailureToast, showSuccessToast } from "../../data/toast";
     import { navigate } from "svelte-routing";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     let displayName = "";
     let loading = false;
@@ -27,18 +22,10 @@
                     display_name: displayName,
                 })
             );
-            await showToast({
-                label: "Organisation created! Have fun!",
-                color: "green",
-                icon: faCheck,
-            });
+            await showSuccessToast("Organisation created! Have fun!");
             navigate(`/orgs/${resp.data}/induction/billing`);
         } catch (e) {
-            await showToast({
-                label: humaniseAPIError(e),
-                color: "red",
-                icon: faTimes,
-            });
+            await showFailureToast(e);
         }
         loading = false;
     };

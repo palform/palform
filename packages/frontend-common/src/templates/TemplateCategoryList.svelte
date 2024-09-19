@@ -5,6 +5,7 @@
     export let categoryURL: (id: string) => string;
     export let categories: APIFormTemplateCategory[];
     export let selectedId: string | undefined = undefined;
+    export let routed = false;
 </script>
 
 <ul class="p-4 bg-slate-100 dark:bg-slate-800 rounded-3xl w-full">
@@ -16,6 +17,7 @@
             {category}
             url={categoryURL(category.id)}
             selected={category.id === selectedId}
+            {routed}
         />
     {/each}
 </ul>

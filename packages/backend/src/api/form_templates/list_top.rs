@@ -1,5 +1,4 @@
 use palform_client_common::errors::error::{APIErrorWithStatus, APIInternalErrorResult};
-use palform_tsid::{resources::IDFormTemplateCategory, tsid::PalformDatabaseID};
 use rocket::{get, serde::json::Json, State};
 use rocket_okapi::openapi;
 use sea_orm::DatabaseConnection;
@@ -9,14 +8,14 @@ use crate::{
     entity_managers::form_templates::FormTemplatesManager,
 };
 
-#[openapi(tag = "Form Templates", operation_id = "form_templates.list")]
-#[get("/templates/categories/<category_id>/all")]
+#[openapi(tag = "Form Templates", operation_id = "form_templates.list_top")]
+#[get("/templates/top")]
 pub async fn handler(
-    category_id: PalformDatabaseID<IDFormTemplateCategory>,
     db: &State<DatabaseConnection>,
 ) -> Result<Json<Vec<APIFormTemplate>>, APIErrorWithStatus> {
-    let templates = FormTemplatesManager::list_in_category(db.inner(), category_id)
+    let top_templates = FormTemplatesManager::list_top_across_categories(db.inner(), 50)
         .await
         .map_internal_error()?;
-    Ok(Json(templates))
+
+    Ok(Json(top_templates))
 }

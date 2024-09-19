@@ -26,6 +26,7 @@
     import UserKeyBackup from "./user/UserKeyBackup.svelte";
     import UserSettings from "./user/UserSettings.svelte";
     import OrganisationKeyManager from "./OrganisationKeyManager.svelte";
+    import FormTemplatesRouter from "../forms/new/FormTemplatesRouter.svelte";
 
     export let orgId: string;
 </script>
@@ -71,6 +72,8 @@
         <Route path="/user/keys/import" component={UserKeyImport} />
         <Route path="/user/keys/:keyId/backup" component={UserKeyBackup} />
         <Route path="/user/settings" component={UserSettings} />
+
+        <Route path="/forms/templates/*" component={FormTemplatesRouter} />
         <Route path="/forms/new" component={FormNew} />
         <Route path="/forms/new/:initialTeamId" component={FormNew} />
         <Route path="/forms/:formId/*" component={FormAdmin} />

@@ -13,7 +13,6 @@
     import { APIs } from "../../../data/common";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import LoadingButton from "../../LoadingButton.svelte";
-    import { navigateEvent } from "../../../utils/navigate";
     import {
         getOrgContext,
         reloadInduction,
@@ -26,6 +25,7 @@
     } from "@paltiverse/palform-typescript-openapi";
     import TeamDropdown from "../../teams/TeamDropdown.svelte";
     import { isEntitled } from "../../../data/billing/entitlement";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     export let initialValue: (UpdateFormRequest & { id: string }) | undefined;
     export let initialTeamId: string | undefined = undefined;

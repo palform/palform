@@ -1,23 +1,22 @@
 <script lang="ts">
     import { Button, ButtonGroup, Fileupload, Label } from "flowbite-svelte";
     import LoadingButton from "../../../components/LoadingButton.svelte";
-    import { humaniseAPIError } from "../../../data/common";
     import {
         getOrgContext,
         reloadGlobalAlert,
         reloadInduction,
     } from "../../../data/contexts/orgLayout";
-    import { showToast } from "../../../data/toast";
     import {
-        faCheck,
-        faExclamationCircle,
-        faWarning,
-    } from "@fortawesome/free-solid-svg-icons";
+        showFailureToast,
+        showSuccessToast,
+        showToast,
+    } from "../../../data/toast";
+    import { faWarning } from "@fortawesome/free-solid-svg-icons";
     import { importKey } from "../../../data/crypto/keyManager";
-    import { navigateEvent } from "../../../utils/navigate";
     import { navigate } from "svelte-routing";
     import InfoText from "../../../components/type/InfoText.svelte";
     import MainTitle from "../../../layouts/MainTitle.svelte";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     const orgCtx = getOrgContext();
 
@@ -42,20 +41,12 @@
             const serverId = await importKey(keyText, $orgCtx.org.id);
             await reloadGlobalAlert(orgCtx);
             await reloadInduction(orgCtx);
-            await showToast({
-                label: "Key imported successfully",
-                color: "green",
-                icon: faCheck,
-            });
+            await showSuccessToast("Key imported successfully");
             navigate(
-                `/orgs/${$orgCtx.org.id}/user/keys/${serverId}/backup?isNew=y`,
+                `/orgs/${$orgCtx.org.id}/user/keys/${serverId}/backup?isNew=y`
             );
         } catch (e) {
-            await showToast({
-                label: humaniseAPIError(e),
-                color: "red",
-                icon: faExclamationCircle,
-            });
+            await showFailureToast(e);
         }
         loading = false;
     };

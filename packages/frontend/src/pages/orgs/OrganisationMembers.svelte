@@ -12,13 +12,13 @@
         Tooltip,
     } from "flowbite-svelte";
     import OrganisationMemberRow from "../../components/orgs/members/OrganisationMemberRow.svelte";
-    import { navigateEvent } from "../../utils/navigate";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
     import TableContainer from "../../components/tables/TableContainer.svelte";
     import { isEntitled } from "../../data/billing/entitlement";
     import MissingEntitlementTooltip from "../../components/billing/entitlement/MissingEntitlementTooltip.svelte";
     import { getUserId } from "../../data/auth";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     const orgCtx = getOrgContext();
     const entitled = isEntitled("user_count", true);

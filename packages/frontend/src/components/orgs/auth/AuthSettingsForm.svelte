@@ -14,7 +14,7 @@
     import { APIs } from "../../../data/common";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
-    import { navigateEvent } from "../../../utils/navigate";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     export let initialValue: APIOrganisationAuthConfig | null;
     const orgCtx = getOrgContext();

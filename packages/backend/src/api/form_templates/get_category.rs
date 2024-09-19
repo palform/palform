@@ -10,7 +10,7 @@ use crate::{
 };
 
 #[openapi(tag = "Form Templates", operation_id = "form_templates.categories.get")]
-#[get("/templates/<category_id>")]
+#[get("/templates/categories/<category_id>")]
 pub async fn handler(
     category_id: PalformDatabaseID<IDFormTemplateCategory>,
     db: &State<DatabaseConnection>,

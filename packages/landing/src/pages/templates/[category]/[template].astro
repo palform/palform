@@ -9,12 +9,9 @@ import { Badge } from "flowbite-svelte";
 
 export const prerender = false;
 const { category: categoryId, template: templateId } = Astro.params;
-const templateResp = await formTemplatesAPI.formTemplatesGet(
-	categoryId!,
-	templateId!
-);
+const templateResp = await formTemplatesAPI.formTemplatesGet(templateId!);
 
-await formTemplatesAPI.formTemplatesReportView(categoryId!, templateId!);
+await formTemplatesAPI.formTemplatesReportView(templateId!);
 ---
 
 <Html title={`Free form template: ${templateResp.data.name}`}>

@@ -11,10 +11,10 @@
         faArrowRight,
         faCheckCircle,
     } from "@fortawesome/free-solid-svg-icons";
-    import { navigateEvent } from "../../../utils/navigate";
     import NewTeamModal from "../../../components/teams/NewTeamModal.svelte";
     import CardGrid from "../../../components/CardGrid.svelte";
     import InductionStepCard from "../../../components/induction/InductionStepCard.svelte";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     const orgCtx = getOrgContext();
 

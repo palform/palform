@@ -7,8 +7,8 @@
     import { APIs } from "../../../data/common";
     import BackupNew from "../../../components/keys/backup/BackupNew.svelte";
     import BackupManage from "../../../components/keys/backup/BackupManage.svelte";
-    import { navigateEvent } from "../../../utils/navigate";
     import { navigate } from "svelte-routing";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     export let keyId: string;
     let key: APIUserKey | undefined;

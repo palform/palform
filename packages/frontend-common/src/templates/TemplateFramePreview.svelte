@@ -4,9 +4,11 @@
     import LittleIcons from "../decorations/LittleIcons.svelte";
     import TemplateItemStats from "./TemplateItemStats.svelte";
 
-    export let categoryId: string;
+    export let categoryId: string | undefined = undefined;
     export let template: APIFormTemplate;
     export let appBaseURL: string;
+    export let showMarketing = true;
+    export let buttonLinkToAuth = true;
 
     const iframeURL = new URL(
         `/fill/${template.organisation_id}/${template.id}/?f=${template.preview_token}`,
@@ -42,18 +44,30 @@
                 {template.description}
             </p>
 
-            <Button class="mt-8" href={useTemplateURL.toString()}>
+            <Button
+                class="mt-8"
+                href={buttonLinkToAuth ? useTemplateURL.toString() : undefined}
+                on:click
+            >
                 Use this template
             </Button>
 
-            <LittleIcons class="mt-3" />
+            {#if showMarketing}
+                <LittleIcons class="mt-3" />
 
-            <Badge class="mt-4" href={`/templates/${categoryId}`} border>
-                See similar templates
-            </Badge>
-            <Badge class="mt-4" href={`/`} border
-                >Learn more about Palform</Badge
-            >
+                {#if categoryId}
+                    <Badge
+                        class="mt-4"
+                        href={`/templates/${categoryId}`}
+                        border
+                    >
+                        See similar templates
+                    </Badge>
+                {/if}
+                <Badge class="mt-4" href={`/`} border
+                    >Learn more about Palform</Badge
+                >
+            {/if}
         </div>
     </div>
 </main>

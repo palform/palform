@@ -6,7 +6,7 @@
     import FormCard from "./FormCard.svelte";
     import { faPlus } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-    import { navigateEvent } from "../../utils/navigate";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     export let teamId: string;
     const orgCtx = getOrgContext();
