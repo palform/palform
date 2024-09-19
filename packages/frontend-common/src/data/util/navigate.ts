@@ -15,5 +15,5 @@ export function navigateEvent(e: MouseEvent | CustomEvent<any>) {
     }
 
     const url = new URL(target.href);
-    navigate(url.pathname);
+    navigate(url.toString());
 }

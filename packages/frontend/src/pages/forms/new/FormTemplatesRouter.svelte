@@ -9,12 +9,15 @@
     import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     const orgCtx = getOrgContext();
+
+    const params = new URLSearchParams(window.location.search);
+    const teamId = params.get("team");
 </script>
 
 <MainTitle>Choose a template to get started</MainTitle>
 <TextButton
     class="mb-8"
-    href={`/orgs/${$orgCtx.org.id}/forms/new`}
+    href={`/orgs/${$orgCtx.org.id}/forms/new/${teamId ?? ""}`}
     on:click={navigateEvent}
 >
     Or start from scratch
@@ -23,5 +26,7 @@
 <Router>
     <Route path="/" component={MostPopularTemplates} />
     <Route path="/categories/:categoryId" component={CategoryTemplates} />
-    <Route path="/:templateId" component={FormTemplatePreview} />
+    <Route path="/:templateId" let:params>
+        <FormTemplatePreview templateId={params.templateId} {teamId} />
+    </Route>
 </Router>

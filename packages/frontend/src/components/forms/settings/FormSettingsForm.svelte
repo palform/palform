@@ -46,7 +46,7 @@
     let brandingsLoading = true;
     let brandingId = initialValue?.branding_id ?? "DEFAULT";
     $: (async () => {
-        if (teamId === "") return;
+        if (teamId === "" || isNew) return;
         brandingsLoading = true;
         const resp = await APIs.formBrandings().then((a) =>
             a.organisationTeamBrandingList($ctx.org.id, teamId)
@@ -57,7 +57,7 @@
 
     $: onSubmit = async (e: Event) => {
         e.preventDefault();
-        if (!editorName || !title || !brandingId) return;
+        if (!title || !brandingId || (!isNew && !editorName)) return;
 
         loading = true;
         const formsAPI = await APIs.forms();
@@ -80,10 +80,9 @@
                 if (oqpp === undefined) return;
 
                 const resp = await formsAPI.formsCreate($ctx.org.id, {
-                    editor_name: editorName,
+                    editor_name: title,
                     title: title,
                     in_team: teamId,
-                    branding_id: brandingId === "DEFAULT" ? null : brandingId,
                     one_question_per_page: oqpp,
                 });
                 await reloadInduction(ctx);
@@ -120,21 +119,23 @@
         </fieldset>
     {/if}
 
-    <fieldset>
-        <Label class="font-medium">
-            Form name
-            <Input
-                required
-                bind:value={editorName}
-                disabled={loading}
-                class="mt-2"
-            />
-        </Label>
-        <Helper class="mt-2">
-            This is an internal name for the form, visible only to your
-            organisation members.
-        </Helper>
-    </fieldset>
+    {#if !isNew}
+        <fieldset>
+            <Label class="font-medium">
+                Form name
+                <Input
+                    required
+                    bind:value={editorName}
+                    disabled={loading}
+                    class="mt-2"
+                />
+            </Label>
+            <Helper class="mt-2">
+                This is an internal name for the form, visible only to your
+                organisation members.
+            </Helper>
+        </fieldset>
+    {/if}
     <fieldset>
         <Label class="font-medium">
             Form title
@@ -150,7 +151,7 @@
         </Helper>
     </fieldset>
 
-    {#if teamId !== "" && $isBrandingEntitled}
+    {#if teamId !== "" && $isBrandingEntitled && !isNew}
         <fieldset>
             <Label class="font-medium">
                 Branding scheme

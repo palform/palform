@@ -18,6 +18,8 @@
     import { navigate } from "svelte-routing";
 
     export let templateId: string;
+    export let teamId: string | null = null;
+
     const orgCtx = getOrgContext();
 
     let template: APIFormTemplate | undefined = undefined;
@@ -36,7 +38,7 @@
 
     let cloneLoading = false;
     let showTeamModal = false;
-    let selectedTeam = "";
+    let selectedTeam = teamId ?? "";
     $: onCloneClick = async () => {
         if ($orgCtx.myTeams.length > 1 && selectedTeam === "") {
             showTeamModal = true;
