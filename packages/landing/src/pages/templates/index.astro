@@ -1,0 +1,18 @@
+---
+import Navbar from "../../components/Navbar.astro";
+import ResponsivePadding from "../../components/ResponsivePadding.astro";
+import Html from "../../layouts/Html.astro";
+import TemplateGrid from "../../components/templates/TemplateGrid.astro";
+---
+
+<Html
+	title="Ready-to-use beautiful form templates with industry-leading security"
+>
+	<Navbar />
+
+	<ResponsivePadding class="mt-32" fluid>
+		<TemplateGrid>
+			<Fragment slot="content"> </Fragment>
+		</TemplateGrid>
+	</ResponsivePadding>
+</Html>

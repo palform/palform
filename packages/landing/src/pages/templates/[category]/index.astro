@@ -1,0 +1,52 @@
+---
+import { TemplateItemPreview } from "@paltiverse/palform-frontend-common";
+import { formTemplatesAPI } from "../../../api/main";
+import Navbar from "../../../components/Navbar.astro";
+import ResponsivePadding from "../../../components/ResponsivePadding.astro";
+import TemplateGrid from "../../../components/templates/TemplateGrid.astro";
+import TemplatePreviewGrid from "../../../components/templates/TemplatePreviewGrid.astro";
+import Html from "../../../layouts/Html.astro";
+import InfoPageParagraph from "../../../components/info/InfoPageParagraph.astro";
+import InfoPageTitle from "../../../components/info/InfoPageTitle.astro";
+
+export const prerender = false;
+const { category: categoryID } = Astro.params;
+
+const categoryResp = await formTemplatesAPI.formTemplatesCategoriesGet(
+	categoryID!
+);
+
+const categoryFormsResp = await formTemplatesAPI.formTemplatesList(categoryID!);
+---
+
+<Html title={`Free ${categoryResp.data.name} Form Templates`}>
+	<Navbar />
+
+	<ResponsivePadding class="mt-24" fluid>
+		<TemplateGrid selectedCategory={categoryID}>
+			<InfoPageTitle>
+				Free {categoryResp.data.name} Form Templates
+			</InfoPageTitle>
+
+			<InfoPageParagraph>
+				Try out our free templates to get instant forms ready to fill
+				out within seconds. You can set them up with a Palform account
+				and get unlimited responses, completely free of charge. Our
+				forms are end-to-end encrypted with industry-leading security
+				standards, guaranteeing high customer trust and reducing the
+				risk of data breaches.
+			</InfoPageParagraph>
+
+			<TemplatePreviewGrid class="mt-6">
+				{
+					categoryFormsResp.data.map((template) => (
+						<TemplateItemPreview
+							{template}
+							link={`/templates/${categoryResp.data.id}/${template.id}`}
+						/>
+					))
+				}
+			</TemplatePreviewGrid>
+		</TemplateGrid>
+	</ResponsivePadding>
+</Html>
