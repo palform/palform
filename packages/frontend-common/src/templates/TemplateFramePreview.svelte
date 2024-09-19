@@ -9,6 +9,7 @@
     export let appBaseURL: string;
     export let showMarketing = true;
     export let buttonLinkToAuth = true;
+    export let disabled = false;
 
     const iframeURL = new URL(
         `/fill/${template.organisation_id}/${template.id}/?f=${template.preview_token}`,
@@ -47,6 +48,7 @@
             <Button
                 class="mt-8"
                 href={buttonLinkToAuth ? useTemplateURL.toString() : undefined}
+                {disabled}
                 on:click
             >
                 Use this template
@@ -59,14 +61,15 @@
                     <Badge
                         class="mt-4"
                         href={`/templates/${categoryId}`}
+                        {disabled}
                         border
                     >
                         See similar templates
                     </Badge>
                 {/if}
-                <Badge class="mt-4" href={`/`} border
-                    >Learn more about Palform</Badge
-                >
+                <Badge class="mt-4" href={`/`} border {disabled}>
+                    Learn more about Palform
+                </Badge>
             {/if}
         </div>
     </div>

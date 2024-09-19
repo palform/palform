@@ -1,3 +1,4 @@
+pub mod clone;
 pub mod get;
 pub mod get_category;
 pub mod list;

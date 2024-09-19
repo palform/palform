@@ -100,7 +100,7 @@
 
     let orgIsHovered = false;
     $: onNewFormClick = () => {
-        navigate(`/orgs/${$orgCtx.org.id}/forms/new`);
+        navigate(`/orgs/${$orgCtx.org.id}/forms/templates/`);
         closeSidebar();
     };
 </script>

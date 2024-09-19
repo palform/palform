@@ -71,6 +71,7 @@ export const APIs = {
     teamAssets: () => apiWithAuth(TeamAssetsApi, baseAPIConfig),
     forms: () => apiWithAuth(FormsApi, baseAPIConfig),
     formTemplates: new FormTemplatesApi(new Configuration(baseAPIConfig)),
+    formTemplatesWithToken: () => apiWithAuth(FormTemplatesApi, baseAPIConfig),
     submissions: () => apiWithAuth(SubmissionsApi, baseAPIConfig),
     submissionAssets: () => apiWithAuth(SubmissionAssetApi, baseAPIConfig),
     questions: () => apiWithAuth(QuestionsApi, baseAPIConfig),

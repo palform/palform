@@ -184,6 +184,7 @@ async fn rocket() -> _ {
         api::form_templates::list_top::handler,
         api::form_templates::get::handler,
         api::form_templates::report_view::handler,
+        api::form_templates::clone::handler,
         api::submissions::crypto::handler,
         api::submissions::list::handler,
         api::submissions::delete::handler,
