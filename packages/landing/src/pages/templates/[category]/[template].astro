@@ -24,7 +24,7 @@ await formTemplatesAPI.formTemplatesReportView(templateId!);
 			<TemplateFramePreview
 				class="mt-2"
 				appBaseURL={AppBaseURL}
-				categoryId={categoryId!}
+				categoryId={categoryId === "_" ? undefined : categoryId}
 				template={templateResp.data}
 			/>
 		</TemplateGrid>
