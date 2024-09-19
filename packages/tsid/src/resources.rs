@@ -15,6 +15,7 @@ id_resource_type!(IDAuditLogEntry, "aul");
 id_resource_type!(IDAuthToken, "au");
 id_resource_type!(IDFillAccessToken, "fat");
 id_resource_type!(IDForm, "form");
+id_resource_type!(IDFormTemplateCategory, "tmplcat");
 id_resource_type!(IDFormBranding, "brand");
 id_resource_type!(IDOrganisation, "org");
 id_resource_type!(IDOrganisationAuthConfig, "org_auth_conf");

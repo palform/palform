@@ -5,6 +5,7 @@ pub mod billing;
 pub mod fill_token;
 pub mod form;
 pub mod form_brandings;
+pub mod form_template;
 pub mod key;
 pub mod org;
 pub mod organisation_auth_config;

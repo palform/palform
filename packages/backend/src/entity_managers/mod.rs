@@ -4,6 +4,7 @@ pub mod audit;
 pub mod billing_entitlement_proxy;
 pub mod email_verifications;
 pub mod form_brandings;
+pub mod form_templates;
 pub mod forms;
 pub mod induction;
 pub mod keys;

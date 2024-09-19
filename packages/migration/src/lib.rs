@@ -49,6 +49,7 @@ mod m20240903_110354_question_internal_name;
 mod m20240904_212438_single_question_forms;
 mod m20240910_113656_nullable_display_name;
 mod m20240918_115812_social_auth;
+mod m20240918_214834_form_templates;
 
 pub struct Migrator;
 
@@ -105,6 +106,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240904_212438_single_question_forms::Migration),
             Box::new(m20240910_113656_nullable_display_name::Migration),
             Box::new(m20240918_115812_social_auth::Migration),
+            Box::new(m20240918_214834_form_templates::Migration),
         ]
     }
 }

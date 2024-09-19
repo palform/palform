@@ -4,6 +4,7 @@ pub mod auth;
 pub mod error;
 pub mod fill_tokens;
 pub mod form_brandings;
+pub mod form_templates;
 pub mod forms;
 pub mod induction;
 pub mod jobs;
