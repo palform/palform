@@ -3,10 +3,10 @@
     import { Button, TableBodyCell, TableBodyRow } from "flowbite-svelte";
     import { parseServerTime } from "../../../data/util/time";
     import { DateTime } from "luxon";
-    import { formatCurrency } from "../../../data/billing/util";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
     import InvoiceStatusLabel from "./InvoiceStatusLabel.svelte";
+    import { formatCurrency } from "@paltiverse/palform-frontend-common";
 
     export let invoice: APIBillingInvoice;
     $: onOpenInvoiceClick = () => {

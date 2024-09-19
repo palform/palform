@@ -5,8 +5,8 @@
         formatCurrency,
         formatDecimalCurrency,
         getCurrencySymbol,
-    } from "../../../data/billing/util";
-    import PlanFeatureItem from "./PlanFeatureItem.svelte";
+        PricingFeatureItem,
+    } from "@paltiverse/palform-frontend-common";
     import { createEventDispatcher } from "svelte";
 
     export let plan: APIBillingPlan;
@@ -16,6 +16,7 @@
     export let disabled = false;
     export let currentPriceId: string | undefined;
     export let allowTrial = true;
+    export let trialOnly = false;
 
     const dispatch = createEventDispatcher<{ click: boolean }>();
 
@@ -24,12 +25,9 @@
         : plan.price_monthly.stripe_price_id === currentPriceId;
 </script>
 
-<Card padding="xl" size="none">
+<Card padding="xl" size="none" shadow={false} class="rounded-2xl">
     <h4 class="text-xl text-gray-600 dark:text-gray-300">{plan.name}</h4>
     <div class="flex items-baseline text-gray-900 dark:text-white mt-4">
-        <p class="text-gray-500 dark:text-gray-400 text-xl">
-            {annualBilling ? "~" : ""}
-        </p>
         <p class="text-3xl font-semibold">
             {getCurrencySymbol(plan.currency)}
         </p>
@@ -38,7 +36,7 @@
                 annualBilling
                     ? plan.price_annually.amount / 12
                     : plan.price_monthly.amount,
-                false
+                true,
             )}
         </h3>
         <p class="ms-1 text-gray-500 dark:text-gray-400 text-xl">/month</p>
@@ -49,14 +47,14 @@
                 Save {formatCurrency(
                     plan.currency,
                     plan.price_monthly.amount * 12 - plan.price_annually.amount,
-                    true
+                    true,
                 )}
             </Badge>
         </p>
         <p class="mt-1 text-sm">
             Charged as {formatCurrency(
                 plan.currency,
-                plan.price_annually.amount
+                plan.price_annually.amount,
             )} annually
         </p>
     {/if}
@@ -75,14 +73,16 @@
             >
                 Try free for 14 days
             </Button>
-            <Button
-                class="mt-4"
-                outline
-                {disabled}
-                on:click={() => dispatch("click", false)}
-            >
-                Buy now
-            </Button>
+            {#if !trialOnly}
+                <Button
+                    class="mt-4"
+                    outline
+                    {disabled}
+                    on:click={() => dispatch("click", false)}
+                >
+                    Buy now
+                </Button>
+            {/if}
         {:else}
             <Button
                 class="mt-6"
@@ -97,10 +97,14 @@
 
     <ul class="mt-7 space-y-4">
         {#if everythingIn}
-            <PlanFeatureItem feature={`Everything in ${everythingIn}`} plus />
+            <PricingFeatureItem plus>
+                Everything in {everythingIn}
+            </PricingFeatureItem>
         {/if}
         {#each plan.features as feature}
-            <PlanFeatureItem {feature} />
+            <PricingFeatureItem>
+                {feature}
+            </PricingFeatureItem>
         {/each}
     </ul>
 </Card>

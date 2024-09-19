@@ -1,56 +1,47 @@
 <script lang="ts">
-    import { writable } from "svelte/store";
-    import {
-        setPricingContext,
-        type PricingContext,
-    } from "../../contexts/pricing";
-    import PricingPlan from "./PricingPlan.svelte";
     import { Label, Select, Spinner, Toggle } from "flowbite-svelte";
     import type { APIBillingPlan } from "@paltiverse/palform-typescript-openapi";
     import { billingAPI } from "../../api/main";
+    import {
+        PricingFAQ,
+        PricingPlan,
+    } from "@paltiverse/palform-frontend-common";
     import { onMount } from "svelte";
-    import PricingFaq from "./PricingFAQ.svelte";
-
-    const ctx = writable<PricingContext>({
-        currency: "gbp",
-        frequency: "annual",
-    });
-    setPricingContext(ctx);
 
     let annualPricing = true;
-    $: onAnnualChanged = () => {
-        $ctx.frequency = annualPricing ? "annual" : "monthly";
-    };
+    let currency = "gbp";
 
     let plans: APIBillingPlan[] = [];
     let loading = true;
 
+    $: reload = () => {
+        loading = true;
+
+        billingAPI
+            .billingPlanList(currency)
+            .then((resp) => {
+                plans = resp.data.toSorted((a, b) => {
+                    return a.price_monthly.amount - b.price_monthly.amount;
+                });
+            })
+            .catch((e) => {
+                plans = [];
+                console.warn(e);
+            })
+            .finally(() => (loading = false));
+    };
+
     onMount(() => {
-        let previousCurrency = "";
-        return ctx.subscribe((val) => {
-            if (val.currency === previousCurrency) return;
-            previousCurrency = val.currency;
-
-            loading = true;
-
-            billingAPI
-                .billingPlanList(val.currency)
-                .then((resp) => {
-                    plans = resp.data.toSorted((a, b) => {
-                        return a.price_monthly.amount - b.price_monthly.amount;
-                    });
-                })
-                .catch((e) => {
-                    plans = [];
-                    console.warn(e);
-                })
-                .finally(() => (loading = false));
-        });
+        reload();
     });
+
+    const onTrialClick = () => {
+        window.location.href = "https://dash.palform.app/auth/signup";
+    };
 </script>
 
 <div class="flex mb-6 gap-8 items-center">
-    <Toggle bind:checked={annualPricing} on:change={onAnnualChanged}>
+    <Toggle bind:checked={annualPricing}>
         <span>
             Annual pricing (<strong>2 months FREE</strong>)
         </span>
@@ -65,7 +56,8 @@
                 { name: "€/EUR", value: "eur" },
                 { name: "$/USD", value: "usd" },
             ]}
-            bind:value={$ctx.currency}
+            bind:value={currency}
+            on:change={reload}
         />
     </Label>
 </div>
@@ -77,9 +69,17 @@
 {:else}
     <div class="grid lg:grid-cols-3 gap-4">
         {#each plans as plan (plan.stripe_product_id)}
-            <PricingPlan {plan} />
+            <PricingPlan
+                {plan}
+                annualBilling={annualPricing}
+                currentPriceId={undefined}
+                allowTrial
+                trialOnly
+                showButton
+                on:click={onTrialClick}
+            />
         {/each}
     </div>
 
-    <PricingFaq class="mt-8" />
+    <PricingFAQ class="mt-8" />
 {/if}

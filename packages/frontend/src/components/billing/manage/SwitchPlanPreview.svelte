@@ -8,10 +8,10 @@
     import { APIs } from "../../../data/common";
     import { showFailureToast } from "../../../data/toast";
     import UpcomingInvoiceTable from "../invoices/UpcomingInvoiceTable.svelte";
-    import { formatCurrency } from "../../../data/billing/util";
     import { createEventDispatcher } from "svelte";
     import { parseServerTime } from "../../../data/util/time";
     import { DateTime } from "luxon";
+    import { formatCurrency } from "@paltiverse/palform-frontend-common";
 
     export let subscription: APIBillingSubscription;
     export let newPriceId: string;

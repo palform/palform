@@ -3,12 +3,14 @@
     import { APIs } from "../../../data/common";
     import CardGrid from "../../CardGrid.svelte";
     import SkeletonPrimitive from "../../SkeletonPrimitive.svelte";
-    import PlanPreviewColumn from "./PlanPreviewColumn.svelte";
     import { Label, Select, Toggle } from "flowbite-svelte";
-    import PlanAccordion from "./PlanAccordion.svelte";
     import InfoText from "../../type/InfoText.svelte";
     import { createEventDispatcher } from "svelte";
     import { fade } from "svelte/transition";
+    import {
+        PricingFAQ,
+        PricingPlan,
+    } from "@paltiverse/palform-frontend-common";
 
     export let disabled = false;
     export let currentPriceId: string | undefined = undefined;
@@ -81,7 +83,7 @@
 
         <CardGrid>
             {#each plans as plan, index (plan.stripe_product_id)}
-                <PlanPreviewColumn
+                <PricingPlan
                     {plan}
                     everythingIn={index > 0 ? plans[index - 1].name : undefined}
                     showButton
@@ -94,6 +96,6 @@
             {/each}
         </CardGrid>
 
-        <PlanAccordion class="mt-8" />
+        <PricingFAQ class="mt-8" />
     </div>
 {/if}

@@ -3,7 +3,6 @@
     import CardBox from "../cardBox/CardBox.svelte";
     import CardBoxTitle from "../cardBox/CardBoxTitle.svelte";
     import CardBoxSubtitle from "../cardBox/CardBoxSubtitle.svelte";
-    import { formatCurrency } from "../../data/billing/util";
     import { Button, Modal } from "flowbite-svelte";
     import CancelPlan from "./manage/CancelPlan.svelte";
     import { parseServerTime } from "../../data/util/time";
@@ -11,6 +10,7 @@
     import UpcomingInvoicePreview from "./invoices/UpcomingInvoicePreview.svelte";
     import SwitchPlan from "./manage/SwitchPlan.svelte";
     import SectionSeparator from "../type/SectionSeparator.svelte";
+    import { formatCurrency } from "@paltiverse/palform-frontend-common";
 
     export let subscription: APIBillingSubscription;
 

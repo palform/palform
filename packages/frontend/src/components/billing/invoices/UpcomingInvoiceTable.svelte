@@ -10,7 +10,7 @@
         TableHead,
         TableHeadCell,
     } from "flowbite-svelte";
-    import { formatCurrency } from "../../../data/billing/util";
+    import { formatCurrency } from "@paltiverse/palform-frontend-common";
 
     export let upcomingInvoice: APIBillingUpcomingInvoice;
 </script>

@@ -8,6 +8,7 @@ export default {
         "../../node_modules/flowbite-svelte/**/*.svelte",
         "../../node_modules/flowbite-svelte/**/*.ts",
         "../../node_modules/flowbite-svelte/**/*.js",
+        "../frontend-common/src/**/*.svelte",
     ],
     darkMode: "media",
     theme: {
