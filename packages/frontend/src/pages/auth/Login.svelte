@@ -122,7 +122,7 @@
                 />
             {/if}
 
-            <div class="space-y-4">
+            <div class="space-y-2">
                 <LoadingButton {loading} disabled={loading} type="submit" buttonClass="w-full">
                     Sign in
                 </LoadingButton>

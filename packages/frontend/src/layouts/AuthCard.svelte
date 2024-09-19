@@ -11,7 +11,7 @@
     <div
         class="h-screen flex flex-col justify-between py-12 overflow-y-auto overflow-x-hidden lg:w-1/2 w-full"
     >
-        <a class="px-8 block" href="https://palform.app">
+        <a class="px-8 pb-8 block" href="https://palform.app">
             <img src={textLogo} class="lg:h-12 h-8" alt="Palform logo" />
         </a>
 

@@ -6,6 +6,8 @@
     import KeyRegisterForm from "../../components/keys/KeyRegisterForm.svelte";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import { APIs } from "../../data/common";
+    import { getIntentTemplate } from "../../data/auth/intent";
+    import type { APIForm } from "@paltiverse/palform-typescript-openapi";
 
     const orgCtx = getOrgContext();
     $: onKeyRegistered = async () => {
@@ -13,23 +15,36 @@
             (e) => e.my_role === "Admin" || e.my_role === "Editor"
         );
         if (firstAdminTeam) {
-            const firstFormResp = await APIs.forms().then((a) =>
-                a.formsCreate($orgCtx.org.id, {
-                    in_team: firstAdminTeam.team_id,
-                    title: "My first form",
-                    editor_name: "My first form",
-                    one_question_per_page: true,
-                })
-            );
+            const intentTemplate = getIntentTemplate();
+
+            let firstForm: APIForm;
+            if (intentTemplate) {
+                const resp = await APIs.formTemplatesWithToken().then((a) =>
+                    a.formTemplatesClone($orgCtx.org.id, intentTemplate, {
+                        into_team: firstAdminTeam.team_id,
+                    })
+                );
+                firstForm = resp.data;
+            } else {
+                const resp = await APIs.forms().then((a) =>
+                    a.formsCreate($orgCtx.org.id, {
+                        in_team: firstAdminTeam.team_id,
+                        title: "My first form",
+                        editor_name: "My first form",
+                        one_question_per_page: true,
+                    })
+                );
+                firstForm = resp.data;
+            }
 
             orgCtx.update((ctx) => {
                 return {
                     ...ctx,
-                    forms: [firstFormResp.data, ...ctx.forms],
+                    forms: [firstForm, ...ctx.forms],
                 };
             });
 
-            navigate(`/orgs/${$orgCtx.org.id}/forms/${firstFormResp.data.id}/`);
+            navigate(`/orgs/${$orgCtx.org.id}/forms/${firstForm.id}/`);
         } else {
             navigate(`/orgs/${$orgCtx.org.id}/induction`);
         }

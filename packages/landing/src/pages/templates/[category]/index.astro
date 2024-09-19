@@ -8,6 +8,7 @@ import TemplatePreviewGrid from "../../../components/templates/TemplatePreviewGr
 import Html from "../../../layouts/Html.astro";
 import InfoPageParagraph from "../../../components/info/InfoPageParagraph.astro";
 import InfoPageTitle from "../../../components/info/InfoPageTitle.astro";
+import { Badge } from "flowbite-svelte";
 
 export const prerender = false;
 const { category: categoryID } = Astro.params;
@@ -24,6 +25,10 @@ const categoryFormsResp = await formTemplatesAPI.formTemplatesList(categoryID!);
 
 	<ResponsivePadding class="mt-24" fluid>
 		<TemplateGrid selectedCategory={categoryID}>
+			<Badge class="mb-2" href="/templates" border>
+				View all templates
+			</Badge>
+
 			<InfoPageTitle>
 				Free {categoryResp.data.name} Form Templates
 			</InfoPageTitle>

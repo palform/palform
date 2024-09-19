@@ -45,11 +45,21 @@
                 {template.description}
             </p>
 
+            {#if showMarketing}
+                <p class="text-gray-600 dark:text-gray-300 text-sm mt-2">
+                    Set up this template in &lt;5 minutes and get unlimited
+                    responses for free. Our industry-leading encryption keeps
+                    even the most sensitive information secret, and reduces the
+                    risk of data breaches so you can sleep at night.
+                </p>
+            {/if}
+
             <Button
-                class="mt-8"
+                class="mt-6"
                 href={buttonLinkToAuth ? useTemplateURL.toString() : undefined}
                 {disabled}
                 on:click
+                size="lg"
             >
                 Use this template
             </Button>

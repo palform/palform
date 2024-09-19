@@ -20,7 +20,7 @@ use crate::rocket_util::validated::Validated;
 pub struct CreateUserRequest {
     #[validate(email(message = "was not a valid email"))]
     email: String,
-    #[validate(length(min = 12, max = 60, message = "must be between 12 and 60 characters"))]
+    #[validate(length(min = 12, max = 64, message = "must be between 12 and 64 characters"))]
     password: String,
 }
 
