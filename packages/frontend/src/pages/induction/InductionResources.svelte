@@ -10,7 +10,7 @@
     } from "@fortawesome/free-solid-svg-icons";
     import { isEntitled } from "../../data/billing/entitlement";
     import MissingEntitlementTooltip from "../../components/billing/entitlement/MissingEntitlementTooltip.svelte";
-    import { navigateEvent } from "../../utils/navigate";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     const orgCtx = getOrgContext();
     const multiMemberEntitled = isEntitled("user_count", true);
