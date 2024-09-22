@@ -11,7 +11,6 @@
     } from "flowbite-svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faFileImport, faPlus } from "@fortawesome/free-solid-svg-icons";
-    import { navigateEvent } from "../../../utils/navigate";
     import { APIs } from "../../../data/common";
     import type { APIUserKey } from "@paltiverse/palform-typescript-openapi";
     import KeyTableRow from "../../../components/keys/KeyTableRow.svelte";
@@ -22,6 +21,7 @@
     import TableContainer from "../../../components/tables/TableContainer.svelte";
     import { isEntitled } from "../../../data/billing/entitlement";
     import MissingEntitlementTooltip from "../../../components/billing/entitlement/MissingEntitlementTooltip.svelte";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     export let orgId: string;
     const orgCtx = getOrgContext();

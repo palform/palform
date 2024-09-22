@@ -1,0 +1,32 @@
+---
+import Html from "../../../layouts/Html.astro";
+import { AppBaseURL, formTemplatesAPI } from "../../../api/main";
+import Navbar from "../../../components/Navbar.astro";
+import ResponsivePadding from "../../../components/ResponsivePadding.astro";
+import TemplateGrid from "../../../components/templates/TemplateGrid.astro";
+import { TemplateFramePreview } from "@paltiverse/palform-frontend-common";
+import { Badge } from "flowbite-svelte";
+
+export const prerender = false;
+const { category: categoryId, template: templateId } = Astro.params;
+const templateResp = await formTemplatesAPI.formTemplatesGet(templateId!);
+
+await formTemplatesAPI.formTemplatesReportView(templateId!);
+---
+
+<Html title={`Free form template: ${templateResp.data.name}`}>
+	<Navbar />
+
+	<ResponsivePadding fluid class="mt-24">
+		<TemplateGrid selectedCategory={categoryId}>
+			<Badge class="mb-1">Free form template</Badge>
+
+			<TemplateFramePreview
+				class="mt-2"
+				appBaseURL={AppBaseURL}
+				categoryId={categoryId === "_" ? undefined : categoryId}
+				template={templateResp.data}
+			/>
+		</TemplateGrid>
+	</ResponsivePadding>
+</Html>

@@ -7,8 +7,8 @@
     import { Alert, Button } from "flowbite-svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-    import { navigateEvent } from "../../utils/navigate";
     import OrganisationLatestUpdates from "../../components/orgs/dashboard/OrganisationLatestUpdates.svelte";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     const orgCtx = getOrgContext();
     const currentTime = DateTime.now();

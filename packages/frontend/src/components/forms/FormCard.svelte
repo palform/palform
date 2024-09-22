@@ -3,10 +3,10 @@
     import { Button } from "flowbite-svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-    import { navigateEvent } from "../../utils/navigate";
     import CardBox from "../cardBox/CardBox.svelte";
     import CardBoxTitle from "../cardBox/CardBoxTitle.svelte";
     import CardBoxSubtitle from "../cardBox/CardBoxSubtitle.svelte";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     export let form: APIForm;
     export let orgId: string;

@@ -6,7 +6,7 @@
     import FormCard from "./FormCard.svelte";
     import { faPlus } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-    import { navigateEvent } from "../../utils/navigate";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     export let teamId: string;
     const orgCtx = getOrgContext();
@@ -24,7 +24,7 @@
         color="light"
         size="xs"
         class="mt-2 mb-4"
-        href={`/orgs/${$orgCtx.org.id}/forms/new/${teamId}`}
+        href={`/orgs/${$orgCtx.org.id}/forms/templates?team=${teamId}`}
         on:click={navigateEvent}
     >
         <FontAwesomeIcon icon={faPlus} class="me-2" />

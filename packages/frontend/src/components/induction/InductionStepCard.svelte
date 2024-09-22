@@ -1,9 +1,9 @@
 <script lang="ts">
     import { Card } from "flowbite-svelte";
-    import { navigateEvent } from "../../utils/navigate";
     import { type IconProp } from "@fortawesome/fontawesome-svg-core";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faCheck } from "@fortawesome/free-solid-svg-icons";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     export let title: string;
     export let href: string | undefined = undefined;

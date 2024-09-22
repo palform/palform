@@ -5,9 +5,9 @@
     import OrganisationCardLoading from "../../components/orgs/OrganisationCardLoading.svelte";
     import { APIs } from "../../data/common";
     import Main from "../../layouts/Main.svelte";
-    import { navigateEvent } from "../../utils/navigate";
     import CardBox from "../../components/cardBox/CardBox.svelte";
     import CardBoxTitle from "../../components/cardBox/CardBoxTitle.svelte";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 </script>
 
 <Main title="My organisations">

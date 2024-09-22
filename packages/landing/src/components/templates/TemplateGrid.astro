@@ -1,0 +1,24 @@
+---
+import { TemplateCategoryList } from "@paltiverse/palform-frontend-common";
+import { formTemplatesAPI } from "../../api/main";
+
+interface Props {
+    selectedCategory?: string;
+}
+
+const categoriesResp = await formTemplatesAPI.formTemplatesCategoriesList();
+const { selectedCategory } = Astro.props;
+---
+
+<div class="w-full md:grid grid-cols-4 gap-12">
+    <div class="w-full mb-8 md:mb-0">
+        <TemplateCategoryList
+            categoryURL={(id) => `/templates/${id}`}
+            categories={categoriesResp.data}
+            selectedId={selectedCategory}
+        />
+    </div>
+    <div class="col-span-3">
+        <slot />
+    </div>
+</div>

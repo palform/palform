@@ -75,16 +75,20 @@ pub async fn handler(
 
             let password_is_valid = AdminUserManager::verify_user_password(&user, password.to_owned())
         .map_err(|e|  match e {
-            AdminUserManagementError::NoPassword => APIError::BadRequest(
-                "Your account belongs to an organisation. Please sign in via your organisation page instead."
-                    .to_string()
-            ).into(),
+                AdminUserManagementError::NoPassword => APIError::BadRequest(
+                    "Your account belongs to an organisation. Please sign in via your organisation page instead."
+                        .to_string()
+                ).into(),
                     AdminUserManagementError::OrgOnly => APIError::BadRequest(e.to_string()).into(),
                 _ => APIError::report_internal_error("verify password", e)
                 })?;
 
             if !password_is_valid {
                 return Err(APIError::BadRequest("Email or password incorrect".to_string()).into());
+            }
+
+            if !user.manual_auth_email_verified.is_some_and(|v| v) {
+                return Err(APIError::BadRequest("Please verify your email address. If you didn't get an email, please contact hey@palform.app".to_string()).into());
             }
 
             let mut org_id = None::<PalformDatabaseID<IDOrganisation>>;

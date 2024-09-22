@@ -13,7 +13,6 @@
         submissionIsError,
         submissionIsSuccess,
     } from "../../../../../data/crypto/results";
-    import { navigateEvent } from "../../../../../utils/navigate";
     import TextButton from "../../../../TextButton.svelte";
     import FormResponseCryptoDetails from "../../FormResponseCryptoDetails.svelte";
     import ListPaginator from "./ListPaginator.svelte";
@@ -22,6 +21,7 @@
     import MissingEntitlementTooltip from "../../../../billing/entitlement/MissingEntitlementTooltip.svelte";
     import { parseServerTime } from "../../../../../data/util/time";
     import { getFormAdminContext } from "../../../../../data/contexts/formAdmin";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     const formAdminCtx = getFormAdminContext();
     const orgCtx = getOrgContext();

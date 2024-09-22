@@ -1,0 +1,61 @@
+---
+import Navbar from "../../components/Navbar.astro";
+import ResponsivePadding from "../../components/ResponsivePadding.astro";
+import Html from "../../layouts/Html.astro";
+import TemplateGrid from "../../components/templates/TemplateGrid.astro";
+import { formTemplatesAPI } from "../../api/main";
+import TemplatePreviewGrid from "../../components/templates/TemplatePreviewGrid.astro";
+import { TemplateItemPreview } from "@paltiverse/palform-frontend-common";
+import InfoPageTitle from "../../components/info/InfoPageTitle.astro";
+import InfoPageParagraph from "../../components/info/InfoPageParagraph.astro";
+
+const allTemplatesResp = await formTemplatesAPI.formTemplatesListTop();
+---
+
+<Html
+	title="Ready-to-use beautiful form templates with industry-leading security"
+>
+	<Navbar />
+
+	<ResponsivePadding class="mt-24" fluid>
+		<TemplateGrid>
+			<InfoPageTitle>
+				Free form templates for every use case
+			</InfoPageTitle>
+
+			<InfoPageParagraph>
+				Form templates make light work of building surveys. Simply
+				choose one suited to your use case and be ready to receive
+				ultra-secure encrypted responses within 5 minutes. Unlimited
+				responses are included for free &mdash; no credit card required.
+				You can customise them to your liking, and you can even change
+				the branding and design on our paid plans.
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				All our templates are designed by hand (no AI here!) and vetted
+				carefully to make sure they're as helpful as possible. Of
+				course, you're still free to change the forms as required for
+				your specific case.
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				Need help? <a
+					href="https://pf.palform.app/sales"
+					class="underline text-primary-700 dark:text-primary-400"
+				>
+					Contact our friendly UK-based team</a
+				>.
+			</InfoPageParagraph>
+
+			<TemplatePreviewGrid class="mt-6">
+				{
+					allTemplatesResp.data.map((template) => (
+						<TemplateItemPreview
+							{template}
+							link={`/templates/_/${template.id}`}
+						/>
+					))
+				}
+			</TemplatePreviewGrid>
+		</TemplateGrid>
+	</ResponsivePadding>
+</Html>

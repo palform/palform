@@ -19,7 +19,7 @@ use crate::{entity_managers::{
 #[derive(Deserialize, JsonSchema, Validate)]
 pub struct ResetPasswordRequest {
     verification_id: PalformDatabaseID<IDAdminUserEmailVerification>,
-    #[validate(length(min = 12, max = 60, message = "must be between 12 and 60 characters"))]
+    #[validate(length(min = 12, max = 64, message = "must be between 12 and 64 characters"))]
     new_password: String,
 }
 

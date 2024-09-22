@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Checkbox, Helper, Input, Label } from "flowbite-svelte";
+    import { Alert, Checkbox, Helper, Input, Label } from "flowbite-svelte";
     import AuthCard from "../../layouts/AuthCard.svelte";
     import InfoText from "../../components/type/InfoText.svelte";
     import LoadingButton from "../../components/LoadingButton.svelte";
@@ -9,6 +9,7 @@
     import TextButton from "../../components/TextButton.svelte";
     import PasswordPicker from "../../components/password/PasswordPicker.svelte";
     import SocialAuthButtons from "../../components/auth/SocialAuthButtons.svelte";
+    import { saveIntentTemplateIfExists } from "../../data/auth/intent";
 
     let email = "";
     let password = "";
@@ -36,6 +37,8 @@
         }
         loading = false;
     };
+
+    const intentTemplateExists = saveIntentTemplateIfExists();
 </script>
 
 {#if signUpComplete}
@@ -47,8 +50,22 @@
     </AuthCard>
 {:else}
     <AuthCard title="Create an account">
+        {#if intentTemplateExists}
+            <Alert class="mb-2">
+                <strong>This only takes 30 seconds.</strong> We'll create your template
+                form once you've made an account :)
+            </Alert>
+        {/if}
+
         <form class="mt-4 space-y-6" on:submit={onSignUpClick}>
-            <Label>
+            <div class="space-y-2 !mb-0">
+                <SocialAuthButtons prefix="Sign up with" />
+                <p class="text-sm text-center text-gray-500 dark:text-gray-400">
+                    or
+                </p>
+            </div>
+
+            <Label class="!mt-2">
                 Your email address
                 <Input
                     class="mt-2"
@@ -94,20 +111,14 @@
                 </span>
             </Checkbox>
 
-            <div class="space-y-4">
-                <LoadingButton
-                    type="submit"
-                    disabled={loading}
-                    {loading}
-                    buttonClass="w-full"
-                >
-                    Sign up
-                </LoadingButton>
-                <p class="text-sm text-center text-gray-500 dark:text-gray-400">
-                    or
-                </p>
-                <SocialAuthButtons prefix="Sign up with" />
-            </div>
+            <LoadingButton
+                type="submit"
+                disabled={loading}
+                {loading}
+                buttonClass="w-full"
+            >
+                Sign up
+            </LoadingButton>
         </form>
 
         <svelte:fragment slot="footer">

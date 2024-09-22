@@ -22,11 +22,11 @@
         downloadPrivateKey,
         findKey,
     } from "../../data/crypto/keyManager";
-    import { navigateEvent } from "../../utils/navigate";
     import {
         getOrgContext,
         reloadGlobalAlert,
     } from "../../data/contexts/orgLayout";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     export let key: APIUserKey;
     const orgCtx = getOrgContext();

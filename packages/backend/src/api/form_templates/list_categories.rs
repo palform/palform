@@ -12,7 +12,7 @@ use crate::{
     tag = "Form Templates",
     operation_id = "form_templates.categories.list"
 )]
-#[get("/templates")]
+#[get("/templates/categories")]
 pub async fn handler(
     db: &State<DatabaseConnection>,
 ) -> Result<Json<Vec<APIFormTemplateCategory>>, APIErrorWithStatus> {

@@ -6,6 +6,7 @@ export default {
     "./index.html",
     "./src/**/*.{ts,svelte}",
     "../../node_modules/flowbite-svelte/**/*.{html,js,svelte,ts}",
+    "../frontend-common/src/**/*.{svelte,ts}"
   ],
   darkMode: "media",
   plugins: [require("flowbite/plugin")],

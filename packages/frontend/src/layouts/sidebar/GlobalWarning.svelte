@@ -3,9 +3,9 @@
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import { faArrowRight, faWarning } from "@fortawesome/free-solid-svg-icons";
     import { Button } from "flowbite-svelte";
-    import { navigateEvent } from "../../utils/navigate";
     import { useLocation } from "svelte-routing";
     import { isOrgRouteMatch } from "../../data/routing";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     const ctx = getOrgContext();
     const location = useLocation();
@@ -13,7 +13,7 @@
         $ctx.globalWarning === undefined
             ? false
             : $ctx.globalWarning.hideOnPaths.some((p) =>
-                  isOrgRouteMatch($location.pathname, p),
+                  isOrgRouteMatch($location.pathname, p)
               );
 </script>
 

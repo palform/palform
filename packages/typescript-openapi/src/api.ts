@@ -3092,6 +3092,19 @@ export type CancelPlanRequestReason = typeof CancelPlanRequestReason[keyof typeo
 /**
  * 
  * @export
+ * @interface CloneFormTemplateRequest
+ */
+export interface CloneFormTemplateRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof CloneFormTemplateRequest
+     */
+    'into_team': string;
+}
+/**
+ * 
+ * @export
  * @interface CreateFormRequest
  */
 export interface CreateFormRequest {
@@ -7347,7 +7360,7 @@ export const FormTemplatesApiAxiosParamCreator = function (configuration?: Confi
         formTemplatesCategoriesGet: async (categoryId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'categoryId' is not null or undefined
             assertParamExists('formTemplatesCategoriesGet', 'categoryId', categoryId)
-            const localVarPath = `/templates/{category_id}`
+            const localVarPath = `/templates/categories/{category_id}`
                 .replace(`{${"category_id"}}`, encodeURIComponent(String(categoryId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -7377,7 +7390,7 @@ export const FormTemplatesApiAxiosParamCreator = function (configuration?: Confi
          * @throws {RequiredError}
          */
         formTemplatesCategoriesList: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/templates`;
+            const localVarPath = `/templates/categories`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7402,18 +7415,61 @@ export const FormTemplatesApiAxiosParamCreator = function (configuration?: Confi
         },
         /**
          * 
-         * @param {string} categoryId 
+         * @param {string} orgId 
+         * @param {string} templateId 
+         * @param {CloneFormTemplateRequest} cloneFormTemplateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        formTemplatesClone: async (orgId: string, templateId: string, cloneFormTemplateRequest: CloneFormTemplateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('formTemplatesClone', 'orgId', orgId)
+            // verify required parameter 'templateId' is not null or undefined
+            assertParamExists('formTemplatesClone', 'templateId', templateId)
+            // verify required parameter 'cloneFormTemplateRequest' is not null or undefined
+            assertParamExists('formTemplatesClone', 'cloneFormTemplateRequest', cloneFormTemplateRequest)
+            const localVarPath = `/users/me/orgs/{org_id}/templates/{template_id}/clone`
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
+                .replace(`{${"template_id"}}`, encodeURIComponent(String(templateId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication APIAuthTokenWithRole_None_OrgView_Any required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(cloneFormTemplateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {string} templateId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formTemplatesGet: async (categoryId: string, templateId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'categoryId' is not null or undefined
-            assertParamExists('formTemplatesGet', 'categoryId', categoryId)
+        formTemplatesGet: async (templateId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'templateId' is not null or undefined
             assertParamExists('formTemplatesGet', 'templateId', templateId)
-            const localVarPath = `/templates/{_category_id}/{template_id}`
-                .replace(`{${"_category_id"}}`, encodeURIComponent(String(categoryId)))
+            const localVarPath = `/templates/{template_id}`
                 .replace(`{${"template_id"}}`, encodeURIComponent(String(templateId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -7446,7 +7502,7 @@ export const FormTemplatesApiAxiosParamCreator = function (configuration?: Confi
         formTemplatesList: async (categoryId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'categoryId' is not null or undefined
             assertParamExists('formTemplatesList', 'categoryId', categoryId)
-            const localVarPath = `/templates/{category_id}/all`
+            const localVarPath = `/templates/categories/{category_id}/all`
                 .replace(`{${"category_id"}}`, encodeURIComponent(String(categoryId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -7472,18 +7528,43 @@ export const FormTemplatesApiAxiosParamCreator = function (configuration?: Confi
         },
         /**
          * 
-         * @param {string} categoryId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        formTemplatesListTop: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/templates/top`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {string} templateId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formTemplatesReportView: async (categoryId: string, templateId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'categoryId' is not null or undefined
-            assertParamExists('formTemplatesReportView', 'categoryId', categoryId)
+        formTemplatesReportView: async (templateId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'templateId' is not null or undefined
             assertParamExists('formTemplatesReportView', 'templateId', templateId)
-            const localVarPath = `/templates/{_category_id}/{template_id}/views`
-                .replace(`{${"_category_id"}}`, encodeURIComponent(String(categoryId)))
+            const localVarPath = `/templates/{template_id}/views`
                 .replace(`{${"template_id"}}`, encodeURIComponent(String(templateId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -7542,13 +7623,26 @@ export const FormTemplatesApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {string} categoryId 
+         * @param {string} orgId 
+         * @param {string} templateId 
+         * @param {CloneFormTemplateRequest} cloneFormTemplateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async formTemplatesClone(orgId: string, templateId: string, cloneFormTemplateRequest: CloneFormTemplateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIForm>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.formTemplatesClone(orgId, templateId, cloneFormTemplateRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FormTemplatesApi.formTemplatesClone']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {string} templateId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async formTemplatesGet(categoryId: string, templateId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIFormTemplate>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.formTemplatesGet(categoryId, templateId, options);
+        async formTemplatesGet(templateId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIFormTemplate>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.formTemplatesGet(templateId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormTemplatesApi.formTemplatesGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -7567,13 +7661,23 @@ export const FormTemplatesApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {string} categoryId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async formTemplatesListTop(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIFormTemplate>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.formTemplatesListTop(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FormTemplatesApi.formTemplatesListTop']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {string} templateId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async formTemplatesReportView(categoryId: string, templateId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.formTemplatesReportView(categoryId, templateId, options);
+        async formTemplatesReportView(templateId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.formTemplatesReportView(templateId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormTemplatesApi.formTemplatesReportView']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -7607,13 +7711,23 @@ export const FormTemplatesApiFactory = function (configuration?: Configuration, 
         },
         /**
          * 
-         * @param {string} categoryId 
+         * @param {string} orgId 
+         * @param {string} templateId 
+         * @param {CloneFormTemplateRequest} cloneFormTemplateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        formTemplatesClone(orgId: string, templateId: string, cloneFormTemplateRequest: CloneFormTemplateRequest, options?: any): AxiosPromise<APIForm> {
+            return localVarFp.formTemplatesClone(orgId, templateId, cloneFormTemplateRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {string} templateId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formTemplatesGet(categoryId: string, templateId: string, options?: any): AxiosPromise<APIFormTemplate> {
-            return localVarFp.formTemplatesGet(categoryId, templateId, options).then((request) => request(axios, basePath));
+        formTemplatesGet(templateId: string, options?: any): AxiosPromise<APIFormTemplate> {
+            return localVarFp.formTemplatesGet(templateId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -7626,13 +7740,20 @@ export const FormTemplatesApiFactory = function (configuration?: Configuration, 
         },
         /**
          * 
-         * @param {string} categoryId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        formTemplatesListTop(options?: any): AxiosPromise<Array<APIFormTemplate>> {
+            return localVarFp.formTemplatesListTop(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {string} templateId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formTemplatesReportView(categoryId: string, templateId: string, options?: any): AxiosPromise<void> {
-            return localVarFp.formTemplatesReportView(categoryId, templateId, options).then((request) => request(axios, basePath));
+        formTemplatesReportView(templateId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.formTemplatesReportView(templateId, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -7667,14 +7788,26 @@ export class FormTemplatesApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} categoryId 
+     * @param {string} orgId 
+     * @param {string} templateId 
+     * @param {CloneFormTemplateRequest} cloneFormTemplateRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FormTemplatesApi
+     */
+    public formTemplatesClone(orgId: string, templateId: string, cloneFormTemplateRequest: CloneFormTemplateRequest, options?: RawAxiosRequestConfig) {
+        return FormTemplatesApiFp(this.configuration).formTemplatesClone(orgId, templateId, cloneFormTemplateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {string} templateId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FormTemplatesApi
      */
-    public formTemplatesGet(categoryId: string, templateId: string, options?: RawAxiosRequestConfig) {
-        return FormTemplatesApiFp(this.configuration).formTemplatesGet(categoryId, templateId, options).then((request) => request(this.axios, this.basePath));
+    public formTemplatesGet(templateId: string, options?: RawAxiosRequestConfig) {
+        return FormTemplatesApiFp(this.configuration).formTemplatesGet(templateId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -7690,14 +7823,23 @@ export class FormTemplatesApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} categoryId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FormTemplatesApi
+     */
+    public formTemplatesListTop(options?: RawAxiosRequestConfig) {
+        return FormTemplatesApiFp(this.configuration).formTemplatesListTop(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {string} templateId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FormTemplatesApi
      */
-    public formTemplatesReportView(categoryId: string, templateId: string, options?: RawAxiosRequestConfig) {
-        return FormTemplatesApiFp(this.configuration).formTemplatesReportView(categoryId, templateId, options).then((request) => request(this.axios, this.basePath));
+    public formTemplatesReportView(templateId: string, options?: RawAxiosRequestConfig) {
+        return FormTemplatesApiFp(this.configuration).formTemplatesReportView(templateId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

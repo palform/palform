@@ -1,18 +1,25 @@
+use std::collections::HashMap;
+
 use palform_entities::{
     form, form_template, form_template_category, form_template_category_assignment, prelude::*,
-    team,
+    question, question_group, team,
 };
-use palform_migration::Expr;
+use palform_migration::{Expr, SimpleExpr};
 use palform_tsid::{
-    resources::{IDForm, IDFormTemplateCategory},
+    resources::{IDForm, IDFormTemplateCategory, IDQuestion, IDQuestionGroup, IDTeam},
     tsid::PalformDatabaseID,
 };
 use sea_orm::{
-    ColumnTrait, ConnectionTrait, DbErr, EntityTrait, JoinType, QueryFilter, QueryOrder,
-    QuerySelect, RelationTrait,
+    ActiveModelTrait, ColumnTrait, ConnectionTrait, DbErr, EntityTrait, JoinType, PaginatorTrait,
+    QueryFilter, QueryOrder, QuerySelect, RelationTrait, Set,
 };
 
-use crate::api_entities::form_template::{APIFormTemplate, APIFormTemplateCategory};
+use crate::api_entities::{
+    form::APIForm,
+    form_template::{APIFormTemplate, APIFormTemplateCategory},
+};
+
+use super::forms::FormManager;
 
 pub struct FormTemplatesManager;
 
@@ -31,6 +38,7 @@ impl FormTemplatesManager {
                 "template_count",
             )
             .group_by(form_template_category::Column::Id)
+            .order_by_desc(SimpleExpr::Custom("template_count".to_string()))
             .into_model()
             .all(conn)
             .await
@@ -69,7 +77,25 @@ impl FormTemplatesManager {
             .column_as(form::Column::EditorName, "name")
             .column_as(form::Column::Id, "id")
             .column_as(team::Column::OrganisationId, "organisation_id")
+            .order_by_desc(form_template::Column::Views)
             .filter(form_template_category_assignment::Column::CategoryId.eq(category_id))
+            .into_model()
+            .all(conn)
+            .await
+    }
+
+    pub async fn list_top_across_categories<T: ConnectionTrait>(
+        conn: &T,
+        top_n: u64,
+    ) -> Result<Vec<APIFormTemplate>, DbErr> {
+        FormTemplate::find()
+            .join(JoinType::InnerJoin, form_template::Relation::Form.def())
+            .join(JoinType::InnerJoin, form::Relation::Team.def())
+            .column_as(form::Column::EditorName, "name")
+            .column_as(form::Column::Id, "id")
+            .column_as(team::Column::OrganisationId, "organisation_id")
+            .order_by_desc(form_template::Column::Views)
+            .limit(top_n)
             .into_model()
             .all(conn)
             .await
@@ -103,5 +129,109 @@ impl FormTemplatesManager {
             .exec(conn)
             .await?;
         Ok(())
+    }
+
+    async fn report_clone<T: ConnectionTrait>(
+        conn: &T,
+        template_id: PalformDatabaseID<IDForm>,
+    ) -> Result<(), DbErr> {
+        FormTemplate::update_many()
+            .col_expr(
+                form_template::Column::Clones,
+                Expr::col(form_template::Column::Clones).add(1),
+            )
+            .filter(form_template::Column::FormId.eq(template_id))
+            .exec(conn)
+            .await?;
+        Ok(())
+    }
+
+    pub async fn clone<T: ConnectionTrait>(
+        conn: &T,
+        template_id: PalformDatabaseID<IDForm>,
+        into_team: PalformDatabaseID<IDTeam>,
+    ) -> Result<APIForm, DbErr> {
+        let count = FormTemplate::find_by_id(template_id).count(conn).await?;
+        if count != 1 {
+            return Err(DbErr::RecordNotFound(
+                "No corresponding template found".to_string(),
+            ));
+        }
+
+        let template_form = Form::find_by_id(template_id)
+            .one(conn)
+            .await?
+            .ok_or(DbErr::RecordNotFound("Form not found".to_string()))?;
+
+        let template_qgs = QuestionGroup::find()
+            .filter(question_group::Column::FormId.eq(template_form.id))
+            .all(conn)
+            .await?;
+
+        let template_questions = Question::find()
+            .join(JoinType::InnerJoin, question::Relation::QuestionGroup.def())
+            .filter(question_group::Column::FormId.eq(template_form.id))
+            .all(conn)
+            .await?;
+
+        let new_form_id = PalformDatabaseID::<IDForm>::random();
+        let new_form = form::ActiveModel {
+            id: Set(new_form_id),
+            editor_name: Set(template_form.editor_name),
+            title: Set(template_form.title),
+            team_id: Set(into_team),
+            end_configuration: Set(template_form.end_configuration),
+            one_question_per_page: Set(template_form.one_question_per_page),
+            ..Default::default()
+        };
+        new_form.insert(conn).await?;
+
+        let mut old_to_new_question_groups =
+            HashMap::<PalformDatabaseID<IDQuestionGroup>, PalformDatabaseID<IDQuestionGroup>>::new(
+            );
+
+        for question_group in template_qgs {
+            let new_question_group_id = PalformDatabaseID::<IDQuestionGroup>::random();
+            let new_question_group = question_group::ActiveModel {
+                id: Set(new_question_group_id),
+                form_id: Set(new_form_id),
+                title: Set(question_group.title),
+                description: Set(question_group.description),
+                step_strategy: Set(question_group.step_strategy),
+                position: Set(question_group.position),
+            };
+
+            new_question_group.insert(conn).await?;
+            old_to_new_question_groups.insert(question_group.id, new_question_group_id);
+        }
+
+        for question in template_questions {
+            let new_group_id = old_to_new_question_groups
+                .get(&question.group_id)
+                .ok_or(DbErr::RecordNotFound("This cannot happen".to_string()))?;
+
+            let new_question = question::ActiveModel {
+                id: Set(PalformDatabaseID::<IDQuestion>::random()),
+                group_id: Set(new_group_id.clone()),
+                title: Set(question.title),
+                description: Set(question.description),
+                configuration: Set(question.configuration),
+                position: Set(question.position),
+                required: Set(question.required),
+                internal_name: Set(question.internal_name),
+            };
+
+            new_question.insert(conn).await?;
+        }
+
+        let newly_created_form =
+            FormManager::get_by_id(conn, new_form_id)
+                .await?
+                .ok_or(DbErr::RecordNotFound(
+                    "Newly created form did not exist :/".to_string(),
+                ))?;
+
+        Self::report_clone(conn, template_id).await?;
+        Ok(newly_created_form)
     }
 }

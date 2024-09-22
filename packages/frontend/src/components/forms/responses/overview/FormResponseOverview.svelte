@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Alert, Button } from "flowbite-svelte";
-    import { navigateEvent } from "../../../../utils/navigate";
     import {
         getFormCtx,
         getOrgContext,
@@ -14,6 +13,7 @@
         getGroupTitle,
     } from "../../../../data/contexts/formAdmin";
     import { qIsInfo } from "../../../../data/contexts/formEditor";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     const orgCtx = getOrgContext();
     const formAdminCtx = getFormAdminContext();
