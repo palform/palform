@@ -9,6 +9,7 @@ import { TemplateItemPreview } from "@paltiverse/palform-frontend-common";
 import InfoPageTitle from "../../components/info/InfoPageTitle.astro";
 import InfoPageParagraph from "../../components/info/InfoPageParagraph.astro";
 
+export const prerender = false;
 const allTemplatesResp = await formTemplatesAPI.formTemplatesListTop();
 ---
 
