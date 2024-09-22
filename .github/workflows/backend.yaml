@@ -3,7 +3,7 @@ on:
   push:
     branches: ['main']
 concurrency:
-  group: frontend-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: backend-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
   build:
