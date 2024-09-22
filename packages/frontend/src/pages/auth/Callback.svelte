@@ -26,8 +26,12 @@
             }
 
             try {
-                await performAuthCallback(orgId, code, state);
-                navigate(`/orgs/${orgId}`);
+                const userIsNew = await performAuthCallback(orgId, code, state);
+                if (userIsNew) {
+                    navigate(`/orgs/${orgId}/induction/member`);
+                } else {
+                    navigate(`/orgs/${orgId}`);
+                }
             } catch (e) {
                 error = humaniseAPIError(e);
             }

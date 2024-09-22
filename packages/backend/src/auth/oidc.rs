@@ -304,7 +304,7 @@ impl OIDCManager {
         auth_code: String,
         nonce: String,
         redirect_url: String,
-    ) -> Result<(NewAPIAuthToken, PalformDatabaseID<IDAdminUser>), TokenExchangeError> {
+    ) -> Result<(NewAPIAuthToken, PalformDatabaseID<IDAdminUser>, bool), TokenExchangeError> {
         let result = oidc_common_token_exchange(
             conn,
             self.client.clone(),
@@ -347,8 +347,10 @@ impl OIDCManager {
         }
 
         let token_user_id: PalformDatabaseID<IDAdminUser>;
+        let user_is_new: bool;
         if let Some(user_id) = user_id {
             token_user_id = user_id;
+            user_is_new = false;
         } else {
             let user_display_name = result
                 .user_info
@@ -375,11 +377,13 @@ impl OIDCManager {
                 .map_err(|e| {
                     TokenExchangeError::CreateUserError(AdminUserManagementError::DBError(e))
                 })?;
+
+            user_is_new = true;
         }
 
         self.map_teams(conn, token_user_id, &result.raw_claims)
             .await?;
         let auth_token = TokenManager::issue_token(conn, token_user_id).await?;
-        Ok((auth_token, token_user_id))
+        Ok((auth_token, token_user_id, user_is_new))
     }
 }

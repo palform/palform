@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert } from "flowbite-svelte";
+    import { Alert, Button } from "flowbite-svelte";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import CardGrid from "../../components/CardGrid.svelte";
     import InductionStepCard from "../../components/induction/InductionStepCard.svelte";
@@ -10,6 +10,7 @@
     } from "@fortawesome/free-solid-svg-icons";
     import { isEntitled } from "../../data/billing/entitlement";
     import MissingEntitlementTooltip from "../../components/billing/entitlement/MissingEntitlementTooltip.svelte";
+    import { navigateEvent } from "../../utils/navigate";
 
     const orgCtx = getOrgContext();
     const multiMemberEntitled = isEntitled("user_count", true);
@@ -19,6 +20,16 @@
     <Alert color="green" border class="mt-8">
         Thanks for completing the induction! We hope you have lots of fun using
         Palform.
+
+        <Button
+            class="block mt-2 w-fit"
+            size="sm"
+            color="green"
+            href={`/orgs/${$orgCtx.org.id}`}
+            on:click={navigateEvent}
+        >
+            Continue
+        </Button>
     </Alert>
 {:else}
     <CardGrid class="mt-8">

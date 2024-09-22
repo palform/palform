@@ -112,6 +112,8 @@ export async function performAuthCallback(
         redirect_url: redirectURL(subdomain),
     });
     await saveAuthToken(response.data.token);
+
+    return response.data.is_new;
 }
 
 export async function saveAuthToken(token: NewAPIAuthToken) {

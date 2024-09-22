@@ -3028,6 +3028,12 @@ export interface AuthCallbackResponse {
      * @memberof AuthCallbackResponse
      */
     'token': NewAPIAuthToken;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AuthCallbackResponse
+     */
+    'is_new': boolean;
 }
 /**
  * 

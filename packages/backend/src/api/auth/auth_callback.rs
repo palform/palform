@@ -27,6 +27,7 @@ pub struct AuthCallbackRequest {
 #[derive(Serialize, JsonSchema)]
 pub struct AuthCallbackResponse {
     token: NewAPIAuthToken,
+    is_new: bool,
 }
 
 /// Process authentication callback
@@ -51,7 +52,7 @@ pub async fn handler(
         .await
         .map_err(|e| APIError::report_internal_error("get org OIDC client", e))?;
 
-    let (token, user_id) = client
+    let (token, user_id, is_new) = client
         .token_exchange(
             &txn,
             request.auth_code.clone(),
@@ -74,5 +75,5 @@ pub async fn handler(
         .map_internal_error()?;
 
     txn.commit().await.map_internal_error()?;
-    Ok(Json(AuthCallbackResponse { token }))
+    Ok(Json(AuthCallbackResponse { token, is_new }))
 }
