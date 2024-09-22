@@ -15,6 +15,7 @@
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { copyGenericValue } from "../../../data/util/clipboard";
     import { getFormAdminContext } from "../../../data/contexts/formAdmin";
+    import QrCode from "../../QRCode.svelte";
 
     export let fatID: string;
     export let shortLink: string | undefined;
@@ -65,6 +66,10 @@
                     />
                 </Label>
             {/if}
+        </TabItem>
+
+        <TabItem title="QR code">
+            <QrCode uri={longURL} download />
         </TabItem>
 
         <TabItem title="Embed">

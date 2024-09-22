@@ -3,13 +3,13 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { Button, Input, Label, Modal } from "flowbite-svelte";
     import { generateNewTOTP, verifyTOTP } from "../../../data/auth/2fa";
-    import UserTwoFactorQrCode from "./UserTwoFactorQRCode.svelte";
     import LoadingButton from "../../LoadingButton.svelte";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import { APIs } from "../../../data/common";
     import { createEventDispatcher } from "svelte";
     import type { APIAdminUserSecondAuthenticationFactor } from "@paltiverse/palform-typescript-openapi";
     import { DateTime } from "luxon";
+    import QrCode from "../../QRCode.svelte";
 
     const dispatch = createEventDispatcher<{
         enroll: APIAdminUserSecondAuthenticationFactor;
@@ -83,7 +83,7 @@
 
         <Button on:click={onContinueClick}>Continue</Button>
     {:else}
-        <UserTwoFactorQrCode uri={data.uri} />
+        <QrCode uri={data.uri} />
         <Label>
             URI
             <Input readonly value={data.uri} class="mt-1" disabled={loading} />
