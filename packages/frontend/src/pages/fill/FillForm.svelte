@@ -58,6 +58,11 @@
         await deleteFormFill();
         await loadInit();
     };
+
+    $: isFirstPage =
+        $formFillStore &&
+        $formFillStore.form.g.length > 0 &&
+        $formFillStore.currentGroupId === $formFillStore.form.g[0].id;
 </script>
 
 {#if initLoading}
@@ -87,7 +92,7 @@
                 targetDescriptor="form"
             />
         {:else if $formFillStore}
-            {#if $formFillStore.form.b?.logo_asset_id}
+            {#if $formFillStore.form.b?.logo_asset_id && isFirstPage}
                 <ImageAsset
                     id={$formFillStore.form.b.logo_asset_id}
                     width="140px"
