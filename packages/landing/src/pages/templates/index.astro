@@ -53,6 +53,7 @@ const allTemplatesResp = await formTemplatesAPI.formTemplatesListTop();
 						<TemplateItemPreview
 							{template}
 							link={`/templates/_/${template.id}`}
+							class="plausible-event-name=View+Template"
 						/>
 					))
 				}

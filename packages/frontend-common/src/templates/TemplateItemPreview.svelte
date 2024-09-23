@@ -11,7 +11,7 @@
 
 <Card
     href={link}
-    class="w-full max-w-none"
+    class={`w-full max-w-none ${$$props.class}`}
     on:click={routed ? navigateEvent : undefined}
 >
     <h5

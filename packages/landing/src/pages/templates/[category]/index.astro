@@ -48,6 +48,7 @@ const categoryFormsResp = await formTemplatesAPI.formTemplatesList(categoryID!);
 						<TemplateItemPreview
 							{template}
 							link={`/templates/${categoryResp.data.id}/${template.id}`}
+							class="plausible-event-name=View+Template"
 						/>
 					))
 				}
