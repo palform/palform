@@ -12,9 +12,13 @@ const { category: categoryId, template: templateId } = Astro.params;
 const templateResp = await formTemplatesAPI.formTemplatesGet(templateId!);
 
 await formTemplatesAPI.formTemplatesReportView(templateId!);
+
+const canonicalURL = new URL(`/templates/_/${templateId!}`, Astro.url.origin);
 ---
 
 <Html title={`Free form template: ${templateResp.data.name}`}>
+	<link slot="canonical" rel="canonical" href={canonicalURL} />
+
 	<Navbar />
 
 	<ResponsivePadding fluid class="mt-24">

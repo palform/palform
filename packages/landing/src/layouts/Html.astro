@@ -19,7 +19,9 @@ const { title } = Astro.props;
 			content="Build end-to-end encrypted forms with advanced enterprise-grade features in just a few simple clicks; no coding required."
 		/>
 		<meta name="viewport" content="width=device-width" />
-		<link rel="canonical" href={Astro.url} />
+		<slot name="canonical">
+			<link rel="canonical" href={Astro.url} />
+		</slot>
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
 		<script
