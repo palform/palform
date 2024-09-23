@@ -30,6 +30,7 @@ jobs:
         run: bun run --cwd packages/landing build
         env:
           PUBLIC_BACKEND_URL: https://api.palform.app
+          PUBLIC_APP_URL: https://dash.palform.app
       - name: Deploy landing page to Cloudflare
         uses: cloudflare/wrangler-action@v3
         with:
