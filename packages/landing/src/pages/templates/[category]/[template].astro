@@ -16,7 +16,10 @@ await formTemplatesAPI.formTemplatesReportView(templateId!);
 const canonicalURL = new URL(`/templates/_/${templateId!}`, Astro.url.origin);
 ---
 
-<Html title={`Free form template: ${templateResp.data.name}`}>
+<Html
+	title={`Free form template: ${templateResp.data.name}`}
+	description={templateResp.data.description}
+>
 	<link slot="canonical" rel="canonical" href={canonicalURL} />
 
 	<Navbar />
