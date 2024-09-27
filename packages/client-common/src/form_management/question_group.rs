@@ -3,7 +3,10 @@ use std::collections::HashSet;
 use anyhow::anyhow;
 use chrono::{DateTime, Local};
 use geo::{GeodesicDistance, Point};
-use palform_tsid::{resources::{IDQuestion, IDQuestionGroup}, tsid::PalformDatabaseID};
+use palform_tsid::{
+    resources::{IDQuestion, IDQuestionGroup},
+    tsid::PalformDatabaseID,
+};
 use serde::{Deserialize, Serialize};
 
 use crate::{address::APIGenericLocation, datetime::normalise_date_time};
@@ -93,8 +96,8 @@ impl Default for APIQuestionGroupStepStrategy {
 #[derive(Clone, Deserialize, Serialize)]
 pub struct APIQuestionGroupStepStrategyJumpCase {
     /// If Some(uuid) jump to the group with that `uuid`. If None, submit the form.
-    target_group_id: Option<PalformDatabaseID<IDQuestionGroup>>,
-    conditions: APIQuestionGroupStepStrategyJumpCaseConditionList,
+    pub target_group_id: Option<PalformDatabaseID<IDQuestionGroup>>,
+    pub conditions: APIQuestionGroupStepStrategyJumpCaseConditionList,
 }
 
 impl APIQuestionGroupStepStrategyJumpCase {
@@ -136,11 +139,26 @@ pub enum APIQuestionGroupStepStrategyJumpCaseConditionList {
     And(Vec<APIQuestionGroupStepStrategyJumpCaseCondition>),
 }
 
+impl APIQuestionGroupStepStrategyJumpCaseConditionList {
+    pub fn get_items(&self) -> &Vec<APIQuestionGroupStepStrategyJumpCaseCondition> {
+        match self {
+            Self::Or(items) => items,
+            Self::And(items) => items,
+        }
+    }
+    pub fn clone_with(&self, items: Vec<APIQuestionGroupStepStrategyJumpCaseCondition>) -> Self {
+        match self {
+            Self::Or(_) => Self::Or(items),
+            Self::And(_) => Self::And(items),
+        }
+    }
+}
+
 #[cfg_attr(feature = "backend", derive(schemars::JsonSchema))]
 #[derive(Clone, Deserialize, Serialize)]
 pub struct APIQuestionGroupStepStrategyJumpCaseCondition {
-    question_id: PalformDatabaseID<IDQuestion>,
-    matcher: APIQuestionGroupStepStrategyJumpCaseConditionMatcher,
+    pub question_id: PalformDatabaseID<IDQuestion>,
+    pub matcher: APIQuestionGroupStepStrategyJumpCaseConditionMatcher,
 }
 
 #[cfg_attr(feature = "backend", derive(schemars::JsonSchema))]

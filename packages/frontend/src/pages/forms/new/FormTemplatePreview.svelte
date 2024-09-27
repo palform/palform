@@ -50,7 +50,7 @@
         try {
             const newFormResp = await APIs.formTemplatesWithToken().then((a) =>
                 a.formTemplatesClone($orgCtx.org.id, templateId, {
-                    into_team: selectedTeam ?? $orgCtx.myTeams[0].team_id,
+                    into_team: selectedTeam || $orgCtx.myTeams[0].team_id,
                 })
             );
 

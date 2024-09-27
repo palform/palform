@@ -1,5 +1,10 @@
 use std::collections::HashMap;
 
+use palform_client_common::form_management::question_group::{
+    APIQuestionGroupStepStrategy, APIQuestionGroupStepStrategyJumpCase,
+    APIQuestionGroupStepStrategyJumpCaseCondition,
+    APIQuestionGroupStepStrategyJumpCaseConditionList,
+};
 use palform_entities::{
     form, form_template, form_template_category, form_template_category_assignment, prelude::*,
     question, question_group, team,
@@ -190,14 +195,14 @@ impl FormTemplatesManager {
             HashMap::<PalformDatabaseID<IDQuestionGroup>, PalformDatabaseID<IDQuestionGroup>>::new(
             );
 
-        for question_group in template_qgs {
+        for question_group in &template_qgs {
             let new_question_group_id = PalformDatabaseID::<IDQuestionGroup>::random();
             let new_question_group = question_group::ActiveModel {
                 id: Set(new_question_group_id),
                 form_id: Set(new_form_id),
-                title: Set(question_group.title),
-                description: Set(question_group.description),
-                step_strategy: Set(question_group.step_strategy),
+                title: Set(question_group.title.clone()),
+                description: Set(question_group.description.clone()),
+                step_strategy: Set(question_group.step_strategy.clone()),
                 position: Set(question_group.position),
             };
 
@@ -205,13 +210,16 @@ impl FormTemplatesManager {
             old_to_new_question_groups.insert(question_group.id, new_question_group_id);
         }
 
+        let mut old_to_new_questions =
+            HashMap::<PalformDatabaseID<IDQuestion>, PalformDatabaseID<IDQuestion>>::new();
         for question in template_questions {
             let new_group_id = old_to_new_question_groups
                 .get(&question.group_id)
                 .ok_or(DbErr::RecordNotFound("This cannot happen".to_string()))?;
 
+            let new_question_id = PalformDatabaseID::<IDQuestion>::random();
             let new_question = question::ActiveModel {
-                id: Set(PalformDatabaseID::<IDQuestion>::random()),
+                id: Set(new_question_id),
                 group_id: Set(new_group_id.clone()),
                 title: Set(question.title),
                 description: Set(question.description),
@@ -222,6 +230,69 @@ impl FormTemplatesManager {
             };
 
             new_question.insert(conn).await?;
+            old_to_new_questions.insert(question.id, new_question_id);
+        }
+
+        for question_group in &template_qgs {
+            let new_question_group_id =
+                old_to_new_question_groups
+                    .get(&question_group.id)
+                    .ok_or(DbErr::RecordNotFound(
+                        "Newly created question group ID not found".to_string(),
+                    ))?;
+
+            let step_strategy: APIQuestionGroupStepStrategy =
+                serde_json::from_value(question_group.step_strategy.clone())
+                    .map_err(|e| DbErr::Custom(format!("Decode step strategy: {}", e)))?;
+
+            if let APIQuestionGroupStepStrategy::JumpToSection(cases) = step_strategy {
+                let mut new_cases = Vec::<APIQuestionGroupStepStrategyJumpCase>::new();
+                for case in cases {
+                    let mut new_target_group_id = case.target_group_id;
+                    if let Some(current_target_group_id) = case.target_group_id {
+                        new_target_group_id = Some(
+                            old_to_new_question_groups
+                                .get(&current_target_group_id)
+                                .ok_or(DbErr::Custom(
+                                    "Question Group in step strategy not found".to_string(),
+                                ))?
+                                .to_owned(),
+                        );
+                    }
+
+                    let mut new_condition_items =
+                        Vec::<APIQuestionGroupStepStrategyJumpCaseCondition>::new();
+                    for condition in case.conditions.get_items() {
+                        let new_question_id = old_to_new_questions
+                            .get(&condition.question_id)
+                            .ok_or(DbErr::Custom(
+                                "Question in step strategy condition not found".to_string(),
+                            ))?
+                            .to_owned();
+
+                        new_condition_items.push(APIQuestionGroupStepStrategyJumpCaseCondition {
+                            question_id: new_question_id,
+                            matcher: condition.matcher.clone(),
+                        })
+                    }
+
+                    new_cases.push(APIQuestionGroupStepStrategyJumpCase {
+                        target_group_id: new_target_group_id,
+                        conditions: case.conditions.clone_with(new_condition_items),
+                    })
+                }
+
+                let new_step_strategy =
+                    serde_json::to_value(APIQuestionGroupStepStrategy::JumpToSection(new_cases))
+                        .map_err(|e| DbErr::Custom(format!("Re-encode step strategy: {}", e)))?;
+
+                let updated_question_group = question_group::ActiveModel {
+                    id: Set(new_question_group_id.to_owned()),
+                    step_strategy: Set(new_step_strategy),
+                    ..Default::default()
+                };
+                updated_question_group.update(conn).await?;
+            }
         }
 
         let newly_created_form =
