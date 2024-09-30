@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use palform_client_common::form_management::question_group::{
     APIQuestionGroupStepStrategy, APIQuestionGroupStepStrategyJumpCase,
     APIQuestionGroupStepStrategyJumpCaseCondition,
-    APIQuestionGroupStepStrategyJumpCaseConditionList,
 };
 use palform_entities::{
     form, form_template, form_template_category, form_template_category_assignment, prelude::*,

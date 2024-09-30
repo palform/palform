@@ -342,6 +342,30 @@ impl OIDCManager {
                 .map_err(|e| {
                     TokenExchangeError::CreateUserError(AdminUserManagementError::DBError(e))
                 })?;
+
+                let is_member = OrganisationMembersManager::check_is_member(
+                    conn,
+                    self.org_id,
+                    email_matched_user.id,
+                )
+                .await
+                .map_err(|e| {
+                    TokenExchangeError::CreateUserError(AdminUserManagementError::DBError(e))
+                })?;
+
+                if !is_member {
+                    OrganisationMembersManager::create(
+                        conn,
+                        self.org_id,
+                        email_matched_user.id,
+                        false,
+                    )
+                    .await
+                    .map_err(|e| {
+                        TokenExchangeError::CreateUserError(AdminUserManagementError::DBError(e))
+                    })?;
+                }
+
                 user_id = Some(email_matched_user.id)
             }
         }

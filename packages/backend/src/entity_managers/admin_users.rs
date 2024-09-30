@@ -209,8 +209,10 @@ impl AdminUserManager {
             manual_auth_email_verified: Set(None),
             ..Default::default()
         };
-
         updated_user.update(conn).await?;
+
+
+
         Ok(())
     }
 
