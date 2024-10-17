@@ -49,7 +49,7 @@
 
 <label
     for={`${questionId}-${option}`}
-    class={`border border-slate-200 dark:border-slate-800 text-gray-800 dark:text-gray-300 block p-4 text-sm cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800/80 ${isActive && $brandCtx === undefined ? "!bg-primary-200/60" : ""}`}
+    class={`border border-slate-200 dark:border-slate-800 text-gray-800 dark:text-gray-300 block p-4 text-sm cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800/80 ${isActive && $brandCtx === undefined ? "!bg-primary-200/60 dark:!bg-primary-950" : ""}`}
     style:font-size={`${getBaseREMFontSizeForBrand($brandCtx) * 0.85}rem`}
     style:border-radius={getRoundingAmountForBrand($brandCtx, true)}
     style:background-color={backgroundColorOverride}

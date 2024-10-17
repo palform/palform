@@ -22,4 +22,6 @@ palform-tsid = { path = "../tsid" }
 palform-client-common = { path = "../client-common", default-features = false, features = [
     "bench",
 ] }
-palform-crypto = { path = "../crypto", default-features = false }
+palform-crypto = { path = "../crypto", default-features = false, features = [
+    "frontend-js",
+] }

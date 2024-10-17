@@ -10,7 +10,12 @@ import { DateTime } from "luxon";
 import { APIs } from "../common";
 import { parseServerTime } from "../util/time";
 import type { FormAdminContext } from "../contexts/formAdmin";
-import { decrypt_blob_js, KeyResolver } from "@paltiverse/palform-crypto";
+import {
+    decrypt_blob_js,
+    decrypt_decode_submission_js,
+    KeyResolver,
+} from "@paltiverse/palform-crypto";
+import { decryptAllSubmissionsInternal } from "./decryptLogic";
 
 export interface DecryptedSubmissionBase {
     id: string;
@@ -88,49 +93,66 @@ export async function downloadSubmissionsForForm(
         done: allCachedSubmissions.length,
     });
 
-    const worker = new DecryptWorker();
-    const workerWrap = Comlink.wrap<DecryptAllSubmissionsFunction>(worker);
-    const unsub = terminateHandle.subscribe((terminate) => {
-        if (terminate) {
-            worker.terminate();
-            unsub();
-        }
-    });
-
-    const submissionGroups = splitSubmissions(sStream.new);
     const keyPEMs = await getPrivateKeys();
 
-    const resp = await Promise.all(
-        submissionGroups.map((group) =>
-            workerWrap(
-                group,
-                keyPEMs,
-                Comlink.proxy(() => {
-                    statusUpdate.update((ctx) => {
-                        if (!ctx) return undefined;
-                        return {
-                            ...ctx,
-                            done: ctx.done + 1,
-                        };
-                    });
-                }),
-                Comlink.proxy(async (submission) => {
-                    await decryptedSubmissionCacheDb.put({
-                        _id: submission.id,
-                        orgId,
-                        formId,
-                        submission,
-                        created: parseServerTime(
-                            submission.createdAt,
-                            true
-                        ).toMillis(),
-                    });
-                })
-            )
-        )
-    );
+    const cacheSubmission = async (submission: DecryptedSubmissionSuccess) => {
+        await decryptedSubmissionCacheDb.put({
+            _id: submission.id,
+            orgId,
+            formId,
+            submission,
+            created: parseServerTime(submission.createdAt, true).toMillis(),
+        });
+    };
 
-    const flatResp = resp.flat(1);
+    const updateStatus = () => {
+        statusUpdate.update((ctx) => {
+            if (!ctx) return undefined;
+            return {
+                ...ctx,
+                done: ctx.done + 1,
+            };
+        });
+    };
+
+    let flatResp: DecryptedSubmission[];
+    if (sStream.new.length <= 100) {
+        flatResp = await decryptAllSubmissionsInternal(
+            sStream.new,
+            keyPEMs,
+            cacheSubmission,
+            updateStatus,
+            {
+                decrypt_decode_submission_js,
+                KeyResolver,
+            }
+        );
+    } else {
+        const worker = new DecryptWorker();
+        const workerWrap = Comlink.wrap<DecryptAllSubmissionsFunction>(worker);
+        const unsub = terminateHandle.subscribe((terminate) => {
+            if (terminate) {
+                worker.terminate();
+                unsub();
+            }
+        });
+
+        const submissionGroups = splitSubmissions(sStream.new);
+
+        const resp = await Promise.all(
+            submissionGroups.map((group) =>
+                workerWrap(
+                    group,
+                    keyPEMs,
+                    Comlink.proxy(updateStatus),
+                    Comlink.proxy(cacheSubmission)
+                )
+            )
+        );
+
+        flatResp = resp.flat(1);
+    }
+
     flatResp.push(...allCachedSubmissions.map((e) => e.submission));
     flatResp.sort((a, b) => {
         const aDate = DateTime.fromISO(a.createdAt);
