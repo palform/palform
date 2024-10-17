@@ -25,14 +25,14 @@ export const getBrandCtx = () =>
     getContext<Writable<BrandContext | undefined>>("branding");
 
 export function getRoundingAmountForBrand(brand?: BrandContext, inner = false) {
-    if (!brand) return "1rem";
+    if (!brand) return inner ? "0.65rem" : "1rem";
     switch (brand.border_rounding) {
         case "Large":
-            return inner ? "1rem" : "2rem";
+            return inner ? "1.2rem" : "2rem";
         case "Medium":
-            return inner ? "0.5rem" : "1rem";
+            return inner ? "0.65rem" : "1rem";
         case "Small":
-            return inner ? "0.25rem" : "0.5rem";
+            return inner ? "0.3rem" : "0.5rem";
         case "None":
             return "0";
     }

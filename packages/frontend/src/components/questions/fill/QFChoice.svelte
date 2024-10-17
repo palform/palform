@@ -1,6 +1,5 @@
 <script lang="ts">
     import type { QuestionSubmissionData } from "@paltiverse/palform-client-js-extra-types/QuestionSubmissionData";
-    import { Checkbox, Radio } from "flowbite-svelte";
     import { createEventDispatcher } from "svelte";
     import {
         fillSendStore,
@@ -9,6 +8,7 @@
     } from "../../../data/contexts/fill";
     import type { APIQuestionConfigurationOneOf2 } from "@paltiverse/palform-typescript-openapi";
     import QfClearButton from "./QFClearButton.svelte";
+    import QfChoiceLabelButton from "./QFChoiceLabelButton.svelte";
 
     const dispatch = createEventDispatcher<{ change: undefined }>();
 
@@ -17,30 +17,14 @@
     export let currentValue: QuestionSubmissionData | undefined;
     $: value = currentValue ? sGetChoice(currentValue) : { option: [] };
 
-    $: onChoiceChange = (e: Event) => {
+    $: onChoiceChange = () => {
         if (currentValue === undefined) return;
 
-        if (config.choice.multi) {
-            const t = e.target as HTMLInputElement;
-            let newVal: string[];
-            if (t.checked) {
-                newVal = [...value.option, t.value];
-            } else {
-                newVal = value.option.filter((e) => e !== t.value);
-            }
-
-            setQuestionValue(id, {
-                Choice: {
-                    option: newVal,
-                },
-            });
-        } else {
-            setQuestionValue(id, {
-                Choice: {
-                    option: value.option,
-                },
-            });
-        }
+        setQuestionValue(id, {
+            Choice: {
+                option: value.option,
+            },
+        });
         dispatch("change");
     };
 
@@ -59,31 +43,36 @@
 
 <ol class="space-y-2">
     {#each config.choice.options as option}
-        <div class="rounded-lg border border-slate-300 dark:border-slate-600">
-            {#if config.choice.multi}
-                <Checkbox
-                    on:change={onChoiceChange}
-                    name={id}
-                    value={option}
-                    checked={value.option.includes(option)}
-                    disabled={$fillSendStore?.loading}
-                    class="p-4"
-                >
-                    {option}
-                </Checkbox>
-            {:else}
-                <Radio
-                    bind:group={value.option[0]}
-                    on:change={onChoiceChange}
-                    value={option}
-                    name={id}
-                    disabled={$fillSendStore?.loading}
-                    class="p-4"
-                >
-                    {option}
-                </Radio>
-            {/if}
-        </div>
+        {#if config.choice.multi}
+            <input
+                id={`${id}-${option}`}
+                name={id}
+                value={option}
+                type="checkbox"
+                class="hidden"
+                bind:group={value.option}
+                disabled={$fillSendStore?.loading}
+                on:change={onChoiceChange}
+            />
+        {:else}
+            <input
+                id={`${id}-${option}`}
+                name={id}
+                value={option}
+                type="radio"
+                class="hidden"
+                bind:group={value.option[0]}
+                disabled={$fillSendStore?.loading}
+                on:change={onChoiceChange}
+            />
+        {/if}
+
+        <QfChoiceLabelButton
+            questionId={id}
+            {option}
+            isActive={value.option.includes(option)}
+            isMulti={config.choice.multi}
+        />
     {/each}
 
     {#if value.option.length > 0}
