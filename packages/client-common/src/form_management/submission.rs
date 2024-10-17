@@ -63,8 +63,8 @@ pub enum QuestionSubmissionData {
         options: HashMap<String, Vec<String>>,
     },
     DateTime {
-        #[cfg_attr(feature = "frontend-js", ts(type = "string"))]
-        value: DateTime<Local>,
+        #[cfg_attr(feature = "frontend-js", ts(type = "string | null | undefined"))]
+        value: Option<DateTime<Local>>,
     },
     Hidden {
         value: String,
@@ -96,7 +96,7 @@ impl QuestionSubmissionData {
                 initial,
                 full_name,
             } => freeform.is_empty() && initial.is_empty() && full_name.is_empty(),
-            QuestionSubmissionData::DateTime { value } => value.timestamp() == 0,
+            QuestionSubmissionData::DateTime { value } => value.is_none(),
             QuestionSubmissionData::Hidden { value } => value.is_empty(),
         }
     }
@@ -163,7 +163,13 @@ impl Display for QuestionSubmissionData {
                 }
             }
             QuestionSubmissionData::DateTime { value } => {
-                write!(f, "{}", value.to_rfc3339_opts(SecondsFormat::Millis, true))
+                write!(
+                    f,
+                    "{}",
+                    value
+                        .map(|v| v.to_rfc3339_opts(SecondsFormat::Millis, true))
+                        .unwrap_or("".to_string())
+                )
             }
             QuestionSubmissionData::Hidden { value } => {
                 write!(f, "{}", value)
@@ -241,11 +247,9 @@ impl TryFrom<APIQuestion> for QuestionSubmission {
             APIQuestionConfiguration::DateTime {
                 collect_date: _,
                 collect_time: _,
-                min,
-                max,
-            } => QuestionSubmissionData::DateTime {
-                value: min.unwrap_or(max.unwrap_or(Local::now())),
-            },
+                min: _,
+                max: _,
+            } => QuestionSubmissionData::DateTime { value: None },
             APIQuestionConfiguration::Hidden { parameter_name: _ } => {
                 QuestionSubmissionData::Hidden {
                     value: String::default(),

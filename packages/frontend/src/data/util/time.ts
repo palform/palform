@@ -16,8 +16,14 @@ export function isDateOnlyEqual(d1: DateTime, d2: DateTime) {
 
 export function labelForQuestionDate(
     question: APIQuestionConfigurationOneOf9DateTime,
-    date: DateTime
+    date: DateTime | string | null | undefined
 ) {
+    if (!date) return "";
+
+    if (typeof date === "string") {
+        date = DateTime.fromISO(date);
+    }
+
     return date.toLocaleString(
         question.collect_date && question.collect_time
             ? DateTime.DATETIME_MED

@@ -22,8 +22,8 @@
 
     $: labels = $submissions
         .map((e) => sGetDateTime(e.data).value)
-        .filter((e) => e.length > 0)
-        .map((e) => DateTime.fromISO(e))
+        .filter((e) => !!e && e.length > 0)
+        .map((e) => DateTime.fromISO(e!))
         .toSorted((a, b) => a.toMillis() - b.toMillis())
         .map((e) => {
             return labelForQuestionDate(questionConfig!, e);

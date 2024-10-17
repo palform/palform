@@ -26,12 +26,21 @@
         ctxGetQuestion,
         ctxSubmissionsForQuestion,
     } from "../../../../data/contexts/formAdmin";
+    import { sIsNonEmpty } from "../../../../data/contexts/fill";
 
     export let questionId: string;
 
     $: question = ctxGetQuestion(questionId);
     $: submissions = ctxSubmissionsForQuestion(questionId);
     $: correlations = getCorrelationsForQuestion(questionId);
+
+    $: numNonEmpty = $submissions.reduce((t, c) => {
+        if (sIsNonEmpty(c.data)) {
+            return t + 1;
+        } else {
+            return t;
+        }
+    }, 0);
 </script>
 
 {#if $question !== undefined}
@@ -40,7 +49,7 @@
             {$question.title}
         </CardBoxTitle>
         <p class="text-sm text-gray-500">
-            {$submissions.length} responses
+            {numNonEmpty} response{numNonEmpty === 1 ? "" : "s"}
         </p>
         {#if $correlations !== undefined}
             <CorrelationViewer

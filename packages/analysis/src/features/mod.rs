@@ -148,10 +148,14 @@ impl Featureable for QuestionSubmissionData {
                     max,
                 } = configuration
                 {
-                    let min = min.map_or(0, |v| v.timestamp_millis());
-                    let max = max.map_or(1893452400, |v| v.timestamp_millis());
-                    let x = vec![min as f64, max as f64];
-                    Some(interp(&x, interp_y, value.timestamp_millis() as f64))
+                    if let Some(value) = value {
+                        let min = min.map_or(0, |v| v.timestamp_millis());
+                        let max = max.map_or(1893452400, |v| v.timestamp_millis());
+                        let x = vec![min as f64, max as f64];
+                        Some(interp(&x, interp_y, value.timestamp_millis() as f64))
+                    } else {
+                        None
+                    }
                 } else {
                     return Err(incorrect_config_err);
                 }

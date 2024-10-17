@@ -41,7 +41,7 @@ async function decryptAllSubmissions(
             d.push(submission);
             await cacheSubmission(submission);
         } catch (e) {
-            d.push({ ...base, error: (e as Error).message });
+            d.push({ ...base, error: (e as string) });
         }
 
         statusUpdate();

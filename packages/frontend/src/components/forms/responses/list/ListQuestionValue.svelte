@@ -37,7 +37,6 @@
         Tooltip,
     } from "flowbite-svelte";
     import { labelForQuestionDate } from "../../../../data/util/time";
-    import { DateTime } from "luxon";
 
     export let questionSubmission: QuestionSubmission;
     export let question: APIQuestion;
@@ -128,7 +127,7 @@
     <p class="dark:text-gray-400">
         {labelForQuestionDate(
             question.configuration.date_time,
-            DateTime.fromISO(sGetDateTime(questionSubmission.data).value)
+            sGetDateTime(questionSubmission.data).value
         )}
     </p>
 {:else if qIsHidden(question.configuration)}

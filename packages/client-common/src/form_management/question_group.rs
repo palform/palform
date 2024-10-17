@@ -364,22 +364,28 @@ impl APIQuestionGroupStepStrategyJumpCaseCondition {
                     value: actual_value,
                 } = submission.data
                 {
-                    let normalised_actual_value =
-                        normalise_date_time(actual_value, match_date, match_time)?;
+                    if let Some(actual_value) = actual_value {
+                        let normalised_actual_value =
+                            normalise_date_time(actual_value, match_date, match_time)?;
 
-                    Ok(match direction {
-                        DirectionOperator::Equal => normalised_actual_value == normalised_value,
-                        DirectionOperator::LessThan => normalised_actual_value < normalised_value,
-                        DirectionOperator::LessThanEqualTo => {
-                            normalised_actual_value <= normalised_value
-                        }
-                        DirectionOperator::GreaterThan => {
-                            normalised_actual_value > normalised_value
-                        }
-                        DirectionOperator::GreaterThanEqualTo => {
-                            normalised_actual_value >= normalised_value
-                        }
-                    })
+                        Ok(match direction {
+                            DirectionOperator::Equal => normalised_actual_value == normalised_value,
+                            DirectionOperator::LessThan => {
+                                normalised_actual_value < normalised_value
+                            }
+                            DirectionOperator::LessThanEqualTo => {
+                                normalised_actual_value <= normalised_value
+                            }
+                            DirectionOperator::GreaterThan => {
+                                normalised_actual_value > normalised_value
+                            }
+                            DirectionOperator::GreaterThanEqualTo => {
+                                normalised_actual_value >= normalised_value
+                            }
+                        })
+                    } else {
+                        Ok(false)
+                    }
                 } else {
                     Err(anyhow!("Submission was not for DateTime"))
                 }
