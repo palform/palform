@@ -2,12 +2,10 @@ use std::{fs, ops::AddAssign};
 
 use chrono::{Duration, Utc};
 use figment::{providers::Env, Figment};
-use palform_client_common::{
-    encrypt::message::encrypt_submission,
-    form_management::submission::{
-        InProgressSubmission, QuestionSubmission, QuestionSubmissionData,
-    },
+use palform_client_common::form_management::submission::{
+    InProgressSubmission, QuestionSubmission, QuestionSubmissionData,
 };
+use palform_crypto::encrypt::message::encrypt_submission;
 use palform_entities::{prelude::*, submission};
 use palform_tsid::{
     resources::{IDForm, IDQuestion, IDQuestionGroup, IDSubmission},
@@ -81,7 +79,7 @@ async fn main() {
         let mut question_submissions = Vec::<QuestionSubmission>::new();
         for choice_question_id in &config.choice_question_ids {
             let ques_sub = QuestionSubmission {
-                question_id: choice_question_id.clone(),
+                question_id: *choice_question_id,
                 data: QuestionSubmissionData::Choice {
                     option: vec![chosen_option.clone()],
                 },
@@ -97,7 +95,7 @@ async fn main() {
 
         let encrypted_submission_data =
             encrypt_submission(submission_data, vec![public_key.clone()])
-                .expect("encrypt submission");
+                .expect("Encrypt submission");
 
         let new_submission = submission::ActiveModel {
             id: Set(PalformDatabaseID::<IDSubmission>::random()),
@@ -105,7 +103,6 @@ async fn main() {
             form_id: Set(config.form_id),
             for_token: Set(None),
             created_at: Set(current_time.naive_utc()),
-            ..Default::default()
         };
         new_submission
             .insert(&txn)
@@ -113,7 +110,7 @@ async fn main() {
             .expect("insert submission");
 
         current_time.add_assign(Duration::milliseconds(1));
-        println!("done {}/{}", i + 1 , config.submission_count);
+        println!("done {}/{}", i + 1, config.submission_count);
     }
 
     txn.commit().await.expect("commit db txn");

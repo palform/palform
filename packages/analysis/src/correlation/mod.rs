@@ -11,7 +11,7 @@ pub type CorrelationHashMap =
 #[wasm_bindgen]
 impl FormAnalysisManager {
     pub fn question_influencers(&self) -> Result<JsValue, JsValue> {
-        if self.feature_mat.len() == 0 {
+        if self.feature_mat.is_empty() {
             let m = CorrelationHashMap::new();
             return serde_wasm_bindgen::to_value(&m).map_err(|e| e.into());
         }
@@ -58,7 +58,7 @@ impl FormAnalysisManager {
                     .or_default()
                     .entry(to_question_id.clone())
                     .or_default()
-                    .insert(to_feature_label.clone(), correlation_value.clone());
+                    .insert(to_feature_label.clone(), correlation_value.to_owned());
             }
         }
 

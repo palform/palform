@@ -214,7 +214,7 @@ impl SubmissionManager {
             editor_name: String,
         }
 
-        let form_settings: FormNotificationSettings = Form::find_by_id(form_id.clone())
+        let form_settings: FormNotificationSettings = Form::find_by_id(form_id)
             .select_only()
             .column(form::Column::NotificationEmail)
             .column(form::Column::NotificationWebhookUrl)
@@ -228,14 +228,14 @@ impl SubmissionManager {
         if let Some(webhook_url) = form_settings.notification_webhook_url {
             let payload = APISubmissionWebhookPayload {
                 submission_id,
-                form_id: form_id.clone(),
-                org_id: org_id.clone(),
+                form_id,
+                org_id,
                 payload: encrypted_payload,
             };
             let m = SubmissionWebhookManager::new(&webhook_url, payload).map_err(|e| {
                 SubmissionNotificationError::Webhook(format!(
                     "parse webhook URL: {}",
-                    e.to_string()
+                    e
                 ))
             })?;
             send_webhook(m)
@@ -275,7 +275,7 @@ impl SubmissionManager {
                         serde_json::to_string(&message_variables).map_err(|e| {
                             SubmissionNotificationError::Email(format!(
                                 "serialize message variables: {}",
-                                e.to_string()
+                                e
                             ))
                         })?;
 

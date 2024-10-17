@@ -110,7 +110,7 @@ impl<'a> BillingManager<'a> {
     fn product_is_plan(product: &Product) -> bool {
         product.metadata.clone().is_some_and(|metadata| {
             let availability_val = metadata.get("availability").cloned();
-            availability_val.is_some_and(|v| v == "main_plan".to_string())
+            availability_val.is_some_and(|v| v == *"main_plan")
         })
     }
 
@@ -129,7 +129,7 @@ impl<'a> BillingManager<'a> {
         currency: Currency,
     ) -> Result<Vec<APIBillingPlan>, BillingError> {
         let all_products = Product::list(
-            &self.stripe,
+            self.stripe,
             &stripe::ListProducts {
                 active: Some(true),
                 limit: Some(100),
@@ -145,7 +145,7 @@ impl<'a> BillingManager<'a> {
             }
 
             let prices = Price::list(
-                &self.stripe,
+                self.stripe,
                 &ListPrices {
                     active: Some(true),
                     currency: Some(currency),
@@ -236,7 +236,7 @@ impl<'a> BillingManager<'a> {
                 .invoice_settings
                 .and_then(|v| v.default_payment_method)
                 .and_then(|v| v.as_object().cloned())
-                .and_then(|v| Some(APIBillingCustomerPaymentMethod::from(v.to_owned()))),
+                .map(|v| APIBillingCustomerPaymentMethod::from(v.to_owned())),
         };
 
         Ok(customer)
@@ -248,7 +248,7 @@ impl<'a> BillingManager<'a> {
         org_id: PalformDatabaseID<IDOrganisation>,
     ) -> Result<(), BillingError> {
         let new_customer = Customer::create(
-            &self.stripe,
+            self.stripe,
             CreateCustomer {
                 metadata: Some(HashMap::from([(
                     "organisation_id".to_string(),
@@ -275,7 +275,7 @@ impl<'a> BillingManager<'a> {
     ) -> Result<Vec<APIBillingSubscription>, BillingError> {
         let customer_id = Self::get_org_customer_id(conn, org_id).await?;
         let subscriptions = Subscription::list(
-            &self.stripe,
+            self.stripe,
             &ListSubscriptions {
                 customer: Some(customer_id),
                 ..Default::default()
@@ -305,7 +305,7 @@ impl<'a> BillingManager<'a> {
                 let frequency = item_price
                     .clone()
                     .recurring
-                    .and_then(|f| Some(f.interval))
+                    .map(|f| f.interval)
                     .ok_or(BillingError::FieldNone("item.price.recurring".to_string()))?;
                 let frequency = APIBillingSubscriptionFrequency::try_from(frequency)?;
 
@@ -314,7 +314,7 @@ impl<'a> BillingManager<'a> {
                     .ok_or(BillingError::FieldNone("item.price.currency".to_string()))?
                     .to_string();
 
-                let product = Product::retrieve(&self.stripe, &product_id, &[]).await?;
+                let product = Product::retrieve(self.stripe, &product_id, &[]).await?;
                 if !Self::product_is_plan(&product) {
                     continue;
                 }
@@ -351,7 +351,7 @@ impl<'a> BillingManager<'a> {
         let customer_id = Self::get_org_customer_id(conn, org_id).await?;
         let subscription_id = SubscriptionId::from_str(&subscription_id)?;
         let response = InvoiceOverride::upcoming(
-            &self.stripe,
+            self.stripe,
             UpcomingInvoiceRequest {
                 customer: customer_id,
                 subscription: subscription_id,
@@ -376,16 +376,15 @@ impl<'a> BillingManager<'a> {
     ) -> Result<String, BillingError> {
         let price_id = PriceId::from_str(&price_id)?;
 
-        let mut line_items = Vec::<CreateCheckoutSessionLineItems>::new();
-        line_items.push(CreateCheckoutSessionLineItems {
+        let line_items = vec![CreateCheckoutSessionLineItems {
             price: Some(price_id.to_string()),
             quantity: Some(1),
             ..Default::default()
-        });
+        }];
 
         let customer_id = Self::get_org_customer_id(conn, org_id).await?;
         let new_session = CheckoutSession::create(
-            &self.stripe,
+            self.stripe,
             CreateCheckoutSession {
                 customer: Some(customer_id),
                 line_items: Some(line_items),
@@ -413,9 +412,9 @@ impl<'a> BillingManager<'a> {
         )
         .await?;
 
-        Ok(new_session
+        new_session
             .url
-            .ok_or(BillingError::FieldNone("url".to_string()))?)
+            .ok_or(BillingError::FieldNone("url".to_string()))
     }
 
     pub async fn list_org_invoices<T: ConnectionTrait>(
@@ -425,7 +424,7 @@ impl<'a> BillingManager<'a> {
     ) -> Result<Vec<APIBillingInvoice>, BillingError> {
         let customer_id = Self::get_org_customer_id(conn, org_id).await?;
         let resp = Invoice::list(
-            &self.stripe,
+            self.stripe,
             &ListInvoices {
                 customer: Some(customer_id.clone()),
                 limit: Some(100),
@@ -469,7 +468,7 @@ impl<'a> BillingManager<'a> {
     ) -> Result<(), BillingError> {
         let customer_id = Self::get_org_customer_id(conn, org_id).await?;
         let subscription_id = SubscriptionId::from_str(&subscription_id)?;
-        let subscription = Subscription::retrieve(&self.stripe, &subscription_id, &[]).await?;
+        let subscription = Subscription::retrieve(self.stripe, &subscription_id, &[]).await?;
 
         if subscription.customer.id() != customer_id {
             return Err(BillingError::NotAllowed);
@@ -483,7 +482,7 @@ impl<'a> BillingManager<'a> {
 
         if subscription.status == SubscriptionStatus::Trialing {
             Subscription::cancel(
-                &self.stripe,
+                self.stripe,
                 &subscription_id,
                 CancelSubscription {
                     cancellation_details: Some(CancellationDetails {
@@ -496,7 +495,7 @@ impl<'a> BillingManager<'a> {
             .await?;
         } else {
             Subscription::update(
-                &self.stripe,
+                self.stripe,
                 &subscription_id,
                 UpdateSubscription {
                     cancel_at_period_end: Some(true),
@@ -521,7 +520,7 @@ impl<'a> BillingManager<'a> {
         let customer_id = Self::get_org_customer_id(conn, org_id).await?;
 
         let subscriptions = Subscription::list(
-            &self.stripe,
+            self.stripe,
             &ListSubscriptions {
                 customer: Some(customer_id),
                 status: Some(SubscriptionStatusFilter::Active),
@@ -545,7 +544,7 @@ impl<'a> BillingManager<'a> {
                     .ok_or(BillingError::FieldNone("item.price.product".to_string()))?
                     .id();
 
-                let product = Product::retrieve(&self.stripe, &product_id, &[]).await?;
+                let product = Product::retrieve(self.stripe, &product_id, &[]).await?;
                 if Self::product_is_plan(&product) {
                     is_main_plan_subscription = true;
 
@@ -586,7 +585,7 @@ impl<'a> BillingManager<'a> {
         let customer_id = Self::get_org_customer_id(conn, org_id).await?;
 
         let subscriptions = Subscription::list(
-            &self.stripe,
+            self.stripe,
             &ListSubscriptions {
                 customer: Some(customer_id),
                 ..Default::default()
@@ -594,7 +593,7 @@ impl<'a> BillingManager<'a> {
         )
         .await?;
 
-        let subscription = subscriptions.data.get(0).ok_or(BillingError::BadState(
+        let subscription = subscriptions.data.first().ok_or(BillingError::BadState(
             "Organisation does not have a subscription, so it cannot be changed".to_string(),
         ))?;
 
@@ -612,7 +611,7 @@ impl<'a> BillingManager<'a> {
                 ))?
                 .id();
 
-            let product = Product::retrieve(&self.stripe, &product_id, &[]).await?;
+            let product = Product::retrieve(self.stripe, &product_id, &[]).await?;
             if Self::product_is_plan(&product) {
                 current_subscription_item_id = Some(item.id.clone());
             }
@@ -654,7 +653,7 @@ impl<'a> BillingManager<'a> {
                 "discounts".to_string(),
             ]),
         };
-        let invoice = InvoiceOverride::create_preview(&self.stripe, req).await?;
+        let invoice = InvoiceOverride::create_preview(self.stripe, req).await?;
 
         Invoice::from(invoice).try_into()
     }
@@ -670,7 +669,7 @@ impl<'a> BillingManager<'a> {
             .await?;
 
         Subscription::update(
-            &self.stripe,
+            self.stripe,
             &subscription_id,
             UpdateSubscription {
                 cancel_at_period_end: Some(false),
@@ -692,7 +691,7 @@ impl<'a> BillingManager<'a> {
     ) -> Result<String, BillingError> {
         let customer_id = Self::get_org_customer_id(conn, org_id).await?;
         let session = BillingPortalSession::create(
-            &self.stripe,
+            self.stripe,
             stripe::CreateBillingPortalSession {
                 customer: customer_id,
                 flow_data: Some(stripe::CreateBillingPortalSessionFlowData {

@@ -132,13 +132,13 @@ impl OrganisationManager {
     ) -> Result<(), BootstrapOrgError> {
         let default_team = OrganisationTeamsManager::create(
             conn,
-            org_id.clone(),
+            org_id,
             "Default team".to_string(),
             true,
         )
         .await?;
 
-        OrganisationMembersManager::create(conn, org_id.clone(), creator_user_id.clone(), true)
+        OrganisationMembersManager::create(conn, org_id, creator_user_id, true)
             .await?;
 
         OrganisationTeamsManager::add_member_to_team(
@@ -153,7 +153,7 @@ impl OrganisationManager {
         {
             let manager = BillingManager::new(stripe);
             manager
-                .register_org_customer_stub(conn, org_id.clone())
+                .register_org_customer_stub(conn, org_id)
                 .await?;
             BillingEntitlementManager::new(org_id)
                 .create_initial_entitlement(conn)

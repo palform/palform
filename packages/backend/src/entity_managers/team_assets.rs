@@ -38,8 +38,8 @@ impl TeamAssetsManager {
     ) -> Result<PalformDatabaseID<IDTeamAsset>, PalformS3Error> {
         let asset_id = PalformDatabaseID::<IDTeamAsset>::random();
         let new_asset = team_asset::ActiveModel {
-            id: Set(asset_id.clone()),
-            team_id: Set(self.team_id.clone()),
+            id: Set(asset_id),
+            team_id: Set(self.team_id),
             ..Default::default()
         };
 
@@ -57,7 +57,7 @@ impl TeamAssetsManager {
     ) -> Result<APITeamAsset, PalformS3Error> {
         let url = s3
             .bucket
-            .presign_get(self.asset_path(&model.id), 1 * 60 * 60, None)
+            .presign_get(self.asset_path(&model.id), 60 * 60, None)
             .await?;
 
         Ok(APITeamAsset::from(model, url))
@@ -69,7 +69,7 @@ impl TeamAssetsManager {
         s3: &PalformS3Client<S3BucketTeamAssets>,
     ) -> Result<Vec<APITeamAsset>, PalformS3Error> {
         let assets = TeamAsset::find()
-            .filter(team_asset::Column::TeamId.eq(self.team_id.clone()))
+            .filter(team_asset::Column::TeamId.eq(self.team_id))
             .all(conn)
             .await?;
 
@@ -92,7 +92,7 @@ impl TeamAssetsManager {
             .await?
             .ok_or(PalformS3Error::AssetNotFound)?;
 
-        Ok(self.create_api_team_asset(s3, asset).await?)
+        self.create_api_team_asset(s3, asset).await
     }
 
     pub async fn verify_asset_team<T: ConnectionTrait>(
@@ -101,7 +101,7 @@ impl TeamAssetsManager {
         asset_id: PalformDatabaseID<IDTeamAsset>,
     ) -> Result<bool, DbErr> {
         TeamAsset::find_by_id(asset_id)
-            .filter(team_asset::Column::TeamId.eq(self.team_id.clone()))
+            .filter(team_asset::Column::TeamId.eq(self.team_id))
             .count(conn)
             .await
             .map(|c| c == 1)

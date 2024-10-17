@@ -32,7 +32,7 @@ pub async fn handler(
     ))?;
 
     let asset_id = m
-        .create(db.inner(), &s3_client, &buf, &content_type.to_string())
+        .create(db.inner(), s3_client, &buf, &content_type.to_string())
         .await
         .map_err(|e| APIError::report_internal_error("upload asset", e))?;
 

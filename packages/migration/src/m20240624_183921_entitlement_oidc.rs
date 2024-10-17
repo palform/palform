@@ -35,5 +35,6 @@ impl MigrationTrait for Migration {
 #[derive(DeriveIden)]
 enum OrganisationFeatureEntitlement {
     Table,
+    #[allow(clippy::upper_case_acronyms)]
     OIDC,
 }

@@ -24,7 +24,7 @@ use crate::{
 
 fn validate_subdomain(value: &str) -> Result<(), ValidationError> {
     for char in value.chars() {
-        if (char < 'a' || char > 'z') && (char < '0' || char > '9') && char != '-' {
+        if !char.is_ascii_lowercase() && !char.is_ascii_digit() && char != '-' {
             return Err(ValidationError::new("invalid subdomain"));
         }
     }
@@ -34,7 +34,7 @@ fn validate_subdomain(value: &str) -> Result<(), ValidationError> {
         .next()
         .ok_or(ValidationError::new("not enough characters"))?;
 
-    if first_char == '-' || (first_char >= '0' && first_char <= '9') {
+    if first_char == '-' || first_char.is_ascii_digit() {
         return Err(ValidationError::new("invalid first character"));
     }
 

@@ -3,12 +3,12 @@ use rand::{rngs, seq::SliceRandom, SeedableRng};
 
 const PASSPHRASE_WORD_COUNT: usize = 16;
 
-#[cfg(any(feature = "frontend-js"))]
+#[cfg(feature = "frontend-js")]
 struct WordList {
     list: Vec<String>,
 }
 
-#[cfg(any(feature = "frontend-js"))]
+#[cfg(feature = "frontend-js")]
 impl WordList {
     fn load() -> Result<Self, anyhow::Error> {
         let word_list_raw = include_bytes!("./word_list.tsv") as &[u8];

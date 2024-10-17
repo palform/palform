@@ -161,10 +161,8 @@ impl OIDCManager {
                 TokenExchangeError::TeamMappingError(format!("get org default team: {}", e))
             })?;
 
-        if member_teams
-            .iter()
-            .find(|v| v.team_id == default_team.id)
-            .is_none()
+        if !member_teams
+            .iter().any(|v| v.team_id == default_team.id)
         {
             OrganisationTeamsManager::add_member_to_team(
                 conn,
@@ -205,7 +203,7 @@ impl OIDCManager {
                 .map_err(|e| {
                     TokenExchangeError::TeamMappingError(format!(
                         "list organisation team mappings: {}",
-                        e.to_string()
+                        e
                     ))
                 })?;
 
@@ -220,7 +218,7 @@ impl OIDCManager {
 
                 let mut matching_mapping = None::<&APIOrganisationAuthTeamMapping>;
                 for mapping in &team_mappings {
-                    if mapping.field_value == val.to_owned() {
+                    if mapping.field_value == *val {
                         matching_mapping = Some(mapping);
                         break;
                     }
@@ -321,7 +319,7 @@ impl OIDCManager {
             if let Some(user_org_id) = email_matched_user.org_auth_organisation_id {
                 if email_matched_user
                     .org_auth_sub
-                    .is_some_and(|v| v != result.sub.to_owned())
+                    .is_some_and(|v| v != result.sub)
                     && user_org_id == self.org_id
                 {
                     return Err(TokenExchangeError::UserConflict(

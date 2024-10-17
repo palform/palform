@@ -29,6 +29,7 @@ use crate::{
 use super::orgs_manager::OrgsRBACManager;
 
 #[derive(PartialEq)]
+#[allow(clippy::enum_variant_names)]
 pub enum OrgRoleTarget {
     /// Derive the Team ID from the form in the request path and validate the role
     OrgViewAndTeamRoleFromForm,
@@ -172,35 +173,35 @@ impl<'a, Role: TeamRoleType, Target: OrgRoleTargetType, Source: APIAuthTokenSour
         if target == OrgRoleTarget::OrgViewAndTeamRoleFromForm
             || target == OrgRoleTarget::OrgViewAndTeamRoleFromTeam
         {
-            let team_id: PalformDatabaseID<IDTeam>;
-            if target == OrgRoleTarget::OrgViewAndTeamRoleFromForm {
-                let form_id = into_outcome!(
-                    request
-                        .param::<PalformDatabaseID<IDForm>>(5)
-                        .ok_or(APIError::BadRequest(
-                            "Not enough parameters for form ID".to_string()
-                        ))
-                        .and_then(|e| e.map_err(|e| APIError::BadRequest(e.to_string()))),
-                    request
-                );
+            let team_id: PalformDatabaseID<IDTeam> =
+                if target == OrgRoleTarget::OrgViewAndTeamRoleFromForm {
+                    let form_id = into_outcome!(
+                        request
+                            .param::<PalformDatabaseID<IDForm>>(5)
+                            .ok_or(APIError::BadRequest(
+                                "Not enough parameters for form ID".to_string()
+                            ))
+                            .and_then(|e| e.map_err(|e| APIError::BadRequest(e.to_string()))),
+                        request
+                    );
 
-                team_id = into_outcome!(
-                    FormManager::get_form_team_id(db, form_id)
-                        .await
-                        .map_err(|e| APIError::BadRequest(e.to_string())),
-                    request
-                );
-            } else {
-                team_id = into_outcome!(
-                    request
-                        .param::<PalformDatabaseID<IDTeam>>(5)
-                        .ok_or(APIError::BadRequest(
-                            "Not enough parameters for team ID".to_string()
-                        ))
-                        .and_then(|e| e.map_err(|e| APIError::BadRequest(e.to_string()))),
-                    request
-                );
-            }
+                    into_outcome!(
+                        FormManager::get_form_team_id(db, form_id)
+                            .await
+                            .map_err(|e| APIError::BadRequest(e.to_string())),
+                        request
+                    )
+                } else {
+                    into_outcome!(
+                        request
+                            .param::<PalformDatabaseID<IDTeam>>(5)
+                            .ok_or(APIError::BadRequest(
+                                "Not enough parameters for team ID".to_string()
+                            ))
+                            .and_then(|e| e.map_err(|e| APIError::BadRequest(e.to_string()))),
+                        request
+                    )
+                };
 
             let target_role = Role::role().expect("missing team role in team role RBAC token");
             into_outcome!(
@@ -241,10 +242,10 @@ impl<'a, Role: TeamRoleType, Target: OrgRoleTargetType, Source: APIAuthTokenSour
         let mut description = "Requires authentication to access.".to_string();
 
         if Source::allow_personal() {
-            description = description + " Allows frontend user tokens (HTTP basic auth) generated with the authentication endpoints.";
+            description += " Allows frontend user tokens (HTTP basic auth) generated with the authentication endpoints.";
         }
         if Source::allow_service_account() {
-            description = description + " Allows service-account tokens via the public Palform API (HTTP bearer auth). Please use the format `Bearer {service_account_token}`.";
+            description += " Allows service-account tokens via the public Palform API (HTTP bearer auth). Please use the format `Bearer {service_account_token}`.";
         }
 
         if let Some(role) = Role::role() {

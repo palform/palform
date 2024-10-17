@@ -59,7 +59,7 @@ impl<'a, T: ConnectionTrait> BillingWebhookManager<'a, T> {
 
                 let is_main_plan = metadata
                     .get("availability")
-                    .is_some_and(|v| v.to_owned() == "main_plan");
+                    .is_some_and(|v| *v == "main_plan");
                 if !is_main_plan {
                     continue;
                 }
@@ -80,7 +80,7 @@ impl<'a, T: ConnectionTrait> BillingWebhookManager<'a, T> {
                     })?;
 
                 let mut entitlement_model = entitlement_info.to_active_model();
-                entitlement_model.organisation_id = Set(matching_org.clone());
+                entitlement_model.organisation_id = Set(matching_org);
                 entitlement_model.update(self.db).await?;
             }
         } else {

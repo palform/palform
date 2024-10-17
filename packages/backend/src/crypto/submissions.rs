@@ -11,6 +11,7 @@ use thiserror::Error;
 #[derive(Error, Debug, Clone)]
 pub enum SubmissionConversionError {
     #[error("PGP: {0}")]
+    #[allow(clippy::upper_case_acronyms)]
     PGP(String),
 }
 
@@ -43,17 +44,14 @@ impl CryptoSubmissionRepr {
     pub fn to_pem_string(bytes: &[u8]) -> Result<String, SubmissionConversionError> {
         let mut w = Writer::new(Vec::new(), Kind::Message)
             .map_err(|e| SubmissionConversionError::PGP(e.to_string()))?;
-        w.write_all(&bytes)
+        w.write_all(bytes)
             .map_err(|e| SubmissionConversionError::PGP(e.to_string()))?;
 
         let pem_bytes = w
             .finalize()
             .map_err(|e| SubmissionConversionError::PGP(e.to_string()))?;
         let pem_string = String::from_utf8(pem_bytes).map_err(|e| {
-            SubmissionConversionError::PGP(format!(
-                "Received non-utf8 string from Writer: {}",
-                e.to_string()
-            ))
+            SubmissionConversionError::PGP(format!("Received non-utf8 string from Writer: {}", e))
         })?;
 
         Ok(pem_string)

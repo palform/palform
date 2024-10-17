@@ -30,7 +30,7 @@ pub async fn handler(
         db.inner(),
         org_id,
         token.get_user_id(),
-        data.since.clone(),
+        data.since,
     )
     .await
     .map_internal_error()?;

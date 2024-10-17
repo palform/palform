@@ -36,7 +36,7 @@ impl INTERNALBillingEntitlementManager {
         &self,
         conn: &T,
     ) -> Result<organisation_feature_entitlement::Model, DbErr> {
-        OrganisationFeatureEntitlement::find_by_id(self.org_id.clone())
+        OrganisationFeatureEntitlement::find_by_id(self.org_id)
             .one(conn)
             .await?
             .ok_or(DbErr::RecordNotFound(
@@ -48,7 +48,7 @@ impl INTERNALBillingEntitlementManager {
         &self,
         conn: &T,
     ) -> Result<APIEntitlementInfo, DbErr> {
-        OrganisationFeatureEntitlement::find_by_id(self.org_id.clone())
+        OrganisationFeatureEntitlement::find_by_id(self.org_id)
             .into_model()
             .one(conn)
             .await?
@@ -63,10 +63,9 @@ impl INTERNALBillingEntitlementManager {
         entitlement: Option<i32>,
     ) -> Result<bool, DbErr> {
         if let Some(entitlement_val) = entitlement {
-            let count = M::billing_count(conn, self.org_id.clone()).await?;
+            let count = M::billing_count(conn, self.org_id).await?;
             let count = count as i32;
-            // add 1 since we're checking if _adding_ a new record would be a valid operation
-            Ok(count + 1 <= entitlement_val)
+            Ok(count < entitlement_val)
         } else {
             // None means infinite is allowed
             Ok(true)
@@ -83,10 +82,9 @@ impl INTERNALBillingEntitlementManager {
         entitlement: Option<i32>,
     ) -> Result<bool, DbErr> {
         if let Some(entitlement_val) = entitlement {
-            let count = M::billing_count(conn, self.org_id.clone(), context_resource_id).await?;
+            let count = M::billing_count(conn, self.org_id, context_resource_id).await?;
             let count = count as i32;
-            // add 1 since we're checking if _adding_ a new record would be a valid operation
-            Ok(count + 1 <= entitlement_val)
+            Ok(count < entitlement_val)
         } else {
             // None means infinite is allowed
             Ok(true)
@@ -145,7 +143,7 @@ impl INTERNALBillingEntitlementManager {
         conn: &T,
     ) -> Result<(), DbErr> {
         let mut new_entitlement = APIEntitlementInfo::default().to_active_model();
-        new_entitlement.organisation_id = Set(self.org_id.clone());
+        new_entitlement.organisation_id = Set(self.org_id);
         new_entitlement.insert(conn).await?;
         Ok(())
     }

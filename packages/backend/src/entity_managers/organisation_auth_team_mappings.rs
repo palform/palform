@@ -35,7 +35,7 @@ impl OrganisationAuthTeamMappingsManager {
                 JoinType::InnerJoin,
                 organisation_auth_team_mapping::Relation::Team.def(),
             )
-            .filter(team::Column::OrganisationId.eq(self.org_id.clone()))
+            .filter(team::Column::OrganisationId.eq(self.org_id))
             .column_as(team::Column::Name, "team_name")
             .into_model()
             .all(conn)
@@ -49,7 +49,7 @@ impl OrganisationAuthTeamMappingsManager {
     ) -> Result<PalformDatabaseID<IDOrganisationAuthTeamMapping>, DbErr> {
         let new_id = PalformDatabaseID::<IDOrganisationAuthTeamMapping>::random();
         let new_mapping = organisation_auth_team_mapping::ActiveModel {
-            id: Set(new_id.clone()),
+            id: Set(new_id),
             team_id: Set(request.team_id),
             role: Set(request.role),
             field_value: Set(request.field_value),
@@ -68,7 +68,7 @@ impl OrganisationAuthTeamMappingsManager {
                 JoinType::InnerJoin,
                 organisation_auth_team_mapping::Relation::Team.def(),
             )
-            .filter(team::Column::OrganisationId.eq(self.org_id.clone()))
+            .filter(team::Column::OrganisationId.eq(self.org_id))
             .count(conn)
             .await
             .map(|c| c == 1)

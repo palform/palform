@@ -9,7 +9,10 @@ use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
 use sea_orm::{ConnectionTrait, DbErr};
 use thiserror::Error;
 
-use crate::entity_managers::{admin_users::{AdminUserManagementError, AdminUserManager}, orgs::BootstrapOrgError};
+use crate::entity_managers::{
+    admin_users::{AdminUserManagementError, AdminUserManager},
+    orgs::BootstrapOrgError,
+};
 
 use super::{social::SocialAuthService, tokens::IssueTokenError};
 
@@ -61,6 +64,7 @@ where
     pub(super) sub_matched_user: Option<admin_user::Model>,
 }
 
+#[allow(clippy::type_complexity)]
 pub(super) async fn oidc_common_token_exchange<
     CO,
     AC,
@@ -122,7 +126,7 @@ where
     let sub_matched_user =
         AdminUserManager::get_user_by_sub(conn, org_id, service, string_sub_id.to_string())
             .await
-            .map_err(|e| TokenExchangeError::DBError(e))?;
+            .map_err(TokenExchangeError::DBError)?;
 
     let user_info: UserInfoClaims<AC, GC> = client
         .user_info(

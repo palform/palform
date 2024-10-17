@@ -34,7 +34,7 @@ impl APIQuestionGroup {
             .ok_or(anyhow!("Current question group not found"))?;
 
         if let APIQuestionGroupStepStrategy::NextPosition = self.step_strategy.clone() {
-            return Ok(steps.get(self_index + 1).map(|e| e.id.clone()));
+            return Ok(steps.get(self_index + 1).map(|e| e.id));
         }
 
         if let APIQuestionGroupStepStrategy::JumpToSection(cases) = self.step_strategy.clone() {
@@ -103,7 +103,7 @@ pub struct APIQuestionGroupStepStrategyJumpCase {
 impl APIQuestionGroupStepStrategyJumpCase {
     pub fn check_condition_match(
         &self,
-        submissions: &Vec<QuestionSubmission>,
+        submissions: &[QuestionSubmission],
     ) -> Result<bool, anyhow::Error> {
         match self.conditions.clone() {
             APIQuestionGroupStepStrategyJumpCaseConditionList::Or(or_list) => {
@@ -117,7 +117,7 @@ impl APIQuestionGroupStepStrategyJumpCase {
                     }
                 }
 
-                return Ok(false);
+                Ok(false)
             }
             APIQuestionGroupStepStrategyJumpCaseConditionList::And(and_list) => {
                 for condition in and_list {
@@ -126,7 +126,7 @@ impl APIQuestionGroupStepStrategyJumpCase {
                     }
                 }
 
-                return Ok(true);
+                Ok(true)
             }
         }
     }
@@ -216,7 +216,7 @@ pub enum APIQuestionGroupStepStrategyJumpCaseConditionMatcher {
 impl APIQuestionGroupStepStrategyJumpCaseCondition {
     fn find_submission(
         question_id: &PalformDatabaseID<IDQuestion>,
-        submissions: &Vec<QuestionSubmission>,
+        submissions: &[QuestionSubmission],
     ) -> Result<QuestionSubmission, anyhow::Error> {
         submissions
             .iter()
@@ -230,7 +230,7 @@ impl APIQuestionGroupStepStrategyJumpCaseCondition {
 
     pub fn check_condition_match(
         &self,
-        submissions: &Vec<QuestionSubmission>,
+        submissions: &[QuestionSubmission],
     ) -> Result<bool, anyhow::Error> {
         let submission = Self::find_submission(&self.question_id, submissions)?;
         match self.matcher.clone() {
@@ -252,14 +252,14 @@ impl APIQuestionGroupStepStrategyJumpCaseCondition {
                             }
                         }
 
-                        return Ok(false);
+                        Ok(false)
                     } else {
                         let selected_options_set =
                             HashSet::from_iter(selected_options.iter().cloned());
-                        return Ok(selected_options_set == target_options_set);
+                        Ok(selected_options_set == target_options_set)
                     }
                 } else {
-                    return Err(anyhow!("Submission was not for a Choice"));
+                    Err(anyhow!("Submission was not for a Choice"))
                 }
             }
             APIQuestionGroupStepStrategyJumpCaseConditionMatcher::Text {
@@ -288,7 +288,7 @@ impl APIQuestionGroupStepStrategyJumpCaseCondition {
                         Ok(actual_value == target_value)
                     }
                 } else {
-                    return Err(anyhow!("Submission was not for Text"));
+                    Err(anyhow!("Submission was not for Text"))
                 }
             }
             APIQuestionGroupStepStrategyJumpCaseConditionMatcher::Scale { direction, value } => {

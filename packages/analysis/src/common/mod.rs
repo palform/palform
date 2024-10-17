@@ -93,10 +93,9 @@ impl FormAnalysisManager {
             .get(feature_index)
             .ok_or(anyhow!("Feature index {} not found", feature_index))?;
 
-        Ok(self
-            .question_labels
-            .get(question_index.clone())
-            .ok_or(anyhow!("Question index {} not found", question_index))?)
+        self.question_labels
+            .get(question_index.to_owned())
+            .ok_or(anyhow!("Question index {} not found", question_index))
     }
 
     pub(crate) fn get_feature_row_for_question_with_label(
@@ -118,7 +117,7 @@ impl FormAnalysisManager {
             .map(|(feature_index, _)| feature_index)
             .find(|feature_index| {
                 self.feature_labels
-                    .get(feature_index.clone())
+                    .get(feature_index.to_owned())
                     .is_some_and(|v| v == &feature_label)
             })
             .ok_or(anyhow!(

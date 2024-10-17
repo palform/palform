@@ -51,9 +51,7 @@ impl AdminUserSecondFactorManager {
         conn: &T,
     ) -> Result<Vec<APIAdminUserSecondAuthenticationFactor>, DbErr> {
         AdminUserSecondAuthenticationFactor::find()
-            .filter(
-                admin_user_second_authentication_factor::Column::UserId.eq(self.user_id.clone()),
-            )
+            .filter(admin_user_second_authentication_factor::Column::UserId.eq(self.user_id))
             .order_by(
                 admin_user_second_authentication_factor::Column::CreatedAt,
                 Order::Desc,
@@ -71,8 +69,8 @@ impl AdminUserSecondFactorManager {
     ) -> Result<PalformDatabaseID<IDAdminUserSecondAuthenticationFactor>, DbErr> {
         let new_id = PalformDatabaseID::<IDAdminUserSecondAuthenticationFactor>::random();
         let new_factor = admin_user_second_authentication_factor::ActiveModel {
-            id: Set(new_id.clone()),
-            user_id: Set(self.user_id.clone()),
+            id: Set(new_id),
+            user_id: Set(self.user_id),
             nickname: Set(nickname),
             totp_secret: Set(secret),
             ..Default::default()
@@ -87,9 +85,7 @@ impl AdminUserSecondFactorManager {
         id: PalformDatabaseID<IDAdminUserSecondAuthenticationFactor>,
     ) -> Result<(), DbErr> {
         AdminUserSecondAuthenticationFactor::delete_by_id(id)
-            .filter(
-                admin_user_second_authentication_factor::Column::UserId.eq(self.user_id.clone()),
-            )
+            .filter(admin_user_second_authentication_factor::Column::UserId.eq(self.user_id))
             .exec(conn)
             .await?;
         Ok(())
@@ -97,9 +93,7 @@ impl AdminUserSecondFactorManager {
 
     pub async fn user_requires_2fa<T: ConnectionTrait>(&self, conn: &T) -> Result<bool, DbErr> {
         AdminUserSecondAuthenticationFactor::find()
-            .filter(
-                admin_user_second_authentication_factor::Column::UserId.eq(self.user_id.clone()),
-            )
+            .filter(admin_user_second_authentication_factor::Column::UserId.eq(self.user_id))
             .count(conn)
             .await
             .map(|c| c > 0)
@@ -111,8 +105,8 @@ impl AdminUserSecondFactorManager {
     ) -> Result<PalformDatabaseID<IDAdminUserSecondAuthenticationFactorSession>, DbErr> {
         let new_id = PalformDatabaseID::<IDAdminUserSecondAuthenticationFactorSession>::random();
         let new_session = admin_user_second_authentication_factor_session::ActiveModel {
-            id: Set(new_id.clone()),
-            user_id: Set(self.user_id.clone()),
+            id: Set(new_id),
+            user_id: Set(self.user_id),
             expires_at: Set((Utc::now() + Duration::minutes(10)).naive_utc()),
             ..Default::default()
         };
@@ -146,9 +140,7 @@ impl AdminUserSecondFactorManager {
         }
 
         let secrets: Vec<String> = AdminUserSecondAuthenticationFactor::find()
-            .filter(
-                admin_user_second_authentication_factor::Column::UserId.eq(session.user_id.clone()),
-            )
+            .filter(admin_user_second_authentication_factor::Column::UserId.eq(session.user_id))
             .select_only()
             .column(admin_user_second_authentication_factor::Column::TotpSecret)
             .into_tuple()

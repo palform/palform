@@ -40,7 +40,7 @@ impl BillingEntitlementManager {
     fn get_internal_manager(
         &self,
     ) -> crate::billing::entitlement::INTERNALBillingEntitlementManager {
-        crate::billing::entitlement::INTERNALBillingEntitlementManager::new(self.org_id.clone())
+        crate::billing::entitlement::INTERNALBillingEntitlementManager::new(self.org_id)
     }
 
     pub async fn check_entitlement<T: ConnectionTrait>(
@@ -56,9 +56,9 @@ impl BillingEntitlementManager {
                 .await
                 .map_err(|e| APIError::report_internal_error("check billing entitlement", e))?;
             if !allowed {
-                return Err(APIError::SubscriptionLimit(entitlement_req.to_string()).into());
+                Err(APIError::SubscriptionLimit(entitlement_req.to_string()).into())
             } else {
-                return Ok(());
+                Ok(())
             }
         }
 

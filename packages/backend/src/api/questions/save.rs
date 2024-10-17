@@ -52,7 +52,7 @@ pub async fn handler(
         .question_per_form_count
         .is_some_and(|v| data.questions.len() as i32 > v)
     {
-        return Err(APIError::SubscriptionLimit(format!("Cannot exceed question limit")).into());
+        return Err(APIError::SubscriptionLimit("Cannot exceed question limit".to_string()).into());
     }
 
     QuestionManager::save_questions_and_groups(

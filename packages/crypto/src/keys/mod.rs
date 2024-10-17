@@ -4,7 +4,7 @@ pub mod parse;
 pub mod strip;
 pub mod validate;
 
-#[cfg(any(feature = "frontend-js"))]
+#[cfg(feature = "frontend-js")]
 pub mod backup;
-#[cfg(any(feature = "frontend-js"))]
+#[cfg(feature = "frontend-js")]
 pub mod gen;

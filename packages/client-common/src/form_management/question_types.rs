@@ -25,7 +25,7 @@ pub struct APIQuestion {
 impl APIQuestion {
     pub fn to_export_key(
         &self,
-        groups: &Vec<APIQuestionGroup>,
+        groups: &[APIQuestionGroup],
         use_question_id: bool,
         exclude_prefix: bool,
         use_prefix_group_id: bool,
@@ -56,7 +56,7 @@ impl APIQuestion {
 
         if let Some(prefix) = prefix {
             if use_question_id {
-                Some(format!("{}{}", prefix, self.id.to_string()))
+                Some(format!("{}{}", prefix, self.id))
             } else {
                 Some(format!("{}{}", prefix, self.title.clone()))
             }
@@ -141,14 +141,12 @@ pub enum APIQuestionConfiguration {
 
 impl APIQuestionConfiguration {
     pub fn requires_submission(&self) -> bool {
-        if let Self::Info {
-            background_color: _,
-        } = self
-        {
-            false
-        } else {
-            true
-        }
+        !matches!(
+            self,
+            Self::Info {
+                background_color: _
+            }
+        )
     }
 }
 

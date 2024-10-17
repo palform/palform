@@ -21,19 +21,19 @@ use super::billing_entitlement_proxy::BillingEntitlementContextualCountTrait;
 #[derive(Debug, Error)]
 pub enum GetQuestionError {
     #[error("Database: {0}")]
-    DBError(#[from] DbErr),
+    DB(#[from] DbErr),
     #[error("Decode config: {0}")]
-    DecodeError(#[from] serde_json::Error),
+    Decode(#[from] serde_json::Error),
 }
 
 #[derive(Debug, Error)]
 pub enum SetQuestionError {
     #[error("Database: {0}")]
-    DBError(#[from] DbErr),
+    DB(#[from] DbErr),
     #[error("Encode config: {0}")]
-    EncodeError(#[from] serde_json::Error),
+    Encode(#[from] serde_json::Error),
     #[error("{0}")]
-    ValidationError(String),
+    Validation(String),
 }
 
 pub struct QuestionManager;
@@ -85,7 +85,7 @@ impl QuestionManager {
     }
 
     pub fn validate_question_internal_name(internal_name: String) -> bool {
-        if internal_name.len() == 0 {
+        if internal_name.is_empty() {
             return false;
         }
 
@@ -98,10 +98,7 @@ impl QuestionManager {
         }
 
         for c in internal_name.chars() {
-            if !(c >= 'a' && c <= 'z')
-                && !(c >= 'A' && c <= 'Z')
-                && !(c >= '0' && c <= '9')
-                && !(c == '_')
+            if !c.is_ascii_lowercase() && !c.is_ascii_uppercase() && !c.is_ascii_digit() && c != '_'
             {
                 return false;
             }
@@ -148,7 +145,7 @@ impl QuestionManager {
             .enumerate()
             .map(|(i, g)| {
                 let step_strategy = serde_json::to_value(g.step_strategy.clone())
-                    .map_err(|e| SetQuestionError::EncodeError(e))?;
+                    .map_err(SetQuestionError::Encode)?;
 
                 Ok((
                     g.id,
@@ -159,7 +156,6 @@ impl QuestionManager {
                         description: Set(g.description.clone()),
                         step_strategy: Set(step_strategy),
                         form_id: Set(form_id),
-                        ..Default::default()
                     },
                 ))
             })
@@ -175,11 +171,11 @@ impl QuestionManager {
             .map(|(i, q)| {
                 let configuration =
                     QuestionWithEncodedConfiguration::encode_config(q.configuration.clone())
-                        .map_err(|e| SetQuestionError::EncodeError(e))?;
+                        .map_err(SetQuestionError::Encode)?;
 
                 if let Some(internal_name) = q.internal_name.clone() {
                     if !Self::validate_question_internal_name(internal_name) {
-                        return Err(SetQuestionError::ValidationError(
+                        return Err(SetQuestionError::Validation(
                             "invalid internal name".to_string(),
                         ));
                     }
@@ -196,7 +192,6 @@ impl QuestionManager {
                         configuration: Set(configuration),
                         position: Set(i as i32),
                         group_id: Set(q.group_id),
-                        ..Default::default()
                     },
                 ))
             })

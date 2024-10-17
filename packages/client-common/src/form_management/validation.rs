@@ -62,7 +62,7 @@ pub fn validate_questions(
                             }
                         }
                         APIQuestionTextValidator::Integer => {
-                            if let Err(_) = value.parse::<i32>() {
+                            if value.parse::<i32>().is_err() {
                                 errors.push(ValidationError {
                                     question_id: question.id.to_string(),
                                     error: "Value must be a number".to_string(),
@@ -70,7 +70,7 @@ pub fn validate_questions(
                             }
                         }
                         APIQuestionTextValidator::Float => {
-                            if let Err(_) = value.parse::<f32>() {
+                            if value.parse::<f64>().is_err() {
                                 errors.push(ValidationError {
                                     question_id: question.id.to_string(),
                                     error: "Value must be a decimal number".to_string(),

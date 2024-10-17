@@ -24,6 +24,7 @@ use crate::{
 
 #[openapi(tag = "Forms", operation_id = "forms.fill")]
 #[post("/fill/orgs/<org_id>/forms/<form_id>", data = "<data>")]
+#[allow(clippy::too_many_arguments)]
 pub async fn handler(
     org_id: PalformDatabaseID<IDOrganisation>,
     form_id: PalformDatabaseID<IDForm>,

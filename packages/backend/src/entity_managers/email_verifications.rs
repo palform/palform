@@ -41,7 +41,7 @@ impl EmailVerificationManager {
         conn: &DatabaseTransaction,
         verification_id: PalformDatabaseID<IDAdminUserEmailVerification>,
     ) -> Result<admin_user_email_verification::Model, DbErr> {
-        let verification = AdminUserEmailVerification::find_by_id(verification_id.clone())
+        let verification = AdminUserEmailVerification::find_by_id(verification_id)
             .one(conn)
             .await?
             .ok_or(DbErr::RecordNotFound("Verification".to_string()))?;
@@ -62,8 +62,8 @@ impl EmailVerificationManager {
         let expires_at = Utc::now() + Duration::minutes(15);
         let verification_id = PalformDatabaseID::<IDAdminUserEmailVerification>::random();
         let new_verification_model = admin_user_email_verification::ActiveModel {
-            id: Set(verification_id.clone()),
-            user_id: Set(user_id.clone()),
+            id: Set(verification_id),
+            user_id: Set(user_id),
             purpose: Set(purpose.clone()),
             expires_at: Set(expires_at.naive_utc()),
             ..Default::default()

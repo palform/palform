@@ -28,6 +28,6 @@ pub async fn handler(
 
     FormBrandingManager::list_in_team(db.inner(), team_id)
         .await
-        .map(|v| Json(v))
+        .map(Json)
         .map_internal_error()
 }

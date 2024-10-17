@@ -34,8 +34,8 @@ impl<'a, T: ConnectionTrait> InductionStatusManager<'a, T> {
         AdminPublicKey::find()
             .filter(
                 Condition::all()
-                    .add(admin_public_key::Column::OrganisationId.eq(self.org_id.clone()))
-                    .add(admin_public_key::Column::UserId.eq(self.user_id.clone())),
+                    .add(admin_public_key::Column::OrganisationId.eq(self.org_id))
+                    .add(admin_public_key::Column::UserId.eq(self.user_id)),
             )
             .count(self.conn)
             .await
@@ -44,7 +44,7 @@ impl<'a, T: ConnectionTrait> InductionStatusManager<'a, T> {
 
     pub async fn can_create_invite(&self) -> Result<bool, DbErr> {
         let membership =
-            OrganisationMembership::find_by_id((self.org_id.clone(), self.user_id.clone()))
+            OrganisationMembership::find_by_id((self.org_id, self.user_id))
                 .one(self.conn)
                 .await?
                 .ok_or(DbErr::RecordNotFound(
@@ -56,7 +56,7 @@ impl<'a, T: ConnectionTrait> InductionStatusManager<'a, T> {
 
     pub async fn has_created_invite(&self) -> Result<bool, DbErr> {
         OrganisationInvite::find()
-            .filter(organisation_invite::Column::OrganisationId.eq(self.org_id.clone()))
+            .filter(organisation_invite::Column::OrganisationId.eq(self.org_id))
             .count(self.conn)
             .await
             .map(|c| c > 0)
@@ -68,7 +68,7 @@ impl<'a, T: ConnectionTrait> InductionStatusManager<'a, T> {
             .filter(
                 Condition::all()
                     .add(team::Column::IsDefault.eq(true))
-                    .add(team::Column::OrganisationId.eq(self.org_id.clone())),
+                    .add(team::Column::OrganisationId.eq(self.org_id)),
             )
             .count(self.conn)
             .await
@@ -76,7 +76,7 @@ impl<'a, T: ConnectionTrait> InductionStatusManager<'a, T> {
     }
 
     pub async fn induction_period_expired(&self) -> Result<bool, DbErr> {
-        Organisation::find_by_id(self.org_id.clone())
+        Organisation::find_by_id(self.org_id)
             .filter(organisation::Column::CreatedAt.gt(Utc::now() - Duration::days(7)))
             .count(self.conn)
             .await
@@ -87,8 +87,8 @@ impl<'a, T: ConnectionTrait> InductionStatusManager<'a, T> {
         AdminPublicKey::find()
             .filter(
                 Condition::all()
-                    .add(admin_public_key::Column::OrganisationId.eq(self.org_id.clone()))
-                    .add(admin_public_key::Column::UserId.eq(self.user_id.clone()))
+                    .add(admin_public_key::Column::OrganisationId.eq(self.org_id))
+                    .add(admin_public_key::Column::UserId.eq(self.user_id))
                     .add(admin_public_key::Column::ExpiresAt.gt(Utc::now())),
             )
             .count(self.conn)
