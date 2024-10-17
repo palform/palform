@@ -10,7 +10,7 @@ pub fn validate_cert(cert: &Cert) -> Result<(), anyhow::Error> {
     let mut has_encryption_key = false;
     for key in valid_cert.keys() {
         if key.for_storage_encryption() {
-            if key.key_expiration_time() == None {
+            if key.key_expiration_time().is_none() {
                 return Err(anyhow!("Encryption key must expire"));
             }
 

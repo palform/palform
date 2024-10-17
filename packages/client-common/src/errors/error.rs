@@ -65,7 +65,7 @@ impl From<APIError> for APIErrorWithStatus {
 pub trait APIInternalError: std::error::Error {
     fn to_internal_error(&self) -> APIErrorWithStatus;
     fn to_internal_error_with_reason(&self, _reason: &str) -> APIErrorWithStatus {
-        Self::to_internal_error(&self)
+        Self::to_internal_error(self)
     }
 }
 

@@ -19,4 +19,7 @@ chrono = "0.4"
 
 palform-entities = { path = "../entities" }
 palform-tsid = { path = "../tsid" }
-palform-client-common = { path = "../client-common", default-features = false, features = ["bench"] }
+palform-client-common = { path = "../client-common", default-features = false, features = [
+    "bench",
+] }
+palform-crypto = { path = "../crypto", default-features = false }

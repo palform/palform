@@ -53,7 +53,7 @@ impl FormAnalysisManager {
 
         let points = array2_to_vec(mini_feature_mat);
         let points = serde_wasm_bindgen::to_value(&points)
-            .map_err(|e| JsValue::from(format!("serialize: {}", e.to_string())))?;
+            .map_err(|e| JsValue::from(format!("serialize: {}", e)))?;
 
         Ok(LinearRegressionResult {
             points,

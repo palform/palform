@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 #[cfg_attr(feature = "frontend-js", derive(ts_rs::TS))]
 #[cfg_attr(feature = "frontend-js", ts(export))]
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Deserialize, Serialize, Clone, Default)]
 pub struct APIGenericAddress {
     line1: Option<String>,
     line2: Option<String>,
@@ -48,18 +48,6 @@ impl Display for APIGenericAddress {
             writeln!(f, "{}", iso_3166_alpha_1_code)?;
         }
         Ok(())
-    }
-}
-
-impl Default for APIGenericAddress {
-    fn default() -> Self {
-        Self {
-            line1: None,
-            line2: None,
-            postal_code: None,
-            locality: None,
-            iso_3166_alpha_1_code: None,
-        }
     }
 }
 

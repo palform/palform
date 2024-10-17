@@ -72,7 +72,7 @@ impl Featureable for QuestionSubmissionData {
                         icon: _,
                     } = configuration
                     {
-                        let x = vec![f64::from(min.clone()), f64::from(max.clone())];
+                        let x = vec![f64::from(min.to_owned()), f64::from(max.to_owned())];
                         Some(interp(&x, interp_y, f64::from(value.to_owned())))
                     } else {
                         return Err(incorrect_config_err);

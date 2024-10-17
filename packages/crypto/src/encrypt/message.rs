@@ -65,7 +65,7 @@ fn armor_message(message: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
 }
 
 fn stringify_armor(armor: &[u8]) -> String {
-    String::from_utf8_lossy(&armor).to_string()
+    String::from_utf8_lossy(armor).to_string()
 }
 
 pub fn encrypt_submission(
