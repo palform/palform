@@ -73,7 +73,7 @@ pub async fn handler(
 
     form.editor_name = Set(data.editor_name.clone());
     form.title = Set(data.title.clone());
-    form.branding_id = Set(data.branding_id.clone());
+    form.branding_id = Set(data.branding_id);
     form.notification_email = Set(data.notification_email);
     form.notification_webhook_url = Set(data.notification_webhook_url.clone());
     let end_config = FormManager::serialize_end_configuration(data.end_configuration.clone())

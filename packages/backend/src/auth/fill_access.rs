@@ -46,7 +46,7 @@ impl<'a> FromRequest<'a> for APIFillAccessToken {
                 request
             )
             .map_err(|e| {
-                APIError::BadRequest(format!("Failed to parse fill token: {}", e.to_string()))
+                APIError::BadRequest(format!("Failed to parse fill token: {}", e))
             }),
             request
         );
@@ -63,7 +63,7 @@ impl<'a> FromRequest<'a> for APIFillAccessToken {
             .map_err(|e| {
                 APIError::BadRequest(format!(
                     "Failed to parse form_id segment: {}",
-                    e.to_string()
+                    e
                 ))
             }),
             request

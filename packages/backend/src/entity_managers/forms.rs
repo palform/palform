@@ -78,29 +78,29 @@ impl FormManager {
         conn: &T,
         form_id: PalformDatabaseID<IDForm>,
     ) -> Result<APIFormWithQuestions, GetFormError> {
-        let form = Form::find_by_id(form_id.clone())
+        let form = Form::find_by_id(form_id)
             .into_model::<APIFrontendForm>()
             .one(conn)
             .await?
             .ok_or(GetFormError::NotFound)?;
 
-        let questions = QuestionManager::get_all_for_form(conn, form_id.clone())
+        let questions = QuestionManager::get_all_for_form(conn, form_id)
             .await
             .map_err(|e| match e {
-                super::questions::GetQuestionError::DecodeError(e) => GetFormError::DecodeError(e),
-                super::questions::GetQuestionError::DBError(e) => GetFormError::DBError(e),
+                super::questions::GetQuestionError::Decode(e) => GetFormError::DecodeError(e),
+                super::questions::GetQuestionError::DB(e) => GetFormError::DBError(e),
             })?;
 
         let groups = QuestionGroupManager::list_all_for_form(conn, form_id)
             .await
-            .map_err(|e| GetFormError::DBError(e))?;
+            .map_err(GetFormError::DBError)?;
 
         let mut branding: Option<APIFormBranding> = None;
         if let Some(branding_id) = &form.branding_id {
             branding = Some(
-                FormBrandingManager::get_by_id(conn, branding_id.clone())
+                FormBrandingManager::get_by_id(conn, *branding_id)
                     .await
-                    .map_err(|e| GetFormError::DBError(e))?
+                    .map_err(GetFormError::DBError)?
                     .ok_or(GetFormError::DBError(DbErr::RecordNotFound(
                         "branding ID not found".to_string(),
                     )))?,
@@ -288,7 +288,7 @@ impl FormManager {
 
             for delete_id in &delete_ids {
                 let new_deletion = deleted_submission::ActiveModel {
-                    id: Set(delete_id.clone()),
+                    id: Set(*delete_id),
                     form_id: Set(form_id),
                     ..Default::default()
                 };

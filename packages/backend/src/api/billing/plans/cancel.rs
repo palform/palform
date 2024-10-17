@@ -33,7 +33,7 @@ pub async fn handler(
             db.inner(),
             org_id,
             stripe_subscription_id,
-            data.reason.clone().into(),
+            data.reason.clone(),
         )
         .await
         .map_err(|e| APIError::BadRequest(e.to_string()))?;

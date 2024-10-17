@@ -134,8 +134,7 @@ impl SocialAuthManager {
 
                 let is_connected = all_connections
                     .iter()
-                    .find(|v| v.service == self.service.to_string())
-                    .is_some();
+                    .any(|v| v.service == self.service.to_string());
 
                 if !is_connected {
                     SocialAuthConnectionsManager::add_connection(

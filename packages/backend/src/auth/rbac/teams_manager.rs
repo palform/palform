@@ -55,7 +55,7 @@ impl TeamsRBACManager {
         team_id: PalformDatabaseID<IDTeam>,
         requested_permission: OrganisationMemberRoleEnum,
     ) -> Result<(), RBACError> {
-        let actual_permission = Self::get_user_team_permission(&self, conn, team_id)
+        let actual_permission = Self::get_user_team_permission(self, conn, team_id)
             .await?
             .ok_or(RBACError::NotAllowed(self.user_id, team_id))?;
 

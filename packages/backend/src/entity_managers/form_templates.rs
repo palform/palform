@@ -219,7 +219,7 @@ impl FormTemplatesManager {
             let new_question_id = PalformDatabaseID::<IDQuestion>::random();
             let new_question = question::ActiveModel {
                 id: Set(new_question_id),
-                group_id: Set(new_group_id.clone()),
+                group_id: Set(*new_group_id),
                 title: Set(question.title),
                 description: Set(question.description),
                 configuration: Set(question.configuration),

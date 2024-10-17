@@ -116,7 +116,7 @@ impl AdminUserManager {
             .clone()
             .ok_or(AdminUserManagementError::NoPassword)?;
         let parsed_hash =
-            PasswordHash::new(&hash).map_err(|e| AdminUserManagementError::Password(e))?;
+            PasswordHash::new(&hash).map_err(AdminUserManagementError::Password)?;
 
         Ok(Self::get_argon2()
             .verify_password(password.as_bytes(), &parsed_hash)
@@ -129,7 +129,7 @@ impl AdminUserManager {
         password: String,
     ) -> Result<(), AdminUserManagementError> {
         let password =
-            Self::gen_password(password).map_err(|e| AdminUserManagementError::Password(e))?;
+            Self::gen_password(password).map_err(AdminUserManagementError::Password)?;
         let updated_user = admin_user::ActiveModel {
             id: Set(user_id),
             manual_auth_password_hash: Set(Some(password)),
@@ -145,11 +145,11 @@ impl AdminUserManager {
         password: String,
     ) -> Result<PalformDatabaseID<IDAdminUser>, AdminUserManagementError> {
         let password_hash =
-            Self::gen_password(password).map_err(|e| AdminUserManagementError::Password(e))?;
+            Self::gen_password(password).map_err(AdminUserManagementError::Password)?;
 
         let id = PalformDatabaseID::<IDAdminUser>::random();
         let new_user = admin_user::ActiveModel {
-            id: Set(id.clone()),
+            id: Set(id),
             email: Set(email),
             manual_auth_email_verified: Set(Some(false)),
             manual_auth_password_hash: Set(Some(password_hash)),
@@ -166,7 +166,7 @@ impl AdminUserManager {
     ) -> Result<PalformDatabaseID<IDAdminUser>, AdminUserManagementError> {
         let id = PalformDatabaseID::<IDAdminUser>::random();
         let new_user = admin_user::ActiveModel {
-            id: Set(id.clone()),
+            id: Set(id),
             email: Set(email),
             ..Default::default()
         };
@@ -183,7 +183,7 @@ impl AdminUserManager {
     ) -> Result<PalformDatabaseID<IDAdminUser>, AdminUserManagementError> {
         let id = PalformDatabaseID::<IDAdminUser>::random();
         let new_user = admin_user::ActiveModel {
-            id: Set(id.clone()),
+            id: Set(id),
             display_name: Set(Some(display_name)),
             email: Set(email),
             org_auth_organisation_id: Set(Some(org_id)),

@@ -66,7 +66,7 @@ impl APIAuthTokenSource for APIAuthTokenSourcePersonal {
         unimplemented!("Cannot construct Personal token for ServiceAccount")
     }
     fn get_user_id(&self) -> PalformDatabaseID<IDAdminUser> {
-        self.model.user_id.clone()
+        self.model.user_id
     }
     fn to_string() -> String {
         "Personal".to_string()
@@ -91,7 +91,7 @@ impl APIAuthTokenSource for APIAuthTokenSourceServiceAccount {
         Self { model }
     }
     fn get_user_id(&self) -> PalformDatabaseID<IDAdminUser> {
-        self.model.id.clone()
+        self.model.id
     }
     fn to_string() -> String {
         "ServiceAccount".to_string()
@@ -118,8 +118,8 @@ impl APIAuthTokenSource for APIAuthTokenSourceAny {
     }
     fn get_user_id(&self) -> PalformDatabaseID<IDAdminUser> {
         match self {
-            Self::ServiceAccount(m) => m.id.clone(),
-            Self::Personal(m) => m.user_id.clone(),
+            Self::ServiceAccount(m) => m.id,
+            Self::Personal(m) => m.user_id,
         }
     }
     fn to_string() -> String {
@@ -199,10 +199,7 @@ impl<'a, Source: APIAuthTokenSource> FromRequest<'a> for APIAuthToken<Source> {
                                         .next()
                                         .ok_or(APIError::BadRequest(
                                             "Token secret not in Authorization header".to_string(),
-                                        ))
-                                        .and_then(|token_secret| {
-                                            Ok((token_id.to_owned(), token_secret.to_owned()))
-                                        })
+                                        )).map(|token_secret| (token_id.to_owned(), token_secret.to_owned()))
                                 })
                         }),
                     request
@@ -273,10 +270,10 @@ impl<'a, Source: APIAuthTokenSource> OpenApiFromRequest<'a> for APIAuthToken<Sou
         let mut description = "Requires authentication to access.".to_string();
 
         if Source::allow_personal() {
-            description = description + " Allows frontend user tokens (HTTP basic auth) generated with the authentication endpoints.";
+            description += " Allows frontend user tokens (HTTP basic auth) generated with the authentication endpoints.";
         }
         if Source::allow_service_account() {
-            description = description + " Allows service-account tokens via the public Palform API (HTTP bearer auth). Please use the format `Bearer {service_account_token}`.";
+            description += " Allows service-account tokens via the public Palform API (HTTP bearer auth). Please use the format `Bearer {service_account_token}`.";
         }
 
         let security_scheme = SecurityScheme {
@@ -331,7 +328,7 @@ impl TokenManager {
         let token_secret = Alphanumeric.sample_string(&mut rand::thread_rng(), 32);
 
         let new_token = auth_token::ActiveModel {
-            id: Set(token_id.clone()),
+            id: Set(token_id),
             created_at: NotSet,
             expires_at: Set(expires_at.naive_utc()),
             hash: Set(token_secret.clone()),

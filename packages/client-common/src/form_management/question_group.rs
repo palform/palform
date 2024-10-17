@@ -103,7 +103,7 @@ pub struct APIQuestionGroupStepStrategyJumpCase {
 impl APIQuestionGroupStepStrategyJumpCase {
     pub fn check_condition_match(
         &self,
-        submissions: &Vec<QuestionSubmission>,
+        submissions: &[QuestionSubmission],
     ) -> Result<bool, anyhow::Error> {
         match self.conditions.clone() {
             APIQuestionGroupStepStrategyJumpCaseConditionList::Or(or_list) => {

@@ -22,6 +22,7 @@ use thiserror::Error;
 #[derive(Error, Debug, Clone)]
 pub enum KeyConversionError {
     #[error("PGP: {0}")]
+    #[allow(clippy::upper_case_acronyms)]
     PGP(String),
     #[error("Never-expiring encryption keys are not supported")]
     NeverExpiringKey,
@@ -110,7 +111,7 @@ impl<P: KeyParts> CryptoKeyRepr<P> {
             .key_expiration_time()
             .ok_or(KeyConversionError::NeverExpiringKey)?;
 
-        let dt_exp_time: DateTime<Utc> = exp_time.clone().into();
+        let dt_exp_time: DateTime<Utc> = exp_time.into();
         Ok(dt_exp_time)
     }
 }

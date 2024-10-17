@@ -106,7 +106,7 @@ pub fn export_submissions(
                         let matching_question_submission = submission
                             .questions
                             .iter()
-                            .find(|e| e.question_id == matching_question_id.clone());
+                            .find(|e| e.question_id == *matching_question_id);
 
                         if let Some(matching_question_submission) = matching_question_submission {
                             row.push(matching_question_submission.data.to_string());

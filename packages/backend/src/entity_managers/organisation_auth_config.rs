@@ -33,7 +33,7 @@ impl OrganisationAuthConfigManager {
                 JoinType::InnerJoin,
                 organisation::Relation::OrganisationAuthConfig.def(),
             )
-            .filter(organisation::Column::Id.eq(self.org_id.clone()))
+            .filter(organisation::Column::Id.eq(self.org_id))
             .into_model::<APIOrganisationAuthConfig>()
             .one(conn)
             .await
@@ -45,7 +45,7 @@ impl OrganisationAuthConfigManager {
                 JoinType::InnerJoin,
                 organisation::Relation::OrganisationAuthConfig.def(),
             )
-            .filter(organisation::Column::Id.eq(self.org_id.clone()))
+            .filter(organisation::Column::Id.eq(self.org_id))
             .count(conn)
             .await
             .map(|c| c == 1)
@@ -60,7 +60,7 @@ impl OrganisationAuthConfigManager {
                 JoinType::InnerJoin,
                 organisation::Relation::OrganisationAuthConfig.def(),
             )
-            .filter(organisation::Column::Id.eq(self.org_id.clone()))
+            .filter(organisation::Column::Id.eq(self.org_id))
             .select_only()
             .column(organisation_auth_config::Column::Id)
             .into_tuple()
@@ -81,11 +81,11 @@ impl OrganisationAuthConfigManager {
             model.update(conn).await.map(|_| ())
         } else {
             let new_id = PalformDatabaseID::<IDOrganisationAuthConfig>::random();
-            model.id = Set(new_id.clone());
+            model.id = Set(new_id);
             model.insert(conn).await?;
 
             let updated_org = organisation::ActiveModel {
-                id: Set(self.org_id.clone()),
+                id: Set(self.org_id),
                 auth_config: Set(Some(new_id)),
                 ..Default::default()
             };

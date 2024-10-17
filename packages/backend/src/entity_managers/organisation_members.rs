@@ -64,7 +64,6 @@ impl OrganisationMembersManager {
             user_id: Set(user_id),
             organisation_id: Set(org_id),
             is_admin: Set(is_admin),
-            ..Default::default()
         }
     }
 
@@ -114,7 +113,6 @@ impl OrganisationMembersManager {
             organisation_id: Set(org_id),
             user_id: Set(user_id),
             is_admin: Set(is_admin),
-            ..Default::default()
         };
 
         updated_member.update(conn).await?;

@@ -21,6 +21,7 @@ pub enum APIEntitlementRequest {
     CryptoDetails,
     Audit,
     PrioritySupport,
+    #[allow(clippy::upper_case_acronyms)]
     OIDC,
     SubmissionAutoDelete,
     FormCaptcha,
@@ -90,7 +91,7 @@ impl Default for APIEntitlementInfo {
 }
 
 impl APIEntitlementInfo {
-    pub fn to_active_model(self) -> organisation_feature_entitlement::ActiveModel {
+    pub fn to_active_model(&self) -> organisation_feature_entitlement::ActiveModel {
         organisation_feature_entitlement::ActiveModel {
             user_count: Set(self.user_count),
             response_count: Set(self.response_count),

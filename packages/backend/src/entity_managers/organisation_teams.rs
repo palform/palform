@@ -67,14 +67,14 @@ impl OrganisationTeamsManager {
                     "No matching membership for team".to_string(),
                 ))?;
                 Ok(APIOrganisationTeamMembership {
-                    team_id: t.id.clone(),
+                    team_id: t.id,
                     name: t.name.clone(),
                     my_role: tm.role,
                 })
             })
             .collect();
 
-        Ok(vec?)
+        vec
     }
 
     pub async fn list_org_teams<T: ConnectionTrait>(
@@ -222,7 +222,7 @@ impl OrganisationTeamsManager {
             .join(JoinType::InnerJoin, team_membership::Relation::Team.def())
             .filter(all![
                 team::Column::OrganisationId.eq(org_id),
-                team_membership::Column::UserId.eq(user_id.clone())
+                team_membership::Column::UserId.eq(user_id)
             ])
             .select_only()
             .column(team_membership::Column::TeamId)
@@ -233,7 +233,7 @@ impl OrganisationTeamsManager {
         TeamMembership::delete_many()
             .filter(all![
                 team_membership::Column::TeamId.is_in(teams),
-                team_membership::Column::UserId.eq(user_id.clone())
+                team_membership::Column::UserId.eq(user_id)
             ])
             .exec(conn)
             .await?;
