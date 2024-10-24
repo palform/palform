@@ -4,12 +4,14 @@
     import InfoText from "../../components/type/InfoText.svelte";
     import LoadingButton from "../../components/LoadingButton.svelte";
     import { APIs } from "../../data/common";
-    import { showFailureToast } from "../../data/toast";
+    import { showFailureToast, showSuccessToast } from "../../data/toast";
     import Captcha from "../../components/captcha/Captcha.svelte";
     import TextButton from "../../components/TextButton.svelte";
     import PasswordPicker from "../../components/password/PasswordPicker.svelte";
     import SocialAuthButtons from "../../components/auth/SocialAuthButtons.svelte";
     import { saveIntentTemplateIfExists } from "../../data/auth/intent";
+    import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
+    import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 
     let email = "";
     let password = "";
@@ -17,6 +19,18 @@
 
     let loading = false;
     let signUpComplete = false;
+
+    let emailCooloffSeconds = 0;
+    const doEmailCooloff = () => {
+        emailCooloffSeconds = 30;
+        const interval = setInterval(() => {
+            emailCooloffSeconds--;
+            if (emailCooloffSeconds === 0) {
+                clearInterval(interval);
+            }
+        }, 1000);
+    };
+
     $: onSignUpClick = async (e: Event) => {
         e.preventDefault();
 
@@ -32,6 +46,19 @@
                 password,
             });
             signUpComplete = true;
+            doEmailCooloff();
+        } catch (e) {
+            await showFailureToast(e);
+        }
+        loading = false;
+    };
+
+    $: onResendClick = async () => {
+        loading = true;
+        try {
+            await APIs.auth.authResendVerification({ email });
+            await showSuccessToast(`Resent email to ${email}`);
+            doEmailCooloff();
         } catch (e) {
             await showFailureToast(e);
         }
@@ -47,6 +74,19 @@
             We've sent a message to <strong>{email}</strong> with a link. Please
             click it within the next 15 minutes to verify your email address.
         </InfoText>
+
+        <LoadingButton
+            outline
+            buttonClass="mt-4"
+            on:click={onResendClick}
+            {loading}
+            disabled={loading || emailCooloffSeconds > 0}
+        >
+            <FontAwesomeIcon icon={faRotateRight} class="me-2" />
+            Resend email {emailCooloffSeconds > 0
+                ? `(wait ${emailCooloffSeconds}s)`
+                : ""}
+        </LoadingButton>
     </AuthCard>
 {:else}
     <AuthCard title="Create an account">

@@ -48,13 +48,10 @@ pub async fn handler(
         return Ok(());
     }
 
-    let new_user_id = AdminUserManager::create_user(
-        &txn,
-        request.email.clone(),
-        request.password.clone(),
-    )
-    .await
-    .map_err(|e| APIError::report_internal_error("create user", e))?;
+    let new_user_id =
+        AdminUserManager::create_user(&txn, request.email.clone(), request.password.clone())
+            .await
+            .map_err(|e| APIError::report_internal_error("create user", e))?;
 
     EmailVerificationManager::send_email_verification(
         &txn,
