@@ -8,6 +8,7 @@
     import { createEventDispatcher } from "svelte";
     import { fade } from "svelte/transition";
     import {
+        freePlan,
         PricingFAQ,
         PricingPlan,
     } from "@paltiverse/palform-frontend-common";
@@ -82,6 +83,16 @@
         </InfoText>
 
         <CardGrid>
+            {#if currentPriceId === undefined}
+                <PricingPlan
+                    isFree
+                    plan={freePlan(currency)}
+                    showButton={true}
+                    annualBilling={useAnnual}
+                    {currentPriceId}
+                />
+            {/if}
+
             {#each plans as plan, index (plan.stripe_product_id)}
                 <PricingPlan
                     {plan}

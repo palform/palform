@@ -17,6 +17,7 @@
     export let currentPriceId: string | undefined;
     export let allowTrial = true;
     export let trialOnly = false;
+    export let isFree = false;
 
     const dispatch = createEventDispatcher<{ click: boolean }>();
 
@@ -36,32 +37,32 @@
                 annualBilling
                     ? plan.price_annually.amount / 12
                     : plan.price_monthly.amount,
-                true,
+                false
             )}
         </h3>
         <p class="ms-1 text-gray-500 dark:text-gray-400 text-xl">/month</p>
     </div>
-    {#if annualBilling}
+    {#if annualBilling && !isFree}
         <p class="mt-2">
             <Badge color="green">
                 Save {formatCurrency(
                     plan.currency,
                     plan.price_monthly.amount * 12 - plan.price_annually.amount,
-                    true,
+                    true
                 )}
             </Badge>
         </p>
         <p class="mt-1 text-sm">
             Charged as {formatCurrency(
                 plan.currency,
-                plan.price_annually.amount,
+                plan.price_annually.amount
             )} annually
         </p>
     {/if}
 
     {#if showButton}
-        {#if isCurrent}
-            <Button class="mt-6" size="lg" disabled color="light">
+        {#if isCurrent || isFree}
+            <Button class={`${isCurrent ? "mt-6" : "mt-20 mb-14"}`} size="lg" disabled color="light">
                 Current plan
             </Button>
         {:else if allowTrial}

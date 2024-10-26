@@ -3,6 +3,7 @@
     import type { APIBillingPlan } from "@paltiverse/palform-typescript-openapi";
     import { billingAPI } from "../../api/main";
     import {
+        freePlan,
         PricingFAQ,
         PricingPlan,
     } from "@paltiverse/palform-frontend-common";
@@ -68,6 +69,13 @@
     </div>
 {:else}
     <div class="grid lg:grid-cols-3 gap-4">
+        <PricingPlan
+            plan={freePlan(currency)}
+            currentPriceId={undefined}
+            isFree
+            annualBilling={annualPricing}
+        />
+
         {#each plans as plan (plan.stripe_product_id)}
             <PricingPlan
                 {plan}

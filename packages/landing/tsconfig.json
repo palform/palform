@@ -7,6 +7,7 @@
         "src/**/*.astro"
     ],
     "compilerOptions": {
+        "target": "ESNext",
         "plugins": [
             {
                 "name": "typescript-svelte-plugin",
