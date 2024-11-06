@@ -27,11 +27,3 @@ jobs:
           registry: ghcr.io/${{ github.repository_owner }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Push to Scaleway
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: ${{ steps.build-image.outputs.image }}
-          tags: ${{ steps.build-image.outputs.tags }}
-          registry: rg.fr-par.scw.cloud/palform-internal-production
-          username: nologin
-          password: ${{ secrets.SCALEWAY_REGISTRY_PASSWORD }}
