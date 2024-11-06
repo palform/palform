@@ -1,0 +1,27 @@
+---
+export const prerender = false;
+
+const resource = new URL(Astro.request.url).searchParams.get("resource");
+if (!resource)
+	return new Response(null, {
+		status: 400,
+		statusText: "Missing `resource`",
+	});
+
+return new Response(
+	JSON.stringify({
+		subject: `acct:${resource}`,
+		links: [
+			{
+				href: "https://palform.uk.auth0.com",
+				rel: "http://openid.net/specs/connect/1.0/issuer",
+			},
+		],
+	}),
+	{
+		headers: {
+			"Content-Type": "application/json",
+		},
+	}
+);
+---
