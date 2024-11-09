@@ -30,6 +30,7 @@
     import { Button } from "flowbite-svelte";
     import { onMount } from "svelte";
     import { enable_debug_hook_js } from "@paltiverse/palform-client-common";
+    import MissingKeyWarning from "../../components/keys/MissingKeyWarning.svelte";
 
     enable_debug_hook_js();
 
@@ -64,6 +65,10 @@
         .then((resp) => {
             $orgCtx.amIAdmin = resp.data;
         });
+
+    APIs.keys()
+        .then((a) => a.keysList(orgId))
+        .then((resp) => ($orgCtx.myKeys = resp.data));
 
     if (billingEnabled) {
         APIs.billingEntitlements()
@@ -105,11 +110,11 @@
     };
 </script>
 
-{#if $orgCtx === undefined || $orgCtx.org === undefined || $orgCtx.forms === undefined || $orgCtx.myTeams === undefined || $orgCtx.induction === undefined || $orgCtx.amIAdmin === undefined}
+{#if $orgCtx === undefined || $orgCtx.org === undefined || $orgCtx.forms === undefined || $orgCtx.myTeams === undefined || $orgCtx.induction === undefined || $orgCtx.amIAdmin === undefined || $orgCtx.myKeys === undefined}
     <OrganisationLoading />
 {/if}
 
-{#if $orgCtx !== undefined && $orgCtx.org !== undefined && $orgCtx.myTeams !== undefined && $orgCtx.forms !== undefined && $orgCtx.induction !== undefined && $orgCtx.amIAdmin !== undefined}
+{#if $orgCtx !== undefined && $orgCtx.org !== undefined && $orgCtx.myTeams !== undefined && $orgCtx.forms !== undefined && $orgCtx.induction !== undefined && $orgCtx.amIAdmin !== undefined && $orgCtx.myKeys !== undefined}
     <div
         class="flex overflow-hidden h-screen w-full bg-slate-50/50 dark:bg-slate-900"
     >
@@ -254,6 +259,7 @@
             {/if}
 
             <GlobalWarning />
+            <MissingKeyWarning />
             <div
                 class="w-full overflow-y-auto px-4 md:px-14 lg:px-32 pt-14 md:pt-8 pb-10"
             >

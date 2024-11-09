@@ -52,19 +52,17 @@
 </script>
 
 <BigAlert class="mb-8">
-    <BigAlertHeading>Set up end-to-end encryption</BigAlertHeading>
+    <BigAlertHeading>Your recovery phrase</BigAlertHeading>
     <BigAlertText class="mt-2 leading-tight">
         Palform protects your form responses with high-security encryption.
     </BigAlertText>
-    <BigAlertText class="leading-tight">
-        Nobody can see your responses, except you (not even us!)
-    </BigAlertText>
     <BigAlertText class="mt-2 leading-tight">
-        You need to create a special <strong>key</strong> to make this work.
-    </BigAlertText>
-    <BigAlertText class="leading-tight">
-        This will live <strong>in your browser</strong>, as well as a backup on
-        our server encrypted with a secret passphrase.
+        <strong
+            >Write down these words (in this order) and save them somewhere
+            safe!</strong
+        >
+        You'll need them whenever you sign in on a new device or if you lose your
+        current one.
     </BigAlertText>
 </BigAlert>
 

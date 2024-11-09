@@ -3,6 +3,7 @@ import type {
     APIForm,
     APIOrganisation,
     APIOrganisationTeamMembership,
+    APIUserKey,
     InductionStatus,
 } from "@paltiverse/palform-typescript-openapi";
 import { getContext, setContext } from "svelte";
@@ -31,6 +32,7 @@ export interface OrgContext {
     myTeams: APIOrganisationTeamMembership[];
     induction: InductionStatus;
     entitlements: APIEntitlementInfo | undefined;
+    myKeys: APIUserKey[];
     globalWarning?: GlobalWarningMessage;
 }
 

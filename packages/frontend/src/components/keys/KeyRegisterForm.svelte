@@ -84,7 +84,7 @@
 <KeyPersistenceModal bind:open={showPersistenceModal} on:granted={onRegister} />
 
 {#if backupKeyId}
-    <BackupNew keyId={backupKeyId} on:done={onBackupCreateDone} />
+    <BackupNew {showInfo} keyId={backupKeyId} on:done={onBackupCreateDone} />
 {:else}
     {#if !browserSupport}
         <Alert color="red" border>

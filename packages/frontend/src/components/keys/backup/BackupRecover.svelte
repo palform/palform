@@ -9,9 +9,12 @@
     import { restoreKeyFromBackup } from "../../../data/crypto/keyManager";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import { navigate } from "svelte-routing";
+    import { createEventDispatcher } from "svelte";
 
     export let key: APIUserKey;
+    export let showInfo = true;
     const orgCtx = getOrgContext();
+    const dispatch = createEventDispatcher<{ successfulImport: undefined }>();
 
     let recoverLoading = false;
     let recoveryPhrase = "";
@@ -22,28 +25,31 @@
         try {
             await restoreKeyFromBackup($orgCtx.org.id, key.id, recoveryPhrase);
             await showSuccessToast(
-                "Successfully restored from backup! You can now use this key to decrypt responses.",
+                "Successfully restored from backup! You can now use this key to decrypt responses."
             );
-            navigate(`/orgs/${$orgCtx.org.id}/settings/keys`);
+            dispatch("successfulImport");
+            navigate(`/orgs/${$orgCtx.org.id}/user/keys`);
         } catch (e) {
             console.error(e);
             await showFailureToast(
-                "Failed to decrypt backup. Please check your recovery passphrase and try again.",
+                "Failed to decrypt backup. Please check your recovery passphrase and try again."
             );
         }
         recoverLoading = false;
     };
 </script>
 
-<SectionHeading class="mt-4">Restore from backup</SectionHeading>
-<InfoText>
-    You don't seem to have this key stored in your browser; you won't be able to
-    use it to decrypt form responses.
-</InfoText>
-<InfoText>
-    If you have this key's recovery phrase, you can restore the backup and
-    import the private key into your browser's storage.
-</InfoText>
+{#if showInfo}
+    <SectionHeading class="mt-4">Restore from backup</SectionHeading>
+    <InfoText>
+        You don't seem to have this key stored in your browser; you won't be
+        able to use it to decrypt form responses.
+    </InfoText>
+    <InfoText>
+        If you have this key's recovery phrase, you can restore the backup and
+        import the private key into your browser's storage.
+    </InfoText>
+{/if}
 
 <form class="mt-4" on:submit={onRecoverClick}>
     <Label>

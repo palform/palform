@@ -1,6 +1,10 @@
 import { getUserId } from "../auth";
 import { APIs } from "../common";
-import { pouchInfiniteLimit, privateKeyDb, type CryptoKeyRecord } from "../pouch";
+import {
+    pouchInfiniteLimit,
+    privateKeyDb,
+    type CryptoKeyRecord,
+} from "../pouch";
 import {
     decrypt_backed_up_key_js,
     encrypt_key_for_backup_js,
@@ -9,6 +13,7 @@ import {
     strip_secret_bits_js,
 } from "@paltiverse/palform-crypto";
 import downloadFile from "../util/downloadFile";
+import type { APIUserKey } from "@paltiverse/palform-typescript-openapi";
 
 export async function findKey(
     serverId: string
@@ -113,8 +118,6 @@ export async function restoreKeyFromBackup(
     if (!encryptedBackupResp.data)
         throw new Error("No backed up private key found");
 
-    console.log(encryptedBackupResp.data);
-
     const result = decrypt_backed_up_key_js(
         encryptedBackupResp.data,
         passphrase
@@ -126,4 +129,15 @@ export async function restoreKeyFromBackup(
         userId,
         orgId,
     });
+}
+
+export async function checkLocalKeyAvailability(keys: APIUserKey[]) {
+    if (keys.length === 0) return;
+
+    for (const apiKey of keys) {
+        const localKey = await findKey(apiKey.id);
+        if (localKey) return;
+    }
+
+    return keys[0];
 }
