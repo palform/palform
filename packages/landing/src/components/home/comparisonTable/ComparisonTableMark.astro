@@ -1,0 +1,14 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+    check: boolean;
+}
+
+const { check } = Astro.props;
+---
+
+<Icon
+    name={check ? "fa6-solid:check" : "fa6-solid:xmark"}
+    class={check ? "text-green-500" : "text-red-500"}
+/>

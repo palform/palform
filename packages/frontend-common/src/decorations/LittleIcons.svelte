@@ -6,14 +6,14 @@
 </script>
 
 <ul
-    class={`text-xs space-x-4 text-gray-600 dark:text-gray-400 ${$$props.class}`}
+    class={`text-xs flex gap-x-4 gap-y-1 flex-wrap text-gray-600 dark:text-gray-400 ${$$props.class}`}
 >
-    <li class="inline-block align-baseline">
+    <li class="block align-baseline">
         <FontAwesomeIcon icon={faCircleCheck} class="inline-block ms-2 h-3" />
         5-minute setup
     </li>
     {#if !hideFree}
-        <li class="inline-block align-baseline">
+        <li class="block align-baseline">
             <FontAwesomeIcon
                 icon={faCircleCheck}
                 class="inline-block ms-2 h-3"
@@ -21,7 +21,7 @@
             Free forever
         </li>
     {/if}
-    <li class="inline-block align-baseline">
+    <li class="block align-baseline">
         <FontAwesomeIcon
             icon={faCircleCheck}
             class="inline-block ms-2 h-3"

@@ -1,0 +1,16 @@
+---
+interface Props {
+    center?: boolean;
+    large?: boolean;
+}
+
+const { center, large } = Astro.props;
+---
+
+<p
+    class={`text-slate-800 dark:text-gray-300 flex items-center ${center ? "text-center justify-center" : "text-left"} ${large ? "text-xl" : ""}`}
+>
+    <span>
+        <slot />
+    </span>
+</p>

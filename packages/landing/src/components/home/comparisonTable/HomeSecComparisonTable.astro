@@ -1,0 +1,82 @@
+---
+import LogoType from "../../branding/LogoType.astro";
+import ComparisonTableCol from "./ComparisonTableCol.astro";
+import ComparisonTableMark from "./ComparisonTableMark.astro";
+import ComparisonTableRow from "./ComparisonTableRow.astro";
+
+interface Props {
+    class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class="overflow-y-auto">
+    <div
+        class={`w-full min-w-[500px] px-6 border border-slate-300 dark:border-slate-600 rounded-2xl ${className}`}
+    >
+        <ComparisonTableRow>
+            <ComparisonTableCol />
+            <ComparisonTableCol center large><LogoType /></ComparisonTableCol>
+            <ComparisonTableCol center large>Competitors</ComparisonTableCol>
+        </ComparisonTableRow>
+        <ComparisonTableRow>
+            <ComparisonTableCol>
+                <em>True</em> end-to-end encryption
+            </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={true} />
+            </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={false} />
+            </ComparisonTableCol>
+        </ComparisonTableRow>
+        <ComparisonTableRow>
+            <ComparisonTableCol>
+                Unlimited responses for free
+            </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={true} />
+            </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={false} />
+            </ComparisonTableCol>
+        </ComparisonTableRow>
+        <ComparisonTableRow>
+            <ComparisonTableCol>
+                Friendly real-human support
+            </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={true} />
+            </ComparisonTableCol>
+            <ComparisonTableCol center>If you're lucky</ComparisonTableCol>
+        </ComparisonTableRow>
+        <ComparisonTableRow>
+            <ComparisonTableCol>Generous free plan</ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={true} />
+            </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={false} />
+            </ComparisonTableCol>
+        </ComparisonTableRow>
+        <ComparisonTableRow>
+            <ComparisonTableCol>Modern mobile-friendly UI</ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={true} />
+            </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={true} />
+            </ComparisonTableCol>
+        </ComparisonTableRow>
+        <ComparisonTableRow>
+            <ComparisonTableCol
+                >Sophisticated enterprise-grade user management</ComparisonTableCol
+            >
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={true} />
+            </ComparisonTableCol>
+            <ComparisonTableCol center>Sometimes</ComparisonTableCol>
+        </ComparisonTableRow>
+    </div>
+</div>
