@@ -1,4 +1,3 @@
-use chrono::{NaiveDateTime, Utc};
 use palform_entities::{
     organisation, organisation_membership, prelude::*,
     sea_orm_active_enums::OrganisationMemberRoleEnum,
@@ -37,25 +36,8 @@ pub enum BootstrapOrgError {
     BillingError(#[from] BillingError),
 }
 
-#[derive(Clone, PartialEq)]
-pub enum OrganisationSubmissionBehaviour {
-    Allow,
-    Block,
-}
-
 pub struct OrganisationManager;
 impl OrganisationManager {
-    pub async fn list_all_orgs<T: ConnectionTrait>(
-        conn: &T,
-    ) -> Result<Vec<PalformDatabaseID<IDOrganisation>>, DbErr> {
-        Organisation::find()
-            .select_only()
-            .column(organisation::Column::Id)
-            .into_tuple()
-            .all(conn)
-            .await
-    }
-
     pub async fn list_orgs_for_user<T: ConnectionTrait>(
         conn: &T,
         user_id: PalformDatabaseID<IDAdminUser>,
@@ -130,16 +112,11 @@ impl OrganisationManager {
         creator_user_id: PalformDatabaseID<IDAdminUser>,
         stripe: &stripe::Client,
     ) -> Result<(), BootstrapOrgError> {
-        let default_team = OrganisationTeamsManager::create(
-            conn,
-            org_id,
-            "Default team".to_string(),
-            true,
-        )
-        .await?;
+        let default_team =
+            OrganisationTeamsManager::create(conn, org_id, "Default team".to_string(), true)
+                .await?;
 
-        OrganisationMembersManager::create(conn, org_id, creator_user_id, true)
-            .await?;
+        OrganisationMembersManager::create(conn, org_id, creator_user_id, true).await?;
 
         OrganisationTeamsManager::add_member_to_team(
             conn,
@@ -152,9 +129,7 @@ impl OrganisationManager {
         #[cfg(feature = "saas")]
         {
             let manager = BillingManager::new(stripe);
-            manager
-                .register_org_customer_stub(conn, org_id)
-                .await?;
+            manager.register_org_customer_stub(conn, org_id).await?;
             BillingEntitlementManager::new(org_id)
                 .create_initial_entitlement(conn)
                 .await?;
@@ -200,40 +175,6 @@ impl OrganisationManager {
             .into_tuple()
             .one(conn)
             .await
-    }
-
-    pub async fn get_org_submission_block<T: ConnectionTrait>(
-        conn: &T,
-        org_id: PalformDatabaseID<IDOrganisation>,
-    ) -> Result<OrganisationSubmissionBehaviour, DbErr> {
-        let block: Option<NaiveDateTime> = Organisation::find_by_id(org_id)
-            .select_only()
-            .column(organisation::Column::BillingSubmissionBlock)
-            .into_tuple()
-            .one(conn)
-            .await?
-            .ok_or(DbErr::RecordNotFound("Organisation".to_string()))?;
-
-        let block = block.is_some_and(|b| b.and_utc() > Utc::now());
-        if block {
-            Ok(OrganisationSubmissionBehaviour::Block)
-        } else {
-            Ok(OrganisationSubmissionBehaviour::Allow)
-        }
-    }
-
-    pub async fn set_org_submission_block<T: ConnectionTrait>(
-        conn: &T,
-        org_id: PalformDatabaseID<IDOrganisation>,
-        until: Option<NaiveDateTime>,
-    ) -> Result<(), DbErr> {
-        let updated_org = organisation::ActiveModel {
-            id: Set(org_id),
-            billing_submission_block: Set(until),
-            ..Default::default()
-        };
-        updated_org.update(conn).await?;
-        Ok(())
     }
 
     pub async fn send_staff_deletion_request(

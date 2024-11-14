@@ -12,11 +12,7 @@ use crate::{
     auth::fill_access::APIFillAccessToken,
     captcha::VerifiedCaptcha,
     crypto::submissions::CryptoSubmissionRepr,
-    entity_managers::{
-        forms::FormManager,
-        orgs::{OrganisationManager, OrganisationSubmissionBehaviour},
-        submission::SubmissionManager,
-    },
+    entity_managers::{forms::FormManager, submission::SubmissionManager},
     i18n::request::I18NManager,
     mail::client::PalformMailClient,
     pt,
@@ -35,14 +31,6 @@ pub async fn handler(
     mail_client: &State<PalformMailClient>,
     i18n: I18NManager,
 ) -> Result<(), (Status, Json<APIError>)> {
-    let submission_behaviour = OrganisationManager::get_org_submission_block(db.inner(), org_id)
-        .await
-        .map_internal_error()?;
-
-    if submission_behaviour == OrganisationSubmissionBehaviour::Block {
-        return Err(APIError::BadRequest(pt!(i18n, "fill_response_limit",)).into());
-    }
-
     if captcha.is_none()
         && FormManager::get_captcha_required(db.inner(), form_id)
             .await

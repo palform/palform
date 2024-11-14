@@ -16,7 +16,7 @@ wasm-bindgen = { version = "0.2.92", features = ["serde"] }
 getrandom = { version = "*", features = ["js"] }
 linfa = "0.7.0"
 linfa-linear = "0.7.0"
-interp = "1.0.3"
+interp = "2.0"
 # waiting to upgrade: https://github.com/rust-ml/linfa/issues/357
 ndarray = "0.15"
 ndarray-stats = "0.5"

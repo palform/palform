@@ -1,6 +1,6 @@
 use std::{collections::HashMap, str::FromStr};
 
-use chrono::{DateTime, Datelike, TimeZone, Utc};
+use chrono::{DateTime, Utc};
 use palform_entities::{organisation, prelude::*};
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
 use rocket_okapi::okapi::schemars::{self, JsonSchema};
@@ -15,9 +15,8 @@ use stripe::{
     CreateCheckoutSessionTaxIdCollection, CreateCustomer, Currency, Customer, CustomerId,
     IdOrCreate, Invoice, List, ListInvoices, ListPrices, ListSubscriptions, Object, Price, PriceId,
     Product, RecurringInterval, Scheduled, Subscription, SubscriptionId, SubscriptionItemId,
-    SubscriptionStatus, SubscriptionStatusFilter, UpdateSubscription,
-    UpdateSubscriptionCancellationDetails, UpdateSubscriptionCancellationDetailsFeedback,
-    UpdateSubscriptionItems,
+    SubscriptionStatus, UpdateSubscription, UpdateSubscriptionCancellationDetails,
+    UpdateSubscriptionCancellationDetailsFeedback, UpdateSubscriptionItems,
 };
 
 use crate::api_entities::billing::{
@@ -510,69 +509,6 @@ impl<'a> BillingManager<'a> {
         }
 
         Ok(())
-    }
-
-    pub async fn get_org_billing_month_start<T: ConnectionTrait>(
-        &self,
-        conn: &T,
-        org_id: PalformDatabaseID<IDOrganisation>,
-    ) -> Result<(DateTime<Utc>, bool), BillingError> {
-        let customer_id = Self::get_org_customer_id(conn, org_id).await?;
-
-        let subscriptions = Subscription::list(
-            self.stripe,
-            &ListSubscriptions {
-                customer: Some(customer_id),
-                status: Some(SubscriptionStatusFilter::Active),
-                ..Default::default()
-            },
-        )
-        .await?;
-
-        let date_now = Utc::now();
-        for subscription in subscriptions.data {
-            let mut is_main_plan_subscription = false;
-            let mut interval = RecurringInterval::Month;
-
-            for item in subscription.items.data {
-                let price = item
-                    .price
-                    .ok_or(BillingError::FieldNone("item.price".to_string()))?;
-
-                let product_id = price
-                    .product
-                    .ok_or(BillingError::FieldNone("item.price.product".to_string()))?
-                    .id();
-
-                let product = Product::retrieve(self.stripe, &product_id, &[]).await?;
-                if Self::product_is_plan(&product) {
-                    is_main_plan_subscription = true;
-
-                    interval = price
-                        .recurring
-                        .ok_or(BillingError::FieldNone("item.price.recurring".to_string()))?
-                        .interval;
-
-                    break;
-                }
-            }
-
-            if !is_main_plan_subscription {
-                continue;
-            }
-
-            return Ok((
-                DateTime::<Utc>::from_timestamp(subscription.current_period_start, 0).ok_or(
-                    BillingError::FieldNone("subscription.current_period_start".to_string()),
-                )?,
-                interval == RecurringInterval::Year,
-            ));
-        }
-
-        let natural_start_of_month = Utc
-            .with_ymd_and_hms(date_now.year(), date_now.month(), 1, 0, 0, 0)
-            .unwrap();
-        Ok((natural_start_of_month, false))
     }
 
     async fn calculate_plan_update_items<T: ConnectionTrait>(

@@ -13,9 +13,9 @@ serde = { version = "1.0.201", features = ["derive"] }
 serde_json = { version = "1.0.117" }
 anyhow = "1.0.83"
 csv = "1.3.0"
-thiserror = "1.0.57"
-validator = "0.18.1"
-geo = { version = "0.28.0", default-features = false }
+thiserror = "2.0"
+validator = "0.19"
+geo = { version = "0.29", default-features = false }
 chrono = { version = "0.4.38", features = ["serde"] }
 
 serde-wasm-bindgen = { version = "0.6.5", optional = true }

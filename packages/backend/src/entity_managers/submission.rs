@@ -110,22 +110,6 @@ impl SubmissionManager {
             .await
     }
 
-    pub async fn total_submission_count_in_org<T: ConnectionTrait>(
-        conn: &T,
-        org_id: PalformDatabaseID<IDOrganisation>,
-        after: NaiveDateTime,
-    ) -> Result<u64, DbErr> {
-        Submission::find()
-            .join(JoinType::InnerJoin, submission::Relation::Form.def())
-            .join(JoinType::InnerJoin, form::Relation::Team.def())
-            .filter(all![
-                team::Column::OrganisationId.eq(org_id),
-                submission::Column::CreatedAt.gt(after)
-            ])
-            .count(conn)
-            .await
-    }
-
     pub async fn submission_count_in_my_forms_since<T: ConnectionTrait>(
         conn: &T,
         org_id: PalformDatabaseID<IDOrganisation>,

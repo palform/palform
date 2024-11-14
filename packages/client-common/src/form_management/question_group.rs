@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use anyhow::anyhow;
 use chrono::{DateTime, Local};
-use geo::{GeodesicDistance, Point};
+use geo::{Distance, Geodesic, Point};
 use palform_tsid::{
     resources::{IDQuestion, IDQuestionGroup},
     tsid::PalformDatabaseID,
@@ -327,7 +327,7 @@ impl APIQuestionGroupStepStrategyJumpCaseCondition {
                     if let Some(near) = near {
                         let submission_point = Point::from(point);
                         let target_point = Point::from(near);
-                        let dist = submission_point.geodesic_distance(&target_point);
+                        let dist = Geodesic::distance(submission_point, target_point);
 
                         if dist > near_radius.map(|v| v * 1000_f64).unwrap_or(20_000_f64) {
                             return Ok(false);
