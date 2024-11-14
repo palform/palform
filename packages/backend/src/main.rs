@@ -108,9 +108,6 @@ async fn main() -> Result<(), rocket::Error> {
             .to_cors()
             .expect("Configure CORS");
 
-            #[cfg(feature = "saas")]
-            let stripe_client = billing::client::init_stripe_client(&config);
-
             let mail_client = PalformMailClient::new(config.clone()).await;
             let s3_brand_assets =
                 PalformS3Client::<S3BucketTeamAssets>::init(&config).expect("Init S3 brand assets");
@@ -118,7 +115,7 @@ async fn main() -> Result<(), rocket::Error> {
                 .expect("Init S3 submission assets");
 
             let mut r = rocket::build()
-                .manage(config)
+                .manage(config.clone())
                 .manage(db)
                 .manage(mail_client)
                 .manage(s3_brand_assets)
@@ -238,7 +235,9 @@ async fn main() -> Result<(), rocket::Error> {
 
             #[cfg(feature = "saas")]
             {
+                let stripe_client = billing::client::init_stripe_client(&config);
                 r = r.manage(stripe_client);
+
                 let extra_routes = openapi_get_routes_spec![
                     api::billing::plans::list::handler,
                     api::billing::plans::get::handler,
@@ -254,6 +253,12 @@ async fn main() -> Result<(), rocket::Error> {
                 ];
                 route_lists.push(extra_routes);
                 r = r.mount("/", routes![api::billing::webhooks::receiver::handler]);
+            }
+
+            #[cfg(not(feature = "saas"))]
+            {
+                let fake_stripe_client = stripe::Client::new("");
+                r = r.manage(fake_stripe_client);
             }
 
             #[cfg(feature = "country-metadata")]

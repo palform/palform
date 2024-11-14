@@ -15,9 +15,7 @@ use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 
 use crate::{
-    auth::rbac::requests::APITokenTeamEditorFromForm,
-    billing::entitlement::INTERNALBillingEntitlementManager,
-    entity_managers::questions::QuestionManager,
+    auth::rbac::requests::APITokenTeamEditorFromForm, entity_managers::questions::QuestionManager,
 };
 
 #[derive(JsonSchema, Deserialize)]
@@ -43,16 +41,23 @@ pub async fn handler(
         .await
         .map_internal_error()?;
 
-    let billing = INTERNALBillingEntitlementManager::new(org_id);
-    let org_entitlement = billing
-        .get_org_entitlement(&txn)
-        .await
-        .map_internal_error()?;
-    if org_entitlement
-        .question_per_form_count
-        .is_some_and(|v| data.questions.len() as i32 > v)
+    #[cfg(feature = "saas")]
     {
-        return Err(APIError::SubscriptionLimit("Cannot exceed question limit".to_string()).into());
+        use crate::billing::entitlement::INTERNALBillingEntitlementManager;
+
+        let billing = INTERNALBillingEntitlementManager::new(org_id);
+        let org_entitlement = billing
+            .get_org_entitlement(&txn)
+            .await
+            .map_internal_error()?;
+        if org_entitlement
+            .question_per_form_count
+            .is_some_and(|v| data.questions.len() as i32 > v)
+        {
+            return Err(
+                APIError::SubscriptionLimit("Cannot exceed question limit".to_string()).into(),
+            );
+        }
     }
 
     QuestionManager::save_questions_and_groups(

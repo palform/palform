@@ -55,11 +55,7 @@ clap = { default-features = false, features = [
 
 async-stripe = { version = "0.39", default-features = false, features = [
     "runtime-tokio-hyper-rustls",
-    "billing",
-    "checkout",
-    "connect",
-    "webhook-events",
-], optional = true }
+] }
 
 keshvar = { version = "0.5.0", optional = true, features = ["emojis"] }
 
@@ -73,5 +69,10 @@ palform-crypto = { path = "../crypto", default-features = false }
 
 [features]
 default = ["saas", "country-metadata"]
-saas = ["dep:async-stripe"]
+saas = [
+    "async-stripe/billing",
+    "async-stripe/checkout",
+    "async-stripe/connect",
+    "async-stripe/webhook-events",
+]
 country-metadata = ["dep:keshvar"]

@@ -49,8 +49,8 @@ pub enum SignInResponse {
 pub async fn handler(
     request: Json<SignInRequest>,
     db: &State<DatabaseConnection>,
-    stripe: &State<stripe::Client>,
     _captcha: VerifiedCaptcha,
+    stripe: &State<stripe::Client>,
 ) -> Result<Json<SignInResponse>, APIErrorWithStatus> {
     let txn = db
         .begin_with_config(
@@ -99,9 +99,15 @@ pub async fn handler(
                         .map_internal_error()?;
                 org_id = Some(new_org_id);
 
-                OrganisationManager::bootstrap_new_org(&txn, new_org_id, user.id, stripe)
-                    .await
-                    .map_err(|e| APIError::report_internal_error("bootstrap error", e))?;
+                OrganisationManager::bootstrap_new_org(
+                    &txn,
+                    new_org_id,
+                    user.id,
+                    #[cfg(feature = "saas")]
+                    stripe,
+                )
+                .await
+                .map_err(|e| APIError::report_internal_error("bootstrap error", e))?;
             }
 
             let tfa_manager = AdminUserSecondFactorManager::new(user.id);

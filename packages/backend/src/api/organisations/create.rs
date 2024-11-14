@@ -9,7 +9,7 @@ use validator::Validate;
 
 use crate::{
     api::error::{APIError, APIInternalError},
-    auth::tokens::{APIAuthToken, APIAuthTokenSourcePersonal, APIAuthTokenSource},
+    auth::tokens::{APIAuthToken, APIAuthTokenSource, APIAuthTokenSourcePersonal},
     entity_managers::orgs::OrganisationManager,
     rocket_util::validated::Validated,
 };
@@ -40,9 +40,15 @@ pub async fn handler(
         .await
         .map_err(|e| e.to_internal_error())?;
 
-    OrganisationManager::bootstrap_new_org(&txn, org_id, token.get_user_id(), stripe)
-        .await
-        .map_err(|e| APIError::report_internal_error("bootstrap org", e))?;
+    OrganisationManager::bootstrap_new_org(
+        &txn,
+        org_id,
+        token.get_user_id(),
+        #[cfg(feature = "saas")]
+        stripe,
+    )
+    .await
+    .map_err(|e| APIError::report_internal_error("bootstrap org", e))?;
 
     txn.commit().await.map_err(|e| e.to_internal_error())?;
     Ok(Json(org_id))

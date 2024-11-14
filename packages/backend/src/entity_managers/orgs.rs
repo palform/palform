@@ -14,7 +14,6 @@ use thiserror::Error;
 
 use crate::{
     api_entities::org::APIOrganisation,
-    billing::{error::BillingError, manager::BillingManager},
     config::Config,
     mail::{
         client::PalformMailClient,
@@ -32,8 +31,9 @@ use super::{
 pub enum BootstrapOrgError {
     #[error("{0}")]
     DBError(#[from] DbErr),
+    #[cfg(feature = "saas")]
     #[error("{0}")]
-    BillingError(#[from] BillingError),
+    BillingError(#[from] crate::billing::error::BillingError),
 }
 
 pub struct OrganisationManager;
@@ -110,6 +110,8 @@ impl OrganisationManager {
         conn: &T,
         org_id: PalformDatabaseID<IDOrganisation>,
         creator_user_id: PalformDatabaseID<IDAdminUser>,
+
+        #[cfg(feature = "saas")]
         stripe: &stripe::Client,
     ) -> Result<(), BootstrapOrgError> {
         let default_team =
@@ -128,7 +130,7 @@ impl OrganisationManager {
 
         #[cfg(feature = "saas")]
         {
-            let manager = BillingManager::new(stripe);
+            let manager = crate::billing::manager::BillingManager::new(stripe);
             manager.register_org_customer_stub(conn, org_id).await?;
             BillingEntitlementManager::new(org_id)
                 .create_initial_entitlement(conn)

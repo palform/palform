@@ -108,7 +108,7 @@ impl SocialAuthManager {
     pub async fn token_exchange<T: ConnectionTrait>(
         &self,
         conn: &T,
-        stripe_client: &stripe::Client,
+        #[cfg(feature = "saas")] stripe: &stripe::Client,
         auth_code: String,
         nonce: String,
         redirect_url: String,
@@ -160,8 +160,14 @@ impl SocialAuthManager {
                 OrganisationManager::create(conn, "Unnamed organisation".to_string()).await?;
             created_org_id = Some(new_org_id);
 
-            OrganisationManager::bootstrap_new_org(conn, new_org_id, new_user_id, stripe_client)
-                .await?;
+            OrganisationManager::bootstrap_new_org(
+                conn,
+                new_org_id,
+                new_user_id,
+                #[cfg(feature = "saas")]
+                stripe,
+            )
+            .await?;
         }
 
         let token_user_id = token_user_id.expect("token_user_id must be assigned by now");

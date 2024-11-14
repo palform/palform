@@ -35,8 +35,8 @@ pub struct SocialAuthCallbackResponse {
 pub async fn handler(
     data: Json<SocialAuthCallbackRequest>,
     db: &State<DatabaseConnection>,
-    stripe_client: &State<stripe::Client>,
     config: &State<Config>,
+    stripe: &State<stripe::Client>,
 ) -> Result<Json<SocialAuthCallbackResponse>, APIErrorWithStatus> {
     let client = SocialAuthManager::new(data.service.clone(), config)
         .await
@@ -53,7 +53,8 @@ pub async fn handler(
     let (token, new_org_id) = client
         .token_exchange(
             &txn,
-            stripe_client,
+            #[cfg(feature = "saas")]
+            stripe,
             data.code.clone(),
             data.nonce.clone(),
             data.redirect_url.clone(),
