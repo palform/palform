@@ -1,5 +1,5 @@
 use anyhow::anyhow;
-use interp::interp;
+use interp::{interp, InterpMode};
 use palform_client_common::form_management::{
     question_types::APIQuestionConfiguration, submission::QuestionSubmissionData,
 };
@@ -73,7 +73,12 @@ impl Featureable for QuestionSubmissionData {
                     } = configuration
                     {
                         let x = vec![f64::from(min.to_owned()), f64::from(max.to_owned())];
-                        Some(interp(&x, interp_y, f64::from(value.to_owned())))
+                        Some(interp(
+                            &x,
+                            interp_y,
+                            f64::from(value.to_owned()),
+                            &InterpMode::Extrapolate,
+                        ))
                     } else {
                         return Err(incorrect_config_err);
                     }
@@ -88,9 +93,9 @@ impl Featureable for QuestionSubmissionData {
                     if let Some(selected_option) = selected_option {
                         let x = vec![0_f64, 1_f64];
                         if option.contains(selected_option) {
-                            Some(interp(&x, interp_y, 1_f64))
+                            Some(interp(&x, interp_y, 1_f64, &InterpMode::Extrapolate))
                         } else {
-                            Some(interp(&x, interp_y, 0_f64))
+                            Some(interp(&x, interp_y, 0_f64, &InterpMode::Extrapolate))
                         }
                     } else {
                         None
@@ -122,7 +127,12 @@ impl Featureable for QuestionSubmissionData {
                         .is_some_and(|v| v.contains(col_label));
                     let x = vec![0_f64, 1_f64];
 
-                    Some(interp(&x, interp_y, if exists { 1_f64 } else { 0_f64 }))
+                    Some(interp(
+                        &x,
+                        interp_y,
+                        if exists { 1_f64 } else { 0_f64 },
+                        &InterpMode::Extrapolate,
+                    ))
                 } else {
                     return Err(incorrect_config_err);
                 }
@@ -130,11 +140,16 @@ impl Featureable for QuestionSubmissionData {
             QuestionSubmissionData::Address { address: _, point } => {
                 if index == 0 {
                     let lati_x = vec![-90_f64, 90_f64];
-                    let lati = interp(&lati_x, interp_y, point.get_lat());
+                    let lati = interp(&lati_x, interp_y, point.get_lat(), &InterpMode::Extrapolate);
                     Some(lati)
                 } else if index == 1 {
                     let longi_x = vec![-180_f64, 180_f64];
-                    let longi = interp(&longi_x, interp_y, point.get_lng());
+                    let longi = interp(
+                        &longi_x,
+                        interp_y,
+                        point.get_lng(),
+                        &InterpMode::Extrapolate,
+                    );
                     Some(longi)
                 } else {
                     None
@@ -152,7 +167,12 @@ impl Featureable for QuestionSubmissionData {
                         let min = min.map_or(0, |v| v.timestamp_millis());
                         let max = max.map_or(1893452400, |v| v.timestamp_millis());
                         let x = vec![min as f64, max as f64];
-                        Some(interp(&x, interp_y, value.timestamp_millis() as f64))
+                        Some(interp(
+                            &x,
+                            interp_y,
+                            value.timestamp_millis() as f64,
+                            &InterpMode::Extrapolate,
+                        ))
                     } else {
                         None
                     }

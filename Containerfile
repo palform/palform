@@ -28,4 +28,4 @@ ENV ROCKET_ADDRESS=0.0.0.0
 ENV ROCKET_PORT=8080
 ENV ROCKET_LOG_LEVEL=normal
 
-CMD ["/opt/palform-backend"]
+CMD ["/opt/palform-backend", "server"]
