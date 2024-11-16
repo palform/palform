@@ -100,6 +100,8 @@ impl FormBrandingManager {
             border_intensity: Set(data.border_intensity),
             border_shadow_intensity: Set(data.border_shadow_intensity),
             e2ee_badge: Set(data.e2ee_badge),
+            background_color: Set(data.background_color),
+            background_color_accent: Set(data.background_color_accent),
         }
     }
 

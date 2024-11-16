@@ -1,6 +1,7 @@
 <script lang="ts">
     import {
         getBrandCtx,
+        getBrandIsNonNeutralBackground,
         getLightnessForBrandBorder,
         getPaddingAmountForBrand,
         getRoundingAmountForBrand,
@@ -9,7 +10,7 @@
     import { isDarkMode } from "../../../data/util/darkMode";
     import { colorWithLightness } from "../../../data/util/color";
 
-    export let backgroundColor: string = "";
+    export let backgroundColor: string | undefined = undefined;
     export let errorState = false;
     export let neutralBorder = false;
     export let ignorePadding = false;
@@ -19,6 +20,8 @@
     const brandCtx = getBrandCtx();
     let borderColorOverride: string | undefined = undefined;
     let shadowColorOverride: string | undefined = undefined;
+    let isNonNeutralBg = getBrandIsNonNeutralBackground($brandCtx);
+
     $: (() => {
         if ($brandCtx === undefined || errorState || neutralBorder) {
             borderColorOverride = undefined;
@@ -56,7 +59,7 @@
     on:click
     {disabled}
     role={element === "button" ? "button" : ""}
-    class={`border ${neutralBorder ? "border-slate-200 dark:border-slate-600" : ""} shadow-sm ${$$props.class ?? ""}`}
+    class={`border ${neutralBorder ? "border-slate-200 dark:border-slate-600" : ""} shadow-sm ${isNonNeutralBg ? "bg-slate-50/80 dark:bg-slate-900" : ""} ${$$props.class ?? ""}`}
     style:background-color={backgroundColor}
     style:border-color={borderColorOverride}
     style:--tw-shadow-color={shadowColorOverride}

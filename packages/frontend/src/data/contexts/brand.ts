@@ -18,6 +18,9 @@ export type BrandContext = Pick<
     | "include_palform_attribution"
     | "border_intensity"
     | "border_shadow_intensity"
+    | "e2ee_badge"
+    | "background_color"
+    | "background_color_accent"
 >;
 export const setBrandCtx = (ctx: Writable<BrandContext | undefined>) =>
     setContext("branding", ctx);
@@ -42,11 +45,11 @@ export function getPaddingAmountForBrand(brand?: BrandContext, half = false) {
     if (!brand) return half ? "0.5rem" : "1rem";
     switch (brand.spacing) {
         case "Comfy":
-            return half ? "0.75rem" : "1.5rem";
+            return half ? "0.7rem" : "1.3rem";
         case "Normal":
             return half ? "0.5rem" : "1rem";
         case "Tight":
-            return half ? "0.375rem" : "0.75rem";
+            return half ? "0.3rem" : "0.7rem";
     }
 }
 
@@ -94,4 +97,11 @@ export function getShadowAlphaForBrandBorder(brand?: BrandContext): number {
         case "Off":
             return 0;
     }
+}
+
+export function getBrandIsNonNeutralBackground(brand?: BrandContext) {
+    return (
+        brand !== undefined &&
+        (brand.background_image_asset_id != null || brand.background_color != null)
+    );
 }

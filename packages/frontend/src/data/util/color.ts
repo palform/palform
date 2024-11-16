@@ -12,3 +12,16 @@ export function colorWithLightness(
     }
     return col.toString({ format: "hex" });
 }
+
+export function colorWithDeltaLightness(
+    color: string,
+    deltaLightness: number,
+    alpha?: number
+) {
+    const col = new Color(color);
+    col.hsl.l *= deltaLightness;
+    if (alpha !== undefined) {
+        col.alpha = alpha;
+    }
+    return col.toString({ format: "hex" });
+}

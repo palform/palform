@@ -56,8 +56,8 @@
 {#if !qIsHidden(config)}
     <CardBox
         backgroundColor={qIsInfo(config)
-            ? config.info.background_color ?? ""
-            : ""}
+            ? (config.info.background_color ?? undefined)
+            : undefined}
         errorState={$validationError !== undefined}
     >
         <fieldset>

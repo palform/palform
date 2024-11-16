@@ -30,6 +30,8 @@ pub struct APIFormBranding {
     pub border_intensity: FormBrandingBorderIntensityEnum,
     pub border_shadow_intensity: FormBrandingBorderIntensityEnum,
     pub e2ee_badge: bool,
+    pub background_color: Option<String>,
+    pub background_color_accent: Option<String>,
 }
 
 #[derive(Deserialize, JsonSchema)]
@@ -50,6 +52,8 @@ pub struct APIFormBrandingRequest {
     pub border_intensity: FormBrandingBorderIntensityEnum,
     pub border_shadow_intensity: FormBrandingBorderIntensityEnum,
     pub e2ee_badge: bool,
+    pub background_color: Option<String>,
+    pub background_color_accent: Option<String>,
 }
 
 #[derive(Serialize, JsonSchema, FromQueryResult)]

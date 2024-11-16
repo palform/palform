@@ -1,7 +1,7 @@
 <script lang="ts">
     import GenericBrandBox from "../teams/brandings/GenericBrandBox.svelte";
 
-    export let backgroundColor: string = "";
+    export let backgroundColor: string | undefined = undefined;
     export let errorState = false;
     export let fadeIn = false;
     export let fadeOut = false;

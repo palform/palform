@@ -1112,6 +1112,18 @@ export interface APIFormBranding {
      * @memberof APIFormBranding
      */
     'e2ee_badge': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIFormBranding
+     */
+    'background_color'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIFormBranding
+     */
+    'background_color_accent'?: string | null;
 }
 
 
@@ -1236,6 +1248,18 @@ export interface APIFormBrandingRequest {
      * @memberof APIFormBrandingRequest
      */
     'e2ee_badge': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIFormBrandingRequest
+     */
+    'background_color'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIFormBrandingRequest
+     */
+    'background_color_accent'?: string | null;
 }
 
 

@@ -22,6 +22,7 @@
     import FormFillFooter from "../../components/forms/fill/FormFillFooter.svelte";
     import BrandingE2EeBadge from "../../components/teams/brandings/BrandingE2EEBadge.svelte";
     import FormFillLoading from "../../components/forms/fill/FormFillLoading.svelte";
+    import BrandingBackgroundColor from "../../components/teams/brandings/BrandingBackgroundColor.svelte";
 
     export let orgId: string | undefined;
     export let formId: string | undefined;
@@ -76,9 +77,13 @@
             asBodyBackground
         />
     {/if}
+
+    <BrandingBackgroundColor />
+
     {#if $formFillStore?.form.b?.e2ee_badge || !$formFillStore?.form.b}
         <BrandingE2EeBadge />
     {/if}
+
     <Main
         extraTight
         fullHeight
