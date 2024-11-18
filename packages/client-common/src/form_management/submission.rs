@@ -276,3 +276,15 @@ pub fn api_question_default_submission(
     let submission_data = default_submission.data.serialize(&get_wasm_serializer())?;
     Ok(submission_data)
 }
+
+#[cfg(feature = "frontend-js")]
+#[wasm_bindgen::prelude::wasm_bindgen]
+pub fn try_parse_question_submissions(
+    question_submissions: Vec<wasm_bindgen::JsValue>,
+) -> Result<(), wasm_bindgen::JsValue> {
+    for sub in question_submissions {
+        serde_wasm_bindgen::from_value::<QuestionSubmission>(sub)?;
+    }
+
+    Ok(())
+}

@@ -7,6 +7,7 @@ import {
     next_question_group_step_js,
     question_submission_data_to_string_js,
     question_submission_is_empty_js,
+    try_parse_question_submissions,
     validate_questions_js,
 } from "@paltiverse/palform-client-common";
 import type { QuestionSubmissionData } from "@paltiverse/palform-client-js-extra-types/QuestionSubmissionData";
@@ -43,12 +44,16 @@ export function ctxGetCurrentGroupQuestions() {
 export function ctxGetNextStep() {
     return derived([formFillStore], ([formFillStore]) => {
         if (!formFillStore) return;
-        const next_group = next_question_group_step_js(
-            formFillStore.currentGroupId,
-            formFillStore.form.g,
-            formFillStore.submission.questions
-        );
-        return next_group;
+        try {
+            const next_group = next_question_group_step_js(
+                formFillStore.currentGroupId,
+                formFillStore.form.g,
+                formFillStore.submission.questions
+            );
+            return next_group;
+        } catch (e) {
+            return;
+        }
     });
 }
 
@@ -98,6 +103,12 @@ export async function loadFormFill(
             groups_completed: [],
             questions: [],
         };
+    }
+
+    try {
+        try_parse_question_submissions(formFill.questions);
+    } catch (e) {
+        formFill.questions = [];
     }
 
     for (const question of resp.data.q) {
