@@ -26,7 +26,7 @@ When the end-user fills in the form, their browser client will request a list of
 
 ## Scope
 
-All standard Share Token links will contain key fingerprints. This feature cannot currently be turned off, and manually removing the hash from the URL will result in an error when submitting the form.
+All standard Share Token links will contain key fingerprints. You can **manually remove the fingerprints list** at the end of the URL to skip integrity verification, but this is done at your own risk.
 
 **Short-link URLs are not supported**. Fingerprints will not be added to short-link URLs (to keep them short), meaning key integrity checking will be skipped.
 

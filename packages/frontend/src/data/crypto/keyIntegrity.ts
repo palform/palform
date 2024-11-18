@@ -14,14 +14,15 @@ export function addFingerprintsToURL(url: URL, fingerprints: string[]) {
     return newURL;
 }
 
+// If there are no fingerprints specified in the URL, return undefined
 export function getFingerprintsFromURL(url: URL) {
     const urlHash = url.hash.split("#");
-    if (urlHash.length !== 2) throw new Error("URL missing key fingerprints");
+    if (urlHash.length !== 2) return undefined;
     const fingerprintListString = new URLSearchParams(urlHash[1]).get("ak");
-    if (!fingerprintListString) throw new Error("URL missing key fingerprints");
+    if (!fingerprintListString) return undefined;
+
     const fingerprintList = fingerprintListString.split(",");
-    if (fingerprintList.length === 0)
-        throw new Error("URL did not contain any key fingerprints");
+    if (fingerprintList.length === 0) return undefined;
 
     return fingerprintList;
 }

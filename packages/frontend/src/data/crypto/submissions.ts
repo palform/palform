@@ -27,15 +27,19 @@ async function getFormKeys(
 
     if (requireFingerprints) {
         const fingerprints = getFingerprintsFromURL(new URL(location.href));
-        const filtered = filterKeysByFingerprint(parsedKeys, fingerprints);
 
-        if (filtered.length === 0) {
-            throw new Error(
-                "Key integrity check failed: no allowed keys were found. Please contact the form owner."
-            );
+        // If there were no fingerprints in the URL, we skip validation. This is not a server-side compromise as the user or form publisher themselves have removed the key fingerprint hash.
+        if (fingerprints !== undefined) {
+            const filtered = filterKeysByFingerprint(parsedKeys, fingerprints);
+
+            if (filtered.length === 0) {
+                throw new Error(
+                    "Key integrity check failed: no allowed keys were found. Please contact the form owner."
+                );
+            }
+
+            return filtered;
         }
-
-        return filtered;
     }
 
     return parsedKeys;
