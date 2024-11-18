@@ -50,7 +50,8 @@
                 file,
                 $formFillStore.organisationId,
                 $formFillStore.form.f.id,
-                $formFillStore.fillAccessToken
+                $formFillStore.fillAccessToken,
+                !$formFillStore.isShortLink
             );
 
             const fd = new FormData();

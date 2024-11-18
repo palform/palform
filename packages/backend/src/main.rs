@@ -156,6 +156,7 @@ async fn main() -> Result<(), rocket::Error> {
                 api::keys::delete::handler,
                 api::keys::get::handler,
                 api::keys::get_backup::handler,
+                api::keys::team_fingerprints::handler,
                 api::organisations::create::handler,
                 api::organisations::list::handler,
                 api::organisations::get::handler,

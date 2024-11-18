@@ -45,7 +45,7 @@
 
                 await loadFormFillFromShortLink(subdomain, fillShortLink);
             } else if (fillAccessToken && orgId && formId) {
-                await loadFormFill(orgId, formId, fillAccessToken);
+                await loadFormFill(orgId, formId, fillAccessToken, false);
             }
         } catch (e) {
             initError = humaniseAPIError(e, "That form");

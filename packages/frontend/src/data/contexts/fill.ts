@@ -21,6 +21,7 @@ export interface FormFillContext {
     organisationId: string;
     currentGroupId: string;
     fillAccessToken: string;
+    isShortLink: boolean;
 }
 export const formFillStore = writable<FormFillContext | undefined>(undefined);
 export function ctxGetCurrentGroup() {
@@ -71,14 +72,16 @@ export async function loadFormFillFromShortLink(
     return loadFormFill(
         resp.data.org_id,
         resp.data.form_id,
-        resp.data.fill_token_id
+        resp.data.fill_token_id,
+        true
     );
 }
 
 export async function loadFormFill(
     orgId: string,
     formId: string,
-    fillAccessToken: string
+    fillAccessToken: string,
+    isShortLink: boolean
 ) {
     const resp = await APIs.fill(fillAccessToken).forms.formsView(
         orgId,
@@ -128,6 +131,7 @@ export async function loadFormFill(
         organisationId: orgId,
         currentGroupId: resp.data.g[0].id,
         fillAccessToken,
+        isShortLink,
     });
     release();
 }

@@ -12,22 +12,32 @@
         formatFillTokenURL,
         formatShortLinkURL,
     } from "../../../data/fillTokens";
-    import { getOrgContext } from "../../../data/contexts/orgLayout";
+    import {
+        getFormCtx,
+        getOrgContext,
+    } from "../../../data/contexts/orgLayout";
     import { copyGenericValue } from "../../../data/util/clipboard";
     import { getFormAdminContext } from "../../../data/contexts/formAdmin";
     import QrCode from "../../QRCode.svelte";
+    import HiddenHelp from "../../HiddenHelp.svelte";
+    import InfoText from "../../type/InfoText.svelte";
 
     export let fatID: string;
     export let shortLink: string | undefined;
 
     const orgCtx = getOrgContext();
-    const formAdmiNCtx = getFormAdminContext();
+    const formAdminCtx = getFormAdminContext();
+    const formCtx = getFormCtx();
 
-    $: longURL = formatFillTokenURL(
-        $orgCtx.org.id,
-        $formAdmiNCtx.formId,
-        fatID
-    );
+    let longURL = "Loading...";
+    $: (async () => {
+        longURL = await formatFillTokenURL(
+            $orgCtx.org.id,
+            $formCtx.team_id,
+            $formAdminCtx.formId,
+            fatID
+        );
+    })();
 
     let frameHeight = 800;
     let frameWidth = 600;
@@ -101,4 +111,18 @@
             </Label>
         </TabItem>
     </Tabs>
+
+    <HiddenHelp class="mt-2" href="https://docs.palform.app/keys/integrity">
+        <InfoText>
+            The default long URL of this link contains a list of key
+            fingerprints to allow for <strong>key integrity checking</strong>,
+            an important part of Palform's security model.
+        </InfoText>
+        <InfoText>
+            If you add more users or keys to this form, you'll need to re-copy
+            and re-distribute this link if you want the new user(s) to have
+            access to new responses. You <em>won't</em> have to re-create the Share
+            Token itself.
+        </InfoText>
+    </HiddenHelp>
 </div>

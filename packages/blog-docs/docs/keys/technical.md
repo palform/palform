@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Technical details
@@ -13,6 +13,7 @@ This page describes the boring bits behind how end-to-end encryption works on Pa
 - Each user has their own encryption key(s). So a given form needs to ensure that all its responses can be decrypted using _all_ the encryption keys of _all_ the users in its team.
 - An "encryption key" is actually an **OpenPGP certificate with at least an encryption subkey**. Technically, this can use any algorithm and key size. Palform-generated keys have a secure, performant default, but imported keys may be different.
 - When a response is made, the client asks the server for a list of keys. The server responds with the public component of all the current (non-expired) keys of all the users in the form's team. These are anonymised.
+  - Palform uses a [key integrity system](/keys/integrity) to check the server-provided keys against a set of pre-defined expected fingerprints.
 - The client encrypts the response data such that _any_ of these keys can decrypt it (by adding a message packet for each key). The encrypted response is a standard OpenPGP message, which is sent to the server ascii-armored.
 - The server stores the encrypted messages and serves them to admin users as needed. They can then decrypt them into the raw responses using the private key component (stored locally in the browser).
 
@@ -45,6 +46,6 @@ If your key is not backed up (or you forget your backup passphrase) and you lose
 
 No system is perfect, and even ours has certain nuanced limitations that are important to consider to avoid overconfidence.
 
-- **Trust**: when filling in forms, clients must trust the list of keys provided by the server. Of course, you'll be able to see the list of keys that a given response was encrypted with, so you can easily notice if there's a key that doesn't belong to one of your teammates.
+- **Trust**: when filling in forms, clients must trust the list of keys provided by the server. In most cases, Palform's [key integrity](/keys/integrity) system will verify this list against a set of expected fingerprints, preventing server compromise from becoming an exploitable vulnerability.
 - **Backend capabilities**: our backend is completely blind to the contents of your responses. This means we're unable to offer certain features that other form builders might have, such as integrations with CRMs. We hope to provide more features within the encrypted bounds of Palform itself, so we can create a more centralised process for our users without having to rely on potentially insecure third-parties.
 - **Scalability**: the more users and keys in a team, the longer it will take to encrypt a form responses. However, it will take _loads_ of users in a given team for this delay to become noticeable, so it's unlikely to ever become a genuine problem.

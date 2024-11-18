@@ -1,3 +1,4 @@
+use chrono::Utc;
 use palform_entities::admin_public_key;
 use palform_entities::admin_user;
 use palform_entities::prelude::*;
@@ -87,7 +88,8 @@ impl UserKeyManager {
             )
             .filter(all![
                 team_membership::Column::TeamId.eq(team_id),
-                admin_public_key::Column::OrganisationId.eq(org_id)
+                admin_public_key::Column::OrganisationId.eq(org_id),
+                admin_public_key::Column::ExpiresAt.gt(Utc::now().naive_utc())
             ])
             .all(conn)
             .await

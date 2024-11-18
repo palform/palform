@@ -1,12 +1,17 @@
 import type { InProgressSubmissionRecord } from "../pouch";
 import type { InProgressSubmission } from "@paltiverse/palform-client-js-extra-types/InProgressSubmission";
 import { APIs } from "../common";
-import { createMessage, readKey } from "openpgp";
+import { createMessage, type Key, readKey } from "openpgp";
+import {
+    filterKeysByFingerprint,
+    getFingerprintsFromURL,
+} from "./keyIntegrity";
 
 async function getFormKeys(
     orgId: string,
     formId: string,
-    fillAccessToken: string
+    fillAccessToken: string,
+    requireFingerprints: boolean
 ) {
     const resp = await APIs.fill(fillAccessToken).forms.formsKeys(
         orgId,
@@ -15,16 +20,30 @@ async function getFormKeys(
     if (resp.data.length === 0) {
         throw new Error("No keys found for organisation.");
     }
-    return resp.data;
-}
 
-async function encryptAnything(data: Uint8Array, keys: string[]) {
     const parsedKeys = await Promise.all(
-        keys.map((e) => readKey({ armoredKey: e }))
+        resp.data.map((e) => readKey({ armoredKey: e }))
     );
 
+    if (requireFingerprints) {
+        const fingerprints = getFingerprintsFromURL(new URL(location.href));
+        const filtered = filterKeysByFingerprint(parsedKeys, fingerprints);
+
+        if (filtered.length === 0) {
+            throw new Error(
+                "Key integrity check failed: no allowed keys were found. Please contact the form owner."
+            );
+        }
+
+        return filtered;
+    }
+
+    return parsedKeys;
+}
+
+async function encryptAnything(data: Uint8Array, keys: Key[]) {
     const message = await createMessage({ binary: data });
-    const encrypted = await message.encrypt(parsedKeys);
+    const encrypted = await message.encrypt(keys);
 
     return encrypted;
 }
@@ -33,14 +52,15 @@ export async function encryptSubmissionAsset(
     file: File,
     orgId: string,
     formId: string,
-    fillAccessToken: string
+    fillAccessToken: string,
+    requireFingerprints: boolean
 ) {
-    const formKeys = await getFormKeys(orgId, formId, fillAccessToken);
-    if (formKeys.length === 0) {
-        throw new Error(
-            "No public keys returned from server; cannot encrypt submission"
-        );
-    }
+    const formKeys = await getFormKeys(
+        orgId,
+        formId,
+        fillAccessToken,
+        requireFingerprints
+    );
 
     const fileData = new Uint8Array(await file.arrayBuffer());
     const encryptedData = await encryptAnything(fileData, formKeys);
@@ -53,14 +73,15 @@ export async function sendSubmission(
     formId: string,
     fillAccessToken: string,
     lastGroupId: string,
+    requireFingerprints: boolean,
     captchaValue?: string
 ) {
-    const formKeys = await getFormKeys(orgId, formId, fillAccessToken);
-    if (formKeys.length === 0) {
-        throw new Error(
-            "No public keys returned from server; cannot encrypt submission"
-        );
-    }
+    const formKeys = await getFormKeys(
+        orgId,
+        formId,
+        fillAccessToken,
+        requireFingerprints
+    );
 
     const submissionToEncrypt: InProgressSubmission = {
         form_id: submission._id,

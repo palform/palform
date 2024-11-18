@@ -51,6 +51,7 @@
                 $formFillStore.form.f.id,
                 $formFillStore.fillAccessToken,
                 $formFillStore.currentGroupId,
+                !$formFillStore.isShortLink,
                 captchaValue
             );
         } catch (e) {

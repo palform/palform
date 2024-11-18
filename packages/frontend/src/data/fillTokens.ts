@@ -1,15 +1,20 @@
 import { frontendURL, urlsBase } from "./common";
+import {
+    addFingerprintsToURL,
+    getTeamKeyFingerprints,
+} from "./crypto/keyIntegrity";
 import { copyGenericValue } from "./util/clipboard";
 
-export function formatFillTokenURL(
+export async function formatFillTokenURL(
     orgId: string,
+    teamId: string,
     formId: string,
     tokenId: string
 ) {
-    return new URL(
-        `/fill/${orgId}/${formId}?f=${tokenId}`,
-        frontendURL
-    ).toString();
+    const url = new URL(`/fill/${orgId}/${formId}?f=${tokenId}`, frontendURL);
+
+    const fingerprints = await getTeamKeyFingerprints(orgId, teamId);
+    return addFingerprintsToURL(url, fingerprints).toString();
 }
 
 export function formatShortLinkURL(subdomain: string, shortLink: string) {
@@ -20,8 +25,11 @@ export function formatShortLinkURL(subdomain: string, shortLink: string) {
 
 export async function copyFillToken(
     orgId: string,
+    teamId: string,
     formId: string,
     tokenId: string
 ) {
-    await copyGenericValue(formatFillTokenURL(orgId, formId, tokenId));
+    await copyGenericValue(
+        await formatFillTokenURL(orgId, teamId, formId, tokenId)
+    );
 }

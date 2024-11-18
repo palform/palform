@@ -5,3 +5,4 @@ pub mod list;
 pub mod list_org;
 pub mod register;
 pub mod register_backup;
+pub mod team_fingerprints;
