@@ -20,7 +20,7 @@
         "@fontsource/ibm-plex-serif": "^5.1.0",
         "@fontsource/kanit": "^5.1.0",
         "@fontsource/nunito": "^5.1.0",
-        "@fortawesome/free-solid-svg-icons": "^6.6.0",
+        "@fortawesome/free-solid-svg-icons": "^6.7.0",
         "@fortawesome/svelte-fontawesome": "^0.2.3",
         "@iconify-json/fa6-regular": "^1.2.1",
         "@iconify-json/fa6-solid": "^1.2.1",

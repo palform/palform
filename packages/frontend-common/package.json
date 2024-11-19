@@ -6,7 +6,7 @@
   "types": "src/index.ts",
   "scripts": {},
   "dependencies": {
-    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.7.0",
     "@fortawesome/svelte-fontawesome": "^0.2.3",
     "@paltiverse/palform-typescript-openapi": "workspace:*",
     "@tsconfig/svelte": "^5.0.4",
