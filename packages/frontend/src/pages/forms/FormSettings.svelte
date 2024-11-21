@@ -20,7 +20,6 @@
         title: $formCtx.title,
         branding_id: $formCtx.branding_id,
         notification_email: $formCtx.notification_email,
-        notification_webhook_url: $formCtx.notification_webhook_url,
         end_configuration: $formCtx.end_configuration,
         enable_captcha: $formCtx.enable_captcha,
     }}

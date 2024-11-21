@@ -30,7 +30,6 @@ pub struct UpdateFormRequest {
     title: Option<String>,
     branding_id: Option<PalformDatabaseID<IDFormBranding>>,
     notification_email: bool,
-    notification_webhook_url: Option<String>,
     end_configuration: APIFormEndConfiguration,
     enable_captcha: bool,
 }
@@ -75,7 +74,6 @@ pub async fn handler(
     form.title = Set(data.title.clone());
     form.branding_id = Set(data.branding_id);
     form.notification_email = Set(data.notification_email);
-    form.notification_webhook_url = Set(data.notification_webhook_url.clone());
     let end_config = FormManager::serialize_end_configuration(data.end_configuration.clone())
         .map_err(|e| APIError::BadRequest(e.to_string()))?;
     form.end_configuration = Set(end_config);

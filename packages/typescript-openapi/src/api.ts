@@ -2886,6 +2886,74 @@ export interface APIUserKeyWithIdentity {
 /**
  * 
  * @export
+ * @interface APIWebhook
+ */
+export interface APIWebhook {
+    /**
+     * 
+     * @type {string}
+     * @memberof APIWebhook
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIWebhook
+     */
+    'form_id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIWebhook
+     */
+    'endpoint': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIWebhook
+     */
+    'created_at': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof APIWebhook
+     */
+    'is_healthy': boolean;
+}
+/**
+ * 
+ * @export
+ * @interface APIWebhookJob
+ */
+export interface APIWebhookJob {
+    /**
+     * 
+     * @type {string}
+     * @memberof APIWebhookJob
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIWebhookJob
+     */
+    'done_at'?: string | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof APIWebhookJob
+     */
+    'retries'?: number | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIWebhookJob
+     */
+    'error'?: string | null;
+}
+/**
+ * 
+ * @export
  * @interface AddAccessRequest
  */
 export interface AddAccessRequest {
@@ -3207,6 +3275,38 @@ export interface CreateUserRequest {
      * @memberof CreateUserRequest
      */
     'password': string;
+}
+/**
+ * 
+ * @export
+ * @interface CreateWebhookRequest
+ */
+export interface CreateWebhookRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateWebhookRequest
+     */
+    'endpoint': string;
+}
+/**
+ * 
+ * @export
+ * @interface CreateWebhookResponse
+ */
+export interface CreateWebhookResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateWebhookResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateWebhookResponse
+     */
+    'signing_secret': string;
 }
 /**
  * @type DecrpytingKey
@@ -4026,12 +4126,6 @@ export interface UpdateFormRequest {
      * @memberof UpdateFormRequest
      */
     'notification_email': boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateFormRequest
-     */
-    'notification_webhook_url'?: string | null;
     /**
      * 
      * @type {APIFormEndConfiguration}
@@ -13709,6 +13803,372 @@ export class UserKeysApi extends BaseAPI {
      */
     public keysRegisterBackup(orgId: string, keyId: string, registerBackupKeyRequest: RegisterBackupKeyRequest, options?: RawAxiosRequestConfig) {
         return UserKeysApiFp(this.configuration).keysRegisterBackup(orgId, keyId, registerBackupKeyRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * WebhooksApi - axios parameter creator
+ * @export
+ */
+export const WebhooksApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} formId 
+         * @param {CreateWebhookRequest} createWebhookRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        webhooksCreate: async (orgId: string, formId: string, createWebhookRequest: CreateWebhookRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('webhooksCreate', 'orgId', orgId)
+            // verify required parameter 'formId' is not null or undefined
+            assertParamExists('webhooksCreate', 'formId', formId)
+            // verify required parameter 'createWebhookRequest' is not null or undefined
+            assertParamExists('webhooksCreate', 'createWebhookRequest', createWebhookRequest)
+            const localVarPath = `/users/me/orgs/{_org_id}/forms/{form_id}/webhooks`
+                .replace(`{${"_org_id"}}`, encodeURIComponent(String(orgId)))
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication APIAuthTokenWithRole_Editor_OrgViewAndTeamRoleFromForm_Any required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createWebhookRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} formId 
+         * @param {string} webhookId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        webhooksDelete: async (orgId: string, formId: string, webhookId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('webhooksDelete', 'orgId', orgId)
+            // verify required parameter 'formId' is not null or undefined
+            assertParamExists('webhooksDelete', 'formId', formId)
+            // verify required parameter 'webhookId' is not null or undefined
+            assertParamExists('webhooksDelete', 'webhookId', webhookId)
+            const localVarPath = `/users/me/orgs/{_org_id}/forms/{form_id}/webhooks/{webhook_id}`
+                .replace(`{${"_org_id"}}`, encodeURIComponent(String(orgId)))
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"webhook_id"}}`, encodeURIComponent(String(webhookId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication APIAuthTokenWithRole_Editor_OrgViewAndTeamRoleFromForm_Any required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} formId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        webhooksList: async (orgId: string, formId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('webhooksList', 'orgId', orgId)
+            // verify required parameter 'formId' is not null or undefined
+            assertParamExists('webhooksList', 'formId', formId)
+            const localVarPath = `/users/me/orgs/{_org_id}/forms/{form_id}/webhooks`
+                .replace(`{${"_org_id"}}`, encodeURIComponent(String(orgId)))
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication APIAuthTokenWithRole_Viewer_OrgViewAndTeamRoleFromForm_Any required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} formId 
+         * @param {string} webhookId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        webhooksListJobs: async (orgId: string, formId: string, webhookId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('webhooksListJobs', 'orgId', orgId)
+            // verify required parameter 'formId' is not null or undefined
+            assertParamExists('webhooksListJobs', 'formId', formId)
+            // verify required parameter 'webhookId' is not null or undefined
+            assertParamExists('webhooksListJobs', 'webhookId', webhookId)
+            const localVarPath = `/users/me/orgs/{_org_id}/forms/{form_id}/webhooks/{webhook_id}/jobs`
+                .replace(`{${"_org_id"}}`, encodeURIComponent(String(orgId)))
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"webhook_id"}}`, encodeURIComponent(String(webhookId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication APIAuthTokenWithRole_Viewer_OrgViewAndTeamRoleFromForm_Any required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * WebhooksApi - functional programming interface
+ * @export
+ */
+export const WebhooksApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = WebhooksApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} formId 
+         * @param {CreateWebhookRequest} createWebhookRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async webhooksCreate(orgId: string, formId: string, createWebhookRequest: CreateWebhookRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateWebhookResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.webhooksCreate(orgId, formId, createWebhookRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebhooksApi.webhooksCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} formId 
+         * @param {string} webhookId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async webhooksDelete(orgId: string, formId: string, webhookId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.webhooksDelete(orgId, formId, webhookId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebhooksApi.webhooksDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} formId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async webhooksList(orgId: string, formId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIWebhook>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.webhooksList(orgId, formId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebhooksApi.webhooksList']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} formId 
+         * @param {string} webhookId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async webhooksListJobs(orgId: string, formId: string, webhookId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIWebhookJob>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.webhooksListJobs(orgId, formId, webhookId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebhooksApi.webhooksListJobs']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * WebhooksApi - factory interface
+ * @export
+ */
+export const WebhooksApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = WebhooksApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} formId 
+         * @param {CreateWebhookRequest} createWebhookRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        webhooksCreate(orgId: string, formId: string, createWebhookRequest: CreateWebhookRequest, options?: any): AxiosPromise<CreateWebhookResponse> {
+            return localVarFp.webhooksCreate(orgId, formId, createWebhookRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} formId 
+         * @param {string} webhookId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        webhooksDelete(orgId: string, formId: string, webhookId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.webhooksDelete(orgId, formId, webhookId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} formId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        webhooksList(orgId: string, formId: string, options?: any): AxiosPromise<Array<APIWebhook>> {
+            return localVarFp.webhooksList(orgId, formId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} formId 
+         * @param {string} webhookId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        webhooksListJobs(orgId: string, formId: string, webhookId: string, options?: any): AxiosPromise<Array<APIWebhookJob>> {
+            return localVarFp.webhooksListJobs(orgId, formId, webhookId, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * WebhooksApi - object-oriented interface
+ * @export
+ * @class WebhooksApi
+ * @extends {BaseAPI}
+ */
+export class WebhooksApi extends BaseAPI {
+    /**
+     * 
+     * @param {string} orgId 
+     * @param {string} formId 
+     * @param {CreateWebhookRequest} createWebhookRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebhooksApi
+     */
+    public webhooksCreate(orgId: string, formId: string, createWebhookRequest: CreateWebhookRequest, options?: RawAxiosRequestConfig) {
+        return WebhooksApiFp(this.configuration).webhooksCreate(orgId, formId, createWebhookRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} orgId 
+     * @param {string} formId 
+     * @param {string} webhookId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebhooksApi
+     */
+    public webhooksDelete(orgId: string, formId: string, webhookId: string, options?: RawAxiosRequestConfig) {
+        return WebhooksApiFp(this.configuration).webhooksDelete(orgId, formId, webhookId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} orgId 
+     * @param {string} formId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebhooksApi
+     */
+    public webhooksList(orgId: string, formId: string, options?: RawAxiosRequestConfig) {
+        return WebhooksApiFp(this.configuration).webhooksList(orgId, formId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} orgId 
+     * @param {string} formId 
+     * @param {string} webhookId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebhooksApi
+     */
+    public webhooksListJobs(orgId: string, formId: string, webhookId: string, options?: RawAxiosRequestConfig) {
+        return WebhooksApiFp(this.configuration).webhooksListJobs(orgId, formId, webhookId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

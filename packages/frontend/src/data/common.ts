@@ -29,6 +29,7 @@ import {
     SubmissionsApi,
     TeamAssetsApi,
     UserKeysApi,
+    WebhooksApi,
     type APIError,
     type ConfigurationParameters,
 } from "@paltiverse/palform-typescript-openapi";
@@ -98,6 +99,7 @@ export const APIs = {
         apiWithAuth(BillingEntitlementsApi, baseAPIConfig),
     audit: () => apiWithAuth(AuditLogsApi, baseAPIConfig),
     countries: new CountryMetadataApi(new Configuration(baseAPIConfig)),
+    webhooks: () => apiWithAuth(WebhooksApi, baseAPIConfig),
 };
 
 // biome-ignore lint/suspicious/noExplicitAny: catch has an any error type

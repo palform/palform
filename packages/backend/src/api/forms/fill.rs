@@ -60,7 +60,6 @@ pub async fn handler(
         org_id,
         form_id,
         submission_id,
-        data,
         mail_client,
     )
     .await

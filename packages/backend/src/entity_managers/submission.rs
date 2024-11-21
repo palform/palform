@@ -13,18 +13,16 @@ use palform_tsid::{
 };
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, Condition, ConnectionTrait, DbErr, EntityTrait, FromQueryResult,
-    JoinType, Order, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, RelationTrait, Set,
+    JoinType, Order, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, RelationTrait, Set, StreamTrait,
 };
 use serde::Serialize;
 use thiserror::Error;
 
 use crate::{
-    api_entities::submission::{APISubmissionCountPerForm, APISubmissionWebhookPayload},
-    mail::{
+    api_entities::submission::APISubmissionCountPerForm, entity_managers::webhook_jobs::WebhookJobsManager, mail::{
         client::PalformMailClient,
         headers::{MailgunHeader, MailgunTemplateNameHeader, MailgunVariableListHeader},
-    },
-    webhooks::{submission::SubmissionWebhookManager, webhook::send_webhook},
+    }
 };
 
 #[derive(Debug, Error)]
@@ -33,8 +31,6 @@ pub enum SubmissionNotificationError {
     DBError(#[from] DbErr),
     #[error("Sending email: {0}")]
     Email(String),
-    #[error("Sending webhook: {0}")]
-    Webhook(String),
 }
 
 pub struct SubmissionManager;
@@ -82,7 +78,7 @@ impl SubmissionManager {
             }
 
             // if we can't find the `since_id` either as a current submission or a deleted one,
-            // then just ignore the condition altogether. better being correct in this (rare) case than 
+            // then just ignore the condition altogether. better being correct in this (rare) case than
             // doing some clever performance optimisation.
             if let Some(since) = since {
                 condition = condition.add(submission::Column::CreatedAt.gt(since))
@@ -182,18 +178,19 @@ impl SubmissionManager {
         Submission::find_by_id(submission_id).one(conn).await
     }
 
-    pub async fn run_submission_notification<T: ConnectionTrait>(
+    pub async fn run_submission_notification<T: ConnectionTrait + StreamTrait>(
         conn: &T,
         org_id: PalformDatabaseID<IDOrganisation>,
         form_id: PalformDatabaseID<IDForm>,
         submission_id: PalformDatabaseID<IDSubmission>,
-        encrypted_payload: String,
         mail_client: &PalformMailClient,
     ) -> Result<(), SubmissionNotificationError> {
+        let wjm = WebhookJobsManager::new(conn);
+        wjm.create(submission_id).await?;
+
         #[derive(FromQueryResult)]
         struct FormNotificationSettings {
             notification_email: bool,
-            notification_webhook_url: Option<String>,
             team_id: PalformDatabaseID<IDTeam>,
             editor_name: String,
         }
@@ -201,31 +198,12 @@ impl SubmissionManager {
         let form_settings: FormNotificationSettings = Form::find_by_id(form_id)
             .select_only()
             .column(form::Column::NotificationEmail)
-            .column(form::Column::NotificationWebhookUrl)
             .column(form::Column::TeamId)
             .column(form::Column::EditorName)
             .into_model()
             .one(conn)
             .await?
             .ok_or(DbErr::RecordNotFound("Organisation not found".to_string()))?;
-
-        if let Some(webhook_url) = form_settings.notification_webhook_url {
-            let payload = APISubmissionWebhookPayload {
-                submission_id,
-                form_id,
-                org_id,
-                payload: encrypted_payload,
-            };
-            let m = SubmissionWebhookManager::new(&webhook_url, payload).map_err(|e| {
-                SubmissionNotificationError::Webhook(format!(
-                    "parse webhook URL: {}",
-                    e
-                ))
-            })?;
-            send_webhook(m)
-                .await
-                .map_err(|e| SubmissionNotificationError::Webhook(e.to_string()))?;
-        }
 
         if form_settings.notification_email {
             let email_addresses: Vec<String> = Team::find_by_id(form_settings.team_id)

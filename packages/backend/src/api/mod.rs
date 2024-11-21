@@ -19,6 +19,7 @@ pub mod question_groups;
 pub mod questions;
 pub mod submissions;
 pub mod team_assets;
+pub mod webhooks;
 
 #[cfg(feature = "saas")]
 pub mod billing;

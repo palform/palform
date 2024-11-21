@@ -5,7 +5,7 @@ use jobs::{
     delete_abandoned_emails::job_delete_abandoned_emails,
     delete_old_audit_logs::job_delete_old_audit_logs,
     delete_old_auth_tokens::job_delete_old_auth_tokens,
-    delete_old_submissions::job_delete_old_submissions,
+    delete_old_submissions::job_delete_old_submissions, webhooks::job_run_webhooks,
 };
 use mail::client::PalformMailClient;
 use palform_s3::{
@@ -39,7 +39,6 @@ mod jobs;
 mod mail;
 mod palform_s3;
 mod rocket_util;
-mod webhooks;
 
 #[cfg(feature = "saas")]
 mod billing;
@@ -70,6 +69,7 @@ async fn main() -> Result<(), rocket::Error> {
                     Command::new("delete-old-auth-tokens").about("Delete expired auth tokens"),
                     Command::new("delete-old-submissions")
                         .about("Delete submissions in form with auto-delete enabled"),
+                    Command::new("webhooks").about("Run pending webhook jobs"),
                 ]),
         )
         .get_matches();
@@ -83,6 +83,7 @@ async fn main() -> Result<(), rocket::Error> {
             Some(("delete-old-audit-logs", _)) => job_delete_old_audit_logs(&db).await,
             Some(("delete-old-auth-tokens", _)) => job_delete_old_auth_tokens(&db).await,
             Some(("delete-old-submissions", _)) => job_delete_old_submissions(&db).await,
+            Some(("webhooks", _)) => job_run_webhooks(&db).await,
             _ => unreachable!("Subcommands are required"),
         }
         .unwrap(),
@@ -231,6 +232,10 @@ async fn main() -> Result<(), rocket::Error> {
                 api::induction::status::handler,
                 api::induction::alert::handler,
                 api::audit::list::handler,
+                api::webhooks::list::handler,
+                api::webhooks::create::handler,
+                api::webhooks::delete::handler,
+                api::webhooks::list_jobs::handler,
             ];
             route_lists.push(main_routes);
 

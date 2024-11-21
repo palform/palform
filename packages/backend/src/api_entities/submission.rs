@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use palform_entities::submission;
 use palform_tsid::{
-    resources::{IDFillAccessToken, IDForm, IDOrganisation, IDSubmission, IDTeam},
+    resources::{IDFillAccessToken, IDForm, IDSubmission, IDTeam},
     tsid::PalformDatabaseID,
 };
 use rocket_okapi::okapi::schemars;
@@ -44,7 +44,7 @@ impl TryFrom<submission::Model> for APISubmission {
 pub struct APISubmissionWebhookPayload {
     pub submission_id: PalformDatabaseID<IDSubmission>,
     pub form_id: PalformDatabaseID<IDForm>,
-    pub org_id: PalformDatabaseID<IDOrganisation>,
+    pub created_at: DateTime<Utc>,
     pub payload: String,
 }
 
