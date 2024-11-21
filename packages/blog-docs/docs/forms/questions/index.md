@@ -116,3 +116,5 @@ On multiple-questions-per-page forms, you can group questions into sections, whi
 All questions within a section will be shown at once. By default, the form will progress from one section to the next linearly when the user clicks the "Next" button.
 
 Sections by default are numbered sequentially, and the numbering is not displayed to users filling in forms. They can be given titles and descriptions optionally, which will then be shown to users at the top of the page.
+
+Sections don't apply to one-question-at-a-time forms.
