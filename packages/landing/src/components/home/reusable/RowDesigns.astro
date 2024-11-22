@@ -1,0 +1,26 @@
+---
+import HomeSecParagraph from "../HomeSecParagraph.astro";
+import HomeSecRow from "../HomeSecRow.astro";
+import { Image } from "astro:assets";
+import responsiveDarkModeImg from "../../../assets/responsive_dark_mode.png";
+
+interface Props {
+    class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<HomeSecRow title="Beautiful designs" class={className}>
+    <HomeSecParagraph>
+        Just a few clicks in our intuitive editor, and you have responsive
+        dark-mode friendly forms that work on all devices. Effortlessly add
+        gradients and colours to give your forms that extra touch.
+    </HomeSecParagraph>
+    <Fragment slot="graphic">
+        <Image
+            src={responsiveDarkModeImg}
+            alt="A Palform in light mode on a desktop computer, and the same form in dark mode on a mobile device."
+        />
+    </Fragment>
+</HomeSecRow>

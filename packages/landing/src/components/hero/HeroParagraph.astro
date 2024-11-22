@@ -1,3 +1,16 @@
-<p class="font-display text-gray-600 dark:text-gray-400 xl:text-3xl lg:text-2xl text-xl">
+---
+interface Props {
+    center?: boolean;
+}
+
+const { center } = Astro.props;
+---
+
+<p
+    class:list={[
+        "font-display text-gray-600 dark:text-gray-400 xl:text-3xl lg:text-2xl text-xl",
+        center ? "text-center" : "",
+    ]}
+>
     <slot />
 </p>

@@ -1,0 +1,18 @@
+---
+import HomeSecHeading from "../home/HomeSecHeading.astro";
+import HomeSecParagraph from "../home/HomeSecParagraph.astro";
+import Pricing from "./Pricing.svelte";
+import PricingFree from "./PricingFree.astro";
+---
+
+<HomeSecHeading size="big" id="pricing">
+    Plans to suit everyone. Really.
+</HomeSecHeading>
+
+<PricingFree class="mt-8" />
+
+<HomeSecParagraph class="mt-12 mb-4">
+    Need more features? Try one of our risk-free affordable plans.
+</HomeSecParagraph>
+
+<Pricing client:load />

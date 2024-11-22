@@ -1,0 +1,28 @@
+---
+import { LittleIcons } from "@paltiverse/palform-frontend-common";
+import Button from "../Button.astro";
+
+interface Props {
+    class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={["flex gap-4", className]}>
+    <Button
+        href="https://dash.palform.app/auth/signup"
+        class="plausible-event-name=Hero+Start"
+    >
+        Start for free
+    </Button>
+    <Button
+        href="https://pf.palform.app/sales"
+        light
+        class="plausible-event-name=Hero+Contact"
+    >
+        Contact us
+    </Button>
+</div>
+
+<LittleIcons class:list={["!mt-4", className]} />

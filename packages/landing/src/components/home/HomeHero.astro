@@ -4,8 +4,7 @@ import HeroContent from "../hero/HeroContent.astro";
 import HeroHeader from "../hero/HeroHeader.astro";
 import HeroParagraph from "../hero/HeroParagraph.astro";
 import HeroTitle from "../hero/HeroTitle.astro";
-import Button from "../Button.astro";
-import { LittleIcons } from "@paltiverse/palform-frontend-common";
+import HeroButtons from "../hero/HeroButtons.astro";
 ---
 
 <HeroHeader>
@@ -19,23 +18,8 @@ import { LittleIcons } from "@paltiverse/palform-frontend-common";
             and guarantee an experience your users will love. Start for free
             with unlimited responses.
         </HeroParagraph>
-        <div class="flex gap-4">
-            <Button
-                href="https://dash.palform.app/auth/signup"
-                class="plausible-event-name=Hero+Start"
-            >
-                Start for free
-            </Button>
-            <Button
-                href="https://pf.palform.app/sales"
-                light
-                class="plausible-event-name=Hero+Contact"
-            >
-                Contact us
-            </Button>
-        </div>
 
-        <LittleIcons class="!mt-4" />
+        <HeroButtons />
     </HeroContent>
     <HeroContent class="flex-1 justify-end relative md:flex hidden">
         <iframe

@@ -1,0 +1,123 @@
+---
+import Html from "../../layouts/Html.astro";
+import Navbar from "../../components/Navbar.astro";
+import MainContainer from "../../components/MainContainer.astro";
+import FeaturePageHero from "../../components/features/FeaturePageHero.astro";
+import ResponsivePadding from "../../components/ResponsivePadding.astro";
+import HomeSecHeading from "../../components/home/HomeSecHeading.astro";
+import HomeSecParagraph from "../../components/home/HomeSecParagraph.astro";
+import HomeSecTriFeature from "../../components/home/HomeSecTriFeature.astro";
+import HomeSecTriFeatureItem from "../../components/home/HomeSecTriFeatureItem.astro";
+import PricingSection from "../../components/pricing/PricingSection.astro";
+import RowCustomisation from "../../components/home/reusable/RowCustomisation.astro";
+import RowTemplates from "../../components/home/reusable/RowTemplates.astro";
+import HomeSecComparisonTable from "../../components/home/comparisonTable/HomeSecComparisonTable.astro";
+import Button from "../../components/Button.astro";
+import HomeSecContact from "../../components/home/reusable/HomeSecContact.astro";
+---
+
+<Html title="End-to-End Encrypted Surveys Like No Other">
+	<Navbar />
+
+	<MainContainer>
+		<FeaturePageHero
+			title="Collect Sensitive Data with Encrypted Forms"
+			description="Stop worrying about data breaches: Palform's always-on encryption gives your data unprecedented protections, safeguarding privacy and building customer trust."
+		/>
+
+		<ResponsivePadding class="mt-32">
+			<HomeSecHeading size="big" id="features">
+				Your Users want Privacy
+			</HomeSecHeading>
+			<HomeSecParagraph class="mt-4">
+				Are you collecting sensitive data in your forms? They may look
+				super pretty, but users expect more: they want strong guarantees
+				of security before handing over their information. Outshine your
+				competitors by using something they can really trust.
+			</HomeSecParagraph>
+
+			<HomeSecTriFeature class="mt-16">
+				<HomeSecTriFeatureItem
+					title="Increase conversion rates"
+					icon="fa6-solid:arrow-trend-up"
+				>
+					Higher trust = more engagement. Create a comfortable
+					environment where your users feel confident submitting their
+					info.
+				</HomeSecTriFeatureItem>
+				<HomeSecTriFeatureItem
+					title="Reduce data breach risk"
+					icon="fa6-solid:shield-halved"
+					link="https://docs.palform.app/keys/technical"
+				>
+					No-one can see your responses. Not even us. Our
+					industry-leading encryption is based on the widely-used
+					OpenPGP protocol.
+				</HomeSecTriFeatureItem>
+				<HomeSecTriFeatureItem
+					title="Multi-user permission system"
+					icon="fa6-solid:sitemap"
+					link="https://docs.palform.app/orgs/teams"
+				>
+					Configure hierarchical access to data and scale to thousands
+					of users with no per-head costs.
+				</HomeSecTriFeatureItem>
+			</HomeSecTriFeature>
+		</ResponsivePadding>
+
+		<ResponsivePadding class="mt-32">
+			<HomeSecHeading size="big" id="features">
+				No-one Sees Your Responses
+			</HomeSecHeading>
+			<HomeSecParagraph class="mt-4">
+				Based on the same tech that powers thousands of encrypted emails
+				every day, Palform uses industry-standard encryption to hide
+				your data from everyone. Even we can't see your responses. If
+				our databases get breached, attackers will find only "garbage"
+				data &mdash; they'd need your locally-stored secret key to do
+				anything with it.
+			</HomeSecParagraph>
+			<HomeSecParagraph class="mt-4">
+				Whether you're collecting medical, financial, or any other kind
+				of sensitive data, Palform is the perfect way to do it while
+				remaining stylish and engaging. Our optimised web client has
+				been benchmarked to ensure high performance, even when handling
+				tens of thousands of responses.
+			</HomeSecParagraph>
+			<Button
+				href="https://docs.palform.app/keys/technical/"
+				class="mt-4"
+				light
+				target="_blank"
+			>
+				Read how it works
+			</Button>
+		</ResponsivePadding>
+
+		<ResponsivePadding class="mt-32">
+			<HomeSecHeading size="big" id="features">
+				Save Time and Costs
+			</HomeSecHeading>
+			<HomeSecParagraph class="mt-4">
+				Palform is not only more secure than competitors, it's also much
+				cheaper. With unlimited responses included for free (forever!),
+				you'll never have to stress about limits and quotas again.
+				Upgrade to our fairly-priced plans for more advanced features
+				and brand customisation, with discounts available for Education
+				and Non-profit organisations.
+			</HomeSecParagraph>
+			<HomeSecComparisonTable class="mt-8" />
+		</ResponsivePadding>
+
+		<RowCustomisation class="mt-32" />
+		<RowTemplates class="mt-32" />
+
+		<ResponsivePadding class="mt-32">
+			<PricingSection />
+		</ResponsivePadding>
+
+		<ResponsivePadding class="mt-32">
+			<HomeSecContact />
+		</ResponsivePadding>
+	</MainContainer>
+</Html>

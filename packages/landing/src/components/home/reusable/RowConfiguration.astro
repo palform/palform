@@ -1,0 +1,36 @@
+---
+import Button from "../../Button.astro";
+import HomeSecParagraph from "../HomeSecParagraph.astro";
+import HomeSecRow from "../HomeSecRow.astro";
+import { Image } from "astro:assets";
+import branchingRulesImg from "../../../assets/branching_rules.png";
+
+interface Props {
+    class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<HomeSecRow title="Powerful configuration" class={className}>
+    <div>
+        <HomeSecParagraph>
+            Set branching rules and recall responses to previous questions to
+            create truly personal experiences that your users love.
+        </HomeSecParagraph>
+        <Button
+            href="https://pf.palform.app/one-at-a-time"
+            target="_blank"
+            class="mt-4 plausible-event-name=Branch+Demo"
+            light
+        >
+            Live demo
+        </Button>
+    </div>
+    <Fragment slot="graphic">
+        <Image
+            src={branchingRulesImg}
+            alt="Multiple branching rules applied to a question, with a button to delete each one and a button to add new rules. A new question button at the bottom of the image."
+        />
+    </Fragment>
+</HomeSecRow>

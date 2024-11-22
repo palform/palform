@@ -1,5 +1,16 @@
+---
+interface Props {
+    center?: boolean;
+}
+
+const { center } = Astro.props;
+---
+
 <section
-    class="h-[75vh] 2xl:px-32 xl:px-24 lg:px-16 px-10 flex items-center lg:gap-16 gap-10"
+    class:list={[
+        "h-[75vh] 2xl:px-32 xl:px-24 lg:px-16 px-10 flex items-center lg:gap-16 gap-10",
+        center ? "justify-center" : "",
+    ]}
 >
     <slot />
 </section>

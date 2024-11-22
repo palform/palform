@@ -1,0 +1,37 @@
+---
+import Button from "../../Button.astro";
+import HomeSecParagraph from "../HomeSecParagraph.astro";
+import HomeSecRow from "../HomeSecRow.astro";
+import { Image } from "astro:assets";
+import brandModalImg from "../../../assets/brand_modal.png";
+
+interface Props {
+    class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<HomeSecRow title="Customise everything" class={className}>
+    <div>
+        <HomeSecParagraph>
+            Create reusable branding schemes to configure everything in your
+            forms: colours, fonts, sizes, curves, and more.
+        </HomeSecParagraph>
+        <Button
+            href="https://pf.palform.app/highly-customised"
+            target="_blank"
+            class="mt-4 plausible-event-name=Brand+Demo"
+            light
+        >
+            Live demo
+        </Button>
+    </div>
+    <Fragment slot="graphic">
+        <Image
+            src={brandModalImg}
+            alt="Modal with various settings to customise the font, scale, colour, and other design elements of the form. A live preview is shown on the right."
+            class="border rounded-xl shadow-sm"
+        />
+    </Fragment>
+</HomeSecRow>

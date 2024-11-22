@@ -1,0 +1,26 @@
+---
+import HeroContent from "../hero/HeroContent.astro";
+import HeroHeader from "../hero/HeroHeader.astro";
+import HeroParagraph from "../hero/HeroParagraph.astro";
+import HeroTitle from "../hero/HeroTitle.astro";
+import HeroButtons from "../hero/HeroButtons.astro";
+
+interface Props {
+    title: string;
+    description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<HeroHeader center>
+    <HeroContent class="md:max-w-[60%]">
+        <HeroTitle center>
+            {title}
+        </HeroTitle>
+
+        {description && <HeroParagraph center>{description}</HeroParagraph>}
+
+        <HeroButtons class="justify-center" />
+    </HeroContent>
+</HeroHeader>
