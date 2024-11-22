@@ -19,19 +19,38 @@
                 class="flex items-center gap-4 sm:gap-8 dark:text-gray-200 font-display font-light text-primary-800"
             >
                 <NavItem
+                    desktopOnly
                     subItems={[
                         {
                             title: "End-to-end encryption",
                             description:
-                                "Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.",
+                                "No-one can see your responses. Not even us. Keep your data more secure than ever with Palform.",
                             href: "/features/encryption",
+                        },
+                        {
+                            title: "Open source",
+                            description:
+                                "Accessible and easily auditable code licensed under AGPL. All development is done in public.",
+                            href: "https://github.com/palform/palform",
+                        },
+                        {
+                            title: "Customisable branching",
+                            description:
+                                "Personalise your forms with recall and branching, keeping your users super engaged throughout.",
+                            href: "https://docs.palform.app/forms/branching/",
+                        },
+                        {
+                            title: "Response notifications",
+                            description:
+                                "Connect your app to a range of services using webhook and email notifications",
+                            href: "https://docs.palform.app/forms/notifications/",
                         },
                     ]}
                 >
                     Features
                 </NavItem>
-                <NavItem href="/templates">Templates</NavItem>
-                <NavItem href="/#pricing">Pricing</NavItem>
+                <NavItem href="/templates" desktopOnly>Templates</NavItem>
+                <NavItem href="/#pricing" desktopOnly>Pricing</NavItem>
                 <NavItem href="https://dash.palform.app/auth/login">
                     Sign in
                 </NavItem>
