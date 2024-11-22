@@ -1,7 +1,6 @@
 ---
 import { TemplateItemPreview } from "@paltiverse/palform-frontend-common";
 import { formTemplatesAPI } from "../../../api/main";
-import Navbar from "../../../components/Navbar.astro";
 import ResponsivePadding from "../../../components/ResponsivePadding.astro";
 import TemplateGrid from "../../../components/templates/TemplateGrid.astro";
 import TemplatePreviewGrid from "../../../components/templates/TemplatePreviewGrid.astro";
@@ -9,6 +8,7 @@ import Html from "../../../layouts/Html.astro";
 import InfoPageParagraph from "../../../components/info/InfoPageParagraph.astro";
 import InfoPageTitle from "../../../components/info/InfoPageTitle.astro";
 import { Badge } from "flowbite-svelte";
+import Navbar from "../../../components/navbar/Navbar.svelte";
 
 export const prerender = false;
 const { category: categoryID } = Astro.params;

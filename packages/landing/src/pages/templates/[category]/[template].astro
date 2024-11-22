@@ -1,11 +1,11 @@
 ---
 import Html from "../../../layouts/Html.astro";
 import { AppBaseURL, formTemplatesAPI } from "../../../api/main";
-import Navbar from "../../../components/Navbar.astro";
 import ResponsivePadding from "../../../components/ResponsivePadding.astro";
 import TemplateGrid from "../../../components/templates/TemplateGrid.astro";
 import { TemplateFramePreview } from "@paltiverse/palform-frontend-common";
 import { Badge } from "flowbite-svelte";
+import Navbar from "../../../components/navbar/Navbar.svelte";
 
 export const prerender = false;
 const { category: categoryId, template: templateId } = Astro.params;

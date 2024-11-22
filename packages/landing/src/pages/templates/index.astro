@@ -1,5 +1,4 @@
 ---
-import Navbar from "../../components/Navbar.astro";
 import ResponsivePadding from "../../components/ResponsivePadding.astro";
 import Html from "../../layouts/Html.astro";
 import TemplateGrid from "../../components/templates/TemplateGrid.astro";
@@ -8,6 +7,7 @@ import TemplatePreviewGrid from "../../components/templates/TemplatePreviewGrid.
 import { TemplateItemPreview } from "@paltiverse/palform-frontend-common";
 import InfoPageTitle from "../../components/info/InfoPageTitle.astro";
 import InfoPageParagraph from "../../components/info/InfoPageParagraph.astro";
+import Navbar from "../../components/navbar/Navbar.svelte";
 
 export const prerender = false;
 const allTemplatesResp = await formTemplatesAPI.formTemplatesListTop();
