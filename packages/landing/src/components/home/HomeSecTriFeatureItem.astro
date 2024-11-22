@@ -4,15 +4,25 @@ import { Icon } from "astro-icon/components";
 interface Props {
     title: string;
     icon?: string;
+    link?: string;
 }
 
-const { title, icon } = Astro.props;
+const { title, icon, link } = Astro.props;
 ---
 
 <div
     class="border-b dark:border-slate-600 lg:border-b-0 lg:border-r last:border-none py-6 first:pt-0 last:pb-0 lg:py-0 lg:px-8 first:pl-0 last:pr-0"
 >
-    {icon && <Icon name={icon} class="block text-2xl text-primary-600 mb-2" />}
+    {
+        icon && (
+            <div class="inline-flex bg-primary-200 dark:bg-primary-800 w-12 h-12 items-center justify-center rounded-2xl mb-2">
+                <Icon
+                    name={icon}
+                    class="text-xl text-primary-600 dark:text-primary-300"
+                />
+            </div>
+        )
+    }
 
     <h3 class="font-display text-xl text-slate-800 dark:text-slate-200">
         {title}
@@ -20,4 +30,22 @@ const { title, icon } = Astro.props;
     <p class="text-slate-500 dark:text-slate-400">
         <slot />
     </p>
+
+    {
+        link && (
+            <p class="mt-1">
+                <a
+                    href={link}
+                    class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+                    target="_blank"
+                >
+                    Learn more
+                    <Icon
+                        name="fa6-solid:arrow-right"
+                        class="inline-block ms-1"
+                    />
+                </a>
+            </p>
+        )
+    }
 </div>
