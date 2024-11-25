@@ -60,7 +60,7 @@
         "tailwindcss": "^3.4.15",
         "tsid-ts": "^0.0.9",
         "tslib": "^2.8.1",
-        "typescript": "^5.6.3",
+        "typescript": "^5.7.2",
         "typescript-svelte-plugin": "^0.3.43",
         "ua-parser-js": "^1.0.39",
         "vite": "^5.4.11",

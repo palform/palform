@@ -26,6 +26,7 @@ impl APIQuestionGroup {
     pub fn next_step(
         &self,
         steps: Vec<APIQuestionGroup>,
+        skipped_step_ids: Vec<PalformDatabaseID<IDQuestionGroup>>,
         submission: Vec<QuestionSubmission>,
     ) -> Result<Option<PalformDatabaseID<IDQuestionGroup>>, anyhow::Error> {
         let self_index = steps
@@ -34,7 +35,21 @@ impl APIQuestionGroup {
             .ok_or(anyhow!("Current question group not found"))?;
 
         if let APIQuestionGroupStepStrategy::NextPosition = self.step_strategy.clone() {
-            return Ok(steps.get(self_index + 1).map(|e| e.id));
+            let mut next_index = self_index + 1;
+            loop {
+                let next_step = steps.get(next_index).map(|e| e.id);
+
+                if next_step.is_none() {
+                    return Ok(None);
+                } else if let Some(next_step) = next_step {
+                    if skipped_step_ids.contains(&next_step) {
+                        next_index += 1;
+                        continue;
+                    }
+
+                    return Ok(Some(next_step));
+                }
+            }
         }
 
         if let APIQuestionGroupStepStrategy::JumpToSection(cases) = self.step_strategy.clone() {
@@ -59,9 +74,22 @@ pub fn next_question_group_step_js(
     current_step_id: String,
     all_steps: wasm_bindgen::JsValue,
     submissions: wasm_bindgen::JsValue,
+    skipped_step_ids: Vec<String>,
 ) -> Result<Option<String>, wasm_bindgen::JsValue> {
     let step_list: Vec<APIQuestionGroup> = serde_wasm_bindgen::from_value(all_steps)?;
     let submission_list: Vec<QuestionSubmission> = serde_wasm_bindgen::from_value(submissions)?;
+
+    let skipped_step_ids: Result<Vec<PalformDatabaseID<IDQuestionGroup>>, anyhow::Error> =
+        skipped_step_ids
+            .iter()
+            .map(
+                |id| -> Result<PalformDatabaseID<IDQuestionGroup>, anyhow::Error> {
+                    PalformDatabaseID::<IDQuestionGroup>::from_str(id)
+                },
+            )
+            .collect();
+    let skipped_step_ids =
+        skipped_step_ids.map_err(|e| wasm_bindgen::JsValue::from_str(&e.to_string()))?;
 
     let current_step_id = PalformDatabaseID::<IDQuestionGroup>::from_str(&current_step_id)
         .map_err(|e| wasm_bindgen::JsValue::from_str(&e.to_string()))?;
@@ -71,7 +99,7 @@ pub fn next_question_group_step_js(
         .ok_or(wasm_bindgen::JsValue::from_str("Cannot find current group"))?;
 
     let next_step = current_step
-        .next_step(step_list.clone(), submission_list)
+        .next_step(step_list.clone(), skipped_step_ids, submission_list)
         .map_err(|e| wasm_bindgen::JsValue::from_str(&e.to_string()))?;
 
     Ok(next_step.map(|e| e.to_string()))

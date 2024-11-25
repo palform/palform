@@ -12,8 +12,11 @@ import {
 } from "@paltiverse/palform-client-common";
 import type { QuestionSubmissionData } from "@paltiverse/palform-client-js-extra-types/QuestionSubmissionData";
 import { Mutex } from "async-mutex";
-import type { APIFormWithQuestions } from "@paltiverse/palform-typescript-openapi";
-import { qIsInfo } from "./formEditor";
+import type {
+    APIFormWithQuestions,
+    APIQuestionGroup,
+} from "@paltiverse/palform-typescript-openapi";
+import { qIsHidden, qIsInfo } from "./formEditor";
 
 const formFillSaveMutex = new Mutex();
 export interface FormFillContext {
@@ -21,6 +24,7 @@ export interface FormFillContext {
     form: APIFormWithQuestions;
     organisationId: string;
     currentGroupId: string;
+    skippedGroupIds: string[];
     fillAccessToken: string;
     isShortLink: boolean;
 }
@@ -48,7 +52,8 @@ export function ctxGetNextStep() {
             const next_group = next_question_group_step_js(
                 formFillStore.currentGroupId,
                 formFillStore.form.g,
-                formFillStore.submission.questions
+                formFillStore.submission.questions,
+                formFillStore.skippedGroupIds
             );
             return next_group;
         } catch (e) {
@@ -118,14 +123,34 @@ export async function loadFormFill(
             // if we don't already have an entry for this question
             !formFill.questions.some((e) => e.question_id === question.id)
         ) {
+            let data: QuestionSubmissionData;
+            if (qIsHidden(question.configuration)) {
+                data = hiddenQuestionValue(
+                    question.configuration.hidden.parameter_name
+                );
+            } else {
+                data = api_question_default_submission(question);
+            }
+
             formFill.questions.push({
                 question_id: question.id,
-                data: api_question_default_submission(question),
+                data,
             });
         }
     }
 
-    if (resp.data.g.length === 0 || resp.data.q.length === 0) {
+    const skippedGroups = resp.data.g.filter((g) =>
+        isHiddenQuestionGroup(g, resp.data)
+    );
+    const firstNonSkippedGroup = resp.data.g.find(
+        (g) => !skippedGroups.some((e) => e.id === g.id)
+    );
+
+    if (
+        resp.data.g.length === 0 ||
+        resp.data.q.length === 0 ||
+        !firstNonSkippedGroup
+    ) {
         release();
         throw new Error("This form is empty");
     }
@@ -140,7 +165,8 @@ export async function loadFormFill(
         },
         form: resp.data,
         organisationId: orgId,
-        currentGroupId: resp.data.g[0].id,
+        currentGroupId: firstNonSkippedGroup.id,
+        skippedGroupIds: skippedGroups.map((e) => e.id),
         fillAccessToken,
         isShortLink,
     });
@@ -252,6 +278,33 @@ export function templateFillQuestionText(text: string) {
     }
 
     return newText;
+}
+
+export function isHiddenQuestionGroup(
+    group: APIQuestionGroup,
+    form: APIFormWithQuestions
+) {
+    if (!form.f.one_question_per_page && (group.title || group.description))
+        return false;
+
+    const questions = form.q.filter((e) => e.group_id === group.id);
+    const allQuestionsAreHidden = questions.every((q) => {
+        return qIsHidden(q.configuration);
+    });
+
+    return allQuestionsAreHidden;
+}
+
+export function hiddenQuestionValue(
+    parameterName: string
+): QuestionSubmissionData {
+    const params = new URLSearchParams(window.location.search);
+    const paramValue = params.get(parameterName);
+    return {
+        Hidden: {
+            value: paramValue ?? "",
+        },
+    };
 }
 
 export function sGetText(s: QuestionSubmissionData) {
