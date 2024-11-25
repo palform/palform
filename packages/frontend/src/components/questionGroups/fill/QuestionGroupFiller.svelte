@@ -14,10 +14,19 @@
     import BrandedButton from "../../teams/brandings/BrandedButton.svelte";
     import FormFillCaptchaModal from "../../forms/fill/FormFillCaptchaModal.svelte";
     import { t } from "../../../data/contexts/i18n";
+    import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
+    import { faArrowRight, faCheck } from "@fortawesome/free-solid-svg-icons";
 
     const currentGroup = ctxGetCurrentGroup();
     const currentGroupQuestions = ctxGetCurrentGroupQuestions();
     const nextStep = ctxGetNextStep();
+
+    let animateOut = true;
+    const animationDelay = 100;
+    $: $currentGroup?.id,
+        setTimeout(() => {
+            animateOut = false;
+        }, animationDelay);
 
     let showCaptchaModal = false;
     $: onSubmit = async (e: Event, captchaValue?: string) => {
@@ -76,20 +85,23 @@
         if ($formFillStore === undefined || $nextStep === undefined) return;
         if (!validateQuestions()) return;
 
-        formFillStore.update((ctx) => {
-            if (!ctx) return undefined;
-            return {
-                ...ctx,
-                submission: {
-                    ...ctx.submission,
-                    groups_completed: [
-                        ...ctx.submission.groups_completed,
-                        ctx.currentGroupId,
-                    ],
-                },
-                currentGroupId: $nextStep,
-            };
-        });
+        animateOut = true;
+        setTimeout(() => {
+            formFillStore.update((ctx) => {
+                if (!ctx) return undefined;
+                return {
+                    ...ctx,
+                    submission: {
+                        ...ctx.submission,
+                        groups_completed: [
+                            ...ctx.submission.groups_completed,
+                            ctx.currentGroupId,
+                        ],
+                    },
+                    currentGroupId: $nextStep,
+                };
+            });
+        }, animationDelay);
     };
 
     $: onPrevious = () => {
@@ -99,13 +111,16 @@
         )
             return;
 
-        formFillStore.update((ctx) => {
-            if (ctx === undefined) return undefined;
-            const newStep = ctx.submission.groups_completed.pop();
-            if (!newStep) return ctx;
-            ctx.currentGroupId = newStep;
-            return ctx;
-        });
+        animateOut = true;
+        setTimeout(() => {
+            formFillStore.update((ctx) => {
+                if (ctx === undefined) return undefined;
+                const newStep = ctx.submission.groups_completed.pop();
+                if (!newStep) return ctx;
+                ctx.currentGroupId = newStep;
+                return ctx;
+            });
+        }, animationDelay);
     };
 </script>
 
@@ -113,7 +128,7 @@
 
 {#if $formFillStore !== undefined && $currentGroup !== undefined}
     <form
-        class="space-y-8"
+        class={`space-y-8 transition ${animateOut ? "translate-y-8 opacity-0 pointer-events-none" : ""}`}
         on:submit={(e) => ($nextStep === undefined ? onSubmit(e) : onNext(e))}
     >
         {#each $currentGroupQuestions as question (question.id)}
@@ -128,9 +143,13 @@
                     type="submit"
                 >
                     {t("submit")}
+                    <FontAwesomeIcon icon={faCheck} class="ms-2" />
                 </BrandedButton>
             {:else}
-                <BrandedButton type="submit">{t("next")}</BrandedButton>
+                <BrandedButton type="submit">
+                    {t("next")}
+                    <FontAwesomeIcon icon={faArrowRight} class="ms-2" />
+                </BrandedButton>
             {/if}
             {#if $formFillStore.submission.groups_completed.length > 0}
                 <BrandedButton on:click={onPrevious} outline>
