@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{fmt::Display, str::FromStr};
 
 use rocket::{
     http::Status,
@@ -16,13 +16,26 @@ use rocket_okapi::{
 };
 use stripe::Currency;
 
-use crate::into_outcome;
+use crate::{geo::IPGeolocator, into_outcome};
 
+#[derive(Clone)]
 pub struct ClientCurrency(Currency);
 
 impl From<ClientCurrency> for Currency {
     fn from(value: ClientCurrency) -> Self {
         value.0
+    }
+}
+
+impl Default for ClientCurrency {
+    fn default() -> Self {
+        Self(Currency::GBP)
+    }
+}
+
+impl Display for ClientCurrency {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.0.fmt(f)
     }
 }
 
@@ -32,14 +45,35 @@ impl<'a> FromRequest<'a> for ClientCurrency {
     async fn from_request(
         request: &'a request::Request<'_>,
     ) -> request::Outcome<Self, Self::Error> {
-        let param = into_outcome!(request
-            .query_value::<&str>("currency")
-            .ok_or((Status::BadRequest, "Missing currency param".to_string()))
-            .and_then(|e| e.map_err(|e| (Status::BadRequest, e.to_string()))));
+        let param = request.query_value::<&str>("currency");
 
-        let currency = into_outcome!(
-            Currency::from_str(param).map_err(|e| (Status::BadRequest, e.to_string()))
-        );
+        let currency_string = if let Some(param) = param {
+            into_outcome!(param.map_err(|e| (Status::BadRequest, e.to_string()))).to_owned()
+        } else {
+            let client_ip = request.client_ip();
+
+            if let Some(client_ip) = client_ip {
+                let ip_geolocator =
+                    into_outcome!(request.rocket().state::<IPGeolocator>().ok_or((
+                        Status::InternalServerError,
+                        "Missing IPGeolocator in state".to_string(),
+                    )));
+
+                let country = ip_geolocator.lookup_country(client_ip);
+
+                if let Ok(country) = country {
+                    country.currency_code().to_string()
+                } else {
+                    return request::Outcome::Success(ClientCurrency::default());
+                }
+            } else {
+                return request::Outcome::Success(ClientCurrency::default());
+            }
+        };
+
+        let currency =
+            into_outcome!(Currency::from_str(&currency_string)
+                .map_err(|e| (Status::BadRequest, e.to_string())));
 
         request::Outcome::Success(ClientCurrency(currency))
     }
@@ -55,8 +89,8 @@ impl<'a> OpenApiFromRequest<'a> for ClientCurrency {
             rocket_okapi::okapi::openapi3::Parameter {
                 name: "currency".to_string(),
                 location: "query".to_string(),
-                description: Some("The currency the client is using".to_string()),
-                required: true,
+                description: Some("The currency the client is using, or the default currency based on the client's IP address country (if not provided).".to_string()),
+                required: false,
                 deprecated: false,
                 allow_empty_value: false,
                 extensions: Map::new(),

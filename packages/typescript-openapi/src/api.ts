@@ -139,6 +139,25 @@ export interface APIAuditLogEntry {
 /**
  * 
  * @export
+ * @interface APIBillingCurrencyResponseForArrayOfAPIBillingPlan
+ */
+export interface APIBillingCurrencyResponseForArrayOfAPIBillingPlan {
+    /**
+     * 
+     * @type {string}
+     * @memberof APIBillingCurrencyResponseForArrayOfAPIBillingPlan
+     */
+    'currency': string;
+    /**
+     * 
+     * @type {Array<APIBillingPlan>}
+     * @memberof APIBillingCurrencyResponseForArrayOfAPIBillingPlan
+     */
+    'data': Array<APIBillingPlan>;
+}
+/**
+ * 
+ * @export
  * @interface APIBillingCustomer
  */
 export interface APIBillingCustomer {
@@ -5864,13 +5883,11 @@ export const BillingPlansApiAxiosParamCreator = function (configuration?: Config
         },
         /**
          * 
-         * @param {string} currency The currency the client is using
+         * @param {string} [currency] The currency the client is using, or the default currency based on the client\&#39;s IP address country (if not provided).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        billingPlanList: async (currency: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'currency' is not null or undefined
-            assertParamExists('billingPlanList', 'currency', currency)
+        billingPlanList: async (currency?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/billing/plans`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5999,11 +6016,11 @@ export const BillingPlansApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {string} currency The currency the client is using
+         * @param {string} [currency] The currency the client is using, or the default currency based on the client\&#39;s IP address country (if not provided).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async billingPlanList(currency: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIBillingPlan>>> {
+        async billingPlanList(currency?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIBillingCurrencyResponseForArrayOfAPIBillingPlan>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.billingPlanList(currency, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BillingPlansApi.billingPlanList']?.[localVarOperationServerIndex]?.url;
@@ -6065,11 +6082,11 @@ export const BillingPlansApiFactory = function (configuration?: Configuration, b
         },
         /**
          * 
-         * @param {string} currency The currency the client is using
+         * @param {string} [currency] The currency the client is using, or the default currency based on the client\&#39;s IP address country (if not provided).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        billingPlanList(currency: string, options?: any): AxiosPromise<Array<APIBillingPlan>> {
+        billingPlanList(currency?: string, options?: any): AxiosPromise<APIBillingCurrencyResponseForArrayOfAPIBillingPlan> {
             return localVarFp.billingPlanList(currency, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6131,12 +6148,12 @@ export class BillingPlansApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} currency The currency the client is using
+     * @param {string} [currency] The currency the client is using, or the default currency based on the client\&#39;s IP address country (if not provided).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof BillingPlansApi
      */
-    public billingPlanList(currency: string, options?: RawAxiosRequestConfig) {
+    public billingPlanList(currency?: string, options?: RawAxiosRequestConfig) {
         return BillingPlansApiFp(this.configuration).billingPlanList(currency, options).then((request) => request(this.axios, this.basePath));
     }
 

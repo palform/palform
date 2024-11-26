@@ -20,15 +20,17 @@
 
     let plans: APIBillingPlan[] | undefined = [];
     let plansLoading = true;
-    let currency = fixCurrency ?? "gbp";
+    let currency: string | undefined = fixCurrency;
+
     $: (() => {
         plansLoading = true;
         APIs.billingPlans()
             .then((a) => a.billingPlanList(currency))
             .then((resp) => {
-                plans = resp.data.toSorted(
+                plans = resp.data.data.toSorted(
                     (a, b) => a.price_monthly.amount - b.price_monthly.amount
                 );
+                currency = resp.data.currency;
                 plansLoading = false;
             });
     })();
@@ -63,7 +65,7 @@
             Annual billing (2 months free!)
         </Toggle>
 
-        {#if fixCurrency === undefined}
+        {#if fixCurrency === undefined && currency !== undefined}
             <Label class="mb-4 inline-block">
                 Currency
                 <Select
@@ -83,7 +85,7 @@
         </InfoText>
 
         <CardGrid>
-            {#if currentPriceId === undefined}
+            {#if currentPriceId === undefined && currency !== undefined}
                 <PricingPlan
                     isFree
                     plan={freePlan(currency)}

@@ -42,6 +42,8 @@ mod rocket_util;
 
 #[cfg(feature = "saas")]
 mod billing;
+#[cfg(feature = "saas")]
+mod geo;
 
 rust_i18n::i18n!("locales", fallback = "en");
 mod i18n;
@@ -243,6 +245,9 @@ async fn main() -> Result<(), rocket::Error> {
             {
                 let stripe_client = billing::client::init_stripe_client(&config);
                 r = r.manage(stripe_client);
+
+                let ip_geolocator = geo::IPGeolocator::new().await.unwrap();
+                r = r.manage(ip_geolocator);
 
                 let extra_routes = openapi_get_routes_spec![
                     api::billing::plans::list::handler,

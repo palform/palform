@@ -10,7 +10,7 @@
     import { onMount } from "svelte";
 
     let annualPricing = true;
-    let currency = "gbp";
+    let currency: string | undefined = undefined;
 
     let plans: APIBillingPlan[] = [];
     let loading = true;
@@ -21,9 +21,10 @@
         billingAPI
             .billingPlanList(currency)
             .then((resp) => {
-                plans = resp.data.toSorted((a, b) => {
+                plans = resp.data.data.toSorted((a, b) => {
                     return a.price_monthly.amount - b.price_monthly.amount;
                 });
+                currency = resp.data.currency;
             })
             .catch((e) => {
                 plans = [];
@@ -48,26 +49,28 @@
         </span>
     </Toggle>
 
-    <Label class="block w-80">
-        Currency
-        <Select
-            class="mt-1"
-            items={[
-                { name: "£/GBP", value: "gbp" },
-                { name: "€/EUR", value: "eur" },
-                { name: "$/USD", value: "usd" },
-            ]}
-            bind:value={currency}
-            on:change={reload}
-        />
-    </Label>
+    {#if currency !== undefined}
+        <Label class="block w-80">
+            Currency
+            <Select
+                class="mt-1"
+                items={[
+                    { name: "£/GBP", value: "gbp" },
+                    { name: "€/EUR", value: "eur" },
+                    { name: "$/USD", value: "usd" },
+                ]}
+                bind:value={currency}
+                on:change={reload}
+            />
+        </Label>
+    {/if}
 </div>
 
 {#if loading}
     <div class="flex justify-center mt-10">
         <Spinner size="16" />
     </div>
-{:else}
+{:else if currency !== undefined}
     <div class="grid lg:grid-cols-3 gap-4">
         <PricingPlan
             plan={freePlan(currency)}

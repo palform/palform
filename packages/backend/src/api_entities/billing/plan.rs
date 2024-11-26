@@ -7,6 +7,12 @@ use stripe::{Price, RecurringInterval};
 use crate::billing::error::BillingError;
 
 #[derive(Serialize, JsonSchema)]
+pub struct APIBillingCurrencyResponse<T: Serialize + JsonSchema> {
+    pub currency: String,
+    pub data: T,
+}
+
+#[derive(Serialize, JsonSchema)]
 pub struct APIBillingPlanPrice {
     pub stripe_price_id: String,
     pub amount: i64,

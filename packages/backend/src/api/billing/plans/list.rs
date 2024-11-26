@@ -3,7 +3,7 @@ use rocket::{get, serde::json::Json, State};
 use rocket_okapi::openapi;
 
 use crate::{
-    api_entities::billing::plan::APIBillingPlan,
+    api_entities::billing::plan::{APIBillingCurrencyResponse, APIBillingPlan},
     billing::{client_currency::ClientCurrency, manager::BillingManager},
 };
 
@@ -12,12 +12,15 @@ use crate::{
 pub async fn handler(
     currency: ClientCurrency,
     stripe: &State<stripe::Client>,
-) -> Result<Json<Vec<APIBillingPlan>>, APIErrorWithStatus> {
+) -> Result<Json<APIBillingCurrencyResponse<Vec<APIBillingPlan>>>, APIErrorWithStatus> {
     let manager = BillingManager::new(stripe);
     let plans = manager
-        .list_plans(currency.into())
+        .list_plans(currency.clone().into())
         .await
         .map_err(|e| APIError::report_internal_error("list plans", e))?;
 
-    Ok(Json(plans))
+    Ok(Json(APIBillingCurrencyResponse {
+        currency: currency.to_string(),
+        data: plans,
+    }))
 }
