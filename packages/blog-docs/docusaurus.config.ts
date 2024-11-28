@@ -32,6 +32,19 @@ const config: Config = {
     },
   ],
 
+  plugins: [
+    async function tailwind() {
+      return {
+        name: "docusaurus-tailwindcss",
+        configurePostCss(postcssOptions) {
+          postcssOptions.plugins.push(require("tailwindcss"));
+          postcssOptions.plugins.push(require("autoprefixer"));
+          return postcssOptions;
+        },
+      };
+    },
+  ],
+
   presets: [
     [
       "classic",
@@ -62,6 +75,7 @@ const config: Config = {
       logo: {
         alt: "Palform Logo",
         src: "/img/logo.svg",
+        href: "https://palform.app/?ref=blog",
       },
       items: [
         {
