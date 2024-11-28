@@ -14,6 +14,8 @@
     export let registerNickname: string | undefined = undefined;
     export let authCredential: any | undefined = undefined;
     export let forceLoading = false;
+    export let disabled = false
+
     const dispatch = createEventDispatcher<{
         enroll: string;
         authenticate: any;
@@ -65,7 +67,7 @@
 <LoadingButton
     on:click={onButtonClick}
     loading={loading || forceLoading}
-    disabled={loading || forceLoading}
+    disabled={loading || forceLoading || disabled}
     buttonClass={$$props.class}
 >
     <FontAwesomeIcon icon={faFingerprint} class="me-2" />

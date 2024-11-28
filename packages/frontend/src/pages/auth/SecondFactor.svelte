@@ -89,11 +89,20 @@
             </Button>
         </div>
     {:else if (!allowBoth && allowWebauthn) || selectedMethod === "webauthn"}
+        {#if !loading}
+            <Captcha
+                class="mt-4"
+                on:complete={(e) => (captchaValue = e.detail)}
+                on:clear={() => (captchaValue = "")}
+            />
+        {/if}
+
         <WebauthnButton
             flowType="authenticate"
             class="mt-4"
             authCredential={tfa.rcr}
             on:authenticate={onWebauthnAuth}
+            disabled={captchaValue === ""}
         />
     {:else if (!allowBoth && allowTotp) || selectedMethod === "totp"}
         <form on:submit={onTotpSubmit}>
