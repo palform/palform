@@ -1,11 +1,13 @@
 use figment::{providers::Env, Figment};
 use serde::Deserialize;
+use url::Url;
 
 use crate::auth::social::SocialAuthService;
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Config {
     pub cors_origin: String,
+    pub frontend_url: Url,
 
     pub database_url: String,
 

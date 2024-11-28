@@ -12,7 +12,7 @@
         TableHeadCell,
     } from "flowbite-svelte";
     import UserTwoFactorRow from "./UserTwoFactorRow.svelte";
-    import UserTwoFactorEnroll from "./UserTwoFactorEnroll.svelte";
+    import UserTwoFactorEnroll from "./two_factor_enroll/UserTwoFactorEnroll.svelte";
 
     let methods: APIAdminUserSecondAuthenticationFactor[] | undefined;
     let loading = true;

@@ -6,6 +6,7 @@ import {
     Configuration,
     type ConfigurationParameters,
     type NewAPIAuthToken,
+    type SignInResponseOneOf1SecondFactorRequired,
 } from "@paltiverse/palform-typescript-openapi";
 import { navigate } from "svelte-routing";
 import { showFailureToast } from "../toast";
@@ -132,7 +133,7 @@ export async function signInWithEmailAndPassword(
     createInitialOrg: boolean
 ): Promise<{
     newOrgId?: string;
-    tfaSessionId?: string;
+    tfa?: SignInResponseOneOf1SecondFactorRequired;
 }> {
     const response = await APIs.auth.authSignIn(captcha, {
         Credentials: {
@@ -149,7 +150,7 @@ export async function signInWithEmailAndPassword(
         return {
             newOrgId:
                 response.data.SecondFactorRequired.new_org_id ?? undefined,
-            tfaSessionId: response.data.SecondFactorRequired.session_id,
+            tfa: response.data.SecondFactorRequired,
         };
     } else {
         throw new Error("Unrecognised response");

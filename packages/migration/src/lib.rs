@@ -52,6 +52,7 @@ mod m20240918_115812_social_auth;
 mod m20240918_214834_form_templates;
 mod m20241115_000035_branding_backgrounds;
 mod m20241119_233312_webhooks;
+mod m20241123_170713_webauthn;
 
 pub struct Migrator;
 
@@ -111,6 +112,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240918_214834_form_templates::Migration),
             Box::new(m20241115_000035_branding_backgrounds::Migration),
             Box::new(m20241119_233312_webhooks::Migration),
+            Box::new(m20241123_170713_webauthn::Migration),
         ]
     }
 }

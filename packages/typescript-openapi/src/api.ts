@@ -78,7 +78,29 @@ export interface APIAdminUserSecondAuthenticationFactor {
      * @memberof APIAdminUserSecondAuthenticationFactor
      */
     'created_at': string;
+    /**
+     * 
+     * @type {APIAdminUserSecondAuthenticationFactorMethod}
+     * @memberof APIAdminUserSecondAuthenticationFactor
+     */
+    'method': APIAdminUserSecondAuthenticationFactorMethod;
 }
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const APIAdminUserSecondAuthenticationFactorMethod = {
+    Totp: 'TOTP',
+    Webauthn: 'Webauthn'
+} as const;
+
+export type APIAdminUserSecondAuthenticationFactorMethod = typeof APIAdminUserSecondAuthenticationFactorMethod[keyof typeof APIAdminUserSecondAuthenticationFactorMethod];
+
+
 /**
  * 
  * @export
@@ -3392,19 +3414,44 @@ export type DirectionOperator = typeof DirectionOperator[keyof typeof DirectionO
 /**
  * 
  * @export
- * @interface EnrollSecondFactorRequest
+ * @interface EnrollTOTPRequest
  */
-export interface EnrollSecondFactorRequest {
+export interface EnrollTOTPRequest {
     /**
      * 
      * @type {string}
-     * @memberof EnrollSecondFactorRequest
+     * @memberof EnrollTOTPRequest
      */
     'secret': string;
     /**
      * 
      * @type {string}
-     * @memberof EnrollSecondFactorRequest
+     * @memberof EnrollTOTPRequest
+     */
+    'nickname': string;
+}
+/**
+ * 
+ * @export
+ * @interface EnrollWebauthnRequest
+ */
+export interface EnrollWebauthnRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof EnrollWebauthnRequest
+     */
+    'cred': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EnrollWebauthnRequest
+     */
+    'session': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EnrollWebauthnRequest
      */
     'nickname': string;
 }
@@ -3827,10 +3874,10 @@ export interface SignInRequestOneOf1SecondFactor {
     'session_id': string;
     /**
      * 
-     * @type {string}
+     * @type {SignInSecondFactorRequest}
      * @memberof SignInRequestOneOf1SecondFactor
      */
-    'token': string;
+    'factor': SignInSecondFactorRequest;
 }
 /**
  * 
@@ -3906,6 +3953,18 @@ export interface SignInResponseOneOf1SecondFactorRequired {
      * @type {string}
      * @memberof SignInResponseOneOf1SecondFactorRequired
      */
+    'rcr'?: string | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof SignInResponseOneOf1SecondFactorRequired
+     */
+    'totp': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof SignInResponseOneOf1SecondFactorRequired
+     */
     'new_org_id'?: string | null;
 }
 /**
@@ -3926,6 +3985,38 @@ export interface SignInResponseOneOfDone {
      * @memberof SignInResponseOneOfDone
      */
     'new_org_id'?: string | null;
+}
+/**
+ * @type SignInSecondFactorRequest
+ * @export
+ */
+export type SignInSecondFactorRequest = SignInSecondFactorRequestOneOf | SignInSecondFactorRequestOneOf1;
+
+/**
+ * 
+ * @export
+ * @interface SignInSecondFactorRequestOneOf
+ */
+export interface SignInSecondFactorRequestOneOf {
+    /**
+     * 
+     * @type {string}
+     * @memberof SignInSecondFactorRequestOneOf
+     */
+    'Totp': string;
+}
+/**
+ * 
+ * @export
+ * @interface SignInSecondFactorRequestOneOf1
+ */
+export interface SignInSecondFactorRequestOneOf1 {
+    /**
+     * 
+     * @type {string}
+     * @memberof SignInSecondFactorRequestOneOf1
+     */
+    'Webauthn': string;
 }
 /**
  * 
@@ -4062,6 +4153,25 @@ export interface StartSocialAuthResponse {
      * @memberof StartSocialAuthResponse
      */
     'nonce': string;
+}
+/**
+ * 
+ * @export
+ * @interface StartWebauthnResponse
+ */
+export interface StartWebauthnResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof StartWebauthnResponse
+     */
+    'ccr': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof StartWebauthnResponse
+     */
+    'session': string;
 }
 /**
  * 
@@ -6218,14 +6328,14 @@ export const Class2FAMethodsApiAxiosParamCreator = function (configuration?: Con
         },
         /**
          * 
-         * @param {EnrollSecondFactorRequest} enrollSecondFactorRequest 
+         * @param {EnrollTOTPRequest} enrollTOTPRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userSecondFactorsEnroll: async (enrollSecondFactorRequest: EnrollSecondFactorRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'enrollSecondFactorRequest' is not null or undefined
-            assertParamExists('userSecondFactorsEnroll', 'enrollSecondFactorRequest', enrollSecondFactorRequest)
-            const localVarPath = `/users/me/second_factors`;
+        userSecondFactorsEnroll: async (enrollTOTPRequest: EnrollTOTPRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'enrollTOTPRequest' is not null or undefined
+            assertParamExists('userSecondFactorsEnroll', 'enrollTOTPRequest', enrollTOTPRequest)
+            const localVarPath = `/users/me/second_factors/totp`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6248,7 +6358,46 @@ export const Class2FAMethodsApiAxiosParamCreator = function (configuration?: Con
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(enrollSecondFactorRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(enrollTOTPRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {EnrollWebauthnRequest} enrollWebauthnRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        userSecondFactorsEnrollWebauthn: async (enrollWebauthnRequest: EnrollWebauthnRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'enrollWebauthnRequest' is not null or undefined
+            assertParamExists('userSecondFactorsEnrollWebauthn', 'enrollWebauthnRequest', enrollWebauthnRequest)
+            const localVarPath = `/users/me/second_factors/webauthn`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication APIAuthToken required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(enrollWebauthnRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -6270,6 +6419,39 @@ export const Class2FAMethodsApiAxiosParamCreator = function (configuration?: Con
             }
 
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication APIAuthToken required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        userSecondFactorsStartWebauthn: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/users/me/second_factors/webauthn/start`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -6312,14 +6494,26 @@ export const Class2FAMethodsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {EnrollSecondFactorRequest} enrollSecondFactorRequest 
+         * @param {EnrollTOTPRequest} enrollTOTPRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async userSecondFactorsEnroll(enrollSecondFactorRequest: EnrollSecondFactorRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.userSecondFactorsEnroll(enrollSecondFactorRequest, options);
+        async userSecondFactorsEnroll(enrollTOTPRequest: EnrollTOTPRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.userSecondFactorsEnroll(enrollTOTPRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['Class2FAMethodsApi.userSecondFactorsEnroll']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {EnrollWebauthnRequest} enrollWebauthnRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async userSecondFactorsEnrollWebauthn(enrollWebauthnRequest: EnrollWebauthnRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.userSecondFactorsEnrollWebauthn(enrollWebauthnRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['Class2FAMethodsApi.userSecondFactorsEnrollWebauthn']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -6331,6 +6525,17 @@ export const Class2FAMethodsApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userSecondFactorsList(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['Class2FAMethodsApi.userSecondFactorsList']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async userSecondFactorsStartWebauthn(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StartWebauthnResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.userSecondFactorsStartWebauthn(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['Class2FAMethodsApi.userSecondFactorsStartWebauthn']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -6354,12 +6559,21 @@ export const Class2FAMethodsApiFactory = function (configuration?: Configuration
         },
         /**
          * 
-         * @param {EnrollSecondFactorRequest} enrollSecondFactorRequest 
+         * @param {EnrollTOTPRequest} enrollTOTPRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userSecondFactorsEnroll(enrollSecondFactorRequest: EnrollSecondFactorRequest, options?: any): AxiosPromise<string> {
-            return localVarFp.userSecondFactorsEnroll(enrollSecondFactorRequest, options).then((request) => request(axios, basePath));
+        userSecondFactorsEnroll(enrollTOTPRequest: EnrollTOTPRequest, options?: any): AxiosPromise<string> {
+            return localVarFp.userSecondFactorsEnroll(enrollTOTPRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {EnrollWebauthnRequest} enrollWebauthnRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        userSecondFactorsEnrollWebauthn(enrollWebauthnRequest: EnrollWebauthnRequest, options?: any): AxiosPromise<string> {
+            return localVarFp.userSecondFactorsEnrollWebauthn(enrollWebauthnRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -6368,6 +6582,14 @@ export const Class2FAMethodsApiFactory = function (configuration?: Configuration
          */
         userSecondFactorsList(options?: any): AxiosPromise<Array<APIAdminUserSecondAuthenticationFactor>> {
             return localVarFp.userSecondFactorsList(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        userSecondFactorsStartWebauthn(options?: any): AxiosPromise<StartWebauthnResponse> {
+            return localVarFp.userSecondFactorsStartWebauthn(options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -6392,13 +6614,24 @@ export class Class2FAMethodsApi extends BaseAPI {
 
     /**
      * 
-     * @param {EnrollSecondFactorRequest} enrollSecondFactorRequest 
+     * @param {EnrollTOTPRequest} enrollTOTPRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof Class2FAMethodsApi
      */
-    public userSecondFactorsEnroll(enrollSecondFactorRequest: EnrollSecondFactorRequest, options?: RawAxiosRequestConfig) {
-        return Class2FAMethodsApiFp(this.configuration).userSecondFactorsEnroll(enrollSecondFactorRequest, options).then((request) => request(this.axios, this.basePath));
+    public userSecondFactorsEnroll(enrollTOTPRequest: EnrollTOTPRequest, options?: RawAxiosRequestConfig) {
+        return Class2FAMethodsApiFp(this.configuration).userSecondFactorsEnroll(enrollTOTPRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {EnrollWebauthnRequest} enrollWebauthnRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof Class2FAMethodsApi
+     */
+    public userSecondFactorsEnrollWebauthn(enrollWebauthnRequest: EnrollWebauthnRequest, options?: RawAxiosRequestConfig) {
+        return Class2FAMethodsApiFp(this.configuration).userSecondFactorsEnrollWebauthn(enrollWebauthnRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -6409,6 +6642,16 @@ export class Class2FAMethodsApi extends BaseAPI {
      */
     public userSecondFactorsList(options?: RawAxiosRequestConfig) {
         return Class2FAMethodsApiFp(this.configuration).userSecondFactorsList(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof Class2FAMethodsApi
+     */
+    public userSecondFactorsStartWebauthn(options?: RawAxiosRequestConfig) {
+        return Class2FAMethodsApiFp(this.configuration).userSecondFactorsStartWebauthn(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

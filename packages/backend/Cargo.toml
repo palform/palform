@@ -59,6 +59,9 @@ clap = { default-features = false, features = [
 ], version = "4.5.21" }
 faster-hex = "0.10.0"
 ring = "0.17"
+webauthn-rs = { version = "0.5", features = [
+    "danger-allow-state-serialisation",
+] }
 
 async-stripe = { version = "0.39", default-features = false, features = [
     "runtime-tokio-hyper-rustls",

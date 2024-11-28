@@ -13,6 +13,8 @@
     import Captcha from "../../components/captcha/Captcha.svelte";
     import TextButton from "../../components/TextButton.svelte";
     import SocialAuthButtons from "../../components/auth/SocialAuthButtons.svelte";
+    import type { SignInResponseOneOf1SecondFactorRequired } from "@paltiverse/palform-typescript-openapi";
+    import SecondFactor from "./SecondFactor.svelte";
 
     let loading = false;
     const isOrgLogin = getOrgSubdomain();
@@ -42,6 +44,10 @@
         "create_initial_org"
     );
 
+    let secondFactor: SignInResponseOneOf1SecondFactorRequired | undefined =
+        undefined;
+    let secondFactorNewOrgId: string | undefined = undefined;
+
     $: onSignInClick = async (e: Event) => {
         e.preventDefault();
         if (!email || !password) return;
@@ -52,17 +58,16 @@
 
         loading = true;
         try {
-            const { newOrgId, tfaSessionId } = await signInWithEmailAndPassword(
+            const { newOrgId, tfa } = await signInWithEmailAndPassword(
                 email,
                 password,
                 captcha,
                 createInitialOrg
             );
 
-            if (tfaSessionId) {
-                navigate(
-                    `/auth/login/tfa/${tfaSessionId}${newOrgId ? "?thenOrg=" + newOrgId : ""}`
-                );
+            if (tfa) {
+                secondFactor = tfa;
+                secondFactorNewOrgId = newOrgId;
             } else {
                 if (newOrgId) {
                     navigate(`/orgs/${newOrgId}/induction/billing`);
@@ -86,6 +91,8 @@
             Sign in
         </LoadingButton>
     </AuthCard>
+{:else if secondFactor}
+    <SecondFactor tfa={secondFactor} newOrgId={secondFactorNewOrgId} />
 {:else}
     <AuthCard title="Welcome back">
         <form class="space-y-6" on:submit={onSignInClick}>
@@ -123,7 +130,12 @@
             {/if}
 
             <div class="space-y-2">
-                <LoadingButton {loading} disabled={loading} type="submit" buttonClass="w-full">
+                <LoadingButton
+                    {loading}
+                    disabled={loading}
+                    type="submit"
+                    buttonClass="w-full"
+                >
                     Sign in
                 </LoadingButton>
                 <p class="text-sm text-center text-gray-500 dark:text-gray-400">

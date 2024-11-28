@@ -10,14 +10,22 @@ use rocket_okapi::okapi::schemars::JsonSchema;
 use rocket_okapi::openapi;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::{Deserialize, Serialize};
+use webauthn_rs::prelude::{PublicKeyCredential, RequestChallengeResponse};
 
 use crate::auth::tokens::{NewAPIAuthToken, TokenManager};
 use crate::captcha::VerifiedCaptcha;
+use crate::config::Config;
 use crate::entity_managers::admin_user_second_factors::{
-    AdminUserSecondFactorManager, VerifyTOTPError,
+    AdminUserSecondFactorManager, ProcessWebauthnError, VerifyTOTPError,
 };
 use crate::entity_managers::admin_users::{AdminUserManagementError, AdminUserManager};
 use crate::entity_managers::orgs::OrganisationManager;
+
+#[derive(Deserialize, JsonSchema)]
+pub enum SignInSecondFactorRequest {
+    Totp(String),
+    Webauthn(#[schemars(with = "String")] PublicKeyCredential),
+}
 
 #[derive(Deserialize, JsonSchema)]
 pub enum SignInRequest {
@@ -28,7 +36,7 @@ pub enum SignInRequest {
     },
     SecondFactor {
         session_id: PalformDatabaseID<IDAdminUserSecondAuthenticationFactorSession>,
-        token: String,
+        factor: SignInSecondFactorRequest,
     },
 }
 
@@ -40,6 +48,9 @@ pub enum SignInResponse {
     },
     SecondFactorRequired {
         session_id: PalformDatabaseID<IDAdminUserSecondAuthenticationFactorSession>,
+        #[schemars(with = "Option<String>")]
+        rcr: Option<RequestChallengeResponse>,
+        totp: bool,
         new_org_id: Option<PalformDatabaseID<IDOrganisation>>,
     },
 }
@@ -51,6 +62,7 @@ pub async fn handler(
     db: &State<DatabaseConnection>,
     _captcha: VerifiedCaptcha,
     stripe: &State<stripe::Client>,
+    config: &State<Config>,
 ) -> Result<Json<SignInResponse>, APIErrorWithStatus> {
     let txn = db
         .begin_with_config(
@@ -110,19 +122,24 @@ pub async fn handler(
                 .map_err(|e| APIError::report_internal_error("bootstrap error", e))?;
             }
 
-            let tfa_manager = AdminUserSecondFactorManager::new(user.id);
-            if tfa_manager
+            let tfa_manager = AdminUserSecondFactorManager::new(user.id, config)
+                .map_err(|e| APIError::report_internal_error("init 2fa manager", e))?;
+
+            let (requires_totp, requires_webauthn) = tfa_manager
                 .user_requires_2fa(&txn)
                 .await
-                .map_internal_error()?
-            {
-                let session_id = tfa_manager
+                .map_internal_error()?;
+
+            if requires_totp || requires_webauthn {
+                let (session_id, rcr) = tfa_manager
                     .create_auth_session(&txn)
                     .await
-                    .map_internal_error()?;
+                    .map_err(|e| APIError::report_internal_error("init 2fa auth session", e))?;
 
                 SignInResponse::SecondFactorRequired {
                     session_id,
+                    rcr,
+                    totp: requires_totp,
                     new_org_id: org_id,
                 }
             } else {
@@ -135,18 +152,41 @@ pub async fn handler(
                 }
             }
         }
-        SignInRequest::SecondFactor { session_id, token } => {
-            let (is_valid, user_id) = AdminUserSecondFactorManager::verify_auth_session(
-                &txn,
-                session_id.to_owned(),
-                token.to_owned(),
-            )
-            .await
-            .map_err(|e| match e {
-                VerifyTOTPError::SessionExpired => APIError::BadRequest(e.to_string()).into(),
-                VerifyTOTPError::SessionNotFound => APIError::BadRequest(e.to_string()).into(),
-                _ => APIError::report_internal_error("verifying totp", e),
-            })?;
+        SignInRequest::SecondFactor { session_id, factor } => {
+            let (is_valid, user_id) = match factor {
+                SignInSecondFactorRequest::Totp(token) => {
+                    AdminUserSecondFactorManager::verify_totp_session(
+                        &txn,
+                        session_id.to_owned(),
+                        token.to_owned(),
+                    )
+                    .await
+                    .map_err(|e| match e {
+                        VerifyTOTPError::SessionExpired => {
+                            APIError::BadRequest(e.to_string()).into()
+                        }
+                        VerifyTOTPError::SessionNotFound => {
+                            APIError::BadRequest(e.to_string()).into()
+                        }
+                        _ => APIError::report_internal_error("verifying totp", e),
+                    })?
+                }
+                SignInSecondFactorRequest::Webauthn(pkc) => {
+                    AdminUserSecondFactorManager::verify_webauthn_session(
+                        &txn,
+                        config,
+                        session_id.to_owned(),
+                        pkc.to_owned(),
+                    )
+                    .await
+                    .map_err(|e| match e {
+                        ProcessWebauthnError::Session(_) => {
+                            APIError::BadRequest(e.to_string()).into()
+                        }
+                        _ => APIError::report_internal_error("verifying webauthn", e),
+                    })?
+                }
+            };
 
             if is_valid {
                 AdminUserSecondFactorManager::delete_auth_session(&txn, session_id.to_owned())

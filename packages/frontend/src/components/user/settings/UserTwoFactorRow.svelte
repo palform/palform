@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { faKey } from "@fortawesome/free-solid-svg-icons";
+    import { faKey, faMobile } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import type { APIAdminUserSecondAuthenticationFactor } from "@paltiverse/palform-typescript-openapi";
     import { TableBodyCell, TableBodyRow } from "flowbite-svelte";
@@ -30,7 +30,11 @@
 
 <TableBodyRow>
     <TableBodyCell>
-        <FontAwesomeIcon icon={faKey} class="me-1" />
+        {#if method.method === "Webauthn"}
+            <FontAwesomeIcon icon={faKey} class="me-1" />
+        {:else if method.method === "TOTP"}
+            <FontAwesomeIcon icon={faMobile} class="me-1" />
+        {/if}
         {method.nickname}
     </TableBodyCell>
     <TableBodyCell>
