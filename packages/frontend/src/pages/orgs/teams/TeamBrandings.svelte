@@ -23,7 +23,7 @@
     outline
     on:click={() => (showNewModal = true)}
     disabled={!$brandingEntitled ||
-        ($teamCtx.brandings.length > 1 && $multiBrandingEntitled)}
+        ($teamCtx.brandings.length >= 1 && !$multiBrandingEntitled)}
 >
     <FontAwesomeIcon icon={faPlus} class="me-2" />
     Create new branding scheme
