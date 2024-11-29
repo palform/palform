@@ -6,7 +6,7 @@ import FormExample from "@site/src/components/FormExample.tsx"
 
 # Struggling to get leads? Your lead gen forms might be to blame...
 
-We get it. You're using Google Forms to collect data from your leads and customers, but something just isn't right. Your conversion rates are low, the forms look unprofessional, and it's a pain to integrate with any other platforms. Leads inexplicably avoid engaging, and you're getting more desperate searching for answers.
+We get it. You're using Google Forms to collect data from your leads and customers, but something just isn't right. Your **conversion rates are low**, the forms look **unprofessional**, and it's a **pain to integrate** with any other platforms. Leads inexplicably avoid engaging, and you're getting more **desperate searching for answers**.
 
 But there's literally hundreds of competing form builders on the market, and the options are just super overwhelming. The costs of the high-quality alternatives are exorbitant which doesn't help when you're already struggling to make a profit.
 
@@ -34,9 +34,10 @@ The simpler your form, the more likely users are to complete it all the way thro
 
 This example collects all the data you need to do some basic research on the person and company, as well as a way to contact them. In 99% of cases, you really don't need more data than this!
 
-<FormExample 
+<FormExample
   url="https://dash.palform.app/fill/org_0GYDWW6VM4C0E/form_0J1BA3AK64ZK2?f=fat_0J1BA9XCP4QS7#ak=C63ECEF4B27E8B6D74F838FC9C7DDFA0BB9F447F" 
   height={280}
+  state="good"
 />
 
 ## 2. Give repeated reassurance
@@ -44,11 +45,11 @@ This example collects all the data you need to do some basic research on the per
 Modern-day consumers are increasingly worried about how their data is handled. Every new data point you're collecting will need a sort of "mental" justification for many people, which can be easy to forget when you're solely focussed on collecting as much data as possible.
 
 It's important to be super clear about how you're handling their data and what security practices you'll be using. Not only to make leads feel comfortable, but also to ensure you're following data protection laws [such as the GDPR](/blog/2024/09/07/google-forms-gdpr).
-
 Here's some simple things you can do:
 
 - At the start of the form, **include a link to your Privacy Policy**. Not only is this legally required, it makes your business look super professional and convinces your users they're in comfortable hands.
 - Use an **end-to-end encrypted form builder**. The majority of form builders on the market such as Google Forms and Typeform don't fully encrypt response data. Users can feel creeped out by this, and it exposes you to serious data breaches. Try [Palform](https://palform.app), which offers unlimited responses for free, and security standards that outperform the entire industry.
+- Explain briefly **why you need their contact details**. If you'll be sending them a newsletter, make that clear! Most people will only be interested in talking to you directly, and reassuring them they won't receive any unwanted emails can increase their confidence.
 
 ## 3. Use a lead magnet
 
@@ -67,6 +68,7 @@ Or try offering a guide/resource that promises to solve common problems experien
 <FormExample 
   url="https://dash.palform.app/fill/org_0GYDWW6VM4C0E/form_0J1BFK17J4W7R?f=fat_0J1BFQ3FJ4XE9#ak=C63ECEF4B27E8B6D74F838FC9C7DDFA0BB9F447F"
   height={300}
+  state="good"
 />
 
 ## 4. Make sure your design stands out
@@ -75,9 +77,41 @@ The worst mistake you can make is using ugly forms that look unprofessional. Goo
 
 Not to mention:
 
-- your branding is basically completely non-existent
-- it's on a random domain that's impossible to memorise
-- a megacorporation known for [non-stop data breaches](https://firewalltimes.com/google-data-breach-timeline/) gets front-row access to your data
+- your branding is basically **completely non-existent**
+- it's on a **random domain** that's impossible to memorise
+- a megacorporation known for [non-stop data breaches](https://firewalltimes.com/google-data-breach-timeline/) gets **front-row access to your data**
 - and so on...
 
 Use a form builder that gives you powerful customisation options: you want to be able to modify **everything**, from colours to images, and border rounding to font settings. [Palform](https://palform.app) offers a sophisticated branding scheme editor that consistently applies your organisation's design to all your forms.
+
+Take a look at this heavily-branded example:
+
+<FormExample 
+  url="https://dash.palform.app/fill/org_0GYDWW6VM4C0E/form_0J1JQR0VP4J03?f=fat_0J1JSVD1Y4ZWZ#ak=C63ECEF4B27E8B6D74F838FC9C7DDFA0BB9F447F"
+  height={450}
+  state="good"
+/>
+
+It conveys a sense of luxury and elegance that an unbranded form simply wouldn't. Add a logo and some more custom assets, and it's perfect!
+
+## 5. Handle the response surge!
+
+Now that you've made the perfect lead gen form, it's important to be prepared for the surge of response you'll inevitably receive.
+
+But here's where the real obstacle comes in. **Nearly all form builders have annoying response limits!**
+
+Take Typeform as an example. On the [free plan](https://www.typeform.com/pricing/), you're restricted to a mere **10 responses per month**. If you want more, you'll have to hand over at least £21 per month. And that still only gets you 100 responses.
+
+The number of posts on X about Typeforms filling up and breaking down is constantly growing and quite sad to look at. There's nothing more unprofessional than your form just **ceasing to work** in the middle of the night and **losing leads** to it.
+
+With [Palform](https://palform.app/#pricing) you get unlimited responses completely free of charge. In fact, all plans include unlimited responses. Your forms will just keep growing with you at no extra cost, so you can actually get some sleep! Feel free to post the submission link anywhere on the internet and stop worrying.
+
+## Conclusion
+
+Hopefully you've gained some good tips on how to level up your forms and optimise them for higher conversions. It's something that often takes hours of experimentation, and you'll probably fail a few times before you land on a winning design. The important thing is to **keep iterating** and getting feedback!
+
+---
+
+This article was written by Pal Kerecsenyi, Founder of [Palform](https://palform.app). Sign up for free now and get unlimited responses with the world's most secure form builder.
+
+Got any questions? Email hey@palform.app and we'll get an actual friendly human to help you.
