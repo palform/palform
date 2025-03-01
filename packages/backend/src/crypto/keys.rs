@@ -81,7 +81,7 @@ impl<P: KeyParts> CryptoKeyRepr<P> {
     pub fn enc_key<'a>(
         &'a self,
         policy: &'a StandardPolicy,
-    ) -> Result<ValidKeyAmalgamation<'_, PublicParts, UnspecifiedRole, bool>, KeyConversionError>
+    ) -> Result<ValidKeyAmalgamation<'a, PublicParts, UnspecifiedRole, bool>, KeyConversionError>
     {
         resolve_encryption_key(&self.cert, policy)
             .map_err(|e| KeyConversionError::PGP(e.to_string()))

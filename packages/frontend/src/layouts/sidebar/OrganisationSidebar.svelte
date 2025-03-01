@@ -15,6 +15,7 @@
         faCog,
         faHome,
         faInfoCircle,
+        faMagicWandSparkles,
         faPerson,
         faPlus,
     } from "@fortawesome/free-solid-svg-icons";
@@ -31,6 +32,8 @@
     import { onMount } from "svelte";
     import { enable_debug_hook_js } from "@paltiverse/palform-client-common";
     import MissingKeyWarning from "../../components/keys/MissingKeyWarning.svelte";
+    import { buffer } from "ol/size";
+    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     enable_debug_hook_js();
 
@@ -243,6 +246,15 @@
             </div>
 
             <div class="pt-2">
+                <Button
+                    class="mb-2 block w-full"
+                    href={`/orgs/${orgId}/settings/billing`}
+                    on:click={navigateEvent}
+                >
+                    <FontAwesomeIcon icon={faMagicWandSparkles} />
+                    Upgrade
+                </Button>
+
                 <TextButton on:click={onSignOutClick}>Sign out</TextButton>
             </div>
         </div>
