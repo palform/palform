@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { useLocation } from "svelte-routing";
     import FormDangerDelete from "../../components/forms/settings/FormDangerDelete.svelte";
     import FormDangerMove from "../../components/forms/settings/FormDangerMove.svelte";
     import FormEndConfiguration from "../../components/forms/settings/FormEndConfiguration.svelte";
@@ -11,9 +12,14 @@
     import { getFormCtx } from "../../data/contexts/orgLayout";
 
     const formCtx = getFormCtx();
+    const location = useLocation();
+
+    const selectField = $location.state.selectField as string | undefined;
 </script>
 
 <FormSettingsForm
+    {selectField}
+    oqpp={$formCtx.one_question_per_page}
     initialValue={{
         id: $formCtx.id,
         editor_name: $formCtx.editor_name,

@@ -8,7 +8,6 @@
     import FormTokens from "./FormTokens.svelte";
     import { Route, Router } from "svelte-routing";
     import FormTabs from "../../components/forms/FormTabs.svelte";
-    import MainTitle from "../../layouts/MainTitle.svelte";
     import FormSettings from "./FormSettings.svelte";
     import { getFormCtx, getOrgContext } from "../../data/contexts/orgLayout";
     import FormExport from "./FormExport.svelte";
@@ -26,6 +25,7 @@
         setFormAdminContext,
         type FormAdminContext,
     } from "../../data/contexts/formAdmin";
+    import FormTitleClickable from "../../components/forms/FormTitleClickable.svelte";
 
     export let formId: string;
     const formAdminStore = writable<FormAdminContext>();
@@ -128,9 +128,7 @@
         {/if}
     </div>
 {:else}
-    <MainTitle className="mb-4">
-        {$formCtx.editor_name}
-    </MainTitle>
+    <FormTitleClickable class="mb-4" />
 
     <Router>
         <FormTabs />

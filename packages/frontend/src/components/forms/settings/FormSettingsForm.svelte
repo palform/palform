@@ -30,6 +30,7 @@
     export let initialValue: (UpdateFormRequest & { id: string }) | undefined;
     export let initialTeamId: string | undefined = undefined;
     export let oqpp: boolean | undefined = undefined;
+    export let selectField: string | undefined = undefined;
 
     $: isNew = initialValue === undefined;
     let editorName = initialValue?.editor_name ?? "";
@@ -128,6 +129,7 @@
                     bind:value={editorName}
                     disabled={loading}
                     class="mt-2"
+                    autofocus={selectField === "editor_name" ? true : undefined}
                 />
             </Label>
             <Helper class="mt-2">
@@ -136,20 +138,22 @@
             </Helper>
         </fieldset>
     {/if}
-    <fieldset>
-        <Label class="font-medium">
-            Form title
-            <Input
-                required
-                bind:value={title}
-                disabled={loading}
-                class="mt-2"
-            />
-        </Label>
-        <Helper class="mt-2">
-            The public-facing title shown to anyone filling in your form.
-        </Helper>
-    </fieldset>
+    {#if !oqpp}
+        <fieldset>
+            <Label class="font-medium">
+                Form title
+                <Input
+                    required
+                    bind:value={title}
+                    disabled={loading}
+                    class="mt-2"
+                />
+            </Label>
+            <Helper class="mt-2">
+                The public-facing title shown to anyone filling in your form.
+            </Helper>
+        </fieldset>
+    {/if}
 
     {#if teamId !== "" && $isBrandingEntitled && !isNew}
         <fieldset>
