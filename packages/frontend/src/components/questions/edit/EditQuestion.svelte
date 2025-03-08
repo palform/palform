@@ -52,6 +52,7 @@
     import QuestionTypeLabel from "./QuestionTypeLabel.svelte";
     import QeDateTime from "./QEDateTime.svelte";
     import QeHidden from "./QEHidden.svelte";
+    import type { ArrayMoveDirection } from "../../../data/util/arraySwap";
 
     export let questionId: string;
     const question = getEditorQuestion(questionId);
@@ -110,7 +111,7 @@
         questionIndex !==
             $formEditorCtx.questions[$question?.group_id].length - 1;
 
-    $: onMoveClick = async (direction: "up" | "down") => {
+    $: onMoveClick = (direction: ArrayMoveDirection) => {
         if (!$question) return;
         moveQuestion(formEditorCtx, $question, direction);
     };
@@ -140,28 +141,30 @@
                     >
                         <FontAwesomeIcon icon={faTrash} />
                     </Button>
-                    <Button
-                        color="light"
-                        disabled={!canMoveUp ||
-                            !!$formEditorCtx.currentlyEditing}
-                        on:click={(e) => {
-                            e.stopPropagation();
-                            onMoveClick("up");
-                        }}
-                    >
-                        <FontAwesomeIcon icon={faArrowUp} />
-                    </Button>
-                    <Button
-                        color="light"
-                        disabled={!canMoveDown ||
-                            !!$formEditorCtx.currentlyEditing}
-                        on:click={(e) => {
-                            e.stopPropagation();
-                            onMoveClick("down");
-                        }}
-                    >
-                        <FontAwesomeIcon icon={faArrowDown} />
-                    </Button>
+                    {#if !$formMetadataCtx.one_question_per_page}
+                        <Button
+                            color="light"
+                            disabled={!canMoveUp ||
+                                !!$formEditorCtx.currentlyEditing}
+                            on:click={(e) => {
+                                e.stopPropagation();
+                                onMoveClick("up");
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faArrowUp} />
+                        </Button>
+                        <Button
+                            color="light"
+                            disabled={!canMoveDown ||
+                                !!$formEditorCtx.currentlyEditing}
+                            on:click={(e) => {
+                                e.stopPropagation();
+                                onMoveClick("down");
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faArrowDown} />
+                        </Button>
+                    {/if}
                 </ButtonGroup>
             </div>
         {:else}

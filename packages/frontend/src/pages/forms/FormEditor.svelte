@@ -13,6 +13,7 @@
     } from "../../data/contexts/formEditor";
     import FormAutosave from "../../components/forms/FormAutosave.svelte";
     import { slide } from "svelte/transition";
+    import { flip } from "svelte/animate";
 
     const formAdminCtx = getFormAdminContext();
     const formMetadataCtx = getFormCtx();
@@ -57,7 +58,11 @@
         <FormQuestionLimitWarning class="!mt-6 !mb-4" />
 
         {#each $formEditorCtx.groups as group, index (group.id)}
-            <div transition:slide class="space-y-4">
+            <div
+                transition:slide
+                animate:flip={{ duration: 200 }}
+                class="space-y-4"
+            >
                 <CreateQuestionGroup beforeIndex={index} />
                 <QuestionGroupEditor groupId={group.id} />
             </div>

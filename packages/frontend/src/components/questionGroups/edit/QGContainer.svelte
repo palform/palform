@@ -1,5 +1,11 @@
 <script lang="ts">
-    import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+    import {
+        faArrowDown,
+        faArrowUp,
+        faEdit,
+        faPlus,
+        faTrash,
+    } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import type { APIQuestionGroup } from "@paltiverse/palform-typescript-openapi";
     import { createEventDispatcher } from "svelte";
@@ -20,9 +26,10 @@
     } from "../../../data/contexts/formAdmin";
     import {
         getFormEditorCtx,
+        moveQuestionGroup,
         updateQuestionGroup,
     } from "../../../data/contexts/formEditor";
-    import { fade, scale } from "svelte/transition";
+    import type { ArrayMoveDirection } from "../../../data/util/arraySwap";
 
     export let group: APIQuestionGroup;
 
@@ -53,6 +60,13 @@
     };
     $: changed =
         groupTitle !== group.title || groupDescription !== group.description;
+
+    $: groupIndex = $formEditorCtx.groups.findIndex((e) => e.id === group.id);
+    $: canMoveUp = groupIndex > 0;
+    $: canMoveDown = groupIndex !== $formEditorCtx.groups.length - 1;
+    $: onMoveClick = (direction: ArrayMoveDirection) => {
+        moveQuestionGroup(formEditorCtx, group, direction);
+    };
 </script>
 
 <section
@@ -139,8 +153,25 @@
                 {/if}
             {/if}
         </div>
-        {#if !$formMetadataCtx.one_question_per_page}
-            <div>
+        <div>
+            <ButtonGroup>
+                <Button
+                    on:click={() => onMoveClick("up")}
+                    disabled={!canMoveUp}
+                    color="light"
+                >
+                    <FontAwesomeIcon icon={faArrowUp} />
+                </Button>
+                <Button
+                    on:click={() => onMoveClick("down")}
+                    disabled={!canMoveDown}
+                    color="light"
+                >
+                    <FontAwesomeIcon icon={faArrowDown} />
+                </Button>
+            </ButtonGroup>
+
+            {#if !$formMetadataCtx.one_question_per_page}
                 {#if !editing}
                     <Button
                         color="light"
@@ -163,8 +194,8 @@
                 >
                     <FontAwesomeIcon icon={faTrash} />
                 </LoadingButton>
-            </div>
-        {/if}
+            {/if}
+        </div>
     </div>
 
     {#if !editing}
