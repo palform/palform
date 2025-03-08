@@ -13,6 +13,8 @@
 
     export let key: APIUserKey;
     export let showInfo = true;
+    export let disableLink = false;
+
     const orgCtx = getOrgContext();
     const dispatch = createEventDispatcher<{ successfulImport: undefined }>();
 
@@ -28,7 +30,10 @@
                 "Successfully restored from backup! You can now use this key to decrypt responses."
             );
             dispatch("successfulImport");
-            navigate(`/orgs/${$orgCtx.org.id}/user/keys`);
+
+            if (!disableLink) {
+                navigate(`/orgs/${$orgCtx.org.id}/user/keys`);
+            }
         } catch (e) {
             console.error(e);
             await showFailureToast(

@@ -122,7 +122,7 @@
         class="flex overflow-hidden h-screen w-full bg-slate-50/50 dark:bg-slate-900"
     >
         <div
-            class={`h-screen bg-slate-100 dark:bg-slate-800 flex flex-col gap-2 transition-[max-width] w-72 overflow-hidden ${!sidebarIsMobile || mobileSidebarOpen ? "max-w-72 p-3" : "max-w-0 p-0"}`}
+            class={`h-screen bg-slate-100 dark:bg-slate-800 flex flex-col gap-2 transition-[max-width] w-72 overflow-x-hidden overflow-y-auto ${!sidebarIsMobile || mobileSidebarOpen ? "max-w-72 p-3" : "max-w-0 p-0"}`}
         >
             {#if !isOnSubdomain}
                 <p
@@ -237,7 +237,7 @@
                 </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto space-y-2">
+            <div class="flex-1 space-y-2">
                 {#if $orgCtx.forms.length > 0}
                     {#each $orgCtx.forms as form (form.id)}
                         <SidebarFormEntry {form} on:click={closeSidebar} />

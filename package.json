@@ -1,5 +1,8 @@
 {
   "name": "@paltiverse/palform",
   "private": true,
-  "workspaces": ["packages/*"]
+  "workspaces": ["packages/*"],
+  "dependencies": {
+    "caniuse-lite": "^1.0.30001702"
+  }
 }

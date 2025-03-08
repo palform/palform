@@ -26,6 +26,7 @@
         <BackupRecover
             key={missingKey}
             showInfo={false}
+            disableLink
             on:successfulImport={() => (showModal = false)}
         />
     {/if}
