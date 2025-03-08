@@ -100,7 +100,7 @@
         for={id}
         class={`block text-center cursor-pointer py-2 px-1 flex-1 rounded-none first:rounded-l-lg last:rounded-r-lg border-r-0 border-t border-b border-l last:border-r dark:border-gray-600 hover:bg-gray-200/80 dark:hover:bg-slate-700/80 peer-focus:ring-2 ring-white ${active ? "text-white" : "dark:text-slate-300"}`}
         style:background-color={active
-            ? activeColorOverride ?? "rgb(147, 14, 189)"
+            ? (activeColorOverride ?? "rgb(147, 14, 189)")
             : ""}
         style:border-color={borderColorOverride}
         style:color={textColorOverride ?? (active ? "white" : "")}
@@ -130,7 +130,7 @@
 {:else}
     <label
         for={id}
-        class={`block cursor-pointer ${active ? "text-primary-600 !text-[var(--brand-color)]" : "text-primary-200 dark:text-primary-900/40 !text-[var(--brand-color)] dark:!text-[var(--brand-color)]"} hover:text-primary-500 hover:!text-[var(--brand-hover-color)] dark:hover:text-primary-700 dark:hover:!text-[var(--brand-hover-color)]`}
+        class={`block cursor-pointer ${active ? ($brandCtx === undefined ? "text-primary-600" : "text-[var(--brand-color)]") : $brandCtx === undefined ? "text-primary-200 dark:text-primary-900/40" : "text-[var(--brand-color)] dark:text-[var(--brand-color)]"} ${$brandCtx === undefined ? " hover:text-primary-500 dark:hover:text-primary-700" : "hover:!text-[var(--brand-hover-color)] dark:hover:!text-[var(--brand-hover-color)]"}`}
         style:--brand-color={textColorOverride}
         style:--brand-hover-color={iconHoverColorOverride}
     >
