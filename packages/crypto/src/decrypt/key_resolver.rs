@@ -1,10 +1,10 @@
 use anyhow::anyhow;
 use sequoia_openpgp::{
-    crypto::KeyPair,
+    crypto::{KeyPair, SessionKey},
     packet::{PKESK, SKESK},
     parse::stream::{DecryptionHelper, VerificationHelper},
     types::SymmetricAlgorithm,
-    Cert, Fingerprint, KeyID,
+    Cert, Fingerprint, KeyHandle,
 };
 
 use crate::{
@@ -15,7 +15,7 @@ use crate::{
 #[derive(Clone)]
 #[cfg_attr(feature = "frontend-js", wasm_bindgen::prelude::wasm_bindgen)]
 pub struct KeyResolver {
-    keys: Vec<(KeyPair, Fingerprint)>,
+    keys: Vec<(KeyPair, Fingerprint, Cert)>,
 }
 
 #[cfg(feature = "frontend-js")]
@@ -30,10 +30,13 @@ impl KeyResolver {
 }
 
 impl KeyResolver {
-    fn find_key_for_id(&self, key_id: &KeyID) -> Option<(&KeyPair, &Fingerprint)> {
-        for (kp, fp) in &self.keys {
-            if &KeyID::from(fp) == key_id {
-                return Some((kp, fp));
+    fn find_key_for_handle(
+        &self,
+        key_handle: &KeyHandle,
+    ) -> Option<(&KeyPair, &Fingerprint, &Cert)> {
+        for (kp, this_fingerprint, cert) in &self.keys {
+            if KeyHandle::from(this_fingerprint).aliases(key_handle) {
+                return Some((kp, this_fingerprint, cert));
             }
         }
         None
@@ -56,38 +59,39 @@ impl VerificationHelper for KeyResolver {
     }
 }
 impl DecryptionHelper for KeyResolver {
-    fn decrypt<D>(
+    fn decrypt(
         &mut self,
         pkesks: &[PKESK],
         _skesks: &[SKESK],
         sym_algo: Option<SymmetricAlgorithm>,
-        mut decrypt: D,
-    ) -> sequoia_openpgp::Result<Option<Fingerprint>>
-    where
-        D: FnMut(
-            sequoia_openpgp::types::SymmetricAlgorithm,
-            &sequoia_openpgp::crypto::SessionKey,
-        ) -> bool,
-    {
+        decrypt: &mut dyn FnMut(Option<SymmetricAlgorithm>, &SessionKey) -> bool,
+    ) -> sequoia_openpgp::Result<Option<Cert>> {
         for pkesk in pkesks {
-            let matching_key = self.find_key_for_id(pkesk.recipient());
-            if let Some((kp, fp)) = matching_key {
+            let matching_key = self.find_key_for_handle(
+                &pkesk
+                    .recipient()
+                    .ok_or(anyhow!("Session key had no recipient metadata"))?,
+            );
+
+            if let Some((kp, _, cert)) = matching_key {
                 if pkesk
                     .decrypt(&mut kp.clone(), sym_algo)
                     .map(|(algo, sk)| decrypt(algo, &sk))
                     .unwrap_or(false)
                 {
-                    return Ok(Some(fp.clone()));
+                    return Ok(Some(cert.to_owned()));
                 }
             }
         }
 
-        Err(anyhow!("Cannot decrypt message with key"))
+        Err(anyhow!("None of your keys are able to decrypt this data"))
     }
 }
 
-fn parse_key_pems(key_pems: Vec<String>) -> Result<Vec<(KeyPair, Fingerprint)>, anyhow::Error> {
-    let mut key_pairs = Vec::<(KeyPair, Fingerprint)>::new();
+fn parse_key_pems(
+    key_pems: Vec<String>,
+) -> Result<Vec<(KeyPair, Fingerprint, Cert)>, anyhow::Error> {
+    let mut key_pairs = Vec::new();
     let p = recipient_cert_policy();
 
     for key_pem in key_pems {
@@ -95,7 +99,8 @@ fn parse_key_pems(key_pems: Vec<String>) -> Result<Vec<(KeyPair, Fingerprint)>, 
         let enc_key = resolve_encryption_key(&cert, &p)?;
         key_pairs.push((
             enc_key.key().parts_as_secret()?.clone().into_keypair()?,
-            enc_key.fingerprint(),
+            enc_key.key().fingerprint(),
+            cert,
         ))
     }
 

@@ -34,8 +34,7 @@ pub fn decrypt_backed_up_key(
         })
     }
 
-
-    let cert = cert.insert_packets(decrypted_keys)?;
+    let (cert, _) = cert.insert_packets(decrypted_keys)?;
     let decrypted_cert_pem = cert.as_tsk().armored().to_vec()?;
     Ok(RestoredKeyResponse {
         decrypted_private_pem: String::from_utf8(decrypted_cert_pem)?,

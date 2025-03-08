@@ -15,7 +15,7 @@ use sequoia_openpgp::{
     parse::Parse,
     policy::StandardPolicy,
     serialize::SerializeInto,
-    Cert, Fingerprint, KeyID,
+    Cert, Fingerprint,
 };
 use thiserror::Error;
 
@@ -87,18 +87,18 @@ impl<P: KeyParts> CryptoKeyRepr<P> {
             .map_err(|e| KeyConversionError::PGP(e.to_string()))
     }
 
-    pub fn all_subkey_ids<'a>(
+    pub fn all_subkey_fingerprints<'a>(
         &'a self,
         policy: &'a StandardPolicy,
-    ) -> Result<Vec<KeyID>, KeyConversionError> {
+    ) -> Result<Vec<Fingerprint>, KeyConversionError> {
         let valid_cert = self
             .cert
             .with_policy(policy, None)
             .map_err(|e| KeyConversionError::PGP(e.to_string()))?;
 
-        let mut id_vec = Vec::<KeyID>::new();
+        let mut id_vec = Vec::<Fingerprint>::new();
         for key in valid_cert.keys() {
-            id_vec.push(key.keyid())
+            id_vec.push(key.key().fingerprint())
         }
 
         Ok(id_vec)

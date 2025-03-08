@@ -23,7 +23,7 @@ pub fn encrypt_key_for_backup(
         })
     }
 
-    let cert = cert.insert_packets(encrypted_keys)?;
+    let (cert, _) = cert.insert_packets(encrypted_keys)?;
     let encrypted_cert_pem = cert.as_tsk().armored().to_vec()?;
     Ok(String::from_utf8(encrypted_cert_pem)?)
 }

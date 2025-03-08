@@ -5,7 +5,7 @@ use palform_client_common::form_management::submission::InProgressSubmission;
 use sequoia_openpgp::{
     armor::{Kind, Reader, ReaderMode, Writer},
     parse::Parse,
-    serialize::stream::{Encryptor2, LiteralWriter, Message},
+    serialize::stream::{Encryptor, LiteralWriter, Message},
     Cert,
 };
 
@@ -50,7 +50,7 @@ fn encrypt_anything(data: &[u8], recipient_certs: Vec<String>) -> Result<Vec<u8>
     }
 
     let mut sink = Vec::new();
-    let message = Encryptor2::for_recipients(Message::new(&mut sink), recipients).build()?;
+    let message = Encryptor::for_recipients(Message::new(&mut sink), recipients).build()?;
     let mut w = LiteralWriter::new(message).build()?;
 
     w.write_all(data)?;

@@ -45,7 +45,7 @@
                 colspan={$formAdminCtx.questions.length}
                 class="px-3 text-sm text-red-800 dark:text-red-200"
             >
-                Failed to decrypt response
+                {submission.error}
             </td>
         {/if}
     </tr>

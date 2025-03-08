@@ -19,8 +19,8 @@ pub fn get_key_metadata(cert_pem: String) -> Result<KeyMetadata, anyhow::Error> 
     let enc_key = resolve_encryption_key(&cert, &policy)?;
     Ok(KeyMetadata {
         fingerprint: cert.fingerprint().to_hex(),
-        algo: format!("{}", enc_key.pk_algo()),
-        has_secret: enc_key.has_unencrypted_secret(),
+        algo: format!("{}", enc_key.key().pk_algo()),
+        has_secret: enc_key.key().has_unencrypted_secret(),
     })
 }
 

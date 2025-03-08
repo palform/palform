@@ -3,7 +3,7 @@ use sequoia_openpgp::{
     packet::Packet,
     parse::Parse,
     serialize::SerializeInto,
-    KeyID, Message,
+    KeyHandle, Message,
 };
 use std::io::Write;
 use thiserror::Error;
@@ -57,13 +57,15 @@ impl CryptoSubmissionRepr {
         Ok(pem_string)
     }
 
-    pub fn get_decrypting_key_ids(&self) -> Vec<KeyID> {
-        let mut key_ids = Vec::<KeyID>::new();
-        for child in self.message.children() {
+    pub fn get_decrypting_key_handles(&self) -> Vec<KeyHandle> {
+        let mut handles = Vec::new();
+        for child in self.message.packets().children() {
             if let Packet::PKESK(child) = child {
-                key_ids.push(child.recipient().clone());
+                if let Some(recipient) = child.recipient().clone() {
+                    handles.push(recipient);
+                }
             }
         }
-        key_ids
+        handles
     }
 }
