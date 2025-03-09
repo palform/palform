@@ -138,7 +138,7 @@
             </Helper>
         </fieldset>
     {/if}
-    {#if !oqpp}
+    {#if !oqpp || isNew}
         <fieldset>
             <Label class="font-medium">
                 Form title
