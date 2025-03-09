@@ -240,6 +240,7 @@ async fn main() -> Result<(), rocket::Error> {
                 api::webhooks::create::handler,
                 api::webhooks::delete::handler,
                 api::webhooks::list_jobs::handler,
+                api::feedback::create::handler,
             ];
             route_lists.push(main_routes);
 

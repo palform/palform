@@ -29,3 +29,4 @@ id_resource_type!(IDTeam, "team");
 id_resource_type!(IDTeamAsset, "tas");
 id_resource_type!(IDWebhook, "wh");
 id_resource_type!(IDWebhookJob, "whj");
+id_resource_type!(IDFeedbackItem, "fi");

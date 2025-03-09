@@ -926,6 +926,25 @@ export interface APIExchangedShortLink {
 /**
  * 
  * @export
+ * @interface APIFeedbackItem
+ */
+export interface APIFeedbackItem {
+    /**
+     * 
+     * @type {number}
+     * @memberof APIFeedbackItem
+     */
+    'score': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof APIFeedbackItem
+     */
+    'comment'?: string | null;
+}
+/**
+ * 
+ * @export
  * @interface APIFillToken
  */
 export interface APIFillToken {
@@ -6807,6 +6826,112 @@ export class CountryMetadataApi extends BaseAPI {
      */
     public countriesListNames(options?: RawAxiosRequestConfig) {
         return CountryMetadataApiFp(this.configuration).countriesListNames(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * FeedbackApi - axios parameter creator
+ * @export
+ */
+export const FeedbackApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {APIFeedbackItem} aPIFeedbackItem 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        feedbackCreate: async (aPIFeedbackItem: APIFeedbackItem, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'aPIFeedbackItem' is not null or undefined
+            assertParamExists('feedbackCreate', 'aPIFeedbackItem', aPIFeedbackItem)
+            const localVarPath = `/feedback`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(aPIFeedbackItem, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * FeedbackApi - functional programming interface
+ * @export
+ */
+export const FeedbackApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = FeedbackApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {APIFeedbackItem} aPIFeedbackItem 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async feedbackCreate(aPIFeedbackItem: APIFeedbackItem, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.feedbackCreate(aPIFeedbackItem, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FeedbackApi.feedbackCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * FeedbackApi - factory interface
+ * @export
+ */
+export const FeedbackApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = FeedbackApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {APIFeedbackItem} aPIFeedbackItem 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        feedbackCreate(aPIFeedbackItem: APIFeedbackItem, options?: any): AxiosPromise<void> {
+            return localVarFp.feedbackCreate(aPIFeedbackItem, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * FeedbackApi - object-oriented interface
+ * @export
+ * @class FeedbackApi
+ * @extends {BaseAPI}
+ */
+export class FeedbackApi extends BaseAPI {
+    /**
+     * 
+     * @param {APIFeedbackItem} aPIFeedbackItem 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FeedbackApi
+     */
+    public feedbackCreate(aPIFeedbackItem: APIFeedbackItem, options?: RawAxiosRequestConfig) {
+        return FeedbackApiFp(this.configuration).feedbackCreate(aPIFeedbackItem, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

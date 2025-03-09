@@ -2,6 +2,7 @@ pub mod admin_user_second_factor;
 pub mod admin_users;
 pub mod audit;
 pub mod billing;
+pub mod feedback_items;
 pub mod fill_token;
 pub mod form;
 pub mod form_brandings;

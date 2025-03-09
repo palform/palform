@@ -10,6 +10,7 @@ pub mod admin_user_second_authentication_factor_session;
 pub mod audit_log_entry;
 pub mod auth_token;
 pub mod deleted_submission;
+pub mod feedback_item;
 pub mod fill_access_token;
 pub mod form;
 pub mod form_branding;

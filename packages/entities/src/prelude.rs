@@ -8,6 +8,7 @@ pub use super::admin_user_second_authentication_factor_session::Entity as AdminU
 pub use super::audit_log_entry::Entity as AuditLogEntry;
 pub use super::auth_token::Entity as AuthToken;
 pub use super::deleted_submission::Entity as DeletedSubmission;
+pub use super::feedback_item::Entity as FeedbackItem;
 pub use super::fill_access_token::Entity as FillAccessToken;
 pub use super::form::Entity as Form;
 pub use super::form_branding::Entity as FormBranding;

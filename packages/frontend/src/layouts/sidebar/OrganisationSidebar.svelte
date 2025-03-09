@@ -34,6 +34,7 @@
     import MissingKeyWarning from "../../components/keys/MissingKeyWarning.svelte";
     import { buffer } from "ol/size";
     import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import FeedbackButton from "../../components/feedback/FeedbackButton.svelte";
 
     enable_debug_hook_js();
 
@@ -118,6 +119,8 @@
 {/if}
 
 {#if $orgCtx !== undefined && $orgCtx.org !== undefined && $orgCtx.myTeams !== undefined && $orgCtx.forms !== undefined && $orgCtx.induction !== undefined && $orgCtx.amIAdmin !== undefined && $orgCtx.myKeys !== undefined}
+    <FeedbackButton />
+
     <div
         class="flex overflow-hidden h-screen w-full bg-slate-50/50 dark:bg-slate-900"
     >
