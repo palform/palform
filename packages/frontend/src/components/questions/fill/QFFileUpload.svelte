@@ -54,6 +54,10 @@
                 !$formFillStore.isShortLink
             );
 
+            if (encryptedAsset.byteLength > 10 * 1e9) {
+                throw t("file_too_large");
+            }
+
             const fd = new FormData();
             fd.append("encrypted", new Blob([encryptedAsset]));
             const resp = await fetch(
@@ -63,11 +67,17 @@
                     method: "POST",
                     body: fd,
                 }
-            ).then((e) => e.json() as Promise<string>);
+            );
+
+            const respJson = (await resp.json()) as string;
+
+            if (!resp.ok) {
+                throw respJson;
+            }
 
             setQuestionValue(id, {
                 FileUpload: {
-                    file_id: resp,
+                    file_id: respJson,
                     content_type: file.type,
                 },
             });
@@ -111,28 +121,26 @@
     let accept = "";
     $: {
         accept = "";
-        if (!config.file_upload.allowed_types.includes("Other")) {
-            for (const type of config.file_upload.allowed_types) {
-                switch (type) {
-                    case "Image":
-                        accept += "image/*,";
-                        break;
-                    case "Video":
-                        accept += "video/*,";
-                        break;
-                    case "Document":
-                        accept +=
-                            "application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,";
-                        break;
-                    case "Slideshow":
-                        accept +=
-                            "application/ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                        break;
-                    case "Spreadsheet":
-                        accept +=
-                            "application/ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                        break;
-                }
+        for (const type of config.file_upload.allowed_types) {
+            switch (type) {
+                case "Image":
+                    accept += "image/*,";
+                    break;
+                case "Video":
+                    accept += "video/*,";
+                    break;
+                case "Document":
+                    accept +=
+                        "application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,";
+                    break;
+                case "Slideshow":
+                    accept +=
+                        "application/ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                    break;
+                case "Spreadsheet":
+                    accept +=
+                        "application/ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    break;
             }
         }
     }

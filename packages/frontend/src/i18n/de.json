@@ -50,6 +50,7 @@
     "file_upload_2": " oder ziehen und ablegen",
     "file_accepted_all": "Alle Dateien werden akzeptiert",
     "file_max_size": "max 10GB",
+	"file_too_large": "Diese Datei ist zu groß.",
     "form_end_continue": "Weiter",
     "form_end_restart": "Erneut ausfüllen",
     "form_end_attribution": "Mit Palform kostenlos sichere Formulare erstellen"

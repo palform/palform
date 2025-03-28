@@ -107,35 +107,39 @@ function isAPIError(e: any): e is APIError {
 	return is_api_error_js(e);
 }
 
+export function humaniseAPIErrorInternal(d: APIError, resourceName = "That") {
+	if (d === "Internal") {
+		return t("error_internal");
+	}
+	if (d === "NotAllowed") {
+		return t("error_not_allowed");
+	}
+	if (d === "NotFound") {
+		return t("error_not_found_1") + resourceName + t("error_not_found_2");
+	}
+	if (typeof d === "string") {
+		return d;
+	}
+	if ("BadRequest" in d) {
+		return d.BadRequest;
+	}
+	if ("ValidationError" in d) {
+		return d.ValidationError.replaceAll("\n", ", ");
+	}
+	if ("CaptchaError" in d) {
+		return `Captcha: ${d.CaptchaError}`;
+	}
+
+	return t("error_upgrade") + ": " + d.SubscriptionLimit;
+}
+
 // biome-ignore lint/suspicious/noExplicitAny: catch has an any error type
 export function humaniseAPIError(e: any, resourceName = "That") {
 	if (e instanceof AxiosError) {
 		if (e.response) {
 			const d = e.response.data;
 			if (isAPIError(d)) {
-				if (d === "Internal") {
-					return t("error_internal");
-				}
-				if (d === "NotAllowed") {
-					return t("error_not_allowed");
-				}
-				if (d === "NotFound") {
-					return t("error_not_found_1") + resourceName + t("error_not_found_2");
-				}
-				if (typeof d === "string") {
-					return d;
-				}
-				if ("BadRequest" in d) {
-					return d.BadRequest;
-				}
-				if ("ValidationError" in d) {
-					return d.ValidationError.replaceAll("\n", ", ");
-				}
-				if ("CaptchaError" in d) {
-					return `Captcha: ${d.CaptchaError}`;
-				}
-
-				return t("error_upgrade") + ": " + d.SubscriptionLimit;
+				return humaniseAPIErrorInternal(d, resourceName);
 			}
 			if (e.response.status === 403) {
 				return t("error_not_allowed");
@@ -152,6 +156,9 @@ export function humaniseAPIError(e: any, resourceName = "That") {
 	}
 	if (typeof e === "string") {
 		return e;
+	}
+	if (isAPIError(e)) {
+		return humaniseAPIErrorInternal(e);
 	}
 
 	console.error(e);
