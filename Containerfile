@@ -27,7 +27,7 @@ COPY --from=builder /usr/local/cargo/bin/palform-backend /opt/palform-backend
 ENV ROCKET_ADDRESS=0.0.0.0
 ENV ROCKET_PORT=8080
 ENV ROCKET_LOG_LEVEL=normal
-ENV ROCKET_LIMITS={file="10GB"}
+ENV ROCKET_LIMITS="{file=\"10GB\", data-form=\"10GB\"}"
 ENV ROCKET_IP_HEADER=X-Forwarded-For
 
 CMD ["/opt/palform-backend", "server"]
