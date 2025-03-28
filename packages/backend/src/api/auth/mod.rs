@@ -1,4 +1,5 @@
 pub mod auth_callback;
+pub mod common;
 pub mod create_user;
 pub mod invalidate;
 pub mod password_reset;
@@ -9,3 +10,4 @@ pub mod social;
 pub mod start_auth;
 pub mod test;
 pub mod verify_email;
+pub mod verify_tfa;

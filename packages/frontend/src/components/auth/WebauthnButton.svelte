@@ -8,13 +8,14 @@
     } from "@simplewebauthn/browser";
     import { showFailureToast } from "../../data/toast";
     import LoadingButton from "../LoadingButton.svelte";
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
 
     export let flowType: "register" | "authenticate";
     export let registerNickname: string | undefined = undefined;
     export let authCredential: any | undefined = undefined;
     export let forceLoading = false;
-    export let disabled = false
+    export let disabled = false;
+    export let initialAutoClick: boolean = false;
 
     const dispatch = createEventDispatcher<{
         enroll: string;
@@ -62,6 +63,10 @@
             loading = false;
         }
     };
+
+    onMount(() => {
+        if (initialAutoClick) onButtonClick();
+    });
 </script>
 
 <LoadingButton

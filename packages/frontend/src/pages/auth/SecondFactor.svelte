@@ -4,13 +4,12 @@
     import AuthCard from "../../layouts/AuthCard.svelte";
     import LoadingButton from "../../components/LoadingButton.svelte";
     import { APIs } from "../../data/common";
-    import Captcha from "../../components/captcha/Captcha.svelte";
     import { showFailureToast } from "../../data/toast";
     import { navigate } from "svelte-routing";
     import { saveAuthToken } from "../../data/auth";
     import type {
         SignInResponseOneOf1SecondFactorRequired,
-        SignInSecondFactorRequest,
+        VerifyTFASecondFactorRequest,
     } from "@paltiverse/palform-typescript-openapi";
     import WebauthnButton from "../../components/auth/WebauthnButton.svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
@@ -25,16 +24,9 @@
     let selectedMethod: "webauthn" | "totp" | undefined = undefined;
 
     let totpToken = "";
-    let captchaValue = "";
     let loading = false;
     $: onTotpSubmit = async (e: Event) => {
         e.preventDefault();
-
-        if (!captchaValue) {
-            await showFailureToast("Please complete the captcha");
-            return;
-        }
-
         await submitWith({ Totp: totpToken });
     };
 
@@ -42,14 +34,12 @@
         await submitWith({ Webauthn: e.detail });
     };
 
-    $: submitWith = async (data: SignInSecondFactorRequest) => {
+    $: submitWith = async (data: VerifyTFASecondFactorRequest) => {
         loading = true;
         try {
-            const resp = await APIs.auth.authSignIn(captchaValue, {
-                SecondFactor: {
-                    session_id: tfa.session_id,
-                    factor: data,
-                },
+            const resp = await APIs.auth.authVerifyTfa({
+                session_id: tfa.session_id,
+                factor: data,
             });
 
             if ("Done" in resp.data) {
@@ -89,20 +79,12 @@
             </Button>
         </div>
     {:else if (!allowBoth && allowWebauthn) || selectedMethod === "webauthn"}
-        {#if !loading}
-            <Captcha
-                class="mt-4"
-                on:complete={(e) => (captchaValue = e.detail)}
-                on:clear={() => (captchaValue = "")}
-            />
-        {/if}
-
         <WebauthnButton
             flowType="authenticate"
             class="mt-4"
             authCredential={tfa.rcr}
             on:authenticate={onWebauthnAuth}
-            disabled={captchaValue === ""}
+            initialAutoClick
         />
     {:else if (!allowBoth && allowTotp) || selectedMethod === "totp"}
         <form on:submit={onTotpSubmit}>
@@ -115,14 +97,6 @@
                     required
                 />
             </Label>
-
-            {#if !loading}
-                <Captcha
-                    class="mt-4"
-                    on:complete={(e) => (captchaValue = e.detail)}
-                    on:clear={() => (captchaValue = "")}
-                />
-            {/if}
 
             <LoadingButton
                 buttonClass="mt-3"

@@ -3848,78 +3848,27 @@ export interface SetSubmissionAutoDeleteRequest {
     'days'?: number | null;
 }
 /**
- * @type SignInRequest
- * @export
- */
-export type SignInRequest = SignInRequestOneOf | SignInRequestOneOf1;
-
-/**
  * 
  * @export
- * @interface SignInRequestOneOf
+ * @interface SignInRequest
  */
-export interface SignInRequestOneOf {
-    /**
-     * 
-     * @type {SignInRequestOneOfCredentials}
-     * @memberof SignInRequestOneOf
-     */
-    'Credentials': SignInRequestOneOfCredentials;
-}
-/**
- * 
- * @export
- * @interface SignInRequestOneOf1
- */
-export interface SignInRequestOneOf1 {
-    /**
-     * 
-     * @type {SignInRequestOneOf1SecondFactor}
-     * @memberof SignInRequestOneOf1
-     */
-    'SecondFactor': SignInRequestOneOf1SecondFactor;
-}
-/**
- * 
- * @export
- * @interface SignInRequestOneOf1SecondFactor
- */
-export interface SignInRequestOneOf1SecondFactor {
+export interface SignInRequest {
     /**
      * 
      * @type {string}
-     * @memberof SignInRequestOneOf1SecondFactor
-     */
-    'session_id': string;
-    /**
-     * 
-     * @type {SignInSecondFactorRequest}
-     * @memberof SignInRequestOneOf1SecondFactor
-     */
-    'factor': SignInSecondFactorRequest;
-}
-/**
- * 
- * @export
- * @interface SignInRequestOneOfCredentials
- */
-export interface SignInRequestOneOfCredentials {
-    /**
-     * 
-     * @type {string}
-     * @memberof SignInRequestOneOfCredentials
+     * @memberof SignInRequest
      */
     'email': string;
     /**
      * 
      * @type {string}
-     * @memberof SignInRequestOneOfCredentials
+     * @memberof SignInRequest
      */
     'password': string;
     /**
      * 
      * @type {boolean}
-     * @memberof SignInRequestOneOfCredentials
+     * @memberof SignInRequest
      */
     'create_initial_org': boolean;
 }
@@ -4004,38 +3953,6 @@ export interface SignInResponseOneOfDone {
      * @memberof SignInResponseOneOfDone
      */
     'new_org_id'?: string | null;
-}
-/**
- * @type SignInSecondFactorRequest
- * @export
- */
-export type SignInSecondFactorRequest = SignInSecondFactorRequestOneOf | SignInSecondFactorRequestOneOf1;
-
-/**
- * 
- * @export
- * @interface SignInSecondFactorRequestOneOf
- */
-export interface SignInSecondFactorRequestOneOf {
-    /**
-     * 
-     * @type {string}
-     * @memberof SignInSecondFactorRequestOneOf
-     */
-    'Totp': string;
-}
-/**
- * 
- * @export
- * @interface SignInSecondFactorRequestOneOf1
- */
-export interface SignInSecondFactorRequestOneOf1 {
-    /**
-     * 
-     * @type {string}
-     * @memberof SignInSecondFactorRequestOneOf1
-     */
-    'Webauthn': string;
 }
 /**
  * 
@@ -4299,6 +4216,57 @@ export interface UpdatePaymentMethodRequest {
      * @memberof UpdatePaymentMethodRequest
      */
     'redirect_url': string;
+}
+/**
+ * 
+ * @export
+ * @interface VerifyTFARequest
+ */
+export interface VerifyTFARequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof VerifyTFARequest
+     */
+    'session_id': string;
+    /**
+     * 
+     * @type {VerifyTFASecondFactorRequest}
+     * @memberof VerifyTFARequest
+     */
+    'factor': VerifyTFASecondFactorRequest;
+}
+/**
+ * @type VerifyTFASecondFactorRequest
+ * @export
+ */
+export type VerifyTFASecondFactorRequest = VerifyTFASecondFactorRequestOneOf | VerifyTFASecondFactorRequestOneOf1;
+
+/**
+ * 
+ * @export
+ * @interface VerifyTFASecondFactorRequestOneOf
+ */
+export interface VerifyTFASecondFactorRequestOneOf {
+    /**
+     * 
+     * @type {string}
+     * @memberof VerifyTFASecondFactorRequestOneOf
+     */
+    'Totp': string;
+}
+/**
+ * 
+ * @export
+ * @interface VerifyTFASecondFactorRequestOneOf1
+ */
+export interface VerifyTFASecondFactorRequestOneOf1 {
+    /**
+     * 
+     * @type {string}
+     * @memberof VerifyTFASecondFactorRequestOneOf1
+     */
+    'Webauthn': string;
 }
 
 /**
@@ -4930,6 +4898,41 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @param {VerifyTFARequest} verifyTFARequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authVerifyTfa: async (verifyTFARequest: VerifyTFARequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'verifyTFARequest' is not null or undefined
+            assertParamExists('authVerifyTfa', 'verifyTFARequest', verifyTFARequest)
+            const localVarPath = `/auth/tfa`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(verifyTFARequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -5073,6 +5076,18 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['AuthenticationApi.authVerify']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * 
+         * @param {VerifyTFARequest} verifyTFARequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async authVerifyTfa(verifyTFARequest: VerifyTFARequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignInResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.authVerifyTfa(verifyTFARequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthenticationApi.authVerifyTfa']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -5182,6 +5197,15 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          */
         authVerify(verificationId: string, options?: any): AxiosPromise<void> {
             return localVarFp.authVerify(verificationId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {VerifyTFARequest} verifyTFARequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authVerifyTfa(verifyTFARequest: VerifyTFARequest, options?: any): AxiosPromise<SignInResponse> {
+            return localVarFp.authVerifyTfa(verifyTFARequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -5313,6 +5337,17 @@ export class AuthenticationApi extends BaseAPI {
      */
     public authVerify(verificationId: string, options?: RawAxiosRequestConfig) {
         return AuthenticationApiFp(this.configuration).authVerify(verificationId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {VerifyTFARequest} verifyTFARequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public authVerifyTfa(verifyTFARequest: VerifyTFARequest, options?: RawAxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).authVerifyTfa(verifyTFARequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

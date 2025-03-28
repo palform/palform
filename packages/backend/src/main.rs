@@ -143,6 +143,7 @@ async fn main() -> Result<(), rocket::Error> {
                 api::auth::verify_email::handler,
                 api::auth::test::handler,
                 api::auth::sign_in::handler,
+                api::auth::verify_tfa::handler,
                 api::auth::invalidate::handler,
                 api::auth::second_factors::list::handler,
                 api::auth::second_factors::enroll_totp::handler,
