@@ -39,19 +39,20 @@
         <p>Yes!</p>
         <p>
             <strong>Students</strong> at higher education institutions with ID
-            can get our <strong>Basic</strong> plan for free.
+            can get our <strong>Pro</strong> plan for free.
+        </p>
+        <p>
+            <strong>Non-profit organisations</strong> with government-issued
+            proof of tax-free or charitable status can get our
+            <strong>Pro</strong> plan for free.
         </p>
         <p>
             <strong>Educational institutions</strong> recognised by the relevant
             government agency, can get 25% off any plan.
         </p>
         <p>
-            <strong>Other non-profit organisations</strong> with government-issued
-            proof of tax-free or charitable status can get 25% off any plan.
-        </p>
-        <p>
-            <strong>Startups</strong> can get our <strong>Basic</strong> plan for
-            free, or 50% off any other plan, until 1 year from the date of founding.
+            <strong>Startups</strong> can get our <strong>Pro</strong> plan for free,
+            or 50% off any other plan, until 1 year from the date of founding.
         </p>
         <p>
             To claim any of these discounts, please send us an email. Discounts
