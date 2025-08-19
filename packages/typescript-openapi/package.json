@@ -4,9 +4,9 @@
   "private": true,
   "main": "src/index.ts",
   "dependencies": {
-    "axios": "^1.7.7"
+    "axios": "^1.11.0"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.15.3"
+    "@openapitools/openapi-generator-cli": "^2.22.0"
   }
 }

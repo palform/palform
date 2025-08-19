@@ -7,7 +7,7 @@
   "scripts": {},
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
-    "@fortawesome/svelte-fontawesome": "^0.2.3",
+    "@fortawesome/svelte-fontawesome": "^0.2.4",
     "@paltiverse/palform-typescript-openapi": "workspace:*",
     "@tsconfig/svelte": "^5.0.4",
     "flowbite": "^2.5.2",
@@ -15,7 +15,7 @@
     "svelte": "^4.2.20",
     "svelte-routing": "^2.13.0",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.8.3",
-    "typescript-svelte-plugin": "^0.3.47"
+    "typescript": "^5.9.2",
+    "typescript-svelte-plugin": "^0.3.50"
   }
 }
