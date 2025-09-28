@@ -1,3 +1,4 @@
+use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
 use palform_tsid::{
     resources::{IDForm, IDOrganisation, IDSubmission},
     tsid::PalformDatabaseID,
@@ -8,8 +9,10 @@ use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 
 use crate::{
     api::error::{APIError, APIInternalError},
-    auth::rbac::requests::APITokenTeamEditorFromForm,
+    audit::AuditManager,
+    auth::{rbac::requests::APITokenTeamEditorFromForm, tokens::APIAuthTokenSource},
     entity_managers::{forms::FormManager, submission::SubmissionManager},
+    rocket_util::from_org_id::FromOrgId,
 };
 
 #[openapi(tag = "Submissions", operation_id = "submissions.delete")]
@@ -18,8 +21,9 @@ pub async fn handler(
     org_id: PalformDatabaseID<IDOrganisation>,
     form_id: PalformDatabaseID<IDForm>,
     submission_id: PalformDatabaseID<IDSubmission>,
-    _token: APITokenTeamEditorFromForm,
+    token: APITokenTeamEditorFromForm,
     db: &State<DatabaseConnection>,
+    audit: FromOrgId<AuditManager>,
 ) -> Result<(), (Status, Json<APIError>)> {
     let txn = db
         .begin_with_config(
@@ -44,6 +48,17 @@ pub async fn handler(
     }
 
     SubmissionManager::delete_submission(&txn, submission_id, form_id)
+        .await
+        .map_err(|e| e.to_internal_error())?;
+
+    audit
+        .log_event(
+            &txn,
+            token.get_user_id(),
+            AuditLogVerbEnum::Delete,
+            AuditLogTargetResourceEnum::Submission,
+            Some(submission_id.into_unknown()),
+        )
         .await
         .map_err(|e| e.to_internal_error())?;
 
