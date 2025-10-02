@@ -1,5 +1,7 @@
 use palform_client_common::errors::error::{APIErrorWithStatus, APIInternalErrorResult};
-use palform_entities::sea_orm_active_enums::OrganisationMemberRoleEnum;
+use palform_entities::sea_orm_active_enums::{
+    AuditLogTargetResourceEnum, AuditLogVerbEnum, OrganisationMemberRoleEnum,
+};
 use palform_tsid::{
     resources::{IDForm, IDOrganisation, IDTeam},
     tsid::PalformDatabaseID,
@@ -13,7 +15,14 @@ use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 
 use crate::{
-    api_entities::form::APIForm, auth::rbac::{requests::APITokenOrgViewer, teams_manager::TeamsRBACManager}, entity_managers::form_templates::FormTemplatesManager
+    api_entities::form::APIForm,
+    audit::AuditManager,
+    auth::{
+        rbac::{requests::APITokenOrgViewer, teams_manager::TeamsRBACManager},
+        tokens::APIAuthTokenSource,
+    },
+    entity_managers::form_templates::FormTemplatesManager,
+    rocket_util::from_org_id::FromOrgId,
 };
 
 #[derive(Deserialize, JsonSchema)]
@@ -22,13 +31,17 @@ pub struct CloneFormTemplateRequest {
 }
 
 #[openapi(tag = "Form Templates", operation_id = "form_templates.clone")]
-#[post("/users/me/orgs/<org_id>/templates/<template_id>/clone", data = "<data>")]
+#[post(
+    "/users/me/orgs/<org_id>/templates/<template_id>/clone",
+    data = "<data>"
+)]
 pub async fn handler(
     org_id: PalformDatabaseID<IDOrganisation>,
     template_id: PalformDatabaseID<IDForm>,
     data: Json<CloneFormTemplateRequest>,
     token: APITokenOrgViewer,
     db: &State<DatabaseConnection>,
+    audit: FromOrgId<AuditManager>,
 ) -> Result<Json<APIForm>, APIErrorWithStatus> {
     let txn = db
         .begin_with_config(
@@ -38,7 +51,7 @@ pub async fn handler(
         .await
         .map_internal_error()?;
 
-    TeamsRBACManager::from(token.token)
+    TeamsRBACManager::from(token.token.clone())
         .require_in_request(
             &txn,
             data.into_team,
@@ -51,7 +64,18 @@ pub async fn handler(
         .await
         .map_internal_error()?;
 
-    txn.commit().await.map_internal_error()?;
+    audit
+        .log_event_with_note(
+            &txn,
+            token.get_user_id(),
+            AuditLogVerbEnum::Create,
+            AuditLogTargetResourceEnum::Form,
+            Some(new_form.id.into_unknown()),
+            Some(format!("Cloned from template {}", template_id)),
+        )
+        .await
+        .map_internal_error()?;
 
+    txn.commit().await.map_internal_error()?;
     Ok(Json(new_form))
 }

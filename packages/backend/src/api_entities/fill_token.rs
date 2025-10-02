@@ -9,7 +9,7 @@ use serde::Serialize;
 
 #[derive(Serialize, JsonSchema, FromQueryResult)]
 pub struct APIFillToken {
-    id: PalformDatabaseID<IDFillAccessToken>,
+    pub id: PalformDatabaseID<IDFillAccessToken>,
     form_id: PalformDatabaseID<IDForm>,
     created_at: NaiveDateTime,
     expires_at: Option<NaiveDateTime>,

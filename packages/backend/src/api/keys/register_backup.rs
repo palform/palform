@@ -1,3 +1,5 @@
+use palform_client_common::errors::error::APIInternalErrorResult;
+use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
 use palform_tsid::resources::{IDAdminPublicKey, IDOrganisation};
 use palform_tsid::tsid::PalformDatabaseID;
 use rocket::http::Status;
@@ -11,10 +13,12 @@ use sequoia_openpgp::packet::key::SecretParts;
 use serde::Deserialize;
 
 use crate::api::error::{APIError, APIInternalError};
+use crate::audit::AuditManager;
 use crate::auth::rbac::requests::APITokenOrgViewer;
 use crate::auth::tokens::APIAuthTokenSource;
 use crate::crypto::keys::CryptoKeyRepr;
 use crate::entity_managers::keys::UserKeyManager;
+use crate::rocket_util::from_org_id::FromOrgId;
 
 #[derive(Deserialize, JsonSchema)]
 pub struct RegisterBackupKeyRequest {
@@ -29,6 +33,7 @@ pub async fn handler(
     key_id: PalformDatabaseID<IDAdminPublicKey>,
     data: Json<RegisterBackupKeyRequest>,
     token: APITokenOrgViewer,
+    audit: FromOrgId<AuditManager>,
     db: &State<DatabaseConnection>,
 ) -> Result<(), (Status, Json<APIError>)> {
     if !UserKeyManager::verify_key_org_and_user(db.inner(), key_id, org_id, token.get_user_id())
@@ -49,6 +54,18 @@ pub async fn handler(
             .await
             .map_err(|e| e.to_internal_error())?;
     }
+
+    audit
+        .log_event_with_note(
+            db.inner(),
+            token.get_user_id(),
+            AuditLogVerbEnum::Update,
+            AuditLogTargetResourceEnum::AdminPublicKey,
+            Some(key_id.into_unknown()),
+            Some("Registered encrypted backup key".to_string()),
+        )
+        .await
+        .map_internal_error()?;
 
     Ok(())
 }

@@ -62,6 +62,8 @@ pub enum AuditLogTargetResourceEnum {
     AuthSession,
     #[sea_orm(string_value = "submission")]
     Submission,
+    #[sea_orm(string_value = "admin_public_key")]
+    AdminPublicKey,
 }
 #[derive(
     Debug,

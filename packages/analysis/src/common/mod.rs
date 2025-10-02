@@ -102,7 +102,7 @@ impl FormAnalysisManager {
         &self,
         question_id: String,
         feature_label: String,
-    ) -> Result<ArrayView1<f64>, anyhow::Error> {
+    ) -> Result<ArrayView1<'_, f64>, anyhow::Error> {
         let question_index = self
             .question_labels
             .iter()

@@ -1,5 +1,7 @@
 use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
-use palform_entities::sea_orm_active_enums::OrganisationMemberRoleEnum;
+use palform_entities::sea_orm_active_enums::{
+    AuditLogTargetResourceEnum, AuditLogVerbEnum, OrganisationMemberRoleEnum,
+};
 use palform_tsid::{
     resources::{IDFormBranding, IDOrganisation, IDTeam},
     tsid::PalformDatabaseID,
@@ -12,8 +14,13 @@ use serde::Deserialize;
 
 use crate::{
     api_entities::form_brandings::APIFormBrandingAccess,
-    auth::rbac::{requests::APITokenTeamAdminFromTeam, teams_manager::TeamsRBACManager},
+    audit::AuditManager,
+    auth::{
+        rbac::{requests::APITokenTeamAdminFromTeam, teams_manager::TeamsRBACManager},
+        tokens::APIAuthTokenSource,
+    },
     entity_managers::form_brandings::FormBrandingManager,
+    rocket_util::from_org_id::FromOrgId,
 };
 
 #[derive(Deserialize, JsonSchema)]
@@ -36,6 +43,7 @@ pub async fn handler(
     data: Json<AddAccessRequest>,
     token: APITokenTeamAdminFromTeam,
     db: &State<DatabaseConnection>,
+    audit: FromOrgId<AuditManager>,
 ) -> Result<Json<APIFormBrandingAccess>, APIErrorWithStatus> {
     if !FormBrandingManager::verify_branding_team_allowed(db.inner(), branding_id, team_id)
         .await
@@ -44,7 +52,7 @@ pub async fn handler(
         return Err(APIError::NotFound.into());
     }
 
-    TeamsRBACManager::from(token.token)
+    TeamsRBACManager::from(token.token.clone())
         .require_in_request(
             db.inner(),
             data.for_team_id,
@@ -56,5 +64,18 @@ pub async fn handler(
     let access = FormBrandingManager::add_access(db.inner(), branding_id, data.for_team_id)
         .await
         .map_internal_error()?;
+
+    audit
+        .log_event_with_note(
+            db.inner(),
+            token.get_user_id(),
+            AuditLogVerbEnum::Update,
+            AuditLogTargetResourceEnum::Branding,
+            Some(branding_id.into_unknown()),
+            Some(format!("Added access for team {}", data.for_team_id)),
+        )
+        .await
+        .map_internal_error()?;
+
     Ok(Json(access))
 }

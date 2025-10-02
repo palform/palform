@@ -14,12 +14,12 @@ anyhow = "1.0.83"
 serde-wasm-bindgen = { version = "0.6.5" }
 wasm-bindgen = { version = "0.2.92", features = ["serde"] }
 getrandom = { version = "*", features = ["js"] }
-linfa = "0.7.0"
-linfa-linear = "0.7.0"
+linfa = "0.8.0"
+linfa-linear = "0.8.0"
 interp = "2.0"
 # waiting to upgrade: https://github.com/rust-ml/linfa/issues/357
-ndarray = "0.15"
-ndarray-stats = "0.5"
+ndarray = "0.16.1"
+ndarray-stats = "0.6"
 
 palform-client-common = { path = "../client-common", default-features = false, features = [
     "frontend-js",

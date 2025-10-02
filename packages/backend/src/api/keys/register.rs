@@ -1,3 +1,5 @@
+use palform_client_common::errors::error::APIInternalErrorResult;
+use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
 use palform_tsid::resources::{IDAdminPublicKey, IDOrganisation};
 use palform_tsid::tsid::PalformDatabaseID;
 use rocket::http::Status;
@@ -11,10 +13,12 @@ use sequoia_openpgp::packet::key::PublicParts;
 use serde::Deserialize;
 
 use crate::api::error::{APIError, APIInternalError};
+use crate::audit::AuditManager;
 use crate::auth::rbac::requests::APITokenOrgViewer;
 use crate::auth::tokens::APIAuthTokenSource;
 use crate::crypto::keys::CryptoKeyRepr;
 use crate::entity_managers::keys::UserKeyManager;
+use crate::rocket_util::from_org_id::FromOrgId;
 
 #[derive(Deserialize, JsonSchema)]
 pub struct RegisterKeyRequest {
@@ -32,6 +36,7 @@ pub async fn handler(
     token: APITokenOrgViewer,
     org: PalformDatabaseID<IDOrganisation>,
     db: &State<DatabaseConnection>,
+    audit: FromOrgId<AuditManager>,
     data: Json<RegisterKeyRequest>,
 ) -> Result<Json<PalformDatabaseID<IDAdminPublicKey>>, (Status, Json<APIError>)> {
     let txn = db
@@ -55,6 +60,18 @@ pub async fn handler(
     let new_key = UserKeyManager::register_key_for_user(&txn, token.get_user_id(), org, cert)
         .await
         .map_err(|e| APIError::report_internal_error("register key", e))?;
+
+    audit
+        .log_event_with_note(
+            &txn,
+            token.get_user_id(),
+            AuditLogVerbEnum::Create,
+            AuditLogTargetResourceEnum::AdminPublicKey,
+            Some(new_key.id.into_unknown()),
+            Some("Registered new key for user".to_string()),
+        )
+        .await
+        .map_internal_error()?;
 
     txn.commit().await.map_err(|e| e.to_internal_error())?;
     Ok(Json(new_key.id))

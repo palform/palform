@@ -1,5 +1,7 @@
 use palform_client_common::errors::error::{APIErrorWithStatus, APIInternalErrorResult};
-use palform_entities::sea_orm_active_enums::OrganisationMemberRoleEnum;
+use palform_entities::sea_orm_active_enums::{
+    AuditLogTargetResourceEnum, AuditLogVerbEnum, OrganisationMemberRoleEnum,
+};
 use palform_tsid::{
     resources::{IDFormBranding, IDOrganisation, IDTeam},
     tsid::PalformDatabaseID,
@@ -13,8 +15,13 @@ use sea_orm::DatabaseConnection;
 use serde::Deserialize;
 
 use crate::{
-    auth::rbac::{requests::APITokenTeamAdminFromTeam, teams_manager::TeamsRBACManager},
+    audit::AuditManager,
+    auth::{
+        rbac::{requests::APITokenTeamAdminFromTeam, teams_manager::TeamsRBACManager},
+        tokens::APIAuthTokenSource,
+    },
     entity_managers::form_brandings::FormBrandingManager,
+    rocket_util::from_org_id::FromOrgId,
 };
 
 #[derive(Deserialize, JsonSchema)]
@@ -37,8 +44,9 @@ pub async fn handler(
     data: Json<DeleteAccessRequest>,
     token: APITokenTeamAdminFromTeam,
     db: &State<DatabaseConnection>,
+    audit: FromOrgId<AuditManager>,
 ) -> Result<(), APIErrorWithStatus> {
-    TeamsRBACManager::from(token.token)
+    TeamsRBACManager::from(token.token.clone())
         .require_in_request(
             db.inner(),
             data.for_team_id,
@@ -48,6 +56,18 @@ pub async fn handler(
         .await?;
 
     FormBrandingManager::remove_access(db.inner(), branding_id, data.for_team_id)
+        .await
+        .map_internal_error()?;
+
+    audit
+        .log_event_with_note(
+            db.inner(),
+            token.get_user_id(),
+            AuditLogVerbEnum::Update,
+            AuditLogTargetResourceEnum::Branding,
+            Some(branding_id.into_unknown()),
+            Some(format!("Removed access for team {}", data.for_team_id)),
+        )
         .await
         .map_internal_error()?;
 

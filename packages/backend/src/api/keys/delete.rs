@@ -1,4 +1,9 @@
-use palform_tsid::{resources::{IDAdminPublicKey, IDOrganisation}, tsid::PalformDatabaseID};
+use palform_client_common::errors::error::APIInternalErrorResult;
+use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
+use palform_tsid::{
+    resources::{IDAdminPublicKey, IDOrganisation},
+    tsid::PalformDatabaseID,
+};
 use rocket::{delete, http::Status, serde::json::Json, State};
 use rocket_okapi::openapi;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
@@ -6,8 +11,11 @@ use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use crate::{
     api::error::{APIError, APIInternalError},
     api_entities::billing::entitlement::APIEntitlementRequest,
-    auth::rbac::requests::{APITokenOrgAdmin, APITokenOrgViewer},
-    auth::tokens::APIAuthTokenSource,
+    audit::AuditManager,
+    auth::{
+        rbac::requests::{APITokenOrgAdmin, APITokenOrgViewer},
+        tokens::APIAuthTokenSource,
+    },
     entity_managers::{billing_entitlement_proxy::BillingEntitlementManager, keys::UserKeyManager},
     rocket_util::from_org_id::FromOrgId,
 };
@@ -20,6 +28,7 @@ pub async fn handler(
     token: APITokenOrgViewer,
     admin_token: Option<APITokenOrgAdmin>,
     db: &State<DatabaseConnection>,
+    audit: FromOrgId<AuditManager>,
     billing: FromOrgId<BillingEntitlementManager>,
 ) -> Result<(), (Status, Json<APIError>)> {
     let txn = db
@@ -52,6 +61,19 @@ pub async fn handler(
     UserKeyManager::delete_key_with_id(&txn, key_id)
         .await
         .map_err(|e| e.to_internal_error())?;
+
+    audit
+        .log_event_with_note(
+            &txn,
+            token.get_user_id(),
+            AuditLogVerbEnum::Delete,
+            AuditLogTargetResourceEnum::AdminPublicKey,
+            Some(key_id.into_unknown()),
+            Some("User deleted own key".to_string()),
+        )
+        .await
+        .map_internal_error()?;
+
     txn.commit().await.map_err(|e| e.to_internal_error())?;
     Ok(())
 }

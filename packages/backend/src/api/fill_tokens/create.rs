@@ -1,5 +1,6 @@
 use chrono::{Duration, Utc};
 use palform_client_common::errors::error::APIInternalErrorResult;
+use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
 use palform_tsid::resources::{IDForm, IDOrganisation};
 use palform_tsid::tsid::PalformDatabaseID;
 use rocket::http::Status;
@@ -14,8 +15,10 @@ use serde::Deserialize;
 use crate::api::error::{APIError, APIInternalError};
 use crate::api_entities::billing::entitlement::APIEntitlementRequest;
 use crate::api_entities::fill_token::APIFillToken;
+use crate::audit::AuditManager;
 use crate::auth::fill_access::FillAccessTokenManager;
 use crate::auth::rbac::requests::APITokenTeamEditorFromForm;
+use crate::auth::tokens::APIAuthTokenSource;
 use crate::entity_managers::billing_entitlement_proxy::BillingEntitlementManager;
 use crate::entity_managers::forms::FormManager;
 use crate::entity_managers::orgs::OrganisationManager;
@@ -37,8 +40,9 @@ pub async fn handler(
     org_id: PalformDatabaseID<IDOrganisation>,
     form_id: PalformDatabaseID<IDForm>,
     data: Json<NewTokenRequest>,
-    _token: APITokenTeamEditorFromForm,
+    token: APITokenTeamEditorFromForm,
     db: &State<DatabaseConnection>,
+    audit: FromOrgId<AuditManager>,
     billing: FromOrgId<BillingEntitlementManager>,
 ) -> Result<Json<APIFillToken>, (Status, Json<APIError>)> {
     let txn = db
@@ -89,6 +93,18 @@ pub async fn handler(
     )
     .await
     .map_err(|e| e.to_internal_error())?;
+
+    audit
+        .log_event_with_note(
+            &txn,
+            token.get_user_id(),
+            AuditLogVerbEnum::Update,
+            AuditLogTargetResourceEnum::Form,
+            Some(form_id.into_unknown()),
+            Some(format!("Created Fill Access Token {}", new_token.id)),
+        )
+        .await
+        .map_internal_error()?;
 
     txn.commit().await.map_err(|e| e.to_internal_error())?;
     Ok(Json(new_token))

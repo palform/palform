@@ -1,4 +1,5 @@
 use palform_client_common::errors::error::{APIErrorWithStatus, APIInternalErrorResult};
+use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
 use palform_tsid::{
     resources::{IDFormBranding, IDOrganisation, IDTeam},
     tsid::PalformDatabaseID,
@@ -9,8 +10,10 @@ use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 
 use crate::{
     api_entities::form_brandings::APIFormBrandingRequest,
-    auth::rbac::requests::APITokenTeamEditorFromTeam,
+    audit::AuditManager,
+    auth::{rbac::requests::APITokenTeamEditorFromTeam, tokens::APIAuthTokenSource},
     entity_managers::form_brandings::FormBrandingManager,
+    rocket_util::from_org_id::FromOrgId,
 };
 
 #[openapi(
@@ -22,7 +25,8 @@ pub async fn handler(
     _org_id: PalformDatabaseID<IDOrganisation>,
     team_id: PalformDatabaseID<IDTeam>,
     data: Json<APIFormBrandingRequest>,
-    _token: APITokenTeamEditorFromTeam,
+    token: APITokenTeamEditorFromTeam,
+    audit: FromOrgId<AuditManager>,
     db: &State<DatabaseConnection>,
 ) -> Result<Json<PalformDatabaseID<IDFormBranding>>, APIErrorWithStatus> {
     let txn = db
@@ -38,6 +42,17 @@ pub async fn handler(
         .map_internal_error()?;
 
     FormBrandingManager::add_access(&txn, branding_id, team_id)
+        .await
+        .map_internal_error()?;
+
+    audit
+        .log_event(
+            &txn,
+            token.get_user_id(),
+            AuditLogVerbEnum::Delete,
+            AuditLogTargetResourceEnum::Branding,
+            Some(branding_id.into_unknown()),
+        )
         .await
         .map_internal_error()?;
 

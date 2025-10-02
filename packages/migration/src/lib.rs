@@ -55,6 +55,7 @@ mod m20241119_233312_webhooks;
 mod m20241123_170713_webauthn;
 mod m20250308_153858_feedback;
 mod m20250928_151739_add_submission_audit;
+mod m20250928_171251_add_public_key_audit;
 
 pub struct Migrator;
 
@@ -117,6 +118,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20241123_170713_webauthn::Migration),
             Box::new(m20250308_153858_feedback::Migration),
             Box::new(m20250928_151739_add_submission_audit::Migration),
+            Box::new(m20250928_171251_add_public_key_audit::Migration),
         ]
     }
 }
