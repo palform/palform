@@ -10,7 +10,7 @@ However, we want to make sure these resources are available to you if you need t
 
 ## Speak to a human
 
-Simply message **hey@palform.app**. Make sure to include some way for us to identify your Palform account and organisation.
+Simply message **mail@support.palform.app**. Make sure to include some way for us to identify your Palform account and organisation.
 
 ### Response times
 We offer the following response times:

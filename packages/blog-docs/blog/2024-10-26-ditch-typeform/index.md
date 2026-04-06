@@ -72,4 +72,4 @@ If you need more inspiration for which platform to choose, [read our article com
 
 ---
 
-> Thanks for reading! This article was written by Pal Kerecsenyi, founder of Palform. If you have any questions, please contact hey@palform.app.
+> Thanks for reading! This article was written by Pal Kerecsenyi, founder of Palform. If you have any questions, please contact mail@support.palform.app.
