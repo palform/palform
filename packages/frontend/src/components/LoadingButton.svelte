@@ -1,20 +1,40 @@
 <script lang="ts">
-    import { Button, Spinner } from "flowbite-svelte";
-    import type { ButtonProps } from "flowbite-svelte/Button.svelte";
-    import type { HTMLButtonAttributes } from "svelte/elements";
+    import { Button, Spinner, type ButtonProps } from "flowbite-svelte";
+    import type { Snippet } from "svelte";
+    import type {
+        HTMLButtonAttributes,
+        MouseEventHandler,
+    } from "svelte/elements";
 
-    export let loading = false;
-    export let disabled = false;
-    export let color: "primary" | "red" | "light" = "primary";
-    export let type: HTMLButtonAttributes["type"] = "button";
-    export let size: ButtonProps["size"] = "md";
-    export let buttonClass = "";
-    export let title: string | undefined = undefined;
-    export let outline: boolean = false;
+    interface Props {
+        loading?: boolean;
+        disabled?: boolean;
+        color?: "primary" | "red" | "light";
+        type?: HTMLButtonAttributes["type"];
+        size?: ButtonProps["size"];
+        buttonClass?: string;
+        title?: string | undefined;
+        outline?: boolean;
+        onclick?: MouseEventHandler<HTMLButtonElement>;
+        children?: Snippet;
+    }
+
+    let {
+        loading = false,
+        disabled = false,
+        color = "primary",
+        type = "button",
+        size = "md",
+        buttonClass = "",
+        title = undefined,
+        outline = false,
+        onclick,
+        children,
+    }: Props = $props();
 </script>
 
 <Button
-    on:click
+    {onclick}
     {disabled}
     {color}
     {type}
@@ -24,7 +44,7 @@
     {title}
 >
     {#if loading}
-        <Spinner class="me-4" size={4} color="white" />
+        <Spinner class="me-4" size="4" color="primary" />
     {/if}
-    <slot />
+    {@render children?.()}
 </Button>

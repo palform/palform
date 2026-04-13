@@ -15,13 +15,13 @@
     const brandingEntitled = isEntitled("branding_count");
     const multiBrandingEntitled = isEntitled("branding_count", true);
 
-    let showNewModal = false;
+    let showNewModal = $state(false);
 </script>
 
 <Button
     class="mb-4"
     outline
-    on:click={() => (showNewModal = true)}
+    onclick={() => (showNewModal = true)}
     disabled={!$brandingEntitled ||
         ($teamCtx.brandings.length >= 1 && !$multiBrandingEntitled)}
 >

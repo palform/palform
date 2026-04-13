@@ -8,19 +8,19 @@
     import LoadingButton from "../../components/LoadingButton.svelte";
     import { showFailureToast } from "../../data/toast";
     import { isEntitled } from "../../data/billing/entitlement";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../router";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import { getFormAdminContext } from "../../data/contexts/formAdmin";
 
     const formAdminCtx = getFormAdminContext();
     const orgCtx = getOrgContext();
     const entitled = isEntitled("export");
-    let format: ExportSubmissionsConfig["format"] = "CSV";
-    let useQuestionIDs = false;
-    let useSectionIDs = false;
+    let format: ExportSubmissionsConfig["format"] = $state("CSV");
+    let useQuestionIDs = $state(false);
+    let useSectionIDs = $state(false);
 
-    let loading = false;
-    $: onExportClick = async () => {
+    let loading = $state(false);
+    let onExportClick = $derived(async () => {
         loading = true;
 
         try {
@@ -34,11 +34,11 @@
         }
 
         loading = false;
-    };
+    });
 
-    $: onBillingClick = () => {
+    let onBillingClick = $derived(() => {
         navigate(`/orgs/${$orgCtx.org.id}/settings/billing`);
-    };
+    });
 </script>
 
 {#if !$entitled}
@@ -50,7 +50,7 @@
         </p>
         <p>To continue, please upgrade your plan.</p>
 
-        <Button class="mt-2" on:click={onBillingClick}>Continue</Button>
+        <Button class="mt-2" onclick={onBillingClick}>Continue</Button>
     </Alert>
 {:else}
     <form class="space-y-4">
@@ -70,7 +70,7 @@
             </Toggle>
         </Label>
 
-        <LoadingButton disabled={loading} {loading} on:click={onExportClick}>
+        <LoadingButton disabled={loading} {loading} onclick={onExportClick}>
             Export
         </LoadingButton>
     </form>

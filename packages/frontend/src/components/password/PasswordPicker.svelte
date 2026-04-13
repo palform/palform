@@ -4,9 +4,19 @@
     import * as zxcvbnCommonPackage from "@zxcvbn-ts/language-common";
     import * as zxcvbnEnPackage from "@zxcvbn-ts/language-en";
 
-    export let value: string;
-    export let required = false;
-    export let disabled = false;
+    interface Props {
+        value: string;
+        required?: boolean;
+        disabled?: boolean;
+        class?: string;
+    }
+
+    let {
+        value = $bindable(),
+        required = false,
+        disabled = false,
+        class: className,
+    }: Props = $props();
 
     zxcvbnOptions.setOptions({
         translations: zxcvbnEnPackage.translations,
@@ -17,10 +27,10 @@
         },
     });
 
-    $: strength = zxcvbn(value);
+    let strength = $derived(zxcvbn(value));
 </script>
 
-<Input bind:value class={$$props.class} {required} {disabled} type="password" />
+<Input bind:value class={className} {required} {disabled} type="password" />
 
 {#if value.length > 0}
     <Progressbar

@@ -1,8 +1,8 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_entities::sea_orm_active_enums::AdminUserEmailVerificationPurposeEnum;
-use rocket::{post, serde::json::Json, State};
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::{okapi::schemars, openapi};
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 
@@ -13,18 +13,17 @@ use crate::{
     mail::client::PalformMailClient,
 };
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct SendPasswordResetRequest {
     email: String,
 }
 
-#[openapi(tag = "Password Resets", operation_id = "user.password_reset.send")]
-#[post("/auth/reset/password/send", data = "<data>")]
-pub async fn handler(
+#[api_operation(tag = "Password Resets", operation_id = "user.password_reset.send")]
+pub async fn auth_password_reset_send(
     data: Json<SendPasswordResetRequest>,
-    db: &State<DatabaseConnection>,
-    mail: &State<PalformMailClient>,
-) -> Result<(), APIErrorWithStatus> {
+    db: Data<DatabaseConnection>,
+    mail: Data<PalformMailClient>,
+) -> Result<(), APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -43,7 +42,7 @@ pub async fn handler(
             user.id,
             Some(user.email),
             AdminUserEmailVerificationPurposeEnum::PasswordReset,
-            mail,
+            mail.as_ref(),
         )
         .await
         .map_err(|e| APIError::report_internal_error("send password reset", e))?;

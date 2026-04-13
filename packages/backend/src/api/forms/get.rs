@@ -1,7 +1,12 @@
-use palform_tsid::{resources::{IDForm, IDOrganisation}, tsid::PalformDatabaseID};
-use rocket::{get, http::Status, serde::json::Json, State};
-use rocket_okapi::openapi;
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_tsid::{
+    resources::{IDForm, IDOrganisation},
+    tsid::PalformDatabaseID,
+};
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
+use serde::Deserialize;
 
 use crate::{
     api::error::{APIError, APIInternalError},
@@ -10,14 +15,19 @@ use crate::{
     entity_managers::forms::FormManager,
 };
 
-#[openapi(tag = "Forms", operation_id = "forms.get")]
-#[get("/users/me/orgs/<_org_id>/forms/<form_id>")]
-pub async fn handler(
-    _org_id: PalformDatabaseID<IDOrganisation>,
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct FormsGetPath {
+    #[allow(unused)]
+    org_id: PalformDatabaseID<IDOrganisation>,
     form_id: PalformDatabaseID<IDForm>,
+}
+
+#[api_operation(tag = "Forms", operation_id = "forms.get")]
+pub async fn forms_get(
+    path: Path<FormsGetPath>,
     _token: APITokenTeamViewerFromForm,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<APIForm>, (Status, Json<APIError>)> {
+    db: Data<DatabaseConnection>,
+) -> Result<Json<APIForm>, APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -26,7 +36,7 @@ pub async fn handler(
         .await
         .map_err(|e| e.to_internal_error())?;
 
-    let form = FormManager::get_by_id(&txn, form_id)
+    let form = FormManager::get_by_id(&txn, path.form_id)
         .await
         .map_err(|e| e.to_internal_error())?
         .ok_or(APIError::NotFound)?;

@@ -1,5 +1,7 @@
 {
-	"name": "@paltiverse/palform",
+	"name": "@palform/palform",
 	"private": true,
-	"workspaces": ["packages/*"]
+	"workspaces": [
+		"packages/*"
+	]
 }

@@ -1,46 +1,37 @@
 <script lang="ts">
-    import type { APIQuestionConfigurationOneOf4 } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher } from "svelte";
-    import {
-        Helper,
-        Label,
-        NumberInput,
-        Toggle,
-    } from "flowbite-svelte";
+    import type { ConfigAddress } from "@palform/palform-typescript-openapi";
+    import { Helper, Input, Label, Toggle } from "flowbite-svelte";
     import AddressSearch from "../../addressSearch/AddressSearch.svelte";
-    import type { APIGenericLocation } from "@paltiverse/palform-client-js-extra-types/APIGenericLocation";
+    import type { APIGenericLocation } from "@palform/palform-client-js-extra-types/APIGenericLocation";
     import TextButton from "../../TextButton.svelte";
-    import type { QuestionEditEvents } from "../../../data/contexts/formEditor";
 
-    export let config: APIQuestionConfigurationOneOf4;
-    const dispatch = createEventDispatcher<QuestionEditEvents>();
+    interface Props {
+        config: ConfigAddress;
+    }
 
-    let focus = !!config.address.search_centre;
+    let { config = $bindable() }: Props = $props();
 
-    $: onUpdate = () => {
-        dispatch("update", config);
-    };
-    $: onAddressClick = (e: CustomEvent<{ location: APIGenericLocation }>) => {
-        config.address.search_centre = e.detail.location;
-        dispatch("update", config);
-    };
-    $: onEnterManuallyClick = () => {
+    let focus = $state(!!config.address.search_centre);
+
+    let onAddressClick = $derived(
+        (e: CustomEvent<{ location: APIGenericLocation }>) => {
+            config.address.search_centre = e.detail.location;
+        }
+    );
+    let onEnterManuallyClick = $derived(() => {
         config.address.search_centre = { lat: 0, lng: 0 };
-        dispatch("update", config);
-    };
-    $: onClearClick = () => {
+    });
+    let onClearClick = $derived(() => {
         config.address.search_centre = null;
-        dispatch("update", config);
-    };
-    $: onToggleChange = () => {
+    });
+    let onToggleChange = $derived(() => {
         if (focus === false) {
             config.address.search_centre = null;
-            dispatch("update", config);
         }
-    };
+    });
 </script>
 
-<Toggle bind:checked={focus} on:change={onToggleChange}>
+<Toggle bind:checked={focus} onchange={onToggleChange}>
     Focus the search on a specific location
 </Toggle>
 
@@ -48,7 +39,7 @@
     {#if !config.address.search_centre}
         <AddressSearch class="mt-4" on:select={onAddressClick} />
         <Helper class="mt-1">
-            <TextButton on:click={onEnterManuallyClick}>
+            <TextButton onclick={onEnterManuallyClick}>
                 Enter coordinates manually
             </TextButton>
         </Helper>
@@ -56,23 +47,23 @@
         <div class="flex items-center gap-8 mt-4">
             <Label>
                 Latitude
-                <NumberInput
+                <Input
+                    type="number"
                     class="mt-1"
                     bind:value={config.address.search_centre.lat}
-                    on:input={onUpdate}
                 />
             </Label>
             <Label>
                 Longitude
-                <NumberInput
+                <Input
+                    type="number"
                     class="mt-1"
                     bind:value={config.address.search_centre.lng}
-                    on:input={onUpdate}
                 />
             </Label>
         </div>
 
-        <TextButton class="mt-1" on:click={onClearClick}>
+        <TextButton class="mt-1" onclick={onClearClick}>
             Search for address
         </TextButton>
     {/if}

@@ -1,19 +1,18 @@
-use palform_client_common::errors::error::{APIErrorWithStatus, APIInternalErrorResult};
-use rocket::{post, serde::json::Json, State};
-use rocket_okapi::openapi;
+use actix_web::web::{Data, Json};
+use apistos::api_operation;
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use sea_orm::DatabaseConnection;
 
 use crate::{
     api_entities::feedback_items::APIFeedbackItem, entity_managers::feedback::FeedbackManager,
 };
 
-#[openapi(tag = "Feedback", operation_id = "feedback.create")]
-#[post("/feedback", data = "<data>")]
-pub async fn handler(
+#[api_operation(tag = "Feedback", operation_id = "feedback.create")]
+pub async fn feedback_create(
     data: Json<APIFeedbackItem>,
-    db: &State<DatabaseConnection>,
-) -> Result<(), APIErrorWithStatus> {
-    FeedbackManager::create_feedback_item(db.inner(), data.score, data.comment.to_owned())
+    db: Data<DatabaseConnection>,
+) -> Result<(), APIError> {
+    FeedbackManager::create_feedback_item(db.as_ref(), data.score, data.comment.to_owned())
         .await
         .map_internal_error()?;
 

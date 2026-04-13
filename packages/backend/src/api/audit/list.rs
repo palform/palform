@@ -1,12 +1,10 @@
+use actix_web::web::{Data, Json, Path, Query};
+use apistos::{api_operation, ApiComponent};
 use chrono::{DateTime, Utc};
-use palform_client_common::errors::error::{APIErrorWithStatus, APIInternalErrorResult};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_entities::sea_orm_active_enums::AuditLogTargetResourceEnum;
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
-use rocket::{post, serde::json::Json, State};
-use rocket_okapi::{
-    okapi::schemars::{self, JsonSchema},
-    openapi,
-};
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
 use serde::Deserialize;
 
@@ -15,7 +13,7 @@ use crate::{
     entity_managers::audit::AuditEntityManager,
 };
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct AuditLogListRequest {
     #[serde(default)]
     from: Option<DateTime<Utc>>,
@@ -25,17 +23,21 @@ pub struct AuditLogListRequest {
     resource: Option<AuditLogTargetResourceEnum>,
 }
 
-#[openapi(tag = "Audit Logs", operation_id = "audit.list")]
-#[post("/user/me/orgs/<org_id>/audit", data = "<data>")]
-pub async fn handler(
-    org_id: PalformDatabaseID<IDOrganisation>,
-    data: Json<AuditLogListRequest>,
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct AuditLogListPath {
+    pub org_id: PalformDatabaseID<IDOrganisation>,
+}
+
+#[api_operation(tag = "Audit Logs", operation_id = "audit.list")]
+pub async fn audit_logs_list(
+    path: Path<AuditLogListPath>,
+    data: Query<AuditLogListRequest>,
     _token: APITokenOrgAdmin,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<Vec<APIAuditLogEntry>>, APIErrorWithStatus> {
+    db: Data<DatabaseConnection>,
+) -> Result<Json<Vec<APIAuditLogEntry>>, APIError> {
     let resp = AuditEntityManager::list(
-        db.inner(),
-        org_id,
+        db.as_ref(),
+        path.org_id,
         data.from,
         data.to,
         data.resource.clone(),

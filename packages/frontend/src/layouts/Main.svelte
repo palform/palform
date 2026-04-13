@@ -7,14 +7,26 @@
     import { isInFrame } from "../data/util/iframe";
     import MainTitle from "./MainTitle.svelte";
 
-    export let title: string | undefined = undefined;
-    export let fluid = false;
-    export let extraTight = false;
-    export let fullHeight = false;
-    export let verticalCenter = false;
+    interface Props {
+        title?: string | undefined;
+        fluid?: boolean;
+        extraTight?: boolean;
+        fullHeight?: boolean;
+        verticalCenter?: boolean;
+        children?: import('svelte').Snippet;
+    }
+
+    let {
+        title = undefined,
+        fluid = false,
+        extraTight = false,
+        fullHeight = false,
+        verticalCenter = false,
+        children
+    }: Props = $props();
 
     const brandCtx = getBrandCtx();
-    $: isNonNeutralBg = getBrandIsNonNeutralBackground($brandCtx);
+    let isNonNeutralBg = $derived(getBrandIsNonNeutralBackground($brandCtx));
     const isFrame = isInFrame();
 </script>
 
@@ -31,7 +43,7 @@
         {/if}
 
         <div>
-            <slot />
+            {@render children?.()}
         </div>
     </div>
 </main>

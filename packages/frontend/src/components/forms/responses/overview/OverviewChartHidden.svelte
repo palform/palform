@@ -1,25 +1,33 @@
 <script lang="ts">
-    import { Chart } from "flowbite-svelte";
+    import { Chart } from "@flowbite-svelte-plugins/chart";
     import { sGetHidden } from "../../../../data/contexts/fill";
     import { ctxSubmissionsForQuestion } from "../../../../data/contexts/formAdmin";
 
-    export let questionId: string;
+    interface Props {
+        questionId: string;
+    }
 
-    $: submissions = ctxSubmissionsForQuestion(questionId);
+    let { questionId }: Props = $props();
 
-    $: values = $submissions
-        .map((e) => sGetHidden(e.data).value)
-        .filter((e) => e.length > 0);
-    $: uniqueValues = Array.from(new Set(values));
-    $: counts = uniqueValues.map((v) => {
-        return values.reduce((t, c) => {
-            if (c === v) {
-                return t + 1;
-            } else {
-                return t;
-            }
-        }, 0);
-    });
+    let submissions = $derived(ctxSubmissionsForQuestion(questionId));
+
+    let values = $derived(
+        $submissions
+            .map((e) => sGetHidden(e.data).value)
+            .filter((e) => e.length > 0)
+    );
+    let uniqueValues = $derived(Array.from(new Set(values)));
+    let counts = $derived(
+        uniqueValues.map((v) => {
+            return values.reduce((t, c) => {
+                if (c === v) {
+                    return t + 1;
+                } else {
+                    return t;
+                }
+            }, 0);
+        })
+    );
 </script>
 
 <Chart

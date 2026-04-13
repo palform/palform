@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../router";
     import BigAlert from "../../components/induction/bigAlert/BigAlert.svelte";
     import BigAlertHeading from "../../components/induction/bigAlert/BigAlertHeading.svelte";
     import BigAlertText from "../../components/induction/bigAlert/BigAlertText.svelte";
@@ -7,10 +7,10 @@
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import { APIs } from "../../data/common";
     import { getIntentTemplate } from "../../data/auth/intent";
-    import type { APIForm } from "@paltiverse/palform-typescript-openapi";
+    import type { APIForm } from "@palform/palform-typescript-openapi";
 
     const orgCtx = getOrgContext();
-    $: onKeyRegistered = async () => {
+    let onKeyRegistered = $derived(async () => {
         const firstAdminTeam = $orgCtx.myTeams.find(
             (e) => e.my_role === "Admin" || e.my_role === "Editor"
         );
@@ -44,11 +44,11 @@
                 };
             });
 
-            navigate(`/orgs/${$orgCtx.org.id}/forms/${firstForm.id}/`);
+            navigate(`/orgs/${$orgCtx.org.id}/forms/${firstForm.id}/overview`);
         } else {
             navigate(`/orgs/${$orgCtx.org.id}/induction`);
         }
-    };
+    });
 </script>
 
 <BigAlert class="mb-8">
@@ -66,4 +66,4 @@
     </BigAlertText>
 </BigAlert>
 
-<KeyRegisterForm on:done={onKeyRegistered} showInfo={false} autoCreate />
+<KeyRegisterForm ondone={onKeyRegistered} showInfo={false} autoCreate />

@@ -1,45 +1,47 @@
 <script lang="ts">
     import {
         DirectionOperator,
-        type APIQuestionConfigurationOneOf3Scale,
-        type APIQuestionGroupStepStrategyJumpCaseConditionMatcher,
-    } from "@paltiverse/palform-typescript-openapi";
+        type ConfigScaleScale,
+    } from "@palform/palform-typescript-openapi";
     import { Button, Label, Select } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
     import { genScaleList } from "../../../../../data/util/scaleList";
     import { comparisonItems } from "../../../../../data/util/directionOperator";
+    import type { StrategyMatcherEventProps } from "../../../../../data/contexts/formEditor";
 
-    export let configuration: APIQuestionConfigurationOneOf3Scale;
-    const dispatch = createEventDispatcher<{
-        save: APIQuestionGroupStepStrategyJumpCaseConditionMatcher;
-    }>();
+    interface Props extends StrategyMatcherEventProps {
+        configuration: ConfigScaleScale;
+    }
 
-    let operator = "";
+    let { configuration, onsave }: Props = $props();
 
-    $: comparableItems = genScaleList(
-        operator === "GreaterThan" || operator === "Equal"
-            ? configuration.min
-            : configuration.min + 1,
-        operator === "LessThan" || operator === "Equal"
-            ? configuration.max
-            : configuration.max - 1
-    ).map((e) => ({ name: e.toString(), value: e }));
-    let comparedValue = 0;
+    let operator = $state("");
 
-    $: onSave = () => {
+    let comparableItems = $derived(
+        genScaleList(
+            operator === "GreaterThan" || operator === "Equal"
+                ? configuration.min
+                : configuration.min + 1,
+            operator === "LessThan" || operator === "Equal"
+                ? configuration.max
+                : configuration.max - 1
+        ).map((e) => ({ name: e.toString(), value: e }))
+    );
+    let comparedValue = $state(0);
+
+    let onSave = $derived(() => {
         if (
             comparedValue < configuration.min ||
             comparedValue > configuration.max
         )
             return;
 
-        dispatch("save", {
+        onsave({
             Scale: {
                 direction: operator as DirectionOperator,
                 value: comparedValue,
             },
         });
-    };
+    });
 </script>
 
 <Label>
@@ -49,5 +51,5 @@
 
 {#if operator !== ""}
     <Select class="mt-4" items={comparableItems} bind:value={comparedValue} />
-    <Button class="mt-4" size="sm" on:click={onSave}>Save</Button>
+    <Button class="mt-4" size="sm" onclick={onSave}>Save</Button>
 {/if}

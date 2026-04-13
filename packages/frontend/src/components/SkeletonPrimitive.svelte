@@ -7,12 +7,23 @@
         return Math.floor(Math.random() * (max - min + 1) + min);
     };
 
-    export let height: string | undefined = undefined;
-    export let className = "";
-    export let randomWidth = false;
-    export let width: string = randomWidth ? `${genWidth()}%` : "100%";
+    interface Props {
+        height?: string | undefined;
+        className?: string;
+        randomWidth?: boolean;
+        width?: string;
+        children?: import('svelte').Snippet;
+    }
 
-    let show = false;
+    let {
+        height = undefined,
+        className = "",
+        randomWidth = false,
+        width = randomWidth ? `${genWidth()}%` : "100%",
+        children
+    }: Props = $props();
+
+    let show = $state(false);
     setTimeout(() => (show = true), 500);
 </script>
 
@@ -24,8 +35,8 @@
         style:visibility={show ? "visible" : "hidden"}
         in:fade
     >
-        <slot />
+        {@render children?.()}
     </div>
 {:else}
-    <div style:height style:width={`${width}%`} />
+    <div style:height style:width={`${width}%`}></div>
 {/if}

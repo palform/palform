@@ -1,37 +1,35 @@
 <script lang="ts">
-    import type { QuestionSubmissionData } from "@paltiverse/palform-client-js-extra-types/QuestionSubmissionData";
-    import type { APIQuestionConfigurationOneOf3 } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher } from "svelte";
+    import type { ConfigScale } from "@palform/palform-typescript-openapi";
     import { genScaleList } from "../../../data/util/scaleList";
     import {
         fillSendStore,
         sGetScale,
         setQuestionValue,
+        type QuestionFillProps,
     } from "../../../data/contexts/fill";
     import QfClearButton from "./QFClearButton.svelte";
     import QfScaleButton from "./QFScaleButton.svelte";
 
-    export let id: string;
-    export let config: APIQuestionConfigurationOneOf3;
-    export let currentValue: QuestionSubmissionData | undefined;
+    interface Props extends QuestionFillProps<ConfigScale> {}
 
-    const dispatch = createEventDispatcher<{ change: undefined }>();
-    $: value = currentValue ? sGetScale(currentValue) : { value: 7 };
-    $: setNumber = (n: number) => {
+    let { id, config, currentValue, onchange }: Props = $props();
+
+    let value = $derived(currentValue ? sGetScale(currentValue) : { value: 7 });
+    let setNumber = $derived((n: number) => {
         if (currentValue === undefined) return;
         setQuestionValue(id, {
             Scale: {
                 value: n,
             },
         });
-        dispatch("change");
-    };
+        onchange();
+    });
     const onClear = () => {
         if (currentValue === undefined) return;
         setQuestionValue(id, {
             Scale: { value: null },
         });
-        dispatch("change");
+        onchange();
     };
 </script>
 
@@ -43,7 +41,7 @@
             questionId={id}
             label={num.toString()}
             active={value.value === null ? false : num <= value.value}
-            on:click={() => setNumber(num)}
+            onclick={() => setNumber(num)}
             isFirst={num === config.scale.min}
             isLast={num === config.scale.max}
             icon={config.scale.icon ?? "Numeric"}
@@ -67,5 +65,5 @@
 {/if}
 
 {#if value.value !== null}
-    <QfClearButton on:click={onClear} disabled={$fillSendStore?.loading} />
+    <QfClearButton onclick={onClear} disabled={$fillSendStore?.loading} />
 {/if}

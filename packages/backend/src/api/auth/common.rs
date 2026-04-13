@@ -1,14 +1,15 @@
+use apistos::ApiComponent;
 use palform_tsid::{
     resources::{IDAdminUserSecondAuthenticationFactorSession, IDOrganisation},
     tsid::PalformDatabaseID,
 };
-use rocket_okapi::okapi::schemars::{self, JsonSchema};
+use schemars::JsonSchema;
 use serde::Serialize;
 use webauthn_rs::prelude::RequestChallengeResponse;
 
 use crate::auth::tokens::NewAPIAuthToken;
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub enum SignInResponse {
     Done {
         token: NewAPIAuthToken,

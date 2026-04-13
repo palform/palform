@@ -1,4 +1,4 @@
-import type { SocialAuthService } from "@paltiverse/palform-typescript-openapi";
+import type { SocialAuthService } from "@palform/palform-typescript-openapi";
 
 export interface OIDCVariables {
     state: string;

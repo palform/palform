@@ -3,27 +3,37 @@
     import MainTitle from "../../../layouts/MainTitle.svelte";
     import { findKey } from "../../../data/crypto/keyManager";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
-    import type { APIUserKey } from "@paltiverse/palform-typescript-openapi";
+    import type { APIUserKey } from "@palform/palform-typescript-openapi";
     import { APIs } from "../../../data/common";
     import BackupNew from "../../../components/keys/backup/BackupNew.svelte";
     import BackupManage from "../../../components/keys/backup/BackupManage.svelte";
-    import { navigate } from "svelte-routing";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { navigate, p, route } from "../../../router";
 
-    export let keyId: string;
-    let key: APIUserKey | undefined;
+    interface Props {
+        keyId?: string | undefined;
+    }
+
+    let { keyId }: Props = $props();
+
+    const keyIdResolved = $derived(keyId ?? route.params.keyId ?? "");
+    let key: APIUserKey | undefined = $state();
     const orgCtx = getOrgContext();
-    let loading = true;
-    $: APIs.keys()
-        .then((a) => a.keysGet($orgCtx.org.id, keyId))
-        .then((resp) => {
-            loading = false;
-            key = resp.data;
-        });
+    let loading = $state(true);
+    $effect(() => {
+        APIs.keys()
+            .then((a) => a.keysGet($orgCtx.org.id, keyIdResolved))
+            .then((resp) => {
+                loading = false;
+                key = resp.data;
+            });
+    });
 
-    let privateKeyExistsLocally: boolean | undefined = undefined;
-    findKey(keyId).then((resp) => {
-        privateKeyExistsLocally = resp !== null;
+    let privateKeyExistsLocally: boolean | undefined = $state(undefined);
+    $effect(() => {
+        const k = keyIdResolved;
+        findKey(k).then((resp) => {
+            privateKeyExistsLocally = resp !== null;
+        });
     });
 
     const isNew = new URLSearchParams(location.search).get("isNew") === "y";
@@ -34,19 +44,18 @@
 </script>
 
 <Button
-    href={`/orgs/${$orgCtx.org.id}/user/keys`}
-    on:click={navigateEvent}
+    href={p("/orgs/:orgId/user/keys", { params: { orgId: $orgCtx.org.id } })}
     size="xs"
     class="mb-4"
     outline
 >
     Cancel
 </Button>
-<MainTitle>Backup your key</MainTitle>
+<MainTitle className="mb-4">Backup your key</MainTitle>
 
 {#if loading || privateKeyExistsLocally === undefined}
     <div class="text-center mt-4">
-        <Spinner size={14} />
+        <Spinner size="12" />
     </div>
 {:else if key !== undefined}
     {#if isNew}
@@ -69,7 +78,7 @@
                 </p>
             </Alert>
         {:else}
-            <BackupNew {keyId} on:done={onNewBackupCreate} />
+            <BackupNew keyId={keyIdResolved} ondone={onNewBackupCreate} />
         {/if}
     {:else}
         <BackupManage {privateKeyExistsLocally} {key} />

@@ -1,12 +1,8 @@
+use std::{future::Future, pin::Pin};
+
+use actix_web::{dev::Payload, FromRequest, HttpRequest};
+use apistos::ApiComponent;
 use palform_client_common::errors::error::APIError;
-use rocket::{
-    request::{self, FromRequest},
-    serde::json::Json,
-};
-use rocket_okapi::{
-    okapi::{openapi3::Parameter, schemars::schema::InstanceType, Map},
-    request::OpenApiFromRequest,
-};
 use rust_i18n::available_locales;
 
 pub struct I18NManager {
@@ -26,53 +22,39 @@ macro_rules! pt {
     };
 }
 
-#[rocket::async_trait]
-impl<'r> FromRequest<'r> for I18NManager {
-    type Error = Json<APIError>;
-    async fn from_request(req: &'r request::Request<'_>) -> request::Outcome<Self, Self::Error> {
-        let raw_header = req.headers().get_one("Accept-Language").unwrap_or("en");
-        let supported_locales = available_locales!();
-        let accepted_locales = accept_language::intersection(raw_header, &supported_locales);
+impl FromRequest for I18NManager {
+    type Error = APIError;
+    type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
+    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
+        let headers = req.headers().clone();
 
-        let chosen_locale = accepted_locales.first().cloned().unwrap_or("en".to_owned());
-        request::Outcome::Success(I18NManager {
-            locale: chosen_locale,
+        Box::pin(async move {
+            let raw_header = headers
+                .get("Accept-Language")
+                .map_or(Ok("en"), |v| v.to_str())
+                .map_err(|_| {
+                    APIError::ValidationError("Invalid language header value".to_string())
+                })?;
+
+            let supported_locales = available_locales!();
+            let accepted_locales = accept_language::intersection(raw_header, &supported_locales);
+
+            let chosen_locale = accepted_locales.first().cloned().unwrap_or("en".to_owned());
+            Ok(I18NManager {
+                locale: chosen_locale,
+            })
         })
     }
 }
 
-#[rocket::async_trait]
-impl<'a> OpenApiFromRequest<'a> for I18NManager {
-    fn from_request_input(
-        _gen: &mut rocket_okapi::gen::OpenApiGenerator,
-        _name: String,
-        _required: bool,
-    ) -> rocket_okapi::Result<rocket_okapi::request::RequestHeaderInput> {
-        Ok(rocket_okapi::request::RequestHeaderInput::Parameter(
-            Parameter {
-                name: "Accept-Language".to_owned(),
-                required: false,
-                description: Some("Defaults to `en`".to_owned()),
-                location: "header".to_owned(),
-                allow_empty_value: false,
-                deprecated: false,
-                extensions: Map::new(),
-                value: rocket_okapi::okapi::openapi3::ParameterValue::Schema {
-                    style: Some(rocket_okapi::okapi::openapi3::ParameterStyle::Simple),
-                    schema: rocket_okapi::okapi::openapi3::SchemaObject {
-                        instance_type: Some(
-                            rocket_okapi::okapi::schemars::schema::SingleOrVec::Single(Box::new(
-                                InstanceType::String,
-                            )),
-                        ),
-                        ..Default::default()
-                    },
-                    explode: None,
-                    example: None,
-                    examples: None,
-                    allow_reserved: false,
-                },
-            },
-        ))
+/// Since `Accept-Language` is a default HTTP header, we don't really need to include this in the
+/// OpenAPi schema.
+impl ApiComponent for I18NManager {
+    fn child_schemas() -> Vec<(String, apistos::reference_or::ReferenceOr<apistos::Schema>)> {
+        Vec::default()
+    }
+
+    fn schema() -> Option<(String, apistos::reference_or::ReferenceOr<apistos::Schema>)> {
+        None
     }
 }

@@ -1,21 +1,31 @@
 import { defineConfig } from "astro/config";
-import tailwind from "@astrojs/tailwind";
 import icon from "astro-icon";
 import svelte from "@astrojs/svelte";
 import sitemap from "@astrojs/sitemap";
-import cloudflare from "@astrojs/cloudflare";
+import tailwindcss from "@tailwindcss/vite";
+import node from "@astrojs/node";
 
 // https://astro.build/config
 export default defineConfig({
     integrations: [
         svelte(),
-        tailwind(),
         icon(),
         sitemap({
             changefreq: "weekly",
         }),
     ],
+
+    vite: {
+        plugins: [tailwindcss()],
+        // Required for Vite 8 + @tailwindcss/vite (createIdResolver expects resolve.tsconfigPaths).
+        resolve: {
+            tsconfigPaths: true,
+        },
+    },
+
     site: "https://palform.app",
-    output: "hybrid",
-    adapter: cloudflare(),
+    output: "static",
+    adapter: node({
+        mode: "standalone",
+    }),
 });

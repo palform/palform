@@ -24,12 +24,14 @@ use thiserror::Error;
 use url::Url;
 
 use crate::{
+    actix_util::from_org_id::FromOrgIdTrait,
     api_entities::{
         organisation_auth_config::APIOrganisationAuthConfig,
         organisation_auth_team_mapping::APIOrganisationAuthTeamMapping,
         organisation_team::APIOrganisationTeamMembership,
     },
     auth::tokens::{NewAPIAuthToken, TokenManager},
+    config::Config,
     entity_managers::{
         admin_users::{AdminUserManagementError, AdminUserManager},
         organisation_auth_config::OrganisationAuthConfigManager,
@@ -37,7 +39,6 @@ use crate::{
         organisation_members::OrganisationMembersManager,
         organisation_teams::OrganisationTeamsManager,
     },
-    rocket_util::from_org_id::FromOrgIdTrait,
 };
 
 use super::oidc_common::{oidc_common_token_exchange, TokenExchangeError};
@@ -161,9 +162,7 @@ impl OIDCManager {
                 TokenExchangeError::TeamMappingError(format!("get org default team: {}", e))
             })?;
 
-        if !member_teams
-            .iter().any(|v| v.team_id == default_team.id)
-        {
+        if !member_teams.iter().any(|v| v.team_id == default_team.id) {
             OrganisationTeamsManager::add_member_to_team(
                 conn,
                 default_team.id,
@@ -302,6 +301,7 @@ impl OIDCManager {
         auth_code: String,
         nonce: String,
         redirect_url: String,
+        config: &Config,
     ) -> Result<(NewAPIAuthToken, PalformDatabaseID<IDAdminUser>, bool), TokenExchangeError> {
         let result = oidc_common_token_exchange(
             conn,
@@ -405,7 +405,7 @@ impl OIDCManager {
 
         self.map_teams(conn, token_user_id, &result.raw_claims)
             .await?;
-        let auth_token = TokenManager::issue_token(conn, token_user_id).await?;
+        let auth_token = TokenManager::issue_token(conn, token_user_id, config).await?;
         Ok((auth_token, token_user_id, user_is_new))
     }
 }

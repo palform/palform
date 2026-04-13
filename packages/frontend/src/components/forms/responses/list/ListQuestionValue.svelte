@@ -1,6 +1,6 @@
 <script lang="ts">
-    import type { QuestionSubmission } from "@paltiverse/palform-client-js-extra-types/QuestionSubmission";
-    import type { APIQuestion } from "@paltiverse/palform-typescript-openapi";
+    import type { QuestionSubmission } from "@palform/palform-client-js-extra-types/QuestionSubmission";
+    import type { APIQuestion } from "@palform/palform-typescript-openapi";
     import {
         qIsAddress,
         qIsChoice,
@@ -38,9 +38,13 @@
     } from "flowbite-svelte";
     import { labelForQuestionDate } from "../../../../data/util/time";
 
-    export let questionSubmission: QuestionSubmission;
-    export let question: APIQuestion;
-    export let compact: boolean;
+    interface Props {
+        questionSubmission: QuestionSubmission;
+        question: APIQuestion;
+        compact: boolean;
+    }
+
+    let { questionSubmission, question, compact }: Props = $props();
 </script>
 
 {#if qIsText(question.configuration)}
@@ -84,7 +88,7 @@
         <strong>{sGetPhoneNumber(questionSubmission.data).calling_code}</strong>
         {sGetPhoneNumber(questionSubmission.data).number}
     </p>
-    <!-- svelte-ignore missing-declaration -->
+    <!-- svelte-ignore missing_declaration -->
 {:else if qIsFileUpload(question.configuration)}
     <ListQuestionFileUpload
         fileId={sGetFileUpload(questionSubmission.data).file_id}

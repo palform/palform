@@ -1,9 +1,9 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus};
+use actix_web::web::{Data, Json};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::APIError;
 use palform_tsid::{
     resources::IDAdminUserSecondAuthenticationFactorSession, tsid::PalformDatabaseID,
 };
-use rocket::{post, serde::json::Json, State};
-use rocket_okapi::openapi;
 use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
 use serde::Serialize;
@@ -15,26 +15,22 @@ use crate::{
     entity_managers::admin_user_second_factors::AdminUserSecondFactorManager,
 };
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct StartWebauthnResponse {
     #[schemars(with = "String")]
     pub ccr: CreationChallengeResponse,
     pub session: PalformDatabaseID<IDAdminUserSecondAuthenticationFactorSession>,
 }
 
-#[openapi(
-    tag = "2FA Methods",
-    operation_id = "user.second_factors.start_webauthn"
-)]
-#[post("/users/me/second_factors/webauthn/start")]
-pub async fn handler(
+#[api_operation(tag = "2FA Methods", operation_id = "user.second_factors.start_webauthn")]
+pub async fn auth_second_factors_start_webauthn(
     token: APIAuthToken<APIAuthTokenSourcePersonal>,
-    db: &State<DatabaseConnection>,
-    config: &State<Config>,
-) -> Result<Json<StartWebauthnResponse>, APIErrorWithStatus> {
-    let (ccr, id) = AdminUserSecondFactorManager::new(token.get_user_id(), config)
+    db: Data<DatabaseConnection>,
+    config: Data<Config>,
+) -> Result<Json<StartWebauthnResponse>, APIError> {
+    let (ccr, id) = AdminUserSecondFactorManager::new(token.get_user_id(), config.as_ref())
         .map_err(|e| APIError::report_internal_error("init 2fa manager", e))?
-        .start_webauthn_register(db.inner())
+        .start_webauthn_register(db.as_ref())
         .await
         .map_err(|e| APIError::report_internal_error("start webauthn register", e))?;
 

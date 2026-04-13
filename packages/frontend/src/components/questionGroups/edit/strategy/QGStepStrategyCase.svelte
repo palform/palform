@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIQuestionGroupStepStrategyJumpCase } from "@paltiverse/palform-typescript-openapi";
+    import type { APIQuestionGroupStepStrategyJumpCase } from "@palform/palform-typescript-openapi";
     import { extractConditionList } from "../../../../data/util/stepStrategyConditions";
     import ConditionLabel from "./ConditionLabel.svelte";
     import { Button } from "flowbite-svelte";
@@ -12,7 +12,11 @@
         getGroupTitle,
     } from "../../../../data/contexts/formAdmin";
 
-    export let strategyCase: APIQuestionGroupStepStrategyJumpCase;
+    interface Props {
+        strategyCase: APIQuestionGroupStepStrategyJumpCase;
+    }
+
+    let { strategyCase }: Props = $props();
     const formAdminCtx = getFormAdminContext();
     const formMetadataCtx = getFormCtx();
     let targetGroup = $formAdminCtx.groups.find(
@@ -20,7 +24,7 @@
     );
 
     const dispatch = createEventDispatcher<{ delete: undefined }>();
-    $: conditionList = extractConditionList(strategyCase.conditions);
+    let conditionList = $derived(extractConditionList(strategyCase.conditions));
 </script>
 
 <div class="border dark:border-slate-600 shadow-sm rounded-md py-2 px-4">
@@ -61,7 +65,7 @@
         size="xs"
         color="light"
         outline
-        on:click={() => dispatch("delete")}
+        onclick={() => dispatch("delete")}
     >
         <FontAwesomeIcon icon={faTrash} class="me-2" />
         Delete case

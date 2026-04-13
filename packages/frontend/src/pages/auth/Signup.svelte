@@ -13,14 +13,14 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 
-    let email = "";
-    let password = "";
-    let captcha = "";
+    let email = $state("");
+    let password = $state("");
+    let captcha = $state("");
 
-    let loading = false;
-    let signUpComplete = false;
+    let loading = $state(false);
+    let signUpComplete = $state(false);
 
-    let emailCooloffSeconds = 0;
+    let emailCooloffSeconds = $state(0);
     const doEmailCooloff = () => {
         emailCooloffSeconds = 30;
         const interval = setInterval(() => {
@@ -31,7 +31,7 @@
         }, 1000);
     };
 
-    $: onSignUpClick = async (e: Event) => {
+    let onSignUpClick = $derived(async (e: Event) => {
         e.preventDefault();
 
         if (!captcha) {
@@ -41,7 +41,7 @@
 
         loading = true;
         try {
-            await APIs.auth.authSignUp(captcha, {
+            await APIs.authWithCaptcha(captcha).authSignUp({
                 email,
                 password,
             });
@@ -51,9 +51,9 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 
-    $: onResendClick = async () => {
+    let onResendClick = $derived(async () => {
         loading = true;
         try {
             await APIs.auth.authResendVerification({ email });
@@ -63,7 +63,7 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 
     const intentTemplateExists = saveIntentTemplateIfExists();
 </script>
@@ -78,7 +78,7 @@
         <LoadingButton
             outline
             buttonClass="mt-4"
-            on:click={onResendClick}
+            onclick={onResendClick}
             {loading}
             disabled={loading || emailCooloffSeconds > 0}
         >
@@ -97,15 +97,15 @@
             </Alert>
         {/if}
 
-        <form class="mt-4 space-y-6" on:submit={onSignUpClick}>
-            <div class="space-y-2 !mb-0">
+        <form class="mt-4 space-y-6" onsubmit={onSignUpClick}>
+            <div class="space-y-2 mb-0!">
                 <SocialAuthButtons prefix="Sign up with" />
                 <p class="text-sm text-center text-gray-500 dark:text-gray-400">
                     or
                 </p>
             </div>
 
-            <Label class="!mt-2">
+            <Label class="mt-2!">
                 Your email address
                 <Input
                     class="mt-2"
@@ -161,13 +161,13 @@
             </LoadingButton>
         </form>
 
-        <svelte:fragment slot="footer">
+        {#snippet footer()}
             <InfoText>
                 Already signed up?
                 <TextButton class="inline-block" href="/auth/login"
                     >Log in</TextButton
                 >
             </InfoText>
-        </svelte:fragment>
+        {/snippet}
     </AuthCard>
 {/if}

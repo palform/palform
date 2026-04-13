@@ -3,3 +3,4 @@ pub mod list;
 pub mod list_my;
 pub mod create;
 pub mod delete;
+pub mod scope;

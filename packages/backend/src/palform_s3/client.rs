@@ -24,6 +24,7 @@ pub enum PalformS3Error {
     AssetNotFound,
 }
 
+#[derive(Clone)]
 pub struct PalformS3Client<T: PalformS3Bucket> {
     bucket_type: PhantomData<T>,
     pub bucket: Box<Bucket>,
@@ -44,7 +45,11 @@ impl<T: PalformS3Bucket> PalformS3Client<T> {
             endpoint: config.s3_endpoint_url.clone(),
         };
 
-        let bucket = Bucket::new(T::name(config).as_str(), region, creds)?;
+        let mut bucket = Bucket::new(T::name(config).as_str(), region, creds)?;
+        if config.s3_path_style {
+            bucket = bucket.with_path_style();
+        }
+
         Ok(Self {
             bucket_type: PhantomData,
             bucket,

@@ -7,20 +7,23 @@
         getOrgContext,
     } from "../../../../data/contexts/orgLayout";
     import { showFailureToast } from "../../../../data/toast";
-    import { createEventDispatcher } from "svelte";
-    import type { APIWebhook } from "@paltiverse/palform-typescript-openapi";
+    import type { APIWebhook } from "@palform/palform-typescript-openapi";
     import { DateTime } from "luxon";
 
-    export let show = false;
+    interface Props {
+        show?: boolean;
+        oncreate: (webhook: APIWebhook) => void;
+    }
+
+    let { show = $bindable(false), oncreate }: Props = $props();
     const orgCtx = getOrgContext();
     const formCtx = getFormCtx();
-    const dispatch = createEventDispatcher<{ create: APIWebhook }>();
 
-    let endpoint = "";
-    let loading = false;
-    let signingSecret: string | undefined = undefined;
+    let endpoint = $state("");
+    let loading = $state(false);
+    let signingSecret: string | undefined = $state(undefined);
 
-    $: onAdd = async () => {
+    let onAdd = $derived(async () => {
         loading = true;
         try {
             const resp = await APIs.webhooks().then((a) =>
@@ -30,7 +33,7 @@
             );
 
             signingSecret = resp.data.signing_secret;
-            dispatch("create", {
+            oncreate({
                 id: resp.data.id,
                 created_at: DateTime.now().toISO(),
                 endpoint,
@@ -41,7 +44,7 @@
             await showFailureToast(e);
             loading = false;
         }
-    };
+    });
 </script>
 
 <Modal bind:open={show} outsideclose title="New webhook">
@@ -77,13 +80,13 @@
         </Label>
     {/if}
 
-    <svelte:fragment slot="footer">
+    {#snippet footer()}
         {#if signingSecret}
-            <Button on:click={() => (show = false)}>Close</Button>
+            <Button onclick={() => (show = false)}>Close</Button>
         {:else}
-            <LoadingButton disabled={loading} {loading} on:click={onAdd}>
+            <LoadingButton disabled={loading} {loading} onclick={onAdd}>
                 Add
             </LoadingButton>
         {/if}
-    </svelte:fragment>
+    {/snippet}
 </Modal>

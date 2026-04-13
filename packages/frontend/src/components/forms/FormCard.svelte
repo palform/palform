@@ -1,15 +1,19 @@
 <script lang="ts">
-    import type { APIForm } from "@paltiverse/palform-typescript-openapi";
+    import type { APIForm } from "@palform/palform-typescript-openapi";
     import { Button } from "flowbite-svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
     import CardBox from "../cardBox/CardBox.svelte";
     import CardBoxTitle from "../cardBox/CardBoxTitle.svelte";
     import CardBoxSubtitle from "../cardBox/CardBoxSubtitle.svelte";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../router";
 
-    export let form: APIForm;
-    export let orgId: string;
+    interface Props {
+        form: APIForm;
+        orgId: string;
+    }
+
+    let { form, orgId }: Props = $props();
 </script>
 
 <CardBox>
@@ -21,8 +25,9 @@
     </CardBoxSubtitle>
     <Button
         outline
-        href={`/orgs/${orgId}/forms/${form.id}/`}
-        on:click={navigateEvent}
+        href={p("/orgs/:orgId/forms/:formId/overview", {
+            params: { orgId, formId: form.id },
+        })}
     >
         View <FontAwesomeIcon class="ml-2" icon={faArrowRight} />
     </Button>

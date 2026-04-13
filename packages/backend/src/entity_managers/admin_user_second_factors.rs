@@ -1,6 +1,6 @@
 use std::{collections::HashMap, time::SystemTimeError};
 
-use chrono::{Duration, NaiveDateTime, Utc};
+use chrono::{DateTime, Duration, Utc};
 use palform_entities::{
     admin_user_second_authentication_factor, admin_user_second_authentication_factor_session,
     prelude::*,
@@ -109,7 +109,7 @@ impl AdminUserSecondFactorManager {
             .map(|f| APIAdminUserSecondAuthenticationFactor {
                 id: f.id,
                 nickname: f.nickname.clone(),
-                created_at: f.created_at,
+                created_at: f.created_at.to_utc(),
                 method: if f.webauthn_public_key.is_some() {
                     APIAdminUserSecondAuthenticationFactorMethod::Webauthn
                 } else {
@@ -123,8 +123,8 @@ impl AdminUserSecondFactorManager {
         Uuid::from_u128(user_id.number().into())
     }
 
-    fn expires_at() -> NaiveDateTime {
-        (Utc::now() + Duration::minutes(SESSION_DURATION_MINS.into())).naive_utc()
+    fn expires_at() -> DateTime<Utc> {
+        Utc::now() + Duration::minutes(SESSION_DURATION_MINS.into())
     }
 
     pub async fn start_webauthn_register<T: ConnectionTrait>(
@@ -155,7 +155,7 @@ impl AdminUserSecondFactorManager {
         let new_session = admin_user_second_authentication_factor_session::ActiveModel {
             id: Set(new_session_id),
             user_id: Set(self.user_id),
-            expires_at: Set(Self::expires_at()),
+            expires_at: Set(Self::expires_at().fixed_offset()),
             webauthn_secret: Set(Some(encoded_secret)),
             is_create: Set(true),
             ..Default::default()
@@ -306,7 +306,7 @@ impl AdminUserSecondFactorManager {
         let mut new_session = admin_user_second_authentication_factor_session::ActiveModel {
             id: Set(new_id),
             user_id: Set(self.user_id),
-            expires_at: Set(Self::expires_at()),
+            expires_at: Set(Self::expires_at().fixed_offset()),
             is_create: Set(false),
             ..Default::default()
         };
@@ -345,7 +345,7 @@ impl AdminUserSecondFactorManager {
             .await?
             .ok_or(VerifyTOTPError::SessionNotFound)?;
 
-        if session.expires_at < Utc::now().naive_utc() {
+        if session.expires_at < Utc::now() {
             return Err(VerifyTOTPError::SessionExpired);
         }
 
@@ -390,10 +390,14 @@ impl AdminUserSecondFactorManager {
         let session = AdminUserSecondAuthenticationFactorSession::find_by_id(session_id)
             .one(conn)
             .await?
-            .ok_or(ProcessWebauthnError::Session("not found. Please sign in again.".to_string()))?;
+            .ok_or(ProcessWebauthnError::Session(
+                "not found. Please sign in again.".to_string(),
+            ))?;
 
-        if session.expires_at < Utc::now().naive_utc() {
-            return Err(ProcessWebauthnError::Session("expired. Please sign in again.".to_string()));
+        if session.expires_at < Utc::now() {
+            return Err(ProcessWebauthnError::Session(
+                "expired. Please sign in again.".to_string(),
+            ));
         }
 
         if session.webauthn_secret.is_none() {

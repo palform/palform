@@ -1,18 +1,11 @@
 <script lang="ts">
     import { Progressbar, Spinner } from "flowbite-svelte";
     import { APIs } from "../../data/common";
-    import FormResponseList from "../../components/forms/responses/list/FormResponseList.svelte";
     import { writable } from "svelte/store";
-    import FormResponseOverview from "../../components/forms/responses/overview/FormResponseOverview.svelte";
-    import FormEditor from "./FormEditor.svelte";
-    import FormTokens from "./FormTokens.svelte";
-    import { Route, Router } from "svelte-routing";
     import FormTabs from "../../components/forms/FormTabs.svelte";
-    import FormSettings from "./FormSettings.svelte";
     import { getFormCtx, getOrgContext } from "../../data/contexts/orgLayout";
-    import FormExport from "./FormExport.svelte";
     import { downloadSubmissionsForForm } from "../../data/crypto/results";
-    import { onMount } from "svelte";
+    import { onMount, type Snippet } from "svelte";
     import {
         type AnalysisCorrelationContext,
         initCorrelationContext,
@@ -26,26 +19,34 @@
         type FormAdminContext,
     } from "../../data/contexts/formAdmin";
     import FormTitleClickable from "../../components/forms/FormTitleClickable.svelte";
+    import { route } from "../../router";
 
-    export let formId: string;
+    interface Props {
+        children?: Snippet;
+    }
+
+    let { children }: Props = $props();
+
+    const orgId = $derived(route.params.orgId ?? "");
+    const formId = $derived(route.params.formId ?? "");
     const formAdminStore = writable<FormAdminContext>();
     setFormAdminContext(formAdminStore);
 
     const orgCtx = getOrgContext();
 
-    let submissionsLoading = true;
+    let submissionsLoading = $state(true);
     let submissionsTracker = writable<
         { total: number; done: number } | undefined
     >(undefined);
     let submissionsTerminateHandle = writable<boolean>(false);
 
-    const doSubmissionLoad = (formId: string) => {
+    const doSubmissionLoad = (orgId: string, formId: string) => {
         submissionsLoading = true;
         submissionsTracker.set(undefined);
 
         submissionsTerminateHandle.set(false);
         downloadSubmissionsForForm(
-            $orgCtx.org.id,
+            orgId,
             formId,
             submissionsTracker,
             formAdminStore,
@@ -55,7 +56,11 @@
             .catch(showFailureToast);
     };
 
-    $: doSubmissionLoad(formId);
+    // Depend only on route params, not `$orgCtx`. Updating form metadata (e.g. settings save)
+    // mutates the org store and must not re-run submission download or the whole page flashes.
+    $effect(() => {
+        doSubmissionLoad(orgId, formId);
+    });
 
     const correlationCtx = writable<AnalysisCorrelationContext>({
         manager: null,
@@ -69,16 +74,19 @@
         };
     });
 
-    let formLoading = true;
-    $: APIs.questions()
-        .then((a) => a.questionsList($orgCtx.org.id, formId))
-        .then((resp) => {
-            $formAdminStore.formId = formId;
-            $formAdminStore.questions = resp.data;
-            formLoading = false;
-        });
+    let formLoading = $state(true);
+    $effect(() => {
+        let _formId = formId;
+        APIs.questions()
+            .then((a) => a.questionsList($orgCtx.org.id, _formId))
+            .then((resp) => {
+                $formAdminStore.formId = formId;
+                $formAdminStore.questions = resp.data;
+                formLoading = false;
+            });
+    });
 
-    $: {
+    $effect(() => {
         if (!submissionsLoading && !formLoading) {
             initCorrelationContext(
                 formId,
@@ -87,25 +95,31 @@
                 correlationCtx
             );
         }
-    }
+    });
 
-    let groupsLoading = true;
-    $: APIs.questionGroups()
-        .then((a) => a.questionGroupsList($orgCtx.org.id, formId))
-        .then((resp) => {
-            $formAdminStore.groups = resp.data;
-            groupsLoading = false;
-        });
+    let groupsLoading = $state(true);
+    $effect(() => {
+        let _formId = formId;
+        APIs.questionGroups()
+            .then((a) => a.questionGroupsList($orgCtx.org.id, _formId))
+            .then((resp) => {
+                $formAdminStore.groups = resp.data;
+                groupsLoading = false;
+            });
+    });
 
-    let tokensLoading = true;
-    $: APIs.fillTokens()
-        .then((a) => a.fillAccessTokensList($orgCtx.org.id, formId))
-        .then((resp) => {
-            $formAdminStore.tokens = resp.data;
-            tokensLoading = false;
-        });
+    let tokensLoading = $state(true);
+    $effect(() => {
+        let _formId = formId;
+        APIs.fillTokens()
+            .then((a) => a.fillAccessTokensList($orgCtx.org.id, _formId))
+            .then((resp) => {
+                $formAdminStore.tokens = resp.data;
+                tokensLoading = false;
+            });
+    });
 
-    $: formCtx = getFormCtx(formId);
+    let formCtx = $derived(getFormCtx(formId));
 </script>
 
 {#if formLoading || submissionsLoading || groupsLoading || tokensLoading || $formAdminStore === undefined || $formCtx === undefined}
@@ -124,19 +138,15 @@
                 We're caching your decrypted submissions so this is faster next time
             </p>
         {:else}
-            <Spinner size={14} />
+            <Spinner size="8" />
         {/if}
     </div>
 {:else}
     <FormTitleClickable class="mb-4" />
 
-    <Router>
-        <FormTabs />
-        <Route path="/" component={FormResponseOverview} />
-        <Route path="/responses" component={FormResponseList} />
-        <Route path="/edit" component={FormEditor} />
-        <Route path="/tokens" component={FormTokens} />
-        <Route path="/export" component={FormExport} />
-        <Route path="/settings" component={FormSettings} />
-    </Router>
+    <FormTabs />
+
+    <div class="mt-4">
+        {@render children?.()}
+    </div>
 {/if}

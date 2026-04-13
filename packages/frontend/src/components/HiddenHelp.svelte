@@ -6,17 +6,26 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { Accordion, AccordionItem, Button } from "flowbite-svelte";
 
-    export let href: string;
+    interface Props {
+        href: string;
+        class?: string;
+        children?: import("svelte").Snippet;
+        [key: string]: any;
+    }
+
+    let { href, class: className, ...props }: Props = $props();
 </script>
 
-<Accordion flush class={$$props.class}>
+<Accordion flush class={className}>
     <AccordionItem>
-        <span slot="header" class="text-sm">
-            <FontAwesomeIcon icon={faQuestionCircle} class="me-2" /> Help
-        </span>
+        {#snippet header()}
+            <span class="text-sm">
+                <FontAwesomeIcon icon={faQuestionCircle} class="me-2" /> Help
+            </span>
+        {/snippet}
 
         <div class="space-y-2">
-            <slot />
+            {@render props.children?.()}
         </div>
 
         <Button size="xs" outline class="mt-4" {href} target="_blank">

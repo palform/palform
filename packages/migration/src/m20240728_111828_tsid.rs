@@ -21,7 +21,7 @@ macro_rules! migrate_id {
             )
             .await
     };
-    ($manager: ident, $table_name: ident, $id_col: expr) => {
+    ($manager: ident, $table_name: ident, $id_col: expr_2021) => {
         $manager
             .alter_table(
                 Table::alter()
@@ -37,7 +37,7 @@ macro_rules! migrate_id {
             )
             .await
     };
-    ($manager: ident, $table_name: ident, $from_col: expr, $to_tbl: ident, $to_col: expr, $fk_name: expr) => {
+    ($manager: ident, $table_name: ident, $from_col: expr_2021, $to_tbl: ident, $to_col: expr_2021, $fk_name: expr_2021) => {
         $manager
             .alter_table(
                 Table::alter()
@@ -60,7 +60,7 @@ macro_rules! migrate_id {
 }
 
 macro_rules! migrate_id_nullable {
-    ($manager: ident, $table_name: ident, $from_col: expr, $to_tbl: ident, $to_col: expr, $fk_name: expr) => {
+    ($manager: ident, $table_name: ident, $from_col: expr_2021, $to_tbl: ident, $to_col: expr_2021, $fk_name: expr_2021) => {
         $manager
             .alter_table(
                 Table::alter()

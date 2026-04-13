@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Chart } from "flowbite-svelte";
+    import { Chart } from "@flowbite-svelte-plugins/chart";
     import { sGetScale } from "../../../../data/contexts/fill";
     import { genScaleList } from "../../../../data/util/scaleList";
     import {
@@ -8,15 +8,18 @@
     } from "../../../../data/contexts/formAdmin";
     import { qIsScale } from "../../../../data/contexts/formEditor";
 
-    export let questionId: string;
+    interface Props {
+        questionId: string;
+    }
 
-    $: question = ctxGetQuestion(questionId);
-    $: submissions = ctxSubmissionsForQuestion(questionId);
+    let { questionId }: Props = $props();
 
-    let series: number[] = [];
-    $: {
+    let question = $derived(ctxGetQuestion(questionId));
+    let submissions = $derived(ctxSubmissionsForQuestion(questionId));
+
+    let series: () => number[] = $derived(() => {
         if ($question !== undefined && qIsScale($question.configuration)) {
-            series = genScaleList(
+            return genScaleList(
                 $question.configuration.scale.min,
                 $question.configuration.scale.max
             ).map(
@@ -26,7 +29,9 @@
                     }).length
             );
         }
-    }
+
+        return [];
+    });
 </script>
 
 {#if $question !== undefined && qIsScale($question.configuration)}
@@ -34,7 +39,8 @@
         options={{
             series: [
                 {
-                    data: series,
+                    data: series(),
+                    name: "Responses",
                 },
             ],
             chart: {

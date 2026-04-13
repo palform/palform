@@ -2,7 +2,7 @@
     import type {
         APIFormBranding,
         APIFormBrandingAccess,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import {
         Modal,
         Spinner,
@@ -19,13 +19,17 @@
     import TableSingleAction from "../../tables/TableSingleAction.svelte";
     import BrandingAccessNewModal from "./BrandingAccessNewModal.svelte";
 
-    export let open = false;
-    export let branding: APIFormBranding;
+    interface Props {
+        open?: boolean;
+        branding: APIFormBranding;
+    }
+
+    let { open = $bindable(false), branding }: Props = $props();
     const orgCtx = getOrgContext();
     const teamCtx = getTeamCtx();
 
-    let initLoading = true;
-    let access: APIFormBrandingAccess[] | undefined = undefined;
+    let initLoading = $state(true);
+    let access: APIFormBrandingAccess[] | undefined = $state(undefined);
     APIs.formBrandings()
         .then((a) =>
             a.organisationTeamBrandingListAccess(
@@ -40,13 +44,13 @@
         .catch((e) => showFailureToast(e))
         .finally(() => (initLoading = false));
 
-    $: onNewAccess = (e: CustomEvent<APIFormBrandingAccess>) => {
+    let onNewAccess = $derived((e: APIFormBrandingAccess) => {
         if (access === undefined) return;
-        access = [e.detail, ...access];
-    };
+        access = [e, ...access];
+    });
 
-    let deleteLoading = false;
-    $: onDeleteClick = async (teamId: string) => {
+    let deleteLoading = $state(false);
+    let onDeleteClick = $derived(async (teamId: string) => {
         if (access === undefined) return;
 
         deleteLoading = true;
@@ -65,7 +69,7 @@
             await showFailureToast(e);
         }
         deleteLoading = false;
-    };
+    });
 </script>
 
 <Modal bind:open outsideclose title={`Sharing for ${branding.name}`}>
@@ -98,7 +102,7 @@
                             <TableBodyCell class="text-right">
                                 {#if entry.team_id !== $teamCtx.team.id}
                                     <TableSingleAction
-                                        on:click={() =>
+                                        onclick={() =>
                                             onDeleteClick(entry.team_id)}
                                         disabled={deleteLoading}
                                     >
@@ -114,7 +118,7 @@
 
         <BrandingAccessNewModal
             brandingId={branding.id}
-            on:create={onNewAccess}
+            oncreate={onNewAccess}
             existingTeams={access.map((e) => e.team_id)}
         />
     {/if}

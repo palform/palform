@@ -1,12 +1,12 @@
+use apistos::ApiComponent;
 use chrono::{DateTime, Utc};
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
+use schemars::JsonSchema;
 use serde::Serialize;
 use stripe::{Invoice, InvoiceStatus, Object};
 
 use crate::billing::{error::BillingError, util::stripe_timestamp_to_chrono};
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct APIBillingInvoice {
     pub id: String,
     pub amount: i64,
@@ -37,7 +37,7 @@ impl From<InvoiceStatus> for APIBillingInvoiceStatus {
     }
 }
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct APIBillingUpcomingInvoice {
     pub invoice_date: DateTime<Utc>,
     pub amount_due: i64,

@@ -4,23 +4,27 @@
     import InfoText from "../../type/InfoText.svelte";
     import SectionHeading from "../../type/SectionHeading.svelte";
     import LoadingButton from "../../LoadingButton.svelte";
-    import type { APIUserKey } from "@paltiverse/palform-typescript-openapi";
+    import type { APIUserKey } from "@palform/palform-typescript-openapi";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { restoreKeyFromBackup } from "../../../data/crypto/keyManager";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../../router";
     import { createEventDispatcher } from "svelte";
 
-    export let key: APIUserKey;
-    export let showInfo = true;
-    export let disableLink = false;
+    interface Props {
+        key: APIUserKey;
+        showInfo?: boolean;
+        disableLink?: boolean;
+    }
+
+    let { key, showInfo = true, disableLink = false }: Props = $props();
 
     const orgCtx = getOrgContext();
     const dispatch = createEventDispatcher<{ successfulImport: undefined }>();
 
-    let recoverLoading = false;
-    let recoveryPhrase = "";
-    $: onRecoverClick = async (e: Event) => {
+    let recoverLoading = $state(false);
+    let recoveryPhrase = $state("");
+    let onRecoverClick = $derived(async (e: Event) => {
         e.preventDefault();
 
         recoverLoading = true;
@@ -41,7 +45,7 @@
             );
         }
         recoverLoading = false;
-    };
+    });
 </script>
 
 {#if showInfo}
@@ -56,7 +60,7 @@
     </InfoText>
 {/if}
 
-<form class="mt-4" on:submit={onRecoverClick}>
+<form class="mt-4" onsubmit={onRecoverClick}>
     <Label>
         Recovery phrase
         <Input

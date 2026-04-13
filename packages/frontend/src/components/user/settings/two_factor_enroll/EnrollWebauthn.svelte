@@ -1,21 +1,23 @@
 <script lang="ts">
-    import type { APIAdminUserSecondAuthenticationFactor } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher } from "svelte";
+    import type { APIAdminUserSecondAuthenticationFactor } from "@palform/palform-typescript-openapi";
     import WebauthnButton from "../../../auth/WebauthnButton.svelte";
     import { DateTime } from "luxon";
 
-    export let nickname: string;
-    const dispatch = createEventDispatcher<{
-        enroll: APIAdminUserSecondAuthenticationFactor;
-    }>();
+    interface Props {
+        nickname: string;
+        onenroll: (factor: APIAdminUserSecondAuthenticationFactor) => void;
+    }
 
-    $: onEnroll = (e: CustomEvent<string>) => {
-        dispatch("enroll", {
+    let { nickname, onenroll }: Props = $props();
+
+    let onEnroll = $derived((e: CustomEvent<string>) => {
+        onenroll({
             id: e.detail,
             nickname,
             created_at: DateTime.now().toISO(),
+            method: "Webauthn",
         });
-    };
+    });
 </script>
 
 <p>To continue, please click the button.</p>

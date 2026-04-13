@@ -19,7 +19,6 @@ use crate::{
         client::PalformMailClient,
         events::{EventNotficationManager, EventNotificationError},
     },
-    rocket_util::from_org_id::FromOrgIdTrait,
 };
 
 use super::{
@@ -111,8 +110,7 @@ impl OrganisationManager {
         org_id: PalformDatabaseID<IDOrganisation>,
         creator_user_id: PalformDatabaseID<IDAdminUser>,
 
-        #[cfg(feature = "saas")]
-        stripe: &stripe::Client,
+        #[cfg(feature = "saas")] stripe: &stripe::Client,
     ) -> Result<(), BootstrapOrgError> {
         let default_team =
             OrganisationTeamsManager::create(conn, org_id, "Default team".to_string(), true)
@@ -130,6 +128,8 @@ impl OrganisationManager {
 
         #[cfg(feature = "saas")]
         {
+            use crate::actix_util::from_org_id::FromOrgIdTrait;
+
             let manager = crate::billing::manager::BillingManager::new(stripe);
             manager.register_org_customer_stub(conn, org_id).await?;
             BillingEntitlementManager::new(org_id)

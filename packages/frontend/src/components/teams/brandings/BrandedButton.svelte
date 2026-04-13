@@ -1,5 +1,6 @@
 <script lang="ts">
-    import type { ButtonProps } from "flowbite-svelte/Button.svelte";
+    import type { Snippet } from "svelte";
+    import type { HTMLButtonAttributes, MouseEventHandler } from "svelte/elements";
     import {
         getBrandCtx,
         getRoundingAmountForBrand,
@@ -8,17 +9,33 @@
     import { isDarkMode } from "../../../data/util/darkMode";
     import { Spinner } from "flowbite-svelte";
 
-    const ctx = getBrandCtx();
-    export let type: ButtonProps["type"] = "button";
-    export let outline: ButtonProps["outline"] = false;
-    export let disabled: ButtonProps["disabled"] = false;
-    export let loading = false;
+    interface Props {
+        type?: HTMLButtonAttributes["type"];
+        outline?: boolean;
+        disabled?: boolean;
+        loading?: boolean;
+        class?: string;
+        children?: Snippet;
+        onclick?: MouseEventHandler<HTMLButtonElement>;
+    }
 
+    let {
+        type = "button",
+        outline = false,
+        disabled = false,
+        loading = false,
+        class: className,
+        children,
+        onclick,
+    }: Props = $props();
+
+    const ctx = getBrandCtx();
     const isDark = isDarkMode();
-    let backgroundColorOverride: string | undefined;
-    let hoverBackgroundColorOverride: string | undefined;
-    let ringColorOverride: string | undefined;
-    $: (() => {
+    let backgroundColorOverride = $state<string | undefined>(undefined);
+    let hoverBackgroundColorOverride = $state<string | undefined>(undefined);
+    let ringColorOverride = $state<string | undefined>(undefined);
+
+    $effect(() => {
         backgroundColorOverride = undefined;
         hoverBackgroundColorOverride = undefined;
         ringColorOverride = undefined;
@@ -46,23 +63,23 @@
             rg.hsl.l = 80;
             ringColorOverride = rg.toString({ format: "hex" });
         }
-    })();
+    });
 
-    $: rounding = getRoundingAmountForBrand($ctx);
+    let rounding = $derived(getRoundingAmountForBrand($ctx));
 </script>
 
 <button
-    class={`brandedButton text-center font-medium focus-within:ring-4 focus-within:outline-none inline-flex items-center justify-center px-5 py-2.5 text-sm ${backgroundColorOverride ? (outline ? "bg-transparent border border-[var(--branded-background-color)] text-[var(--branded-background-color)]" : "bg-[var(--branded-background-color)] text-white") : outline ? "border border-primary-700 dark:border-primary-400 text-primary-700 dark:text-primary-400" : "bg-primary-700 dark:bg-primary-600 text-white"} ${hoverBackgroundColorOverride ? (outline ? "hover:bg-[var(--branded-background-color)] hover:text-white" : "hover:bg-[var(--branded-hover-color)]") : outline ? "hover:bg-primary-700 hover:text-white" : "hover:bg-primary-800 dark:hover:bg-primary-700"} ${ringColorOverride ? "focus-within:ring-[var(--branded-ring-color)]" : "focus-within:ring-primary-300 dark:focus-within:ring-primary-800"}  ${$$props.class}`}
+    class={`brandedButton text-center font-medium focus-within:ring-4 focus-within:outline-none inline-flex items-center justify-center px-5 py-2.5 text-sm ${backgroundColorOverride ? (outline ? "bg-transparent border border-(--branded-background-color) text-(--branded-background-color)" : "bg-(--branded-background-color) text-white") : outline ? "border border-primary-700 dark:border-primary-400 text-primary-700 dark:text-primary-400" : "bg-primary-700 dark:bg-primary-600 text-white"} ${hoverBackgroundColorOverride ? (outline ? "hover:bg-(--branded-background-color) hover:text-white" : "hover:bg-(--branded-hover-color)") : outline ? "hover:bg-primary-700 hover:text-white" : "hover:bg-primary-800 dark:hover:bg-primary-700"} ${ringColorOverride ? "focus-within:ring-(--branded-ring-color)" : "focus-within:ring-primary-300 dark:focus-within:ring-primary-800"}  ${className ?? ""}`}
     style:--branded-background-color={backgroundColorOverride}
     style:--branded-hover-color={hoverBackgroundColorOverride}
     style:--branded-ring-color={ringColorOverride}
     style:border-radius={rounding}
     {type}
     {disabled}
-    on:click
+    {onclick}
 >
     {#if loading}
-        <Spinner class="me-4" size={4} color="white" />
+        <Spinner class="me-4" size="4" />
     {/if}
-    <slot />
+    {@render children?.()}
 </button>

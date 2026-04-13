@@ -1,8 +1,7 @@
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use palform_tsid::resources::IDAdminUser;
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
+use schemars::JsonSchema;
 use sea_orm::FromQueryResult;
 use serde::Serialize;
 
@@ -11,5 +10,5 @@ pub struct APIAdminUser {
     pub id: PalformDatabaseID<IDAdminUser>,
     pub display_name: Option<String>,
     pub email: String,
-    pub created_at: NaiveDateTime,
+    pub created_at: DateTime<Utc>,
 }

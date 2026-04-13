@@ -1,15 +1,27 @@
 <script lang="ts">
-    import type { APIForm } from "@paltiverse/palform-typescript-openapi";
+    import type { APIForm } from "@palform/palform-typescript-openapi";
     import SidebarLink from "./SidebarLink.svelte";
     import { getOrgContext } from "../../data/contexts/orgLayout";
+    import type { MouseEventHandler } from "svelte/elements";
 
-    export let form: APIForm;
+    interface Props {
+        form: APIForm;
+        onclick?: MouseEventHandler<HTMLAnchorElement>;
+    }
+
+    let { form, onclick }: Props = $props();
     const orgCtx = getOrgContext();
 
-    $: team = $orgCtx.myTeams.find((e) => e.team_id === form.team_id);
+    let team = $derived(
+        $orgCtx.myTeams.find((e) => e.team_id === form.team_id)
+    );
 </script>
 
-<SidebarLink orgPath={`/forms/${form.id}/`} on:click>
+<SidebarLink
+    orgPath={`/forms/${form.id}/overview`}
+    {onclick}
+    activationLevel={2}
+>
     {#if team !== undefined}
         <span class="block text-xs text-slate-600 dark:text-slate-400">
             {team.name}

@@ -6,22 +6,32 @@
     import type {
         APIQuestionGroupStepStrategyJumpCase,
         APIQuestionGroupStepStrategyJumpCaseCondition,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import QgStepStrategyNewCondition from "./QGStepStrategyNewCondition.svelte";
     import ConditionLabel from "./ConditionLabel.svelte";
     import { createEventDispatcher } from "svelte";
     import { getFormCtx } from "../../../../data/contexts/orgLayout";
-    import { getFormAdminContext, getGroupTitle } from "../../../../data/contexts/formAdmin";
+    import {
+        getFormAdminContext,
+        getGroupTitle,
+    } from "../../../../data/contexts/formAdmin";
 
-    export let fromGroupId: string;
+    interface Props {
+        fromGroupId: string;
+        class?: string;
+    }
+
+    let { fromGroupId, class: className = "" }: Props = $props();
     const formAdminCtx = getFormAdminContext();
     const formMetadataCtx = getFormCtx();
 
-    let showCreateModal = false;
+    let showCreateModal = $state(false);
 
-    let targetGroupId: string = "";
-    let binaryOperation: "And" | "Or" = "And";
-    let conditions: APIQuestionGroupStepStrategyJumpCaseCondition[] = [];
+    let targetGroupId: string = $state("");
+    let binaryOperation: "And" | "Or" = $state("And");
+    let conditions: APIQuestionGroupStepStrategyJumpCaseCondition[] = $state(
+        []
+    );
 
     const onNewCondition = (
         e: CustomEvent<APIQuestionGroupStepStrategyJumpCaseCondition>
@@ -38,7 +48,7 @@
         saveNew: APIQuestionGroupStepStrategyJumpCase;
     }>();
 
-    $: selectItems = [
+    let selectItems = $derived([
         ...$formAdminCtx.groups
             .filter((e) => e.id !== fromGroupId)
             .map((g) => ({
@@ -53,10 +63,10 @@
             name: "- (Submit form)",
             value: "SUBMIT",
         },
-    ];
+    ]);
 
-    $: valid = targetGroupId !== "";
-    $: onSaveClick = () => {
+    let valid = $derived(targetGroupId !== "");
+    function onSaveClick() {
         if (!valid) return;
 
         dispatch("saveNew", {
@@ -73,15 +83,15 @@
         showCreateModal = false;
         binaryOperation = "And";
         conditions = [];
-    };
+    }
 </script>
 
 <Button
     size="xs"
     color="light"
     outline
-    class={$$props.class ?? ""}
-    on:click={() => (showCreateModal = true)}
+    class={className}
+    onclick={() => (showCreateModal = true)}
 >
     <FontAwesomeIcon icon={faPlus} class="me-2" />
     Add jump case
@@ -132,7 +142,7 @@
         </Alert>
     {/if}
 
-    <svelte:fragment slot="footer">
-        <Button on:click={onSaveClick} disabled={!valid}>Save</Button>
-    </svelte:fragment>
+    {#snippet footer()}
+        <Button onclick={onSaveClick} disabled={!valid}>Save</Button>
+    {/snippet}
 </Modal>

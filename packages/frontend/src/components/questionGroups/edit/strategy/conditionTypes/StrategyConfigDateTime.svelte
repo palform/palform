@@ -1,25 +1,25 @@
 <script lang="ts">
     import type {
-        APIQuestionConfigurationOneOf9DateTime,
-        APIQuestionGroupStepStrategyJumpCaseConditionMatcher,
+        ConfigDateTimeDateTime,
         DirectionOperator,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import { Button, Label, Select } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
     import { comparisonItems } from "../../../../../data/util/directionOperator";
     import DateTimePicker from "../../../../datePicker/DateTimePicker.svelte";
     import { DateTime } from "luxon";
+    import type { StrategyMatcherEventProps } from "../../../../../data/contexts/formEditor";
 
-    export let configuration: APIQuestionConfigurationOneOf9DateTime;
-    const dispatch = createEventDispatcher<{
-        save: APIQuestionGroupStepStrategyJumpCaseConditionMatcher;
-    }>();
+    interface Props extends StrategyMatcherEventProps {
+        configuration: ConfigDateTimeDateTime;
+    }
 
-    let direction = "";
-    let dateTime = DateTime.now().toISO();
-    $: onSave = () => {
+    let { configuration, onsave }: Props = $props();
+
+    let direction = $state("");
+    let dateTime = $state(DateTime.now().toISO());
+    let onSave = $derived(() => {
         if (direction === "") return;
-        dispatch("save", {
+        onsave({
             DateTime: {
                 direction: direction as DirectionOperator,
                 value: dateTime,
@@ -27,7 +27,7 @@
                 match_time: configuration.collect_time,
             },
         });
-    };
+    });
 </script>
 
 <Label>
@@ -44,4 +44,4 @@
     />
 {/if}
 
-<Button class="mt-4" size="sm" on:click={onSave}>Save</Button>
+<Button class="mt-4" size="sm" onclick={onSave}>Save</Button>

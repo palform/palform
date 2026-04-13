@@ -1,16 +1,14 @@
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
 use palform_client_common::{
-    errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult},
+    errors::error::{APIError, APIInternalErrorResult},
     form_management::{question_group::APIQuestionGroup, question_types::APIQuestion},
 };
 use palform_tsid::{
     resources::{IDForm, IDOrganisation},
     tsid::PalformDatabaseID,
 };
-use rocket::{post, serde::json::Json, State};
-use rocket_okapi::{
-    okapi::schemars::{self, JsonSchema},
-    openapi,
-};
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 
@@ -18,21 +16,25 @@ use crate::{
     auth::rbac::requests::APITokenTeamEditorFromForm, entity_managers::questions::QuestionManager,
 };
 
-#[derive(JsonSchema, Deserialize)]
+#[derive(JsonSchema, Deserialize, ApiComponent)]
 pub struct APISaveQuestionsRequest {
     questions: Vec<APIQuestion>,
     groups: Vec<APIQuestionGroup>,
 }
 
-#[openapi(tag = "Questions", operation_id = "questions.save")]
-#[post("/users/me/orgs/<org_id>/forms/<form_id>/save", data = "<data>")]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct QuestionsSavePath {
     org_id: PalformDatabaseID<IDOrganisation>,
     form_id: PalformDatabaseID<IDForm>,
+}
+
+#[api_operation(tag = "Questions", operation_id = "questions.save")]
+pub async fn questions_save(
+    path: Path<QuestionsSavePath>,
     data: Json<APISaveQuestionsRequest>,
     _token: APITokenTeamEditorFromForm,
-    db: &State<DatabaseConnection>,
-) -> Result<(), APIErrorWithStatus> {
+    db: Data<DatabaseConnection>,
+) -> Result<(), APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -45,7 +47,7 @@ pub async fn handler(
     {
         use crate::billing::entitlement::INTERNALBillingEntitlementManager;
 
-        let billing = INTERNALBillingEntitlementManager::new(org_id);
+        let billing = INTERNALBillingEntitlementManager::new(path.org_id);
         let org_entitlement = billing
             .get_org_entitlement(&txn)
             .await
@@ -62,7 +64,7 @@ pub async fn handler(
 
     QuestionManager::save_questions_and_groups(
         &txn,
-        form_id,
+        path.form_id,
         data.groups.clone(),
         data.questions.clone(),
     )

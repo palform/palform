@@ -8,14 +8,18 @@
     } from "@fortawesome/free-solid-svg-icons";
     import { getFormCtx } from "../../../../data/contexts/orgLayout";
 
-    export let groupTitle: string;
-    export let questions: string[];
+    interface Props {
+        groupTitle: string;
+        questions: string[];
+    }
+
+    let { groupTitle, questions }: Props = $props();
     const formMetadataCtx = getFormCtx();
 
-    let expanded = true;
+    let expanded = $state(true);
 </script>
 
-<button on:click={() => (expanded = !expanded)}>
+<button onclick={() => (expanded = !expanded)}>
     <h2 class="text-lg mb-2 text-slate-800 dark:text-slate-300">
         <span class="text-slate-400 inline-block w-4">
             {#if expanded}

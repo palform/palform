@@ -3,18 +3,17 @@
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import { faArrowRight, faWarning } from "@fortawesome/free-solid-svg-icons";
     import { Button } from "flowbite-svelte";
-    import { useLocation } from "svelte-routing";
+    import { route } from "../../router";
     import { isOrgRouteMatch } from "../../data/routing";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
     const ctx = getOrgContext();
-    const location = useLocation();
-    $: shouldHide =
+    let shouldHide = $derived(
         $ctx.globalWarning === undefined
             ? false
             : $ctx.globalWarning.hideOnPaths.some((p) =>
-                  isOrgRouteMatch($location.pathname, p)
-              );
+                  isOrgRouteMatch(route.pathname, p, 1)
+              )
+    );
 </script>
 
 {#if $ctx.globalWarning && !shouldHide}
@@ -26,12 +25,7 @@
             />
             {$ctx.globalWarning.message}
         </p>
-        <Button
-            class="ms-10 mt-2"
-            color="light"
-            href={$ctx.globalWarning.link}
-            on:click={navigateEvent}
-        >
+        <Button class="ms-10 mt-2" color="light" href={$ctx.globalWarning.link}>
             Fix now
             <FontAwesomeIcon icon={faArrowRight} class="ms-2" />
         </Button>

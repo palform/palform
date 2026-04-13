@@ -6,3 +6,4 @@ pub mod list_access;
 pub mod list_fonts;
 pub mod put;
 pub mod remove_access;
+pub mod scope;

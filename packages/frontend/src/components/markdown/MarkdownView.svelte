@@ -1,11 +1,15 @@
 <script lang="ts">
-    import SvelteMarkdown from "svelte-markdown";
     import MarkdownLink from "./MarkdownLink.svelte";
     import MarkdownFormFillImage from "./MarkdownFormFillImage.svelte";
     import MarkdownList from "./MarkdownList.svelte";
+    import SvelteMarkdown from "@humanspeak/svelte-markdown";
 
-    export let value = "";
-    export let imagesWithFillToken = false;
+    interface Props {
+        value?: string;
+        imagesWithFillToken?: boolean;
+    }
+
+    let { value = "", imagesWithFillToken = false }: Props = $props();
 </script>
 
 <div class="space-y-2">
@@ -16,6 +20,5 @@
             image: imagesWithFillToken ? MarkdownFormFillImage : undefined,
             list: MarkdownList,
         }}
-        options={{ mangle: false }}
     />
 </div>

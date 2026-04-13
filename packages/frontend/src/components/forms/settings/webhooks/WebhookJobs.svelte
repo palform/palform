@@ -2,7 +2,7 @@
     import type {
         APIWebhook,
         APIWebhookJob,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import { APIs } from "../../../../data/common";
     import {
         getFormCtx,
@@ -22,10 +22,14 @@
     import { parseServerTime } from "../../../../data/util/time";
     import { DateTime } from "luxon";
 
-    export let webhook: APIWebhook;
+    interface Props {
+        webhook: APIWebhook;
+    }
+
+    let { webhook }: Props = $props();
     const orgCtx = getOrgContext();
     const formCtx = getFormCtx();
-    let jobs: APIWebhookJob[] | undefined = undefined;
+    let jobs: APIWebhookJob[] | undefined = $state(undefined);
 
     APIs.webhooks()
         .then((a) =>

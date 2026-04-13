@@ -1,27 +1,41 @@
-<script>
+<script lang="ts">
     import { Accordion, AccordionItem } from "flowbite-svelte";
+
+    interface Props {
+        class?: string;
+    }
+
+    let { class: className }: Props = $props();
 </script>
 
-<Accordion class={$$props.class}>
+<Accordion class={className}>
     <AccordionItem>
-        <span slot="header">Is there a limit to responses?</span>
+        {#snippet header()}
+            <span>Is there a limit to responses?</span>
+        {/snippet}
         No! All our plans, including the free plan, come with unlimited responses.
     </AccordionItem>
     <AccordionItem>
-        <span slot="header">What payment methods do you accept?</span>
+        {#snippet header()}
+            <span>What payment methods do you accept?</span>
+        {/snippet}
         We use Stripe, so you can pay with any debit or credit card supported by
         its platform. If you need to pay with some other method (e.g. ACH/SEPA),
         please send us an email and we'll be happy to help!
     </AccordionItem>
     <AccordionItem>
-        <span slot="header">Is pricing per-user?</span>
+        {#snippet header()}
+            <span>Is pricing per-user?</span>
+        {/snippet}
         No! One price includes all users. We think pricing per user would be silly,
         since an extra user basically adds zero extra cost for us. Processing responses
         and developing new features are the bulk of our expenses, so we prefer to
         make our pricing centered around those instead.
     </AccordionItem>
     <AccordionItem>
-        <span slot="header">What is a "team"?</span>
+        {#snippet header()}
+            <span>What is a "team"?</span>
+        {/snippet}
         <p>
             A logical collection of forms and associated branding schemes. Users
             in your organisation can be given access to multiple teams with a
@@ -35,7 +49,9 @@
         </p>
     </AccordionItem>
     <AccordionItem>
-        <span slot="header">Do you offer discounts?</span>
+        {#snippet header()}
+            <span>Do you offer discounts?</span>
+        {/snippet}
         <p>Yes!</p>
         <p>
             <strong>Students</strong> at higher education institutions with ID
@@ -61,7 +77,9 @@
         </p>
     </AccordionItem>
     <AccordionItem>
-        <span slot="header">Are there limits to file uploads?</span>
+        {#snippet header()}
+            <span>Are there limits to file uploads?</span>
+        {/snippet}
         <p>
             Our File Upload question currently only has limits on individual
             uploads: files larger than 10GB cannot be uploaded. We currently
@@ -75,7 +93,9 @@
         <p>There are no restrictions on types of files that can be uploaded.</p>
     </AccordionItem>
     <AccordionItem>
-        <span slot="header">Are my responses secure?</span>
+        {#snippet header()}
+            <span>Are my responses secure?</span>
+        {/snippet}
         <div class="space-y-2">
             <p>
                 We pride ourselves on having best-in-class security: our
@@ -104,11 +124,15 @@
         </div>
     </AccordionItem>
     <AccordionItem>
-        <span slot="header">Do your forms support mobile devices?</span>
+        {#snippet header()}
+            <span>Do your forms support mobile devices?</span>
+        {/snippet}
         <p>Yes! We've designed our forms to work beautifully on all devices.</p>
     </AccordionItem>
     <AccordionItem>
-        <span slot="header">How do I start?</span>
+        {#snippet header()}
+            <span>How do I start?</span>
+        {/snippet}
         <p>
             Simply choose a plan, create an account, and then answer a few easy
             questions. You'll be up and running in just 5-10 minutes.

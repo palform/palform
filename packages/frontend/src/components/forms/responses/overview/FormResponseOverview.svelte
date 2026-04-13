@@ -13,21 +13,21 @@
         getGroupTitle,
     } from "../../../../data/contexts/formAdmin";
     import { qIsInfo } from "../../../../data/contexts/formEditor";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../../../router";
 
     const orgCtx = getOrgContext();
     const formAdminCtx = getFormAdminContext();
     const formMetadataCtx = getFormCtx();
-    $: groupedQuestions = $formAdminCtx.groups.map((g) => ({
+    let groupedQuestions = $derived($formAdminCtx.groups.map((g) => ({
         group: g,
         questions: $formAdminCtx.questions
             .filter((q) => !qIsInfo(q.configuration) && q.group_id === g.id)
             .map((q) => q.id),
-    }));
+    })));
 
-    $: hasSomeFailure = $formAdminCtx.submissions.some((e) =>
+    let hasSomeFailure = $derived($formAdminCtx.submissions.some((e) =>
         submissionIsError(e)
-    );
+    ));
 </script>
 
 <ol class="space-y-4">
@@ -42,8 +42,12 @@
             <Button
                 class="mt-2"
                 size="sm"
-                href={`/orgs/${$orgCtx.org.id}/forms/${$formAdminCtx.formId}/edit`}
-                on:click={navigateEvent}
+                href={p("/orgs/:orgId/forms/:formId/edit", {
+                    params: {
+                        orgId: $orgCtx.org.id,
+                        formId: $formAdminCtx.formId,
+                    },
+                })}
             >
                 Edit form
             </Button>
@@ -52,9 +56,11 @@
 
     {#if hasSomeFailure}
         <Alert border color="yellow">
-            <svelte:fragment slot="icon">
-                <FontAwesomeIcon icon={faWarning} />
-            </svelte:fragment>
+            {#snippet icon()}
+                    
+                    <FontAwesomeIcon icon={faWarning} />
+                
+                    {/snippet}
             <h2 class="text-lg">Failed to decrypt some responses</h2>
             <p>
                 We were unable to decrypt at least one response. Check the

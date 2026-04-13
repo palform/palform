@@ -1,6 +1,11 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from "svelte";
     import { Turnstile } from "svelte-turnstile";
+    interface Props {
+        [key: string]: any
+    }
+
+    let { ...props }: Props = $props();
 
     const siteKey = import.meta.env.VITE_CAPTCHA_SITE_KEY;
     const dispatch = createEventDispatcher<{
@@ -20,7 +25,7 @@
 {#if !skipCaptcha}
     <Turnstile
         {siteKey}
-        class={$$props.class}
+        class={props.class}
         responseField={false}
         on:callback={(e) => dispatch("complete", e.detail.token)}
         on:timeout={() => dispatch("clear")}

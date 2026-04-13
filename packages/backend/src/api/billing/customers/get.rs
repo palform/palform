@@ -1,25 +1,31 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus};
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::APIError;
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
-use rocket::{get, serde::json::Json, State};
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
+use serde::Deserialize;
 
 use crate::{
     api_entities::billing::customer::APIBillingCustomer, auth::rbac::requests::APITokenOrgAdmin,
     billing::manager::BillingManager,
 };
 
-#[openapi(tag = "Billing Customers", operation_id = "billing.customer.get")]
-#[get("/users/me/orgs/<org_id>/billing/customer")]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct BillingCustomersGetPath {
     org_id: PalformDatabaseID<IDOrganisation>,
+}
+
+#[api_operation(tag = "Billing Customers", operation_id = "billing.customer.get")]
+pub async fn billing_customers_get(
+    path: Path<BillingCustomersGetPath>,
     _token: APITokenOrgAdmin,
-    stripe: &State<stripe::Client>,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<APIBillingCustomer>, APIErrorWithStatus> {
-    let manager = BillingManager::new(stripe);
+    stripe: Data<stripe::Client>,
+    db: Data<DatabaseConnection>,
+) -> Result<Json<APIBillingCustomer>, APIError> {
+    let manager = BillingManager::new(stripe.as_ref());
     let customer = manager
-        .get_org_customer(db.inner(), org_id)
+        .get_org_customer(db.as_ref(), path.org_id)
         .await
         .map_err(|e| APIError::report_internal_error("get customer", e))?;
 

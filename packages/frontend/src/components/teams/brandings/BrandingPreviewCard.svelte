@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIFormBranding } from "@paltiverse/palform-typescript-openapi";
+    import type { APIFormBranding } from "@palform/palform-typescript-openapi";
     import CardBox from "../../cardBox/CardBox.svelte";
     import CardBoxTitle from "../../cardBox/CardBoxTitle.svelte";
     import CardBoxSubtitle from "../../cardBox/CardBoxSubtitle.svelte";
@@ -12,17 +12,22 @@
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import BrandingAccessModal from "./BrandingAccessModal.svelte";
 
-    export let branding: APIFormBranding;
+    interface Props {
+        branding: APIFormBranding;
+    }
+
+    let { branding }: Props = $props();
     const orgCtx = getOrgContext();
     const teamCtx = getTeamCtx();
-    let showEditModal = false;
+    let showEditModal = $state(false);
 
-    $: isTeamAdmin =
+    let isTeamAdmin = $derived(
         $orgCtx.myTeams.find((e) => e.team_id === $teamCtx.team.id)?.my_role ===
-        "Admin";
+            "Admin"
+    );
 
-    let deleteLoading = false;
-    $: onDeleteClick = async () => {
+    let deleteLoading = $state(false);
+    let onDeleteClick = $derived(async () => {
         deleteLoading = true;
         try {
             await APIs.formBrandings().then((a) =>
@@ -47,9 +52,9 @@
             await showFailureToast(e);
         }
         deleteLoading = false;
-    };
+    });
 
-    let showAccessModal = false;
+    let showAccessModal = $state(false);
 </script>
 
 <BrandingConfigModal
@@ -68,7 +73,7 @@
     <div class="mt-2">
         <Button
             outline
-            on:click={() => (showEditModal = true)}
+            onclick={() => (showEditModal = true)}
             size="xs"
             disabled={deleteLoading}
         >
@@ -81,7 +86,7 @@
             size="xs"
             loading={deleteLoading}
             disabled={deleteLoading}
-            on:click={onDeleteClick}
+            onclick={onDeleteClick}
         >
             Delete
         </LoadingButton>
@@ -89,7 +94,7 @@
         {#if isTeamAdmin}
             <Button
                 outline
-                on:click={() => (showAccessModal = true)}
+                onclick={() => (showAccessModal = true)}
                 size="xs"
                 disabled={deleteLoading}
             >

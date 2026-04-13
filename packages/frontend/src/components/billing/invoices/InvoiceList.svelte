@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIBillingInvoice } from "@paltiverse/palform-typescript-openapi";
+    import type { APIBillingInvoice } from "@palform/palform-typescript-openapi";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { APIs } from "../../../data/common";
     import SkeletonPrimitive from "../../SkeletonPrimitive.svelte";
@@ -14,8 +14,8 @@
     import InfoText from "../../type/InfoText.svelte";
 
     const orgCtx = getOrgContext();
-    let invoices: APIBillingInvoice[] | undefined;
-    let invoicesLoading = true;
+    let invoices: APIBillingInvoice[] | undefined = $state();
+    let invoicesLoading = $state(true);
     APIs.billingInvoices()
         .then((a) => a.billingInvoiceList($orgCtx.org.id))
         .then((resp) => {

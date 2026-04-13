@@ -4,27 +4,21 @@
 
     const ctx = getBrandCtx();
 
-    let colorList: {
-        from: string;
-        to: string;
-        direction?: "bottom" | "right";
-    }[] = [];
-
-    $: (() => {
+    let colorListFn = $derived(() => {
         if (!$ctx || !$ctx.background_color) {
-            colorList = [];
-            return;
+            return [];
         }
 
         if (!$ctx.background_color_accent) {
-            colorList = [
+            return [
                 {
                     from: $ctx.background_color,
                     to: colorWithDeltaLightness($ctx.background_color, 0.8),
+                    direction: "right",
                 },
             ];
         } else {
-            colorList = [
+            return [
                 {
                     from: colorWithDeltaLightness($ctx.background_color, 1.2),
                     to: colorWithDeltaLightness(
@@ -32,6 +26,7 @@
                         0.9,
                         0.9
                     ),
+                    direction: "right",
                 },
                 {
                     from: colorWithDeltaLightness(
@@ -44,6 +39,7 @@
                         0.9,
                         0.8
                     ),
+                    direction: "right",
                 },
                 {
                     from: colorWithDeltaLightness(
@@ -56,6 +52,7 @@
                         0.9,
                         0.8
                     ),
+                    direction: "right",
                 },
                 {
                     from: colorWithDeltaLightness(
@@ -64,10 +61,12 @@
                         0.8
                     ),
                     to: colorWithDeltaLightness($ctx.background_color, 1.2),
+                    direction: "right",
                 },
             ];
         }
-    })();
+    });
+    let colorList = $derived(colorListFn());
 </script>
 
 {#if colorList.length > 0}
@@ -80,7 +79,7 @@
             {#each colorList as color}
                 <div
                     style:background-image={`linear-gradient(to ${color.direction ?? "right"}, ${color.from}, ${color.to})`}
-                />
+                ></div>
             {/each}
         </div>
     </div>

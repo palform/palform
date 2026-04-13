@@ -8,10 +8,10 @@
 
     const orgCtx = getOrgContext();
 
-    let value = $orgCtx.org.display_name;
-    let loading = false;
+    let value = $state($orgCtx.org.display_name);
+    let loading = $state(false);
 
-    $: onRenameClick = async () => {
+    let onRenameClick = $derived(async () => {
         loading = true;
         try {
             await APIs.orgs().then((a) =>
@@ -24,7 +24,7 @@
         }
 
         loading = false;
-    };
+    });
 </script>
 
 <InfoText class="mt-2">
@@ -39,7 +39,7 @@
         buttonClass="mt-4"
         disabled={loading}
         {loading}
-        on:click={onRenameClick}
+        onclick={onRenameClick}
     >
         Rename
     </LoadingButton>

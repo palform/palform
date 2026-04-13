@@ -1,19 +1,17 @@
 <script lang="ts">
     import {
         APIQuestionTextValidator,
-        type APIQuestionConfigurationOneOf1,
-    } from "@paltiverse/palform-typescript-openapi";
+        type ConfigText,
+    } from "@palform/palform-typescript-openapi";
     import { Label, Select, Toggle } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
-    import { getFormEditorCtx, type QuestionEditEvents } from "../../../data/contexts/formEditor";
+    import { getFormEditorCtx } from "../../../data/contexts/formEditor";
 
-    export let config: APIQuestionConfigurationOneOf1;
+    interface Props {
+        config: ConfigText;
+    }
+
+    let { config = $bindable() }: Props = $props();
     const ctx = getFormEditorCtx();
-    const dispatch = createEventDispatcher<QuestionEditEvents>();
-
-    $: onUpdate = () => {
-        dispatch("update", config);
-    };
 
     const validators = [
         {
@@ -27,11 +25,7 @@
     ] as { name: string; value: string | null }[];
 </script>
 
-<Toggle
-    bind:checked={config.text.is_long}
-    on:change={onUpdate}
-    disabled={$ctx.loading}
->
+<Toggle bind:checked={config.text.is_long} disabled={$ctx.loading}>
     Long answer
 </Toggle>
 
@@ -41,7 +35,6 @@
         class="mt-1"
         bind:value={config.text.validator}
         items={validators}
-        on:change={onUpdate}
         disabled={$ctx.loading}
     />
 </Label>

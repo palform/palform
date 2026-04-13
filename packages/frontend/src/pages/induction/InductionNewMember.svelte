@@ -4,13 +4,13 @@
     import BigAlertHeading from "../../components/induction/bigAlert/BigAlertHeading.svelte";
     import BigAlertText from "../../components/induction/bigAlert/BigAlertText.svelte";
     import { getOrgContext } from "../../data/contexts/orgLayout";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../router";
 
     const orgCtx = getOrgContext();
 
-    $: onGetStartedClick = () => {
+    let onGetStartedClick = $derived(() => {
         navigate(`/orgs/${$orgCtx.org.id}/induction/key`);
-    };
+    });
 </script>
 
 <BigAlert>
@@ -23,7 +23,7 @@
         set-up steps.
     </BigAlertText>
 
-    <Button size="xl" class="mt-4" on:click={onGetStartedClick}>
+    <Button size="xl" class="mt-4" onclick={onGetStartedClick}>
         Let's go!
     </Button>
 </BigAlert>

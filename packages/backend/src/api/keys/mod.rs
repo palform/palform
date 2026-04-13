@@ -6,3 +6,4 @@ pub mod list_org;
 pub mod register;
 pub mod register_backup;
 pub mod team_fingerprints;
+pub mod scope;

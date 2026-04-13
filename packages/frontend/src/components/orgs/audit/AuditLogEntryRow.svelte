@@ -1,12 +1,16 @@
 <script lang="ts">
-    import type { APIAuditLogEntry } from "@paltiverse/palform-typescript-openapi";
+    import type { APIAuditLogEntry } from "@palform/palform-typescript-openapi";
     import { TableBodyCell, TableBodyRow } from "flowbite-svelte";
     import AuditLogTargetResource from "./AuditLogTargetResource.svelte";
     import AuditLogAction from "./AuditLogAction.svelte";
     import { parseServerTime } from "../../../data/util/time";
     import { DateTime } from "luxon";
 
-    export let entry: APIAuditLogEntry;
+    interface Props {
+        entry: APIAuditLogEntry;
+    }
+
+    let { entry }: Props = $props();
 </script>
 
 <TableBodyRow>
@@ -20,14 +24,11 @@
         <AuditLogAction action={entry.verb} />
     </TableBodyCell>
     <TableBodyCell>
-        <AuditLogTargetResource
-            id={entry.target_resource_id}
-            resourceType={entry.target_resource_type}
-        />
+        <AuditLogTargetResource {entry} />
     </TableBodyCell>
     <TableBodyCell>
         {parseServerTime(entry.created_at).toLocaleString(
-            DateTime.DATETIME_MED,
+            DateTime.DATETIME_MED
         )}
     </TableBodyCell>
     <TableBodyCell>

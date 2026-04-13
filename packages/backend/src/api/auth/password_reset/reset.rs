@@ -1,34 +1,32 @@
-use palform_client_common::errors::error::{
-    APIError, APIErrorWithStatus, APIInternalError, APIInternalErrorResult,
-};
+use actix_web::web::{Data, Json};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalError, APIInternalErrorResult};
 use palform_entities::sea_orm_active_enums::AdminUserEmailVerificationPurposeEnum;
 use palform_tsid::{resources::IDAdminUserEmailVerification, tsid::PalformDatabaseID};
-use rocket::{put, serde::json::Json, State};
-use rocket_okapi::{
-    okapi::schemars::{self, JsonSchema},
-    openapi,
-};
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, DbErr, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 use validator::Validate;
 
-use crate::{entity_managers::{
-    admin_users::AdminUserManager, email_verifications::EmailVerificationManager,
-}, rocket_util::validated::Validated};
+use crate::{
+    actix_util::validated::Validated,
+    entity_managers::{
+        admin_users::AdminUserManager, email_verifications::EmailVerificationManager,
+    },
+};
 
-#[derive(Deserialize, JsonSchema, Validate)]
+#[derive(Deserialize, JsonSchema, Validate, ApiComponent)]
 pub struct ResetPasswordRequest {
     verification_id: PalformDatabaseID<IDAdminUserEmailVerification>,
     #[validate(length(min = 12, max = 64, message = "must be between 12 and 64 characters"))]
     new_password: String,
 }
 
-#[openapi(tag = "Password Resets", operation_id = "user.password_reset.reset")]
-#[put("/auth/reset/password", data = "<data>")]
-pub async fn handler(
+#[api_operation(tag = "Password Resets", operation_id = "user.password_reset.reset")]
+pub async fn auth_password_reset_reset(
     data: Validated<Json<ResetPasswordRequest>>,
-    db: &State<DatabaseConnection>,
-) -> Result<(), APIErrorWithStatus> {
+    db: Data<DatabaseConnection>,
+) -> Result<(), APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),

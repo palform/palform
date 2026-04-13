@@ -4,16 +4,19 @@
     import LoadingButton from "../LoadingButton.svelte";
     import { APIs } from "../../data/common";
     import { showFailureToast } from "../../data/toast";
-    import { createEventDispatcher } from "svelte";
     import InfoText from "../type/InfoText.svelte";
 
-    const dispatch = createEventDispatcher<{ done: void }>();
-    let selectedRating: number | null = null;
-    let comments = "";
-    let loading = false;
-    let done = false;
+    interface Props {
+        ondone: () => void;
+    }
+    let { ondone }: Props = $props();
 
-    $: onSubmit = async () => {
+    let selectedRating: number | null = $state(null);
+    let comments = $state("");
+    let loading = $state(false);
+    let done = $state(false);
+
+    let onSubmit = $derived(async () => {
         if (selectedRating === null) return;
 
         loading = true;
@@ -27,7 +30,7 @@
         } catch (e) {
             showFailureToast(e);
         }
-    };
+    });
 </script>
 
 <div
@@ -41,7 +44,7 @@
                 {#each [1, 2, 3, 4, 5] as rating}
                     <Button
                         color="light"
-                        on:click={() => (selectedRating = rating)}
+                        onclick={() => (selectedRating = rating)}
                         disabled={loading}
                     >
                         {rating}
@@ -58,7 +61,7 @@
             <Label class="mt-4">
                 Comments (optional)
                 <Textarea
-                    class="mt-1"
+                    class="mt-1 w-full"
                     bind:value={comments}
                     disabled={loading}
                 />
@@ -68,7 +71,7 @@
                 disabled={loading}
                 {loading}
                 buttonClass="mt-4 w-full"
-                on:click={onSubmit}
+                onclick={onSubmit}
             >
                 Submit
             </LoadingButton>
@@ -79,7 +82,7 @@
             We've anonymously noted your feedback. If you'd like us to respond,
             please email hey@palform.app.
         </InfoText>
-        <Button color="light" on:click={() => dispatch("done")} class="mt-4">
+        <Button color="light" onclick={() => ondone()} class="mt-4">
             Close
         </Button>
     {/if}

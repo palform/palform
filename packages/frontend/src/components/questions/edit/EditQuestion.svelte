@@ -36,7 +36,6 @@
         faTrash,
     } from "@fortawesome/free-solid-svg-icons";
     import QeText from "./QEText.svelte";
-    import type { APIQuestionConfiguration } from "@paltiverse/palform-typescript-openapi";
     import { getFormCtx } from "../../../data/contexts/orgLayout";
     import LoadingButton from "../../LoadingButton.svelte";
     import QeChoice from "./QEChoice.svelte";
@@ -54,27 +53,29 @@
     import QeHidden from "./QEHidden.svelte";
     import type { ArrayMoveDirection } from "../../../data/util/arraySwap";
 
-    export let questionId: string;
-    const question = getEditorQuestion(questionId);
+    interface Props {
+        questionId: string;
+    }
+
+    let { questionId }: Props = $props();
+    const question = $derived(getEditorQuestion(questionId));
     const formMetadataCtx = getFormCtx();
     const formEditorCtx = getFormEditorCtx();
 
-    $: editing = $formEditorCtx.currentlyEditing === questionId;
+    let editing = $derived($formEditorCtx.currentlyEditing === questionId);
 
-    let questionTitle = $question?.title ?? "";
-    let questionDescription = $question?.description;
-    let questionInternalName = $question?.internal_name;
-    let questionRequired = $question?.required ?? false;
+    let questionTitle = $state($question?.title ?? "");
+    let questionDescription = $state($question?.description);
+    let questionInternalName = $state($question?.internal_name);
+    let questionRequired = $state($question?.required ?? false);
 
-    let questionConfiguration = $question?.configuration;
-    const onConfigUpdate = (e: CustomEvent<APIQuestionConfiguration>) =>
-        (questionConfiguration = e.detail);
+    let questionConfiguration = $state($question?.configuration);
 
-    $: onEditClick = () => {
+    let onEditClick = $derived(() => {
         $formEditorCtx.currentlyEditing = questionId;
-    };
+    });
 
-    $: onSaveClick = async () => {
+    let onSaveClick = $derived(async () => {
         if ($question === undefined || questionConfiguration === undefined)
             return;
         updateQuestion(formEditorCtx, {
@@ -86,9 +87,9 @@
             configuration: questionConfiguration,
         });
         $formEditorCtx.currentlyEditing = undefined;
-    };
+    });
 
-    $: onDeleteClick = async (e: Event) => {
+    let onDeleteClick = $derived(async (e: Event) => {
         e.stopPropagation();
         if (!$question) return;
 
@@ -98,30 +99,32 @@
         if ($formMetadataCtx.one_question_per_page) {
             deleteGroup(formEditorCtx, groupId);
         }
-    };
+    });
 
-    $: questionIndex =
+    let questionIndex = $derived(
         $question &&
-        $formEditorCtx.questions[$question.group_id].findIndex(
-            (e) => e.id === $question.id
-        );
-    $: canMoveUp = questionIndex && questionIndex > 0;
-    $: canMoveDown =
+            $formEditorCtx.questions[$question.group_id].findIndex(
+                (e) => e.id === $question.id
+            )
+    );
+    let canMoveUp = $derived(questionIndex && questionIndex > 0);
+    let canMoveDown = $derived(
         $question &&
-        questionIndex !==
-            $formEditorCtx.questions[$question?.group_id].length - 1;
+            questionIndex !==
+                $formEditorCtx.questions[$question?.group_id].length - 1
+    );
 
-    $: onMoveClick = (direction: ArrayMoveDirection) => {
+    let onMoveClick = $derived((direction: ArrayMoveDirection) => {
         if (!$question) return;
         moveQuestion(formEditorCtx, $question, direction);
-    };
+    });
 </script>
 
 {#if $question}
     <CardBox
-        element="button"
+        element={editing ? "div" : "button"}
         class={`block w-full text-left ${editing ? "" : "hover:scale-[1.02] active:scale-[0.98] transition-transform"}`}
-        on:click={onEditClick}
+        onclick={editing ? undefined : onEditClick}
         disabled={editing}
     >
         {#if !editing}
@@ -137,7 +140,7 @@
                     <Button
                         color="light"
                         disabled={!!$formEditorCtx.currentlyEditing}
-                        on:click={onDeleteClick}
+                        onclick={onDeleteClick}
                     >
                         <FontAwesomeIcon icon={faTrash} />
                     </Button>
@@ -146,7 +149,7 @@
                             color="light"
                             disabled={!canMoveUp ||
                                 !!$formEditorCtx.currentlyEditing}
-                            on:click={(e) => {
+                            onclick={(e: MouseEvent) => {
                                 e.stopPropagation();
                                 onMoveClick("up");
                             }}
@@ -157,7 +160,7 @@
                             color="light"
                             disabled={!canMoveDown ||
                                 !!$formEditorCtx.currentlyEditing}
-                            on:click={(e) => {
+                            onclick={(e: MouseEvent) => {
                                 e.stopPropagation();
                                 onMoveClick("down");
                             }}
@@ -193,7 +196,7 @@
                         size="xs"
                         outline
                         class="mt-2"
-                        on:click={() => (questionDescription = "")}
+                        onclick={() => (questionDescription = "")}
                         disabled={$formEditorCtx.loading}
                     >
                         Add description
@@ -210,7 +213,7 @@
                     />
                     <Button
                         title="Delete description"
-                        on:click={() => (questionDescription = null)}
+                        onclick={() => (questionDescription = null)}
                         disabled={$formEditorCtx.loading}
                         class="mt-3"
                         outline
@@ -226,7 +229,7 @@
                         size="xs"
                         outline
                         class="mt-"
-                        on:click={() => (questionInternalName = "")}
+                        onclick={() => (questionInternalName = "")}
                         disabled={$formEditorCtx.loading}
                     >
                         Add internal name
@@ -241,7 +244,7 @@
                             />
                             <Button
                                 disabled={$formEditorCtx.loading}
-                                on:click={() => (questionInternalName = null)}
+                                onclick={() => (questionInternalName = null)}
                             >
                                 <FontAwesomeIcon icon={faTrash} class="me-2" />
                             </Button>
@@ -269,57 +272,30 @@
             <QuestionTypeLabel configuration={$question.configuration} />
         {/if}
 
-        {#if editing && !qIsMeta($question.configuration)}
+        {#if editing && !qIsMeta(questionConfiguration)}
             <div
-                class="bg-slate-50/40 dark:bg-slate-800 border dark:border-slate-700 p-4 mt-4 mb-2 rounded-lg"
+                class="bg-slate-50/40 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-4 mt-4 mb-2 rounded-lg"
             >
-                {#if qIsText($question.configuration)}
-                    <QeText
-                        config={$question.configuration}
-                        on:update={onConfigUpdate}
-                    />
-                {:else if qIsChoice($question.configuration)}
-                    <QeChoice
-                        config={$question.configuration}
-                        on:update={onConfigUpdate}
-                    />
-                {:else if qIsScale($question.configuration)}
-                    <QeScale
-                        config={$question.configuration}
-                        on:update={onConfigUpdate}
-                    />
-                {:else if qIsAddress($question.configuration)}
-                    <QeAddress
-                        config={$question.configuration}
-                        on:update={onConfigUpdate}
-                    />
-                {:else if qIsPhoneNumber($question.configuration)}
+                {#if qIsText(questionConfiguration)}
+                    <QeText bind:config={questionConfiguration} />
+                {:else if qIsChoice(questionConfiguration)}
+                    <QeChoice bind:config={questionConfiguration} />
+                {:else if qIsScale(questionConfiguration)}
+                    <QeScale bind:config={questionConfiguration} />
+                {:else if qIsAddress(questionConfiguration)}
+                    <QeAddress bind:config={questionConfiguration} />
+                {:else if qIsPhoneNumber(questionConfiguration)}
                     <QePhoneNumber />
-                {:else if qIsFileUpload($question.configuration)}
-                    <QeFileUpload
-                        config={$question.configuration}
-                        on:update={onConfigUpdate}
-                    />
-                {:else if qIsSignature($question.configuration)}
-                    <QeSignature
-                        config={$question.configuration}
-                        on:update={onConfigUpdate}
-                    />
-                {:else if qIsChoiceMatrix($question.configuration)}
-                    <QeChoiceMatrix
-                        config={$question.configuration}
-                        on:update={onConfigUpdate}
-                    />
-                {:else if qIsDateTime($question.configuration)}
-                    <QeDateTime
-                        config={$question.configuration}
-                        on:update={onConfigUpdate}
-                    />
-                {:else if qIsHidden($question.configuration)}
-                    <QeHidden
-                        config={$question.configuration}
-                        on:update={onConfigUpdate}
-                    />
+                {:else if qIsFileUpload(questionConfiguration)}
+                    <QeFileUpload bind:config={questionConfiguration} />
+                {:else if qIsSignature(questionConfiguration)}
+                    <QeSignature bind:config={questionConfiguration} />
+                {:else if qIsChoiceMatrix(questionConfiguration)}
+                    <QeChoiceMatrix bind:config={questionConfiguration} />
+                {:else if qIsDateTime(questionConfiguration)}
+                    <QeDateTime bind:config={questionConfiguration} />
+                {:else if qIsHidden(questionConfiguration)}
+                    <QeHidden bind:config={questionConfiguration} />
                 {/if}
             </div>
         {/if}
@@ -327,7 +303,7 @@
             <LoadingButton
                 buttonClass="mt-2"
                 size="sm"
-                on:click={onSaveClick}
+                onclick={onSaveClick}
                 loading={$formEditorCtx.loading}
                 disabled={$formEditorCtx.loading}
             >

@@ -1,9 +1,7 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus};
-use rocket::{post, serde::json::Json, State};
-use rocket_okapi::{
-    okapi::schemars::{self, JsonSchema},
-    openapi,
-};
+use actix_web::web::{Data, Json};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::APIError;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -11,26 +9,25 @@ use crate::{
     config::Config,
 };
 
-#[derive(JsonSchema, Deserialize)]
+#[derive(JsonSchema, Deserialize, ApiComponent)]
 pub struct StartSocialAuthRequest {
     service: SocialAuthService,
     redirect_url: String,
 }
 
-#[derive(JsonSchema, Serialize)]
+#[derive(JsonSchema, Serialize, ApiComponent)]
 pub struct StartSocialAuthResponse {
     url: String,
     state: String,
     nonce: String,
 }
 
-#[openapi(tag = "Authentication", operation_id = "auth.social.start")]
-#[post("/auth/social/start", data = "<data>")]
-pub async fn handler(
+#[api_operation(tag = "Authentication", operation_id = "auth.social.start")]
+pub async fn auth_social_start(
     data: Json<StartSocialAuthRequest>,
-    config: &State<Config>,
-) -> Result<Json<StartSocialAuthResponse>, APIErrorWithStatus> {
-    let client = SocialAuthManager::new(data.service.clone(), config)
+    config: Data<Config>,
+) -> Result<Json<StartSocialAuthResponse>, APIError> {
+    let client = SocialAuthManager::new(data.service.clone(), config.as_ref())
         .await
         .map_err(|e| APIError::report_internal_error("start social auth client", e))?;
 

@@ -1,11 +1,9 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_tsid::resources::IDOrganisation;
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket::futures::TryFutureExt;
-use rocket::{post, serde::json::Json, State};
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 
@@ -18,22 +16,21 @@ use crate::entity_managers::orgs::OrganisationManager;
 
 use super::common::SignInResponse;
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct SignInRequest {
     email: String,
     password: String,
     create_initial_org: bool,
 }
 
-#[openapi(tag = "Authentication", operation_id = "auth.sign_in")]
-#[post("/auth/signin", data = "<request>")]
-pub async fn handler(
+#[api_operation(tag = "Authentication", operation_id = "auth.sign_in")]
+pub async fn auth_sign_in(
     request: Json<SignInRequest>,
-    db: &State<DatabaseConnection>,
+    db: Data<DatabaseConnection>,
     _captcha: VerifiedCaptcha,
-    stripe: &State<stripe::Client>,
-    config: &State<Config>,
-) -> Result<Json<SignInResponse>, APIErrorWithStatus> {
+    stripe: Data<stripe::Client>,
+    config: Data<Config>,
+) -> Result<Json<SignInResponse>, APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -79,13 +76,13 @@ pub async fn handler(
             new_org_id,
             user.id,
             #[cfg(feature = "saas")]
-            stripe,
+            stripe.as_ref(),
         )
         .await
         .map_err(|e| APIError::report_internal_error("bootstrap error", e))?;
     }
 
-    let tfa_manager = AdminUserSecondFactorManager::new(user.id, config)
+    let tfa_manager = AdminUserSecondFactorManager::new(user.id, config.as_ref())
         .map_err(|e| APIError::report_internal_error("init 2fa manager", e))?;
 
     let (requires_totp, requires_webauthn) = tfa_manager
@@ -106,9 +103,9 @@ pub async fn handler(
             new_org_id: org_id,
         }
     } else {
-        let token = TokenManager::issue_token(&txn, user.id)
-            .map_err(|e| APIError::report_internal_error("issue token to password user", e))
-            .await?;
+        let token = TokenManager::issue_token(&txn, user.id, config.as_ref())
+            .await
+            .map_err(|e| APIError::report_internal_error("issue token to password user", e))?;
         SignInResponse::Done {
             token,
             new_org_id: org_id,

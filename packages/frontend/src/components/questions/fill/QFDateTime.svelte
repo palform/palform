@@ -1,33 +1,30 @@
 <script lang="ts">
-    import type { QuestionSubmissionData } from "@paltiverse/palform-client-js-extra-types/QuestionSubmissionData";
-    import type { APIQuestionConfigurationOneOf9 } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher } from "svelte";
     import {
         fillSendStore,
         setQuestionValue,
         sGetDateTime,
+        type QuestionFillProps,
     } from "../../../data/contexts/fill";
     import DateTimePicker from "../../datePicker/DateTimePicker.svelte";
+    import type { ConfigDateTime } from "@palform/palform-typescript-openapi";
 
-    const dispatch = createEventDispatcher<{ change: undefined }>();
+    interface Props extends QuestionFillProps<ConfigDateTime> {}
 
-    export let id: string;
-    export let config: APIQuestionConfigurationOneOf9;
-    export let currentValue: QuestionSubmissionData | undefined;
-    $: value = currentValue ? sGetDateTime(currentValue).value : "";
+    let { id, config, currentValue, onchange }: Props = $props();
+    let value = $derived(currentValue ? sGetDateTime(currentValue).value : "");
 
-    $: onSubmissionUpdate = (e: CustomEvent<string>) => {
+    let onSubmissionUpdate = $derived((e: CustomEvent<string>) => {
         setQuestionValue(id, {
             DateTime: {
                 value: e.detail,
             },
         });
-        dispatch("change");
-    };
+        onchange();
+    });
 </script>
 
 <DateTimePicker
-    selectedDateTime={value === "" ? null : value}
+    selectedDateTime={value === "" ? null : (value ?? null)}
     disabled={$fillSendStore?.loading}
     on:update={onSubmissionUpdate}
     class="mt-2"

@@ -1,5 +1,5 @@
-import type { QuestionSubmission } from "@paltiverse/palform-client-js-extra-types/QuestionSubmission";
-import type { APISubmission } from "@paltiverse/palform-typescript-openapi";
+import type { QuestionSubmission } from "@palform/palform-client-js-extra-types/QuestionSubmission";
+import type { APISubmission } from "@palform/palform-typescript-openapi";
 import DecryptWorker from "./decryptWorker?worker";
 import type { Readable, Writable } from "svelte/store";
 import * as Comlink from "comlink";
@@ -14,7 +14,7 @@ import {
     decrypt_blob_js,
     decrypt_decode_submission_js,
     KeyResolver,
-} from "@paltiverse/palform-crypto";
+} from "@palform/palform-crypto";
 import { decryptAllSubmissionsInternal } from "./decryptLogic";
 
 export interface DecryptedSubmissionBase {
@@ -72,7 +72,13 @@ export async function downloadSubmissionsForForm(
             : undefined;
 
     const submissionsResp = await APIs.submissions().then((a) =>
-        a.submissionsList(orgId, formId, latestCachedSubmission?._id)
+        // The OpenAPI query param generated for `since` is temporarily not working,
+        // so we will do it manually.
+        a.submissionsList(orgId, formId, undefined, {
+            params: {
+                since: latestCachedSubmission?._id,
+            },
+        })
     );
     const sStream = submissionsResp.data;
 

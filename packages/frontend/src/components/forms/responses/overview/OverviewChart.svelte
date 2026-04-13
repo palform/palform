@@ -28,19 +28,25 @@
     } from "../../../../data/contexts/formAdmin";
     import { sIsNonEmpty } from "../../../../data/contexts/fill";
 
-    export let questionId: string;
+    interface Props {
+        questionId: string;
+    }
 
-    $: question = ctxGetQuestion(questionId);
-    $: submissions = ctxSubmissionsForQuestion(questionId);
-    $: correlations = getCorrelationsForQuestion(questionId);
+    let { questionId }: Props = $props();
 
-    $: numNonEmpty = $submissions.reduce((t, c) => {
-        if (sIsNonEmpty(c.data)) {
-            return t + 1;
-        } else {
-            return t;
-        }
-    }, 0);
+    let question = $derived(ctxGetQuestion(questionId));
+    let submissions = $derived(ctxSubmissionsForQuestion(questionId));
+    let correlations = $derived(getCorrelationsForQuestion(questionId));
+
+    let numNonEmpty = $derived(
+        $submissions.reduce((t, c) => {
+            if (sIsNonEmpty(c.data)) {
+                return t + 1;
+            } else {
+                return t;
+            }
+        }, 0)
+    );
 </script>
 
 {#if $question !== undefined}
@@ -59,7 +65,7 @@
             />
         {/if}
 
-        <div class="h-4" />
+        <div class="h-4"></div>
         {#if qIsText($question.configuration)}
             <OverviewChartText {questionId} />
         {:else if qIsChoice($question.configuration)}

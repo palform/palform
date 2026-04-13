@@ -4,7 +4,7 @@
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import AuthSettings from "./AuthSettings.svelte";
     import AuthSettingsIntro from "../../../components/orgs/auth/AuthSettingsIntro.svelte";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../../router";
 
     const entitled = isEntitled("oidc");
     const orgCtx = getOrgContext();
@@ -22,8 +22,9 @@
         </p>
         <Button
             class="mt-2"
-            href={`/orgs/${$orgCtx.org.id}/settings/subdomain`}
-            on:click={navigateEvent}
+            href={p("/orgs/:orgId/settings/subdomain", {
+                params: { orgId: $orgCtx.org.id },
+            })}
         >
             Continue
         </Button>

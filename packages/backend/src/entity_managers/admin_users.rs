@@ -1,5 +1,5 @@
 use argon2::{
-    password_hash::{PasswordHasher, SaltString},
+    password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
     Argon2, PasswordHash, PasswordVerifier,
 };
 use palform_entities::{admin_user, prelude::*, social_auth_connection};
@@ -7,7 +7,6 @@ use palform_tsid::{
     resources::{IDAdminUser, IDOrganisation},
     tsid::PalformDatabaseID,
 };
-use rand::rngs::OsRng;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, Condition, ConnectionTrait, DbErr, EntityTrait, JoinType,
     QueryFilter, QuerySelect, RelationTrait, Set,
@@ -115,8 +114,7 @@ impl AdminUserManager {
             .manual_auth_password_hash
             .clone()
             .ok_or(AdminUserManagementError::NoPassword)?;
-        let parsed_hash =
-            PasswordHash::new(&hash).map_err(AdminUserManagementError::Password)?;
+        let parsed_hash = PasswordHash::new(&hash).map_err(AdminUserManagementError::Password)?;
 
         Ok(Self::get_argon2()
             .verify_password(password.as_bytes(), &parsed_hash)
@@ -128,8 +126,7 @@ impl AdminUserManager {
         user_id: PalformDatabaseID<IDAdminUser>,
         password: String,
     ) -> Result<(), AdminUserManagementError> {
-        let password =
-            Self::gen_password(password).map_err(AdminUserManagementError::Password)?;
+        let password = Self::gen_password(password).map_err(AdminUserManagementError::Password)?;
         let updated_user = admin_user::ActiveModel {
             id: Set(user_id),
             manual_auth_password_hash: Set(Some(password)),
@@ -210,8 +207,6 @@ impl AdminUserManager {
             ..Default::default()
         };
         updated_user.update(conn).await?;
-
-
 
         Ok(())
     }

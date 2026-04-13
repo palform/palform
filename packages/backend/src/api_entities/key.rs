@@ -1,25 +1,25 @@
-use chrono::NaiveDateTime;
+use apistos::ApiComponent;
+use chrono::{DateTime, Utc};
 use palform_entities::admin_public_key;
 use palform_tsid::{
     resources::{IDAdminPublicKey, IDAdminUser},
     tsid::PalformDatabaseID,
 };
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
+use schemars::JsonSchema;
 use sea_orm::FromQueryResult;
 use sequoia_openpgp::packet::key::PublicParts;
 use serde::Serialize;
 
 use crate::crypto::keys::{CryptoKeyRepr, KeyConversionError};
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct APIUserKey {
     pub id: String,
     pub user_id: String,
     pub key_pem: String,
     pub has_backup: bool,
-    pub created_at: NaiveDateTime,
-    pub expires_at: NaiveDateTime,
+    pub created_at: DateTime<Utc>,
+    pub expires_at: DateTime<Utc>,
 }
 
 impl TryFrom<admin_public_key::Model> for APIUserKey {
@@ -32,8 +32,8 @@ impl TryFrom<admin_public_key::Model> for APIUserKey {
             user_id: value.user_id.to_string(),
             key_pem,
             has_backup: value.private_key_backup.is_some(),
-            created_at: value.created_at,
-            expires_at: value.expires_at,
+            created_at: value.created_at.to_utc(),
+            expires_at: value.expires_at.to_utc(),
         })
     }
 }
@@ -45,17 +45,17 @@ pub struct UserKeyWithIdentity {
     pub user_id: PalformDatabaseID<IDAdminUser>,
     pub user_email: String,
     pub user_display_name: Option<String>,
-    pub created_at: NaiveDateTime,
-    pub expires_at: NaiveDateTime,
+    pub created_at: DateTime<Utc>,
+    pub expires_at: DateTime<Utc>,
 }
 
-#[derive(Serialize, JsonSchema, Clone)]
+#[derive(Serialize, JsonSchema, Clone, ApiComponent)]
 pub struct APIUserKeyWithIdentity {
     pub id: PalformDatabaseID<IDAdminPublicKey>,
     pub key_fingerprint: String,
     pub user_id: PalformDatabaseID<IDAdminUser>,
     pub user_email: String,
     pub user_display_name: Option<String>,
-    pub created_at: NaiveDateTime,
-    pub expires_at: NaiveDateTime,
+    pub created_at: DateTime<Utc>,
+    pub expires_at: DateTime<Utc>,
 }

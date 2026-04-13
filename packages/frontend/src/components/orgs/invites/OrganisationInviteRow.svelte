@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIOrganisationInvite } from "@paltiverse/palform-typescript-openapi";
+    import type { APIOrganisationInvite } from "@palform/palform-typescript-openapi";
     import { TableBodyCell, TableBodyRow } from "flowbite-svelte";
     import TableSingleAction from "../../tables/TableSingleAction.svelte";
     import { copyOrgInviteLink } from "../../../data/orgInvites";
@@ -7,40 +7,43 @@
     import { parseServerTime } from "../../../data/util/time";
     import { DateTime } from "luxon";
     import { APIs } from "../../../data/common";
-    import { createEventDispatcher } from "svelte";
     import { showToast } from "../../../data/toast";
     import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
-    export let invite: APIOrganisationInvite;
+    interface Props {
+        invite: APIOrganisationInvite;
+        ondelete: () => void;
+    }
+
+    let { invite, ondelete }: Props = $props();
     const orgCtx = getOrgContext();
-    const dispatch = createEventDispatcher<{ delete: undefined }>();
 
-    $: expiresAt = parseServerTime(invite.expires_at);
+    let expiresAt = $derived(parseServerTime(invite.expires_at));
 
-    $: onURLClick = async () => {
+    let onURLClick = $derived(async () => {
         await copyOrgInviteLink($orgCtx.org.id, invite.id);
-    };
+    });
 
-    let deleteLoading = false;
-    $: onDelete = async () => {
+    let deleteLoading = $state(false);
+    let onDelete = $derived(async () => {
         deleteLoading = true;
         await APIs.orgInvites().then((a) =>
-            a.organisationInvitesDelete($orgCtx.org.id, invite.id),
+            a.organisationInvitesDelete($orgCtx.org.id, invite.id)
         );
         deleteLoading = false;
-        dispatch("delete");
+        ondelete();
 
         await showToast({
             label: "Invite deleted! That link can no longer be used to join your organisation.",
             color: "green",
             icon: faCheck,
         });
-    };
+    });
 </script>
 
 <TableBodyRow>
     <TableBodyCell>
-        <TableSingleAction on:click={onURLClick} disabled={deleteLoading}>
+        <TableSingleAction onclick={onURLClick} disabled={deleteLoading}>
             {invite.id}
         </TableSingleAction>
     </TableBodyCell>
@@ -49,7 +52,7 @@
     </TableBodyCell>
     <TableBodyCell>
         {parseServerTime(invite.created_at).toLocaleString(
-            DateTime.DATETIME_MED,
+            DateTime.DATETIME_MED
         )}
     </TableBodyCell>
     <TableBodyCell>
@@ -60,7 +63,7 @@
         {/if}
     </TableBodyCell>
     <TableBodyCell>
-        <TableSingleAction on:click={onDelete} disabled={deleteLoading}>
+        <TableSingleAction onclick={onDelete} disabled={deleteLoading}>
             Delete
         </TableSingleAction>
     </TableBodyCell>

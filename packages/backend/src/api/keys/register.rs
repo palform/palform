@@ -1,44 +1,46 @@
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
 use palform_client_common::errors::error::APIInternalErrorResult;
 use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
 use palform_tsid::resources::{IDAdminPublicKey, IDOrganisation};
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket::http::Status;
-use rocket::serde::json::Json;
-use rocket::{post, State};
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use sequoia_openpgp::packet::key::PublicParts;
 use serde::Deserialize;
 
+use crate::actix_util::from_org_id::FromOrgId;
 use crate::api::error::{APIError, APIInternalError};
-use crate::audit::AuditManager;
+use crate::audit::id_chains::IDChainEmpty;
+use crate::audit::manager::AuditManager;
 use crate::auth::rbac::requests::APITokenOrgViewer;
 use crate::auth::tokens::APIAuthTokenSource;
 use crate::crypto::keys::CryptoKeyRepr;
 use crate::entity_managers::keys::UserKeyManager;
-use crate::rocket_util::from_org_id::FromOrgId;
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct RegisterKeyRequest {
     /// PEM-encoded public key
     key_data: String,
+}
+
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct KeysRegisterPath {
+    org_id: PalformDatabaseID<IDOrganisation>,
 }
 
 /// Register new public key
 ///
 /// Registers a new public to the authenticated user's account. The key is stored in DER-encoded
 /// binary in the database and can be retrieved using the GET /users/me/key endpoint.
-#[openapi(tag = "User keys", operation_id = "keys.register")]
-#[post("/users/me/orgs/<org>/keys", data = "<data>")]
-pub async fn handler(
+#[api_operation(tag = "User keys", operation_id = "keys.register")]
+pub async fn keys_register(
+    path: Path<KeysRegisterPath>,
     token: APITokenOrgViewer,
-    org: PalformDatabaseID<IDOrganisation>,
-    db: &State<DatabaseConnection>,
-    audit: FromOrgId<AuditManager>,
+    db: Data<DatabaseConnection>,
+    audit: FromOrgId<AuditManager<IDChainEmpty>>,
     data: Json<RegisterKeyRequest>,
-) -> Result<Json<PalformDatabaseID<IDAdminPublicKey>>, (Status, Json<APIError>)> {
+) -> Result<Json<PalformDatabaseID<IDAdminPublicKey>>, APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -57,9 +59,10 @@ pub async fn handler(
         return Err(APIError::BadRequest("Certificate already exists".to_string()).into());
     }
 
-    let new_key = UserKeyManager::register_key_for_user(&txn, token.get_user_id(), org, cert)
-        .await
-        .map_err(|e| APIError::report_internal_error("register key", e))?;
+    let new_key =
+        UserKeyManager::register_key_for_user(&txn, token.get_user_id(), path.org_id, cert)
+            .await
+            .map_err(|e| APIError::report_internal_error("register key", e))?;
 
     audit
         .log_event_with_note(

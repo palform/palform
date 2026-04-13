@@ -5,13 +5,17 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-    export let toast: ToastDataInternal;
+    interface Props {
+        toast: ToastDataInternal;
+    }
+
+    let { toast }: Props = $props();
     let toastOpen = true;
     const transitionDuration = 400;
 
-    $: end = () => {
+    let end = $derived(() => {
         removeToast(toast.id);
-    };
+    });
 
     onMount(() => {
         const t = setTimeout(() => {
@@ -54,7 +58,7 @@
         </p>
     </div>
     <div>
-        <button class="ml-4 text-white" on:click={() => end()}>
+        <button class="ml-4 text-white" onclick={() => end()}>
             <FontAwesomeIcon icon={faTimes} />
         </button>
     </div>

@@ -19,8 +19,8 @@
     const formAdminCtx = getFormAdminContext();
     const orgCtx = getOrgContext();
 
-    let syncing = false;
-    let error = false;
+    let syncing = $state(false);
+    let error = $state(false);
     onMount(() => {
         let timeout: number | null = null;
         const mutex = new Mutex();

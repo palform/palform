@@ -1,11 +1,11 @@
+use actix_web::rt::{net::TcpStream, time::timeout};
 use palform_entities::{prelude::*, webhook, webhook_job};
 use palform_migration::all;
 use palform_tsid::{
     resources::{IDForm, IDWebhook},
     tsid::PalformDatabaseID,
 };
-use rand::Rng;
-use rocket::tokio::{net::TcpStream, time::timeout};
+use rand::RngExt;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, ConnectionTrait, DbErr, EntityTrait, PaginatorTrait,
     QueryFilter, Set,
@@ -70,7 +70,7 @@ impl WebhookManager {
                     id: w.id,
                     form_id: w.form_id,
                     endpoint: w.endpoint.clone(),
-                    created_at: w.created_at,
+                    created_at: w.created_at.to_utc(),
                     is_healthy,
                 }
             })
@@ -79,7 +79,7 @@ impl WebhookManager {
 
     fn create_signing_secret() -> String {
         let mut arr = [0u8; 64];
-        rand::thread_rng().fill(&mut arr);
+        rand::rng().fill(&mut arr);
         faster_hex::hex_string(&arr)
     }
 

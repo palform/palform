@@ -1,27 +1,28 @@
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
 use palform_client_common::errors::error::APIInternalErrorResult;
 use palform_entities::sea_orm_active_enums::{
     AuditLogTargetResourceEnum, AuditLogVerbEnum, OrganisationMemberRoleEnum,
 };
 use palform_tsid::resources::{IDFormBranding, IDOrganisation, IDTeam};
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket::{http::Status, post, serde::json::Json, State};
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::{okapi::schemars, openapi};
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 
+use crate::actix_util::from_org_id::FromOrgId;
 use crate::api_entities::form::APIForm;
-use crate::audit::AuditManager;
+use crate::audit::id_chains::IDChainEmpty;
+use crate::audit::manager::AuditManager;
 use crate::auth::rbac::{requests::APITokenOrgViewer, teams_manager::TeamsRBACManager};
 use crate::auth::tokens::APIAuthTokenSource;
 use crate::entity_managers::form_brandings::FormBrandingManager;
-use crate::rocket_util::from_org_id::FromOrgId;
 use crate::{
     api::error::{APIError, APIInternalError},
     entity_managers::forms::FormManager,
 };
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct CreateFormRequest {
     editor_name: String,
     title: String,
@@ -30,15 +31,19 @@ pub struct CreateFormRequest {
     one_question_per_page: bool,
 }
 
-#[openapi(tag = "Forms", operation_id = "forms.create")]
-#[post("/users/me/orgs/<org_id>/forms", data = "<request>")]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct FormCreatePath {
     org_id: PalformDatabaseID<IDOrganisation>,
+}
+
+#[api_operation(tag = "Forms", operation_id = "forms.create")]
+pub async fn forms_create(
+    path: Path<FormCreatePath>,
     request: Json<CreateFormRequest>,
     token: APITokenOrgViewer,
-    db: &State<DatabaseConnection>,
-    audit: FromOrgId<AuditManager>,
-) -> Result<Json<APIForm>, (Status, Json<APIError>)> {
+    db: Data<DatabaseConnection>,
+    audit: FromOrgId<AuditManager<IDChainEmpty>>,
+) -> Result<Json<APIForm>, APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::Serializable),
@@ -51,7 +56,7 @@ pub async fn handler(
         .require_in_request(
             &txn,
             request.in_team,
-            org_id,
+            path.org_id,
             OrganisationMemberRoleEnum::Editor,
         )
         .await?;

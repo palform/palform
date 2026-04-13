@@ -1,5 +1,6 @@
 target/*
 node_modules/*
+packages/*/node_modules
 .wrangler/
 .env
 *.asc

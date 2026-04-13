@@ -1,8 +1,13 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus};
-use palform_tsid::{resources::{IDOrganisation, IDTeam}, tsid::PalformDatabaseID};
-use rocket::{get, serde::json::Json, State};
-use rocket_okapi::openapi;
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::APIError;
+use palform_tsid::{
+    resources::{IDOrganisation, IDTeam},
+    tsid::PalformDatabaseID,
+};
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
+use serde::Deserialize;
 
 use crate::{
     api_entities::team_asset::APITeamAsset,
@@ -11,18 +16,23 @@ use crate::{
     palform_s3::{buckets::S3BucketTeamAssets, client::PalformS3Client},
 };
 
-#[openapi(tag = "Team Assets", operation_id = "organisation.team.asset.list")]
-#[get("/users/me/orgs/<_org_id>/teams/<team_id>/assets")]
-pub async fn handler(
-    _org_id: PalformDatabaseID<IDOrganisation>,
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct TeamAssetsListPath {
+    #[allow(unused)]
+    org_id: PalformDatabaseID<IDOrganisation>,
     team_id: PalformDatabaseID<IDTeam>,
+}
+
+#[api_operation(tag = "Team Assets", operation_id = "organisation.team.asset.list")]
+pub async fn team_assets_list(
+    path: Path<TeamAssetsListPath>,
     _token: APITokenTeamViewerFromTeam,
-    s3: &State<PalformS3Client<S3BucketTeamAssets>>,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<Vec<APITeamAsset>>, APIErrorWithStatus> {
-    let m = TeamAssetsManager::new(team_id);
+    s3: Data<PalformS3Client<S3BucketTeamAssets>>,
+    db: Data<DatabaseConnection>,
+) -> Result<Json<Vec<APITeamAsset>>, APIError> {
+    let m = TeamAssetsManager::new(path.team_id);
     let assets = m
-        .list(db.inner(), s3)
+        .list(db.as_ref(), s3.as_ref())
         .await
         .map_err(|e| APIError::report_internal_error("list assets", e))?;
 

@@ -1,34 +1,41 @@
-use palform_client_common::errors::error::{APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
 use palform_tsid::{
     resources::{IDFormBranding, IDOrganisation, IDTeam},
     tsid::PalformDatabaseID,
 };
-use rocket::{post, serde::json::Json, State};
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
+use serde::Deserialize;
 
 use crate::{
+    actix_util::from_org_id::FromOrgId,
     api_entities::form_brandings::APIFormBrandingRequest,
-    audit::AuditManager,
+    audit::{id_chains::IDChainBranding, manager::AuditManager},
     auth::{rbac::requests::APITokenTeamEditorFromTeam, tokens::APIAuthTokenSource},
     entity_managers::form_brandings::FormBrandingManager,
-    rocket_util::from_org_id::FromOrgId,
 };
 
-#[openapi(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct FormBrandingsCreatePath {
+    #[allow(unused)]
+    org_id: PalformDatabaseID<IDOrganisation>,
+    team_id: PalformDatabaseID<IDTeam>,
+}
+
+#[api_operation(
     tag = "Form Brandings",
     operation_id = "organisation.team.branding.create"
 )]
-#[post("/users/me/orgs/<_org_id>/teams/<team_id>/brandings", data = "<data>")]
-pub async fn handler(
-    _org_id: PalformDatabaseID<IDOrganisation>,
-    team_id: PalformDatabaseID<IDTeam>,
+pub async fn form_brandings_create(
+    path: Path<FormBrandingsCreatePath>,
     data: Json<APIFormBrandingRequest>,
     token: APITokenTeamEditorFromTeam,
-    audit: FromOrgId<AuditManager>,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<PalformDatabaseID<IDFormBranding>>, APIErrorWithStatus> {
+    audit: FromOrgId<AuditManager<IDChainBranding>>,
+    db: Data<DatabaseConnection>,
+) -> Result<Json<PalformDatabaseID<IDFormBranding>>, APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -41,17 +48,18 @@ pub async fn handler(
         .await
         .map_internal_error()?;
 
-    FormBrandingManager::add_access(&txn, branding_id, team_id)
+    FormBrandingManager::add_access(&txn, branding_id, path.team_id)
         .await
         .map_internal_error()?;
 
     audit
-        .log_event(
+        .log_event_with_id_chain(
             &txn,
             token.get_user_id(),
-            AuditLogVerbEnum::Delete,
+            AuditLogVerbEnum::Create,
             AuditLogTargetResourceEnum::Branding,
             Some(branding_id.into_unknown()),
+            Some(IDChainBranding::new(path.team_id)),
         )
         .await
         .map_internal_error()?;

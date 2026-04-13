@@ -5,9 +5,9 @@
     import { showFailureToast, showSuccessToast } from "../../data/toast";
 
     const orgCtx = getOrgContext();
-    let loading = false;
+    let loading = $state(false);
 
-    $: onOverageToggle = async (e: Event) => {
+    let onOverageToggle = $derived(async (e: Event) => {
         const t = e.target as HTMLInputElement;
 
         loading = true;
@@ -25,7 +25,7 @@
         }
 
         loading = false;
-    };
+    });
 </script>
 
 <SectionHeading>Settings</SectionHeading>
@@ -33,7 +33,7 @@
 <Toggle
     class="mt-4"
     bind:checked={$orgCtx.org.billing_allow_overage}
-    on:change={onOverageToggle}
+    onchange={onOverageToggle}
     disabled={loading}
 >
     <p>

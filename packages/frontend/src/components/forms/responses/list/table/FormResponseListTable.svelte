@@ -5,7 +5,9 @@
     const formAdminCtx = getFormAdminContext();
 </script>
 
-<div class="overflow-y-auto rounded-lg border dark:border-gray-700">
+<div
+    class="overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700"
+>
     <table class="w-full">
         <thead>
             <tr class="bg-slate-100 dark:bg-slate-700">

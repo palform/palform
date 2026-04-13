@@ -8,39 +8,39 @@ use thiserror::Error;
 
 #[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Copy, Clone)]
 struct Ipv4AddrRange {
-    start: Ipv4Addr,
-    end: Ipv4Addr,
+    start: u32,
+    end: u32,
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Copy, Clone)]
 struct Ipv6AddrRange {
-    start: Ipv6Addr,
-    end: Ipv6Addr,
+    start: u128,
+    end: u128,
 }
 
 impl InclusiveInterval<u32> for Ipv4AddrRange {
-    fn start(&self) -> u32 {
-        self.start.to_bits()
+    fn start(&self) -> &u32 {
+        &self.start
     }
-    fn end(&self) -> u32 {
-        self.end.to_bits()
+    fn end(&self) -> &u32 {
+        &self.end
     }
 }
 
 impl InclusiveInterval<u128> for Ipv6AddrRange {
-    fn start(&self) -> u128 {
-        self.start.to_bits()
+    fn start(&self) -> &u128 {
+        &self.start
     }
-    fn end(&self) -> u128 {
-        self.end.to_bits()
+    fn end(&self) -> &u128 {
+        &self.end
     }
 }
 
 impl From<Interval<u32>> for Ipv4AddrRange {
     fn from(value: Interval<u32>) -> Self {
         Self {
-            start: Ipv4Addr::from_bits(value.start()),
-            end: Ipv4Addr::from_bits(value.end()),
+            start: *value.start(),
+            end: *value.end(),
         }
     }
 }
@@ -48,12 +48,13 @@ impl From<Interval<u32>> for Ipv4AddrRange {
 impl From<Interval<u128>> for Ipv6AddrRange {
     fn from(value: Interval<u128>) -> Self {
         Self {
-            start: Ipv6Addr::from_bits(value.start()),
-            end: Ipv6Addr::from_bits(value.end()),
+            start: *value.start(),
+            end: *value.end(),
         }
     }
 }
 
+#[derive(Clone)]
 pub struct IPGeolocator {
     cache_v4: NoditMap<u32, Ipv4AddrRange, String>,
     cache_v6: NoditMap<u128, Ipv6AddrRange, String>,
@@ -115,8 +116,8 @@ impl IPGeolocator {
 
             if v6 {
                 let range = Ipv6AddrRange {
-                    start: ip_range_start.parse()?,
-                    end: ip_range_end.parse()?,
+                    start: ip_range_start.parse::<Ipv6Addr>()?.to_bits(),
+                    end: ip_range_end.parse::<Ipv6Addr>()?.to_bits(),
                 };
 
                 self.cache_v6
@@ -124,8 +125,8 @@ impl IPGeolocator {
                     .map_err(|_| IPGeolocatorError::Nodit)?;
             } else {
                 let range = Ipv4AddrRange {
-                    start: ip_range_start.parse()?,
-                    end: ip_range_end.parse()?,
+                    start: ip_range_start.parse::<Ipv4Addr>()?.to_bits(),
+                    end: ip_range_end.parse::<Ipv4Addr>()?.to_bits(),
                 };
 
                 self.cache_v4
@@ -139,8 +140,8 @@ impl IPGeolocator {
 
     pub fn lookup_country(&self, ip: IpAddr) -> Result<Country, IPGeolocatorError> {
         let country_code = match ip {
-            IpAddr::V4(v4) => self.cache_v4.get_at_point(v4.to_bits()),
-            IpAddr::V6(v6) => self.cache_v6.get_at_point(v6.to_bits()),
+            IpAddr::V4(v4) => self.cache_v4.get_at_point(&v4.to_bits()),
+            IpAddr::V6(v6) => self.cache_v6.get_at_point(&v6.to_bits()),
         }
         .ok_or(IPGeolocatorError::KeyNotFound)?;
 

@@ -14,7 +14,11 @@
     import BrandingContextProvider from "./BrandingContextProvider.svelte";
     import BrandingE2EeBadge from "./BrandingE2EEBadge.svelte";
 
-    export let ctx: BrandContext;
+    interface Props {
+        ctx: BrandContext;
+    }
+
+    let { ctx }: Props = $props();
     const orgCtx = getOrgContext();
     const teamCtx = getTeamCtx();
 </script>

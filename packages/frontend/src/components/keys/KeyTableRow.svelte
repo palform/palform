@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIUserKey } from "@paltiverse/palform-typescript-openapi";
+    import type { APIUserKey } from "@palform/palform-typescript-openapi";
     import {
         DropdownItem,
         TableBodyCell,
@@ -16,7 +16,7 @@
     import {
         KeyMetadata,
         get_key_metadata_js,
-    } from "@paltiverse/palform-crypto";
+    } from "@palform/palform-crypto";
     import {
         deleteLocalKey,
         downloadPrivateKey,
@@ -26,24 +26,29 @@
         getOrgContext,
         reloadGlobalAlert,
     } from "../../data/contexts/orgLayout";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../router";
 
-    export let key: APIUserKey;
+    interface Props {
+        key: APIUserKey;
+        ondelete: () => void;
+    }
+
+    let { key, ondelete }: Props = $props();
     const orgCtx = getOrgContext();
-    let matchedLocalKey: CryptoKeyRecord | null | undefined = undefined;
-    let keyMetadata: KeyMetadata | undefined = undefined;
-    findKey(key.id).then((resp) => {
-        matchedLocalKey = resp;
+    let matchedLocalKey: CryptoKeyRecord | null | undefined = $state(undefined);
+    let keyMetadata: KeyMetadata | undefined = $state(undefined);
+
+    $effect(() => {
+        findKey(key.id).then((resp) => {
+            matchedLocalKey = resp;
+        });
+        (async () => {
+            keyMetadata = get_key_metadata_js(key.key_pem);
+        })();
     });
 
-    (async () => {
-        keyMetadata = get_key_metadata_js(key.key_pem);
-    })();
-
-    const dispatch = createEventDispatcher<{ deleted: undefined }>();
-
-    let loading = false;
-    $: onDelete = async () => {
+    let loading = $state(false);
+    let onDelete = $derived(async () => {
         loading = true;
         try {
             await APIs.keys().then((a) => a.keysDelete($orgCtx.org.id, key.id));
@@ -52,22 +57,22 @@
                 await reloadGlobalAlert(orgCtx);
             }
 
-            dispatch("deleted");
+            ondelete();
             await showSuccessToast("Key deleted!");
         } catch (e) {
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 
     const onDownload = () => {
         if (!matchedLocalKey) return;
         downloadPrivateKey(matchedLocalKey);
     };
 
-    let createdAt = parseServerTime(key.created_at);
-    let expiresAt = parseServerTime(key.expires_at);
-    $: expired = expiresAt < DateTime.now();
+    let createdAt = $derived(parseServerTime(key.created_at));
+    let expiresAt = $derived(parseServerTime(key.expires_at));
+    let expired = $derived(expiresAt < DateTime.now());
 </script>
 
 <TableBodyRow>
@@ -114,18 +119,19 @@
     </TableBodyCell>
     <TableBodyCell>
         <TableActions>
-            <DropdownItem disabled={loading} on:click={onDelete}>
+            <DropdownItem disabled={loading} onclick={onDelete}>
                 Delete
             </DropdownItem>
             {#if matchedLocalKey}
-                <DropdownItem disabled={loading} on:click={onDownload}>
+                <DropdownItem disabled={loading} onclick={onDownload}>
                     Download private key
                 </DropdownItem>
             {/if}
             <DropdownItem
                 disabled={loading}
-                href={`/orgs/${$orgCtx.org.id}/user/keys/${key.id}/backup`}
-                on:click={navigateEvent}
+                href={p("/orgs/:orgId/user/keys/:keyId/backup", {
+                    params: { orgId: $orgCtx.org.id, keyId: key.id },
+                })}
             >
                 Manage backup
             </DropdownItem>

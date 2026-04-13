@@ -19,7 +19,7 @@
         faPerson,
         faPlus,
     } from "@fortawesome/free-solid-svg-icons";
-    import { Link, navigate } from "svelte-routing";
+    import { navigate, p } from "../../router";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import SidebarSeparator from "./SidebarSeparator.svelte";
     import SidebarFormEntry from "./SidebarFormEntry.svelte";
@@ -30,15 +30,18 @@
     import TextButton from "../../components/TextButton.svelte";
     import { Button } from "flowbite-svelte";
     import { onMount } from "svelte";
-    import { enable_debug_hook_js } from "@paltiverse/palform-client-common";
+    import { enable_debug_hook_js } from "@palform/palform-client-common";
     import MissingKeyWarning from "../../components/keys/MissingKeyWarning.svelte";
-    import { buffer } from "ol/size";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
     import FeedbackButton from "../../components/feedback/FeedbackButton.svelte";
 
     enable_debug_hook_js();
 
-    export let orgId: string;
+    interface Props {
+        orgId: string;
+        children?: import("svelte").Snippet;
+    }
+
+    let { orgId, children }: Props = $props();
     const orgCtx = writable<OrgContext>(
         // @ts-expect-error We'll only load components that depend on this context once we know that all attributes are initialised
         {}
@@ -86,16 +89,16 @@
     const onSignOutClick = async (e: Event) => {
         e.preventDefault();
         await signOut();
-        navigate("/auth/login");
+        void navigate("/auth/login");
     };
 
     const closeSidebar = () => {
         mobileSidebarOpen = false;
     };
 
-    let screenWidth = window.innerWidth;
-    $: sidebarIsMobile = screenWidth <= 768;
-    let mobileSidebarOpen = false;
+    let screenWidth = $state(window.innerWidth);
+    let sidebarIsMobile = $derived(screenWidth <= 768);
+    let mobileSidebarOpen = $state(false);
     onMount(() => {
         const listener = () => {
             screenWidth = window.innerWidth;
@@ -107,11 +110,7 @@
         };
     });
 
-    let orgIsHovered = false;
-    $: onNewFormClick = () => {
-        navigate(`/orgs/${$orgCtx.org.id}/forms/templates/`);
-        closeSidebar();
-    };
+    let orgIsHovered = $state(false);
 </script>
 
 {#if $orgCtx === undefined || $orgCtx.org === undefined || $orgCtx.forms === undefined || $orgCtx.myTeams === undefined || $orgCtx.induction === undefined || $orgCtx.amIAdmin === undefined || $orgCtx.myKeys === undefined}
@@ -130,12 +129,12 @@
             {#if !isOnSubdomain}
                 <p
                     class="text-sm mb-4 text-gray-600 dark:text-gray-400"
-                    on:mouseover={() => (orgIsHovered = true)}
-                    on:focus={() => (orgIsHovered = true)}
-                    on:mouseout={() => (orgIsHovered = false)}
-                    on:blur={() => (orgIsHovered = false)}
+                    onmouseover={() => (orgIsHovered = true)}
+                    onfocus={() => (orgIsHovered = true)}
+                    onmouseout={() => (orgIsHovered = false)}
+                    onblur={() => (orgIsHovered = false)}
                 >
-                    <Link to="/" class="hover:underline">
+                    <a href="/" class="hover:underline">
                         {#if orgIsHovered}
                             <FontAwesomeIcon icon={faArrowLeft} />
                             All orgs
@@ -143,11 +142,11 @@
                             <FontAwesomeIcon icon={faBuilding} />
                             {$orgCtx.org.display_name}
                         {/if}
-                    </Link>
+                    </a>
                 </p>
             {/if}
 
-            <SidebarLink orgPath="/" icon={faHome} on:click={closeSidebar}>
+            <SidebarLink orgPath="/" icon={faHome} onclick={closeSidebar}>
                 Home
             </SidebarLink>
             {#if !$orgCtx.induction.induction_complete}
@@ -155,71 +154,71 @@
                     orgPath="/induction"
                     icon={faInfoCircle}
                     highlight
-                    on:click={closeSidebar}
+                    onclick={closeSidebar}
                 >
                     Getting started
                 </SidebarLink>
             {/if}
             <SidebarLink
-                orgPath="/user"
-                dropdownLink="/user/keys"
+                orgPath="/user/keys"
+                activationLevel={1}
                 dropdownTitle="My account"
                 icon={faPerson}
             >
-                <SidebarLink orgPath="/user/keys" on:click={closeSidebar}
+                <SidebarLink orgPath="/user/keys" onclick={closeSidebar}
                     >Keys</SidebarLink
                 >
-                <SidebarLink orgPath="/user/settings" on:click={closeSidebar}
+                <SidebarLink orgPath="/user/settings" onclick={closeSidebar}
                     >Settings</SidebarLink
                 >
             </SidebarLink>
             <SidebarLink
-                orgPath="/settings"
-                dropdownLink="/settings/teams"
+                orgPath="/settings/teams"
+                activationLevel={1}
                 dropdownTitle="Organisation"
                 icon={faCog}
             >
-                <SidebarLink orgPath="/settings/teams" on:click={closeSidebar}
+                <SidebarLink orgPath="/settings/teams" onclick={closeSidebar}
                     >Teams</SidebarLink
                 >
                 {#if $orgCtx.amIAdmin}
                     <SidebarLink
                         orgPath="/settings/members"
-                        on:click={closeSidebar}
+                        onclick={closeSidebar}
                     >
                         Members
                     </SidebarLink>
                     <SidebarLink
                         orgPath="/settings/keys"
-                        on:click={closeSidebar}
+                        onclick={closeSidebar}
                     >
                         Manage keys
                     </SidebarLink>
                     <SidebarLink
                         orgPath="/settings/audit"
-                        on:click={closeSidebar}>Audit logs</SidebarLink
+                        onclick={closeSidebar}>Audit logs</SidebarLink
                     >
                     <SidebarLink
                         orgPath="/settings/subdomain"
-                        on:click={closeSidebar}
+                        onclick={closeSidebar}
                     >
                         Subdomain
                     </SidebarLink>
                     <SidebarLink
                         orgPath="/settings/auth"
-                        on:click={closeSidebar}
+                        onclick={closeSidebar}
                     >
                         Authentication
                     </SidebarLink>
                     {#if billingEnabled}
                         <SidebarLink
                             orgPath="/settings/billing"
-                            on:click={closeSidebar}
+                            onclick={closeSidebar}
                         >
                             Billing
                         </SidebarLink>
                     {/if}
-                    <SidebarLink orgPath="/settings/org" on:click={closeSidebar}
+                    <SidebarLink orgPath="/settings/org" onclick={closeSidebar}
                         >Settings</SidebarLink
                     >
                 {/if}
@@ -233,7 +232,14 @@
                     >
                         Forms
                     </p>
-                    <Button size="xs" outline on:click={onNewFormClick}>
+                    <Button
+                        size="xs"
+                        outline
+                        href={p("/orgs/:orgId/forms/templates", {
+                            params: { orgId },
+                        })}
+                        onclick={closeSidebar}
+                    >
                         <FontAwesomeIcon icon={faPlus} class="me-2" />
                         Create new
                     </Button>
@@ -243,7 +249,7 @@
             <div class="flex-1 space-y-2">
                 {#if $orgCtx.forms.length > 0}
                     {#each $orgCtx.forms as form (form.id)}
-                        <SidebarFormEntry {form} on:click={closeSidebar} />
+                        <SidebarFormEntry {form} onclick={closeSidebar} />
                     {/each}
                 {/if}
             </div>
@@ -251,14 +257,15 @@
             <div class="pt-2">
                 <Button
                     class="mb-2 block w-full"
-                    href={`/orgs/${orgId}/settings/billing`}
-                    on:click={navigateEvent}
+                    href={p("/orgs/:orgId/settings/billing", {
+                        params: { orgId },
+                    })}
                 >
                     <FontAwesomeIcon icon={faMagicWandSparkles} />
                     Upgrade
                 </Button>
 
-                <TextButton on:click={onSignOutClick}>Sign out</TextButton>
+                <TextButton onclick={onSignOutClick}>Sign out</TextButton>
             </div>
         </div>
         <div class="flex-1 overflow-x-auto">
@@ -266,7 +273,7 @@
                 <div class="fixed top-4 left-4">
                     <button
                         class="px-2 py-1 bg-primary-100 rounded-md"
-                        on:click={() => (mobileSidebarOpen = true)}
+                        onclick={() => (mobileSidebarOpen = true)}
                     >
                         <FontAwesomeIcon icon={faBars} />
                     </button>
@@ -278,7 +285,7 @@
             <div
                 class="w-full overflow-y-auto px-4 md:px-14 lg:px-32 pt-14 md:pt-8 pb-10"
             >
-                <slot />
+                {@render children?.()}
             </div>
         </div>
     </div>

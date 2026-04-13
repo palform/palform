@@ -13,7 +13,10 @@ use crate::{address::APIGenericLocation, datetime::normalise_date_time};
 
 use super::submission::{QuestionSubmission, QuestionSubmissionData};
 
-#[cfg_attr(feature = "backend", derive(schemars::JsonSchema))]
+#[cfg_attr(
+    feature = "backend",
+    derive(schemars::JsonSchema, apistos::ApiComponent)
+)]
 #[derive(Clone, Serialize, Deserialize)]
 pub struct APIQuestionGroup {
     pub id: PalformDatabaseID<IDQuestionGroup>,
@@ -76,6 +79,8 @@ pub fn next_question_group_step_js(
     submissions: wasm_bindgen::JsValue,
     skipped_step_ids: Vec<String>,
 ) -> Result<Option<String>, wasm_bindgen::JsValue> {
+    use std::str::FromStr;
+
     let step_list: Vec<APIQuestionGroup> = serde_wasm_bindgen::from_value(all_steps)?;
     let submission_list: Vec<QuestionSubmission> = serde_wasm_bindgen::from_value(submissions)?;
 
@@ -204,41 +209,42 @@ pub enum DirectionOperator {
 pub enum APIQuestionGroupStepStrategyJumpCaseConditionMatcher {
     /// A single- or multi- choice question exactly matches this _set_ of items (regardless of
     /// order)
+    #[cfg_attr(feature = "backend", schemars(title = "matcher_choice"))]
     Choice {
         options: Vec<String>,
         contains_any: bool,
     },
+    #[cfg_attr(feature = "backend", schemars(title = "matcher_text"))]
     Text {
         case_sensitive: bool,
         /// Checks exact match if false, otherwise checks whether the value is contained
         contains: bool,
         value: String,
     },
+    #[cfg_attr(feature = "backend", schemars(title = "matcher_scale"))]
     Scale {
         direction: DirectionOperator,
         value: i32,
     },
-    PhoneNumber {
-        calling_code: String,
-    },
+    #[cfg_attr(feature = "backend", schemars(title = "matcher_phone_number"))]
+    PhoneNumber { calling_code: String },
+    #[cfg_attr(feature = "backend", schemars(title = "matcher_address"))]
     Address {
         near: Option<APIGenericLocation>,
         near_radius_km: Option<f64>,
         in_country: Option<String>,
     },
-    ChoiceMatrix {
-        row: String,
-        column: String,
-    },
+    #[cfg_attr(feature = "backend", schemars(title = "matcher_choice_matrix"))]
+    ChoiceMatrix { row: String, column: String },
+    #[cfg_attr(feature = "backend", schemars(title = "matcher_date_time"))]
     DateTime {
         direction: DirectionOperator,
         value: DateTime<Local>,
         match_date: bool,
         match_time: bool,
     },
-    Hidden {
-        value: String,
-    },
+    #[cfg_attr(feature = "backend", schemars(title = "matcher_hidden"))]
+    Hidden { value: String },
 }
 
 impl APIQuestionGroupStepStrategyJumpCaseCondition {
@@ -355,9 +361,9 @@ impl APIQuestionGroupStepStrategyJumpCaseCondition {
                     if let Some(near) = near {
                         let submission_point = Point::from(point);
                         let target_point = Point::from(near);
-                        let dist = Geodesic::distance(submission_point, target_point);
+                        let distance = Geodesic.distance(submission_point, target_point);
 
-                        if dist > near_radius.map(|v| v * 1000_f64).unwrap_or(20_000_f64) {
+                        if distance > near_radius.map(|v| v * 1000_f64).unwrap_or(20_000_f64) {
                             return Ok(false);
                         }
                     }

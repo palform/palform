@@ -1,16 +1,16 @@
+use apistos::ApiComponent;
 use palform_client_common::form_management::form_end::APIFormEndConfiguration;
 use palform_client_common::form_management::question_group::APIQuestionGroup;
 use palform_client_common::form_management::question_types::APIQuestion;
 use palform_tsid::resources::{IDForm, IDFormBranding, IDTeam};
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
+use schemars::JsonSchema;
 use sea_orm::FromQueryResult;
 use serde::Serialize;
 
 use super::form_brandings::APIFormBranding;
 
-#[derive(Serialize, JsonSchema, FromQueryResult)]
+#[derive(Serialize, JsonSchema, FromQueryResult, ApiComponent)]
 pub struct APIForm {
     pub id: PalformDatabaseID<IDForm>,
     pub title: Option<String>,
@@ -26,7 +26,7 @@ pub struct APIForm {
     pub one_question_per_page: bool,
 }
 
-#[derive(Serialize, JsonSchema, FromQueryResult)]
+#[derive(Serialize, JsonSchema, FromQueryResult, ApiComponent)]
 pub struct APIFrontendForm {
     pub id: PalformDatabaseID<IDForm>,
     pub title: Option<String>,
@@ -38,7 +38,7 @@ pub struct APIFrontendForm {
     pub one_question_per_page: bool,
 }
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct APIFormWithQuestions {
     #[serde(rename = "f")]
     pub form: APIFrontendForm,

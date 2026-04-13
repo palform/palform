@@ -1,13 +1,20 @@
 <script lang="ts">
     import { t } from "../../../data/contexts/i18n";
+    import type { MouseEventHandler } from "svelte/elements";
 
-    export let disabled = false;
+    interface Props {
+        disabled?: boolean;
+        class?: string;
+        onclick?: MouseEventHandler<HTMLButtonElement>;
+    }
+
+    let { disabled = false, class: className, onclick }: Props = $props();
 </script>
 
 <button
-    class={`text-xs text-gray-600 hover:underline cursor-pointer ${$$props.class}`}
+    class={`text-xs text-gray-600 hover:underline cursor-pointer ${className ?? ""}`}
     type="button"
-    on:click
+    {onclick}
     {disabled}
 >
     {t("field_clear")}

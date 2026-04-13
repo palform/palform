@@ -1,26 +1,24 @@
 <script lang="ts">
-    import type {
-        APIQuestionConfigurationOneOf8ChoiceMatrix,
-        APIQuestionGroupStepStrategyJumpCaseConditionMatcher,
-    } from "@paltiverse/palform-typescript-openapi";
+    import type { ConfigChoiceMatrixChoiceMatrix } from "@palform/palform-typescript-openapi";
     import { Button, Label, Select } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
+    import type { StrategyMatcherEventProps } from "../../../../../data/contexts/formEditor";
 
-    export let configuration: APIQuestionConfigurationOneOf8ChoiceMatrix;
-    const dispatch = createEventDispatcher<{
-        save: APIQuestionGroupStepStrategyJumpCaseConditionMatcher;
-    }>();
+    interface Props extends StrategyMatcherEventProps {
+        configuration: ConfigChoiceMatrixChoiceMatrix;
+    }
 
-    let row = "";
-    let column = "";
-    $: onSave = () => {
-        dispatch("save", {
+    let { configuration, onsave }: Props = $props();
+
+    let row = $state("");
+    let column = $state("");
+    let onSave = $derived(() => {
+        onsave({
             ChoiceMatrix: {
                 row,
                 column,
             },
         });
-    };
+    });
 </script>
 
 <Label>
@@ -42,5 +40,5 @@
 </Label>
 
 {#if row !== "" && column !== ""}
-    <Button class="mt-4" size="sm" on:click={onSave}>Save</Button>
+    <Button class="mt-4" size="sm" onclick={onSave}>Save</Button>
 {/if}

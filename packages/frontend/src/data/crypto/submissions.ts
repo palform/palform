@@ -1,5 +1,5 @@
 import type { InProgressSubmissionRecord } from "../pouch";
-import type { InProgressSubmission } from "@paltiverse/palform-client-js-extra-types/InProgressSubmission";
+import type { InProgressSubmission } from "@palform/palform-client-js-extra-types/InProgressSubmission";
 import { APIs } from "../common";
 import { createMessage, type Key, readKey } from "openpgp";
 import {
@@ -14,15 +14,15 @@ async function getFormKeys(
     requireFingerprints: boolean
 ) {
     const resp = await APIs.fill(fillAccessToken).forms.formsKeys(
-        orgId,
-        formId
+        formId,
+        orgId
     );
-    if (resp.data.length === 0) {
+    if (resp.data.keys.length === 0) {
         throw new Error("No keys found for organisation.");
     }
 
     const parsedKeys = await Promise.all(
-        resp.data.map((e) => readKey({ armoredKey: e }))
+        resp.data.keys.map((e) => readKey({ armoredKey: e }))
     );
 
     if (requireFingerprints) {
@@ -101,10 +101,11 @@ export async function sendSubmission(
         formKeys
     );
 
-    await APIs.fill(fillAccessToken).forms.formsFill(
-        orgId,
+    await APIs.fill(fillAccessToken, captchaValue).forms.formsFill(
         formId,
-        encryptedSubmission.armor(),
-        captchaValue
+        orgId,
+        {
+            data: encryptedSubmission.armor(),
+        }
     );
 }

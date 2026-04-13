@@ -9,13 +9,13 @@ import {
     question_submission_is_empty_js,
     try_parse_question_submissions,
     validate_questions_js,
-} from "@paltiverse/palform-client-common";
-import type { QuestionSubmissionData } from "@paltiverse/palform-client-js-extra-types/QuestionSubmissionData";
+} from "@palform/palform-client-common";
+import type { QuestionSubmissionData } from "@palform/palform-client-js-extra-types/QuestionSubmissionData";
 import { Mutex } from "async-mutex";
 import type {
     APIFormWithQuestions,
     APIQuestionGroup,
-} from "@paltiverse/palform-typescript-openapi";
+} from "@palform/palform-typescript-openapi";
 import { qIsHidden, qIsInfo } from "./formEditor";
 
 const formFillSaveMutex = new Mutex();
@@ -62,6 +62,13 @@ export function ctxGetNextStep() {
     });
 }
 
+export interface QuestionFillProps<C> {
+    id: string;
+    config: C;
+    currentValue: QuestionSubmissionData | undefined;
+    onchange: () => void;
+}
+
 export const questionValidationStore = writable<ValidationError[]>([]);
 
 export interface FillSendState {
@@ -94,8 +101,8 @@ export async function loadFormFill(
     isShortLink: boolean
 ) {
     const resp = await APIs.fill(fillAccessToken).forms.formsView(
-        orgId,
-        formId
+        formId,
+        orgId
     );
 
     const release = await formFillSaveMutex.acquire();

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIGenericAddress } from "@paltiverse/palform-client-js-extra-types/APIGenericAddress";
+    import type { APIGenericAddress } from "@palform/palform-client-js-extra-types/APIGenericAddress";
     import { createEventDispatcher, onMount } from "svelte";
     import {
         getMapboxAPI,
@@ -9,30 +9,41 @@
     } from "../../data/billing/google";
     import { Input, Label } from "flowbite-svelte";
     import InfoText from "../type/InfoText.svelte";
-    import type { APIGenericLocation } from "@paltiverse/palform-client-js-extra-types/APIGenericLocation";
+    import type { APIGenericLocation } from "@palform/palform-client-js-extra-types/APIGenericLocation";
     import type {
         AddressAutofillSuggestion,
         LngLatLike,
     } from "@mapbox/search-js-core";
     import { t } from "../../data/contexts/i18n";
 
-    export let countryCode: string | undefined = undefined;
-    export let locationBias: LngLatLike | string | undefined = undefined;
+    interface Props {
+        countryCode?: string;
+        locationBias?: LngLatLike | string;
+        class?: string;
+        disabled?: boolean;
+    }
+
+    let {
+        countryCode,
+        locationBias,
+        class: className,
+        disabled,
+    }: Props = $props();
+
     const dispatch = createEventDispatcher<{
         select: { address: APIGenericAddress; location: APIGenericLocation };
     }>();
 
-    let api: MapboxAPIType | undefined = undefined;
-    undefined;
+    let api = $state<MapboxAPIType | undefined>(undefined);
 
     onMount(async () => {
         api = getMapboxAPI();
     });
 
-    let query = "";
-    let suggestions: AddressAutofillSuggestion[] = [];
+    let query = $state("");
+    let suggestions = $state<AddressAutofillSuggestion[]>([]);
 
-    $: makeRequest = async () => {
+    async function makeRequest() {
         if (!api) return;
         if (query.trim().length === 0) {
             suggestions = [];
@@ -45,18 +56,18 @@
         });
 
         suggestions = resp.suggestions;
-    };
+    }
 
-    let timeout: number | undefined = undefined;
-    $: onChange = () => {
+    let timeout = $state<number | undefined>(undefined);
+    function onInputChange() {
         if (timeout) {
             clearTimeout(timeout);
             timeout = undefined;
         }
         timeout = setTimeout(() => {
-            makeRequest();
+            void makeRequest();
         }, 100) as unknown as number;
-    };
+    }
 
     const onAddressClick = async (suggestion: AddressAutofillSuggestion) => {
         if (!api) return;
@@ -74,14 +85,15 @@
     };
 </script>
 
-<div class={$$props.class}>
+<div class={className}>
     <Label>
         {t("address_search")}
         <Input
             bind:value={query}
             class="mt-1"
             placeholder={t("address_start_typing")}
-            on:input={onChange}
+            oninput={onInputChange}
+            {disabled}
         />
     </Label>
 
@@ -93,8 +105,9 @@
             {#each suggestions as suggestion (suggestion.action.id)}
                 <button
                     class="w-full px-4 py-2 bg-gray-50 dark:bg-slate-800 odd:bg-gray-100 dark:odd:bg-slate-900 hover:bg-gray-200 dark:hover:bg-gray-700 text-left dark:text-slate-300"
-                    on:click={() => onAddressClick(suggestion)}
+                    onclick={() => onAddressClick(suggestion)}
                     type="button"
+                    {disabled}
                 >
                     {suggestion.full_address}
                 </button>

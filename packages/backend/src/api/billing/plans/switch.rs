@@ -1,45 +1,50 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json, Path, Query};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
-use rocket::serde::json::Json;
-use rocket::{post, State};
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
 use serde::Deserialize;
 
+use crate::actix_util::from_org_id::FromOrgId;
 use crate::api_entities::billing::invoice::APIBillingUpcomingInvoice;
-use crate::audit::AuditManager;
+use crate::audit::id_chains::IDChainEmpty;
+use crate::audit::manager::AuditManager;
 use crate::auth::rbac::requests::APITokenOrgAdmin;
 use crate::auth::tokens::APIAuthTokenSource;
 use crate::billing::manager::BillingManager;
-use crate::rocket_util::from_org_id::FromOrgId;
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct SwitchPlanRequest {
     new_stripe_price_id: String,
 }
 
-#[openapi(tag = "Billing Plans", operation_id = "billing.plan.switch")]
-#[post(
-    "/users/me/orgs/<org_id>/billing/plan.switch?<dry_run>",
-    data = "<data>"
-)]
-pub async fn handler(
-    org_id: PalformDatabaseID<IDOrganisation>,
-    data: Json<SwitchPlanRequest>,
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct SwitchPlanQuery {
     dry_run: bool,
-    token: APITokenOrgAdmin,
-    stripe: &State<stripe::Client>,
-    db: &State<DatabaseConnection>,
-    audit: FromOrgId<AuditManager>,
-) -> Result<Json<Option<APIBillingUpcomingInvoice>>, APIErrorWithStatus> {
-    let manager = BillingManager::new(stripe);
+}
 
-    if dry_run {
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct BillingPlansSwitchPath {
+    org_id: PalformDatabaseID<IDOrganisation>,
+}
+
+#[api_operation(tag = "Billing Plans", operation_id = "billing.plan.switch")]
+pub async fn billing_plans_switch(
+    path: Path<BillingPlansSwitchPath>,
+    data: Json<SwitchPlanRequest>,
+    Query(query): Query<SwitchPlanQuery>,
+    token: APITokenOrgAdmin,
+    stripe: Data<stripe::Client>,
+    db: Data<DatabaseConnection>,
+    audit: FromOrgId<AuditManager<IDChainEmpty>>,
+) -> Result<Json<Option<APIBillingUpcomingInvoice>>, APIError> {
+    let manager = BillingManager::new(stripe.as_ref());
+
+    if query.dry_run {
         let preview_invoice = manager
-            .preview_plan_change(db.inner(), org_id, data.new_stripe_price_id.clone())
+            .preview_plan_change(db.as_ref(), path.org_id, data.new_stripe_price_id.clone())
             .await
             .map_err(|e| {
                 APIError::report_internal_error("preview change to subscription plan", e)
@@ -48,17 +53,17 @@ pub async fn handler(
         Ok(Json(Some(preview_invoice)))
     } else {
         manager
-            .change_subscription_plan(db.inner(), org_id, data.new_stripe_price_id.clone())
+            .change_subscription_plan(db.as_ref(), path.org_id, data.new_stripe_price_id.clone())
             .await
             .map_err(|e| APIError::report_internal_error("change subscription plan", e))?;
 
         audit
             .log_event_with_note(
-                db.inner(),
+                db.as_ref(),
                 token.get_user_id(),
                 AuditLogVerbEnum::Update,
                 AuditLogTargetResourceEnum::Organisation,
-                Some(org_id.into_unknown()),
+                Some(path.org_id.into_unknown()),
                 Some("Change subscription plan".to_string()),
             )
             .await

@@ -1,100 +1,89 @@
 <script lang="ts">
-    import type { APITeamAsset } from "@paltiverse/palform-typescript-openapi";
+    import type { APITeamAsset } from "@palform/palform-typescript-openapi";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
-    import { APIs, backendURL } from "../../../data/common";
-    import { createEventDispatcher, onMount } from "svelte";
-    import { getCredentials } from "../../../data/auth";
+    import { APIs } from "../../../data/common";
+    import { onMount } from "svelte";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
-    import { DateTime } from "luxon";
     import { Alert, Button, Modal } from "flowbite-svelte";
     import LoadingButton from "../../LoadingButton.svelte";
 
-    export let teamId: string;
-    export let allowClear = false;
-    export let highlight: string | undefined = undefined;
-    export let show: boolean;
+    interface Props {
+        teamId: string;
+        allowClear?: boolean;
+        highlight?: string | undefined;
+        show: boolean;
+        onselect: (id: string | null) => void;
+    }
 
-    const dispatch = createEventDispatcher<{ select: string | null }>();
+    let {
+        teamId,
+        allowClear = false,
+        highlight = undefined,
+        show = $bindable(),
+        onselect,
+    }: Props = $props();
+
     const orgCtx = getOrgContext();
 
-    let assets: APITeamAsset[] | undefined = undefined;
-    let assetsLoading = true;
-    $: loadAssets = async () => {
+    let assets: APITeamAsset[] | undefined = $state(undefined);
+    let assetsLoading = $state(true);
+    let loadAssets = $derived(async () => {
         assetsLoading = true;
         const resp = await APIs.teamAssets().then((a) =>
             a.organisationTeamAssetList($orgCtx.org.id, teamId)
         );
         assets = resp.data;
         assetsLoading = false;
-    };
+    });
 
     onMount(() => {
         loadAssets();
     });
 
-    let fileInput: HTMLInputElement | undefined;
-    let files: FileList | undefined;
-    $: onUploadClick = () => {
+    let fileInput: HTMLInputElement | undefined = $state();
+    let files: FileList | undefined = $state();
+    let onUploadClick = $derived(() => {
         if (!fileInput) return;
         fileInput.click();
-    };
+    });
 
-    let uploadLoading = false;
-    $: onFileSet = async () => {
+    let uploadLoading = $state(false);
+    let onFileSet = $derived(async () => {
         if (!assets || !files || files.length !== 1) return;
         const file = files.item(0);
         if (!file) return;
 
         uploadLoading = true;
         try {
-            // OpenAPI macros on the backend don't yet support multipart uploads, so we have to do this manually :(
             const fd = new FormData();
-            fd.append(file.name, file);
-            const auth = await getCredentials();
-            if (!auth) return;
-            const resp = await fetch(
-                backendURL +
-                    `/users/me/orgs/${$orgCtx.org.id}/teams/${teamId}/assets`,
+            fd.append("file", file);
+
+            const teamAssetsApi = await APIs.teamAssets();
+            const resp = await teamAssetsApi.organisationTeamAssetUpload(
+                $orgCtx.org.id,
+                teamId,
                 {
-                    method: "POST",
-                    body: fd,
-                    headers: {
-                        Authorization:
-                            "Basic " +
-                            btoa(auth.username + ":" + auth.password),
-                    },
+                    data: fd,
                 }
             );
-            if (resp.status !== 200) {
-                throw new Error(await resp.text());
-            }
-
-            const newId = await resp.json();
 
             await showSuccessToast("File uploaded");
-            dispatch("select", newId);
-            assets = [
-                ...assets,
-                {
-                    id: newId,
-                    created_at: DateTime.now().toISO(),
-                    url: "",
-                },
-            ];
+            onselect(resp.data.id);
+            assets = [...assets, resp.data];
         } catch (e) {
             await showFailureToast(e);
         }
 
         uploadLoading = false;
-    };
+    });
 
-    $: onAssetSelect = (id: string) => {
+    let onAssetSelect = $derived((id: string) => {
         if (uploadLoading) return;
-        dispatch("select", id);
-    };
+        onselect(id);
+    });
 
     const clearSelection = () => {
-        dispatch("select", null);
+        onselect(null);
     };
 </script>
 
@@ -106,12 +95,12 @@
             id="file-upload"
             bind:this={fileInput}
             bind:files
-            on:change={onFileSet}
+            onchange={onFileSet}
         />
         <div class="flex items-center gap-4">
             <label for="file-upload">
                 <LoadingButton
-                    on:click={onUploadClick}
+                    onclick={onUploadClick}
                     disabled={uploadLoading}
                     loading={uploadLoading}
                 >
@@ -119,7 +108,7 @@
                 </LoadingButton>
             </label>
             {#if allowClear}
-                <Button outline on:click={clearSelection}>
+                <Button outline onclick={clearSelection}>
                     Clear selection
                 </Button>
             {/if}
@@ -135,8 +124,8 @@
             {#each assets as asset, index (asset.id)}
                 <div
                     class={`h-40 rounded-lg shadow-md border flex items-center justify-center overflow-hidden ${asset.id === highlight ? "border-4 border-primary-500 cursor-pointer" : ""}`}
-                    on:click={() => onAssetSelect(asset.id)}
-                    on:keypress={() => onAssetSelect(asset.id)}
+                    onclick={() => onAssetSelect(asset.id)}
+                    onkeypress={() => onAssetSelect(asset.id)}
                     role="button"
                     tabindex={index}
                 >

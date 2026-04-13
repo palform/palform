@@ -1,13 +1,13 @@
 use std::fmt::Display;
 
+use apistos::ApiComponent;
 use palform_entities::organisation_feature_entitlement;
 use palform_tsid::{resources::IDForm, tsid::PalformDatabaseID};
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
+use schemars::JsonSchema;
 use sea_orm::{FromQueryResult, Set};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, JsonSchema, Clone)]
+#[derive(Serialize, Deserialize, JsonSchema, Clone, ApiComponent)]
 pub enum APIEntitlementRequest {
     UserCount,
     ResponseCount,
@@ -49,7 +49,7 @@ impl Display for APIEntitlementRequest {
     }
 }
 
-#[derive(Deserialize, Serialize, FromQueryResult, JsonSchema)]
+#[derive(Deserialize, Serialize, FromQueryResult, JsonSchema, ApiComponent)]
 pub struct APIEntitlementInfo {
     pub user_count: Option<i32>,
     pub response_count: Option<i32>,

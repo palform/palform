@@ -1,4 +1,4 @@
-import type { APISubmission } from "@paltiverse/palform-typescript-openapi";
+import type { APISubmission } from "@palform/palform-typescript-openapi";
 import type { DecryptedSubmissionSuccess } from "./results";
 import * as Comlink from "comlink";
 import { decryptAllSubmissionsInternal } from "./decryptLogic";
@@ -10,7 +10,7 @@ async function decryptAllSubmissions(
     cacheSubmission: (submission: DecryptedSubmissionSuccess) => Promise<void>
 ) {
     const { decrypt_decode_submission_js, KeyResolver } = await import(
-        "@paltiverse/palform-crypto"
+        "@palform/palform-crypto"
     );
 
     return await decryptAllSubmissionsInternal(

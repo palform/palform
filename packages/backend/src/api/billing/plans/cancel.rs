@@ -1,38 +1,39 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus};
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::APIError;
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
-use rocket::{delete, serde::json::Json, State};
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::{okapi::schemars, openapi};
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
 use serde::Deserialize;
 
 use crate::billing::manager::CancelPlanRequestReason;
 use crate::{auth::rbac::requests::APITokenOrgAdmin, billing::manager::BillingManager};
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct CancelPlanRequest {
     reason: CancelPlanRequestReason,
 }
 
-#[openapi(tag = "Billing Plans", operation_id = "billing.plan.cancel")]
-#[delete(
-    "/users/me/orgs/<org_id>/billing/plan/<stripe_subscription_id>",
-    data = "<data>"
-)]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct BillingPlansCancelPath {
     org_id: PalformDatabaseID<IDOrganisation>,
     stripe_subscription_id: String,
+}
+
+#[api_operation(tag = "Billing Plans", operation_id = "billing.plan.cancel")]
+pub async fn billing_plans_cancel(
+    path: Path<BillingPlansCancelPath>,
     data: Json<CancelPlanRequest>,
     _token: APITokenOrgAdmin,
-    stripe: &State<stripe::Client>,
-    db: &State<DatabaseConnection>,
-) -> Result<(), APIErrorWithStatus> {
-    let manager = BillingManager::new(stripe);
+    stripe: Data<stripe::Client>,
+    db: Data<DatabaseConnection>,
+) -> Result<(), APIError> {
+    let manager = BillingManager::new(stripe.as_ref());
     manager
         .cancel_subscription(
-            db.inner(),
-            org_id,
-            stripe_subscription_id,
+            db.as_ref(),
+            path.org_id,
+            path.stripe_subscription_id.clone(),
             data.reason.clone(),
         )
         .await

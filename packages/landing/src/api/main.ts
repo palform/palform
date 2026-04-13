@@ -2,7 +2,7 @@ import {
     BillingPlansApi,
     Configuration,
     FormTemplatesApi,
-} from "@paltiverse/palform-typescript-openapi/src/index";
+} from "@palform/palform-typescript-openapi/src/index";
 
 export const APIBaseURL = import.meta.env.PUBLIC_BACKEND_URL as string;
 export const AppBaseURL = import.meta.env.PUBLIC_APP_URL as string;

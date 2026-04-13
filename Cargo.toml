@@ -12,6 +12,9 @@ members = [
 ]
 resolver = "2"
 
+[patch.crates-io]
+apistos = { git = "https://github.com/palkerecsenyi/apistos" }
+
 [profile.release]
 lto = true
 

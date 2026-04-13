@@ -3,11 +3,9 @@
     import CardGrid from "../../../components/CardGrid.svelte";
     import InductionStepCard from "../../../components/induction/InductionStepCard.svelte";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
-    import { navigate } from "svelte-routing";
+    import { p } from "../../../router";
 
     const orgCtx = getOrgContext();
-    $: onGetStartedClick = () =>
-        navigate(`/orgs/${$orgCtx.org.id}/settings/billing`);
 </script>
 
 <CardGrid>
@@ -25,8 +23,15 @@
         Subdomains are available exclusively on our upgraded plans. Get started
         now with fair plans that you can cancel whenever you want.
 
-        <Button class="mt-3 block" on:click={onGetStartedClick}>
-            Continue
-        </Button>
+        {#snippet footer()}
+            <Button
+                class="mt-3"
+                href={p("/orgs/:orgId/settings/billing", {
+                    params: { orgId: $orgCtx.org.id },
+                })}
+            >
+                Continue
+            </Button>
+        {/snippet}
     </InductionStepCard>
 </CardGrid>

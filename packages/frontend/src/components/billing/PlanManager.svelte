@@ -2,7 +2,7 @@
     import type {
         APIBillingCustomer,
         APIBillingSubscription,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import CardBox from "../cardBox/CardBox.svelte";
     import CardBoxTitle from "../cardBox/CardBoxTitle.svelte";
     import InfoText from "../type/InfoText.svelte";
@@ -19,11 +19,16 @@
     import LoadingButton from "../LoadingButton.svelte";
     import { showFailureToast } from "../../data/toast";
 
-    export let customer: APIBillingCustomer;
+    interface Props {
+        customer: APIBillingCustomer;
+    }
+
+    let { customer }: Props = $props();
     const orgCtx = getOrgContext();
 
-    let existingSubscriptions: APIBillingSubscription[] | undefined = undefined;
-    let existingSubscriptionsLoading = true;
+    let existingSubscriptions: APIBillingSubscription[] | undefined =
+        $state(undefined);
+    let existingSubscriptionsLoading = $state(true);
 
     APIs.billingPlans()
         .then((a) => a.billingPlanGet($orgCtx.org.id))
@@ -32,8 +37,8 @@
             existingSubscriptionsLoading = false;
         });
 
-    let paymentMethodLoading = false;
-    $: onPaymentMethodUpdateClick = async () => {
+    let paymentMethodLoading = $state(false);
+    let onPaymentMethodUpdateClick = $derived(async () => {
         paymentMethodLoading = true;
         try {
             const linkResp = await APIs.billingCustomers().then((a) =>
@@ -46,7 +51,7 @@
             await showFailureToast(e);
         }
         paymentMethodLoading = false;
-    };
+    });
 </script>
 
 {#if existingSubscriptionsLoading}
@@ -99,7 +104,7 @@
                     outline
                     disabled={paymentMethodLoading}
                     loading={paymentMethodLoading}
-                    on:click={onPaymentMethodUpdateClick}
+                    onclick={onPaymentMethodUpdateClick}
                 >
                     Update payment method
                 </LoadingButton>

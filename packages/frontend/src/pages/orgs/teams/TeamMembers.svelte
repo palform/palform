@@ -13,41 +13,42 @@
     import type {
         APIOrganisationTeamMember,
         OrganisationMemberRoleEnum,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import { getUserId } from "../../../data/auth";
 
     const teamCtx = getTeamCtx();
 
-    $: onMemberRoleChange = (
-        userId: string,
-        newRole: OrganisationMemberRoleEnum,
-    ) => {
-        const i = $teamCtx.members.findIndex((e) => e.user_id === userId);
-        teamCtx.update((ctx) => {
-            ctx.members[i].role = newRole;
-            return ctx;
-        });
-    };
-    $: onMemberDelete = (userId: string) => {
+    let onMemberRoleChange = $derived(
+        (userId: string, newRole: OrganisationMemberRoleEnum) => {
+            const i = $teamCtx.members.findIndex((e) => e.user_id === userId);
+            teamCtx.update((ctx) => {
+                ctx.members[i].role = newRole;
+                return ctx;
+            });
+        }
+    );
+    let onMemberDelete = $derived((userId: string) => {
         teamCtx.update((ctx) => {
             return {
                 ...ctx,
                 members: ctx.members.filter((e) => e.user_id !== userId),
             };
         });
-    };
-    $: onMemberAdd = (e: CustomEvent<APIOrganisationTeamMember>) => {
+    });
+    let onMemberAdd = $derived((e: CustomEvent<APIOrganisationTeamMember>) => {
         teamCtx.update((ctx) => {
             return {
                 ...ctx,
                 members: [e.detail, ...ctx.members],
             };
         });
-    };
+    });
 
-    let userId: undefined | string = undefined;
-    $: getUserId().then((u) => {
-        userId = u;
+    let userId: undefined | string = $state(undefined);
+    $effect(() => {
+        getUserId().then((u) => {
+            userId = u;
+        });
     });
 </script>
 

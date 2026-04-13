@@ -1,17 +1,21 @@
 <script lang="ts">
-    import type { AuditLogVerbEnum } from "@paltiverse/palform-typescript-openapi";
-    import { Badge } from "flowbite-svelte";
-    import type { BadgeProps } from "flowbite-svelte/Badge.svelte";
+    import type { AuditLogVerbEnum } from "@palform/palform-typescript-openapi";
+    import { Badge, type BadgeProps } from "flowbite-svelte";
 
-    export let action: AuditLogVerbEnum;
-    let color: BadgeProps["color"] =
+    interface Props {
+        action: AuditLogVerbEnum;
+    }
+
+    let { action }: Props = $props();
+    let color: BadgeProps["color"] = $derived(
         action === "Create"
             ? "green"
             : action === "Update"
               ? "yellow"
               : action === "Delete"
                 ? "red"
-                : "blue";
+                : "blue"
+    );
 </script>
 
 <Badge {color}>

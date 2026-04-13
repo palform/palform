@@ -17,25 +17,29 @@
     } from "../../data/contexts/orgLayout";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
     import { registerKey } from "../../data/crypto/keyManager";
-    import { createEventDispatcher, onMount } from "svelte";
+    import { onMount } from "svelte";
     import BackupNew from "./backup/BackupNew.svelte";
     import KeyPersistenceModal from "./KeyPersistenceModal.svelte";
     import { UAParser } from "ua-parser-js";
 
-    export let showInfo = true;
-    export let autoCreate = false;
+    interface Props {
+        showInfo?: boolean;
+        autoCreate?: boolean;
+        ondone: (backupKeyId: string) => void;
+    }
+
+    let { showInfo = true, autoCreate = false, ondone }: Props = $props();
 
     const ctx = getOrgContext();
     const browserSupport = !!(navigator.storage && navigator.storage.persist);
-    const dispatch = createEventDispatcher<{ done: string }>();
 
     const browserAgent = UAParser();
 
-    let expirationDays = 0;
-    let registerLoading = false;
-    let backupKeyId: string | undefined;
-    let showPersistenceModal = false;
-    $: onRegister = async () => {
+    let expirationDays = $state(0);
+    let registerLoading = $state(false);
+    let backupKeyId: string | undefined = $state();
+    let showPersistenceModal = $state(false);
+    let onRegister = $derived(async () => {
         const granted = await navigator.storage.persisted();
         if (!granted) {
             if (browserAgent.browser.name !== "Firefox") {
@@ -67,12 +71,12 @@
         }
 
         registerLoading = false;
-    };
+    });
 
-    $: onBackupCreateDone = () => {
+    let onBackupCreateDone = $derived(() => {
         if (!backupKeyId) return;
-        dispatch("done", backupKeyId);
-    };
+        ondone(backupKeyId);
+    });
 
     onMount(() => {
         if (autoCreate) {
@@ -81,14 +85,16 @@
     });
 </script>
 
-<KeyPersistenceModal bind:open={showPersistenceModal} on:granted={onRegister} />
+<KeyPersistenceModal bind:open={showPersistenceModal} ongranted={onRegister} />
 
 {#if backupKeyId}
-    <BackupNew {showInfo} keyId={backupKeyId} on:done={onBackupCreateDone} />
+    <BackupNew {showInfo} keyId={backupKeyId} ondone={onBackupCreateDone} />
 {:else}
     {#if !browserSupport}
         <Alert color="red" border>
-            <FontAwesomeIcon slot="icon" icon={faExclamationTriangle} />
+            {#snippet icon()}
+                <FontAwesomeIcon icon={faExclamationTriangle} />
+            {/snippet}
             <p>
                 <strong>Warning!</strong>
                 It looks like your browser doesn't support long-term key storage.
@@ -126,7 +132,7 @@
             <LoadingButton
                 loading={registerLoading}
                 disabled={registerLoading}
-                on:click={onRegister}
+                onclick={onRegister}
                 buttonClass="mt-4"
             >
                 Generate my key
@@ -134,7 +140,9 @@
 
             <Accordion flush class="mt-2">
                 <AccordionItem>
-                    <span slot="header" class="text-sm">Advanced</span>
+                    {#snippet header()}
+                        <span class="text-sm">Advanced</span>
+                    {/snippet}
                     <fieldset>
                         <Label for="expiry" class="mb-2">Expires</Label>
                         <Select

@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import {
         ctxGetCurrentGroup,
         ctxGetCurrentGroupQuestions,
@@ -21,15 +23,17 @@
     const currentGroupQuestions = ctxGetCurrentGroupQuestions();
     const nextStep = ctxGetNextStep();
 
-    let animateOut = true;
+    let animateOut = $state(true);
     const animationDelay = 100;
-    $: $currentGroup?.id,
-        setTimeout(() => {
-            animateOut = false;
-        }, animationDelay);
+    run(() => {
+        $currentGroup?.id,
+            setTimeout(() => {
+                animateOut = false;
+            }, animationDelay);
+    });
 
-    let showCaptchaModal = false;
-    $: onSubmit = async (e: Event, captchaValue?: string) => {
+    let showCaptchaModal = $state(false);
+    let onSubmit = $derived(async (e: Event, captchaValue?: string) => {
         e.preventDefault();
 
         if (!$formFillStore) return;
@@ -77,9 +81,9 @@
             error: undefined,
             done: true,
         };
-    };
+    });
 
-    $: onNext = (e: Event) => {
+    let onNext = $derived((e: Event) => {
         e.preventDefault();
 
         if ($formFillStore === undefined || $nextStep === undefined) return;
@@ -102,9 +106,9 @@
                 };
             });
         }, animationDelay);
-    };
+    });
 
-    $: onPrevious = () => {
+    let onPrevious = $derived(() => {
         if (
             $formFillStore === undefined ||
             $formFillStore.submission.groups_completed.length === 0
@@ -121,7 +125,7 @@
                 return ctx;
             });
         }, animationDelay);
-    };
+    });
 </script>
 
 <QgFillHeader class="mb-4" />
@@ -129,7 +133,7 @@
 {#if $formFillStore !== undefined && $currentGroup !== undefined}
     <form
         class={`space-y-8 transition ${animateOut ? "translate-y-8 opacity-0 pointer-events-none" : ""}`}
-        on:submit={(e) => ($nextStep === undefined ? onSubmit(e) : onNext(e))}
+        onsubmit={(e) => ($nextStep === undefined ? onSubmit(e) : onNext(e))}
     >
         {#each $currentGroupQuestions as question (question.id)}
             <QuestionFill {question} />
@@ -152,7 +156,7 @@
                 </BrandedButton>
             {/if}
             {#if $formFillStore.submission.groups_completed.length > 0}
-                <BrandedButton on:click={onPrevious} outline>
+                <BrandedButton onclick={onPrevious} outline>
                     {t("back")}
                 </BrandedButton>
             {/if}

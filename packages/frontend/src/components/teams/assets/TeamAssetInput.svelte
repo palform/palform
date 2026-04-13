@@ -2,22 +2,32 @@
     import TeamAssetModal from "./TeamAssetModal.svelte";
     import { Input } from "flowbite-svelte";
 
-    export let value: string | null = null;
-    export let teamId: string;
-    export let id: string;
+    interface Props {
+        value?: string | null;
+        teamId: string;
+        id: string;
+        class?: string;
+    }
 
-    let showModal = false;
-    $: onAssetSelect = (e: CustomEvent<string | null>) => {
-        value = e.detail;
+    let {
+        value = $bindable(null),
+        teamId,
+        id,
+        class: className,
+    }: Props = $props();
+
+    let showModal = $state(false);
+    const onAssetSelect = (e: string | null) => {
+        value = e;
         showModal = false;
     };
 </script>
 
 <Input
     readonly
-    class={$$props.class}
+    class={className}
     value={value === null ? "Click to select..." : "Selected asset"}
-    on:click={() => (showModal = true)}
+    onclick={() => (showModal = true)}
     {id}
 />
 
@@ -26,5 +36,5 @@
     allowClear
     bind:show={showModal}
     highlight={value ?? undefined}
-    on:select={onAssetSelect}
+    onselect={onAssetSelect}
 />

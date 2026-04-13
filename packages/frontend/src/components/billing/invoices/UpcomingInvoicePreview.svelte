@@ -2,7 +2,7 @@
     import type {
         APIBillingSubscription,
         APIBillingUpcomingInvoice,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import CardBoxSubtitle from "../../cardBox/CardBoxSubtitle.svelte";
     import { parseServerTime } from "../../../data/util/time";
     import { DateTime } from "luxon";
@@ -12,11 +12,15 @@
     import SkeletonPrimitive from "../../SkeletonPrimitive.svelte";
     import UpcomingInvoiceTable from "./UpcomingInvoiceTable.svelte";
 
-    export let subscription: APIBillingSubscription;
+    interface Props {
+        subscription: APIBillingSubscription;
+    }
+
+    let { subscription }: Props = $props();
     const orgCtx = getOrgContext();
 
-    let loading = true;
-    let upcomingInvoice: APIBillingUpcomingInvoice | undefined = undefined;
+    let loading = $state(true);
+    let upcomingInvoice: APIBillingUpcomingInvoice | undefined = $state(undefined);
     APIs.billingInvoices()
         .then((a) =>
             a.billingInvoicePreview(

@@ -1,11 +1,13 @@
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
 use palform_client_common::form_management::question_types::APIQuestion;
 use palform_tsid::{
     resources::{IDForm, IDOrganisation, IDQuestion, IDQuestionGroup},
     tsid::PalformDatabaseID,
 };
-use rocket::{get, http::Status, serde::json::Json, State};
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
+use serde::Deserialize;
 
 use crate::{
     api::error::{APIError, APIInternalError},
@@ -15,16 +17,20 @@ use crate::{
     },
 };
 
-#[openapi(tag = "Questions", operation_id = "questions.get")]
-#[get("/users/me/orgs/<org_id>/forms/<form_id>/groups/<question_group_id>/questions/<question_id>")]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct QuestionsGetPath {
     org_id: PalformDatabaseID<IDOrganisation>,
     form_id: PalformDatabaseID<IDForm>,
     question_group_id: PalformDatabaseID<IDQuestionGroup>,
     question_id: PalformDatabaseID<IDQuestion>,
+}
+
+#[api_operation(tag = "Questions", operation_id = "questions.get")]
+pub async fn questions_get(
+    path: Path<QuestionsGetPath>,
     _token: APITokenTeamViewerFromForm,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<APIQuestion>, (Status, Json<APIError>)> {
+    db: Data<DatabaseConnection>,
+) -> Result<Json<APIQuestion>, APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -33,25 +39,25 @@ pub async fn handler(
         .await
         .expect("txn");
 
-    if !FormManager::verify_form_org(&txn, form_id, org_id)
+    if !FormManager::verify_form_org(&txn, path.form_id, path.org_id)
         .await
         .map_err(|e| e.to_internal_error())?
     {
         return Err(APIError::NotFound.into());
     }
 
-    if !QuestionGroupManager::verify_question_group_form(&txn, question_group_id, form_id)
+    if !QuestionGroupManager::verify_question_group_form(&txn, path.question_group_id, path.form_id)
         .await
         .map_err(|e| e.to_internal_error())?
     {
         return Err(APIError::NotFound.into());
     }
 
-    let question = QuestionManager::get_by_id(&txn, question_id)
+    let question = QuestionManager::get_by_id(&txn, path.question_id)
         .await
         .map_err(|e| e.to_internal_error())?
         .ok_or(APIError::NotFound)?;
-    if question.group_id != question_group_id {
+    if question.group_id != path.question_group_id {
         return Err(APIError::NotFound.into());
     }
 

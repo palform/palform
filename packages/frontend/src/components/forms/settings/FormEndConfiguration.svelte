@@ -10,31 +10,32 @@
     import LoadingButton from "../../LoadingButton.svelte";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import { APIs } from "../../../data/common";
-    import type { APIForm } from "@paltiverse/palform-typescript-openapi";
+    import type { APIForm } from "@palform/palform-typescript-openapi";
 
     const orgCtx = getOrgContext();
     const formMetadataCtx = getFormCtx();
 
-    let message = $formMetadataCtx.end_configuration.message ?? "";
-    let showRestart = $formMetadataCtx.end_configuration.show_restart;
-    let redirectURL = $formMetadataCtx.end_configuration.redirect_to;
+    let message = $state($formMetadataCtx.end_configuration.message ?? "");
+    let showRestart = $state($formMetadataCtx.end_configuration.show_restart);
+    let redirectURL = $state($formMetadataCtx.end_configuration.redirect_to);
 
-    $: onRedirectToggleClick = (e: Event) => {
+    let onRedirectToggleClick = $derived((e: Event) => {
         const t = e.target as HTMLInputElement;
         if (t.checked) {
             redirectURL = "https://example.com";
         } else {
             redirectURL = null;
         }
-    };
+    });
 
-    $: hasChanged =
+    let hasChanged = $derived(
         message !== $formMetadataCtx.end_configuration.message ||
-        showRestart !== $formMetadataCtx.end_configuration.show_restart ||
-        redirectURL !== $formMetadataCtx.end_configuration.redirect_to;
+            showRestart !== $formMetadataCtx.end_configuration.show_restart ||
+            redirectURL !== $formMetadataCtx.end_configuration.redirect_to
+    );
 
-    let loading = false;
-    $: onSaveClick = async () => {
+    let loading = $state(false);
+    let onSaveClick = $derived(async () => {
         loading = true;
 
         try {
@@ -57,7 +58,7 @@
         } catch (e) {
             await showFailureToast(e);
         }
-    };
+    });
 </script>
 
 <SectionHeading>End page</SectionHeading>
@@ -68,6 +69,8 @@
     bind:value={message}
     id="message_editor"
     disabled={loading}
+    imageFormId={$formMetadataCtx.id}
+    imageTeamId={$formMetadataCtx.team_id}
 />
 
 <Toggle class="mt-6" bind:checked={showRestart} disabled={loading}>
@@ -77,7 +80,7 @@
 <Toggle
     class="mt-4"
     checked={!!redirectURL}
-    on:change={onRedirectToggleClick}
+    onchange={onRedirectToggleClick}
     disabled={loading}
 >
     Redirect to a custom URL
@@ -98,7 +101,7 @@
 {#if hasChanged}
     <LoadingButton
         buttonClass="mt-4"
-        on:click={onSaveClick}
+        onclick={onSaveClick}
         {loading}
         disabled={loading}>Save</LoadingButton
     >

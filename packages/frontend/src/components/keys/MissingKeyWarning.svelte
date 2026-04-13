@@ -3,10 +3,14 @@
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import { checkLocalKeyAvailability } from "../../data/crypto/keyManager";
     import BackupRecover from "./backup/BackupRecover.svelte";
-    import type { APIUserKey } from "@paltiverse/palform-typescript-openapi";
+    import type { APIUserKey } from "@palform/palform-typescript-openapi";
 
-    export let missingKey: APIUserKey | undefined = undefined;
-    export let showModal = false;
+    interface Props {
+        missingKey?: APIUserKey | undefined;
+        showModal?: boolean;
+    }
+
+    let { missingKey = $bindable(undefined), showModal = $bindable(false) }: Props = $props();
     const orgCtx = getOrgContext();
 
     (async () => {

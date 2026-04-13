@@ -3,11 +3,16 @@
     import { getBrandCtx } from "../../../data/contexts/brand";
     import { faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 
-    export let dummyLinks = false;
+    interface Props {
+        dummyLinks?: boolean;
+        class?: string;
+    }
+
+    let { dummyLinks = false, class: className }: Props = $props();
     const brandCtx = getBrandCtx();
 </script>
 
-<footer class={$$props.class}>
+<footer class={className}>
     {#if $brandCtx !== undefined}
         <div>
             {#if $brandCtx.extra_footer_message}
@@ -19,7 +24,7 @@
                 <p class="text-gray-600 text-sm">
                     <a
                         href={$brandCtx.terms_link}
-                        on:click={(e) => dummyLinks && e.preventDefault()}
+                        onclick={(e) => dummyLinks && e.preventDefault()}
                         target="_blank"
                         class="underline"
                     >
@@ -32,7 +37,7 @@
                 <p class="text-gray-600 text-sm">
                     <a
                         href={$brandCtx.privacy_link}
-                        on:click={(e) => dummyLinks && e.preventDefault()}
+                        onclick={(e) => dummyLinks && e.preventDefault()}
                         target="_blank"
                         class="underline"
                     >

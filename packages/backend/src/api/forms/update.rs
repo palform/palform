@@ -1,30 +1,28 @@
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
 use palform_client_common::errors::error::APIInternalErrorResult;
 use palform_client_common::form_management::form_end::APIFormEndConfiguration;
 use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
 use palform_tsid::resources::{IDForm, IDFormBranding, IDOrganisation};
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket::http::Status;
-use rocket::serde::json::Json;
-use rocket::{put, State};
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::{
     AccessMode, ActiveModelTrait, DatabaseConnection, IntoActiveModel, IsolationLevel, Set,
     TransactionTrait,
 };
 use serde::Deserialize;
 
+use crate::actix_util::from_org_id::FromOrgId;
 use crate::api::error::APIError;
 use crate::api_entities::billing::entitlement::APIEntitlementRequest;
-use crate::audit::AuditManager;
+use crate::audit::id_chains::IDChainEmpty;
+use crate::audit::manager::AuditManager;
 use crate::auth::rbac::requests::APITokenTeamEditorFromForm;
 use crate::auth::tokens::APIAuthTokenSource;
 use crate::entity_managers::billing_entitlement_proxy::BillingEntitlementManager;
 use crate::entity_managers::forms::FormManager;
-use crate::rocket_util::from_org_id::FromOrgId;
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct UpdateFormRequest {
     editor_name: String,
     title: Option<String>,
@@ -34,17 +32,21 @@ pub struct UpdateFormRequest {
     enable_captcha: bool,
 }
 
-#[openapi(tag = "Forms", operation_id = "forms.update")]
-#[put("/users/me/orgs/<org_id>/forms/<form_id>", data = "<data>")]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct FormsUpdatePath {
     org_id: PalformDatabaseID<IDOrganisation>,
     form_id: PalformDatabaseID<IDForm>,
+}
+
+#[api_operation(tag = "Forms", operation_id = "forms.update")]
+pub async fn forms_update(
+    path: Path<FormsUpdatePath>,
     data: Json<UpdateFormRequest>,
     token: APITokenTeamEditorFromForm,
-    db: &State<DatabaseConnection>,
-    audit: FromOrgId<AuditManager>,
-    billing: FromOrgId<BillingEntitlementManager>
-) -> Result<(), (Status, Json<APIError>)> {
+    db: Data<DatabaseConnection>,
+    audit: FromOrgId<AuditManager<IDChainEmpty>>,
+    billing: FromOrgId<BillingEntitlementManager>,
+) -> Result<(), APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -53,21 +55,23 @@ pub async fn handler(
         .await
         .map_internal_error()?;
 
-    if !FormManager::verify_form_org(&txn, form_id, org_id)
+    if !FormManager::verify_form_org(&txn, path.form_id, path.org_id)
         .await
         .map_internal_error()?
     {
         return Err(APIError::NotFound.into());
     }
 
-    let mut form = FormManager::get_plain_by_id(&txn, form_id)
+    let mut form = FormManager::get_plain_by_id(&txn, path.form_id)
         .await
         .map_internal_error()?
         .ok_or(APIError::NotFound)?
         .into_active_model();
 
     if data.enable_captcha {
-        billing.check_entitlement(&txn, APIEntitlementRequest::FormCaptcha).await?;
+        billing
+            .check_entitlement(&txn, APIEntitlementRequest::FormCaptcha)
+            .await?;
     }
 
     form.editor_name = Set(data.editor_name.clone());
@@ -86,7 +90,7 @@ pub async fn handler(
             token.get_user_id(),
             AuditLogVerbEnum::Update,
             AuditLogTargetResourceEnum::Form,
-            Some(form_id.into_unknown()),
+            Some(path.form_id.into_unknown()),
         )
         .await
         .map_internal_error()?;

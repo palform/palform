@@ -1,21 +1,21 @@
 <script lang="ts">
     import { Label, Select, Spinner, Toggle } from "flowbite-svelte";
-    import type { APIBillingPlan } from "@paltiverse/palform-typescript-openapi";
+    import type { APIBillingPlan } from "@palform/palform-typescript-openapi";
     import { billingAPI } from "../../api/main";
     import {
         freePlan,
         PricingFAQ,
         PricingPlan,
-    } from "@paltiverse/palform-frontend-common";
+    } from "@palform/palform-frontend-common";
     import { onMount } from "svelte";
 
-    let annualPricing = true;
-    let currency: string | undefined = undefined;
+    let annualPricing = $state(true);
+    let currency: string | undefined = $state(undefined);
 
-    let plans: APIBillingPlan[] = [];
-    let loading = true;
+    let plans: APIBillingPlan[] = $state([]);
+    let loading = $state(true);
 
-    $: reload = () => {
+    let reload = $derived(() => {
         loading = true;
 
         billingAPI
@@ -31,7 +31,7 @@
                 console.warn(e);
             })
             .finally(() => (loading = false));
-    };
+    });
 
     onMount(() => {
         reload();
@@ -58,9 +58,10 @@
                     { name: "£/GBP", value: "gbp" },
                     { name: "€/EUR", value: "eur" },
                     { name: "$/USD", value: "usd" },
+                    { name: "Fr/CHF", value: "chf" },
                 ]}
                 bind:value={currency}
-                on:change={reload}
+                onchange={reload}
             />
         </Label>
     {/if}
@@ -87,7 +88,7 @@
                 allowTrial
                 trialOnly
                 showButton
-                on:click={onTrialClick}
+                onclick={onTrialClick}
             />
         {/each}
     </div>

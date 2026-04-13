@@ -1,18 +1,22 @@
 <script lang="ts">
-    import type { APIBillingInvoice } from "@paltiverse/palform-typescript-openapi";
+    import type { APIBillingInvoice } from "@palform/palform-typescript-openapi";
     import { Button, TableBodyCell, TableBodyRow } from "flowbite-svelte";
     import { parseServerTime } from "../../../data/util/time";
     import { DateTime } from "luxon";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
     import InvoiceStatusLabel from "./InvoiceStatusLabel.svelte";
-    import { formatCurrency } from "@paltiverse/palform-frontend-common";
+    import { formatCurrency } from "@palform/palform-frontend-common";
 
-    export let invoice: APIBillingInvoice;
-    $: onOpenInvoiceClick = () => {
+    interface Props {
+        invoice: APIBillingInvoice;
+    }
+
+    let { invoice }: Props = $props();
+    let onOpenInvoiceClick = $derived(() => {
         if (!invoice.url) return;
         window.open(invoice.url);
-    };
+    });
 </script>
 
 <TableBodyRow>
@@ -28,7 +32,7 @@
     </TableBodyCell>
     {#if invoice.url}
         <TableBodyCell>
-            <Button outline on:click={onOpenInvoiceClick}>
+            <Button outline onclick={onOpenInvoiceClick}>
                 <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
             </Button>
         </TableBodyCell>

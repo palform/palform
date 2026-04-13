@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIOrganisationInvite } from "@paltiverse/palform-typescript-openapi";
+    import type { APIOrganisationInvite } from "@palform/palform-typescript-openapi";
     import { APIs } from "../../data/common";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import {
@@ -16,38 +16,41 @@
     import { copyOrgInviteLink } from "../../data/orgInvites";
     import InfoText from "../../components/type/InfoText.svelte";
     import TableContainer from "../../components/tables/TableContainer.svelte";
-    import { Link } from "svelte-routing";
-
+    import { isEntitled } from "../../data/billing/entitlement";
+    import { p } from "../../router";
     const orgCtx = getOrgContext();
 
-    let invitesLoading = true;
-    let invites: APIOrganisationInvite[] = [];
-    $: APIs.orgInvites()
-        .then((a) => a.organisationInvitesList($orgCtx.org.id))
-        .then((resp) => {
-            invites = resp.data;
-            invitesLoading = false;
-        });
+    let invitesLoading = $state(true);
+    let invites: APIOrganisationInvite[] = $state([]);
+    const entitled = isEntitled("user_count", true);
+    $effect(() => {
+        APIs.orgInvites()
+            .then((a) => a.organisationInvitesList($orgCtx.org.id))
+            .then((resp) => {
+                invites = resp.data;
+                invitesLoading = false;
+            });
+    });
 
-    let newModalOpen = false;
-    $: onNewInvite = async (e: CustomEvent<APIOrganisationInvite>) => {
+    let newModalOpen = $state(false);
+    let onNewInvite = $derived(async (e: APIOrganisationInvite) => {
         newModalOpen = false;
-        invites = [e.detail, ...invites];
-        await copyOrgInviteLink($orgCtx.org.id, e.detail.id);
-    };
+        invites = [e, ...invites];
+        await copyOrgInviteLink($orgCtx.org.id, e.id);
+    });
 
-    $: onInviteDelete = (id: string) => {
+    let onInviteDelete = $derived((id: string) => {
         invites = invites.filter((e) => e.id !== id);
-    };
+    });
 </script>
 
 {#if invitesLoading}
     <div class="text-center">
-        <Spinner size={14} />
+        <Spinner size="4" />
     </div>
 {/if}
 
-<OrganisationInviteModal bind:open={newModalOpen} on:create={onNewInvite} />
+<OrganisationInviteModal bind:open={newModalOpen} oncreate={onNewInvite} />
 
 {#if !invitesLoading && invites.length === 0}
     <Alert border>
@@ -63,9 +66,20 @@
         </p>
         <p>Links can be made single-use and must have an expiry date.</p>
 
-        <Button class="mt-4" outline on:click={() => (newModalOpen = true)}>
-            Invite someone!
-        </Button>
+        {#if $entitled}
+            <Button class="mt-4" outline onclick={() => (newModalOpen = true)}>
+                Invite someone!
+            </Button>
+        {:else}
+            <Button
+                class="mt-4"
+                href={p("/orgs/:orgId/settings/billing", {
+                    params: { orgId: $orgCtx.org.id },
+                })}
+            >
+                Upgrade to continue
+            </Button>
+        {/if}
     </Alert>
 {/if}
 
@@ -76,13 +90,13 @@
     </InfoText>
 
     <InfoText>
-        New users will automatically be added to your <Link
-            to={`/orgs/${$orgCtx.org.id}/settings/teams`}
-            class="font-bold hover:underline">default team</Link
+        New users will automatically be added to your <a
+            href={`/orgs/${$orgCtx.org.id}/settings/teams`}
+            class="font-bold hover:underline">default team</a
         >. You can manually add them to other teams once they join.
     </InfoText>
 
-    <Button class="mt-4" on:click={() => (newModalOpen = true)}>
+    <Button class="mt-4" onclick={() => (newModalOpen = true)}>
         New invite
     </Button>
 
@@ -101,7 +115,7 @@
                 {#each invites as invite (invite.id)}
                     <OrganisationInviteRow
                         {invite}
-                        on:delete={() => onInviteDelete(invite.id)}
+                        ondelete={() => onInviteDelete(invite.id)}
                     />
                 {/each}
             </TableBody>

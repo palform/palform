@@ -1,20 +1,26 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_entities::sea_orm_active_enums::AdminUserEmailVerificationPurposeEnum;
 use palform_tsid::{resources::IDAdminUserEmailVerification, tsid::PalformDatabaseID};
-use rocket::{post, State};
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, DbErr, IsolationLevel, TransactionTrait};
+use serde::Deserialize;
 
 use crate::entity_managers::{
     admin_users::AdminUserManager, email_verifications::EmailVerificationManager,
 };
 
-#[openapi(tag = "Authentication", operation_id = "auth.verify")]
-#[post("/auth/verify/<verification_id>", rank = 1)]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct VerifyEmailPath {
     verification_id: PalformDatabaseID<IDAdminUserEmailVerification>,
-    db: &State<DatabaseConnection>,
-) -> Result<(), APIErrorWithStatus> {
+}
+
+#[api_operation(tag = "Authentication", operation_id = "auth.verify")]
+pub async fn auth_verify_email(
+    path: Path<VerifyEmailPath>,
+    db: Data<DatabaseConnection>,
+) -> Result<(), APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -23,7 +29,7 @@ pub async fn handler(
         .await
         .map_internal_error()?;
 
-    let verification = EmailVerificationManager::process_verification(&txn, verification_id)
+    let verification = EmailVerificationManager::process_verification(&txn, path.verification_id)
         .await
         .map_err(|e| match e {
             DbErr::RecordNotFound(_) => APIError::NotFound.into(),

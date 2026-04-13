@@ -1,37 +1,26 @@
 <script lang="ts">
-    import type { APIQuestionConfigurationOneOf3 } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher } from "svelte";
-    import {
-        Button,
-        ButtonGroup,
-        Input,
-        Label,
-        NumberInput,
-        Select,
-    } from "flowbite-svelte";
+    import type { ConfigScale } from "@palform/palform-typescript-openapi";
+    import { Button, ButtonGroup, Input, Label, Select } from "flowbite-svelte";
     import { genScaleList, scaleIcons } from "../../../data/util/scaleList";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faTrash } from "@fortawesome/free-solid-svg-icons";
-    import { getFormEditorCtx, type QuestionEditEvents } from "../../../data/contexts/formEditor";
+    import { getFormEditorCtx } from "../../../data/contexts/formEditor";
 
-    export let config: APIQuestionConfigurationOneOf3;
+    interface Props {
+        config: ConfigScale;
+    }
+
+    let { config = $bindable() }: Props = $props();
     const ctx = getFormEditorCtx();
-    const dispatch = createEventDispatcher<QuestionEditEvents>();
 
-    $: onUpdate = () => {
-        dispatch("update", config);
-    };
-
-    $: toggleMinLabel = () => {
+    let toggleMinLabel = $derived(() => {
         config.scale.min_label =
             typeof config.scale.min_label === "string" ? null : "";
-        dispatch("update", config);
-    };
-    $: toggleMaxLabel = () => {
+    });
+    let toggleMaxLabel = $derived(() => {
         config.scale.max_label =
             typeof config.scale.max_label === "string" ? null : "";
-        dispatch("update", config);
-    };
+    });
 </script>
 
 <div
@@ -47,10 +36,9 @@
 </div>
 <div class="flex w-full justify-between">
     <div>
-        <NumberInput
+        <Input
             placeholder="Min value"
             bind:value={config.scale.min}
-            on:input={onUpdate}
             disabled={$ctx.loading}
         />
         {#if config.scale.icon === "Numeric"}
@@ -59,10 +47,9 @@
                     <Input
                         placeholder="Label"
                         bind:value={config.scale.min_label}
-                        on:input={onUpdate}
                         disabled={$ctx.loading}
                     />
-                    <Button on:click={toggleMinLabel} disabled={$ctx.loading}>
+                    <Button onclick={toggleMinLabel} disabled={$ctx.loading}>
                         <FontAwesomeIcon icon={faTrash} />
                     </Button>
                 </ButtonGroup>
@@ -72,7 +59,7 @@
                     size="xs"
                     outline
                     class="mt-2"
-                    on:click={toggleMinLabel}
+                    onclick={toggleMinLabel}
                     disabled={$ctx.loading}
                 >
                     Add label
@@ -81,10 +68,10 @@
         {/if}
     </div>
     <div class="flex flex-col items-end">
-        <NumberInput
+        <Input
+            type="number"
             placeholder="Max value"
             bind:value={config.scale.max}
-            on:input={onUpdate}
             disabled={$ctx.loading}
         />
         {#if config.scale.icon === "Numeric"}
@@ -93,10 +80,9 @@
                     <Input
                         placeholder="Label"
                         bind:value={config.scale.max_label}
-                        on:input={onUpdate}
                         disabled={$ctx.loading}
                     />
-                    <Button on:click={toggleMaxLabel} disabled={$ctx.loading}>
+                    <Button onclick={toggleMaxLabel} disabled={$ctx.loading}>
                         <FontAwesomeIcon icon={faTrash} />
                     </Button>
                 </ButtonGroup>
@@ -106,7 +92,7 @@
                     size="xs"
                     outline
                     class="mt-2"
-                    on:click={toggleMaxLabel}
+                    onclick={toggleMaxLabel}
                     disabled={$ctx.loading}
                 >
                     Add label
@@ -122,7 +108,6 @@
         items={scaleIcons}
         class="mt-1"
         bind:value={config.scale.icon}
-        on:change={onUpdate}
         disabled={$ctx.loading}
     />
 </Label>

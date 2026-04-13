@@ -1,29 +1,26 @@
 <script lang="ts">
-    import type {
-        APIQuestionConfigurationOneOf2Choice,
-        APIQuestionGroupStepStrategyJumpCaseConditionMatcher,
-    } from "@paltiverse/palform-typescript-openapi";
+    import type { ConfigChoiceChoice } from "@palform/palform-typescript-openapi";
     import { Button, Checkbox, Label, Radio, Toggle } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
+    import type { StrategyMatcherEventProps } from "../../../../../data/contexts/formEditor";
 
-    export let configuration: APIQuestionConfigurationOneOf2Choice;
-    let options: string[] = [];
-    let containsAny = false;
+    interface Props extends StrategyMatcherEventProps {
+        configuration: ConfigChoiceChoice;
+    }
 
-    const dispatch = createEventDispatcher<{
-        save: APIQuestionGroupStepStrategyJumpCaseConditionMatcher;
-    }>();
+    let { configuration, onsave }: Props = $props();
+    let options: string[] = $state([]);
+    let containsAny = $state(false);
 
-    $: onSave = () => {
-        dispatch("save", {
+    let onSave = $derived(() => {
+        onsave({
             Choice: {
                 options,
                 contains_any: containsAny,
             },
         });
-    };
+    });
 
-    $: onCheckboxChange = (e: Event) => {
+    let onCheckboxChange = $derived((e: Event) => {
         const t = e.target as HTMLInputElement;
 
         if (t.checked) {
@@ -31,7 +28,7 @@
         } else {
             options = options.filter((e) => e !== t.value);
         }
-    };
+    });
 </script>
 
 <Label>
@@ -45,7 +42,7 @@
             {#if configuration.multi}
                 <Checkbox
                     checked={options.includes(option)}
-                    on:change={onCheckboxChange}
+                    onchange={onCheckboxChange}
                     value={option}
                 >
                     {option}
@@ -65,4 +62,4 @@
     </Toggle>
 {/if}
 
-<Button class="mt-4" size="sm" on:click={onSave}>Save</Button>
+<Button class="mt-4" size="sm" onclick={onSave}>Save</Button>

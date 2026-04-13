@@ -3,7 +3,11 @@
     import Captcha from "../../captcha/Captcha.svelte";
     import { createEventDispatcher } from "svelte";
 
-    export let open: boolean;
+    interface Props {
+        open: boolean;
+    }
+
+    let { open = $bindable() }: Props = $props();
 
     const dispatch = createEventDispatcher<{
         complete: string;

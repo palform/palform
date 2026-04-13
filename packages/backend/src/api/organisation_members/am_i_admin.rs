@@ -1,28 +1,35 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
-use rocket::{get, serde::json::Json, State};
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
+use serde::Deserialize;
 
 use crate::{
     auth::rbac::requests::APITokenOrgViewer, auth::tokens::APIAuthTokenSource,
     entity_managers::organisation_members::OrganisationMembersManager,
 };
 
-#[openapi(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct OrganisationMembersAmIAdminPath {
+    org_id: PalformDatabaseID<IDOrganisation>,
+}
+
+#[api_operation(
     tag = "Organisation Members",
     operation_id = "organisation.members.am_i_admin"
 )]
-#[get("/users/me/orgs/<org_id>/am-i-admin")]
-pub async fn handler(
-    org_id: PalformDatabaseID<IDOrganisation>,
+pub async fn organisation_members_am_i_admin(
+    path: Path<OrganisationMembersAmIAdminPath>,
     token: APITokenOrgViewer,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<bool>, APIErrorWithStatus> {
-    let resp = OrganisationMembersManager::get_is_admin(db.inner(), org_id, token.get_user_id())
-        .await
-        .map_internal_error()?
-        .ok_or(APIError::NotFound)?;
+    db: Data<DatabaseConnection>,
+) -> Result<Json<bool>, APIError> {
+    let resp =
+        OrganisationMembersManager::get_is_admin(db.as_ref(), path.org_id, token.get_user_id())
+            .await
+            .map_internal_error()?
+            .ok_or(APIError::NotFound)?;
 
     Ok(Json(resp))
 }

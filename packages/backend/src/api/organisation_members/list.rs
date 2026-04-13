@@ -1,7 +1,9 @@
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
-use rocket::{get, http::Status, serde::json::Json, State};
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
+use serde::Deserialize;
 
 use crate::{
     api::error::{APIError, APIInternalError},
@@ -10,16 +12,17 @@ use crate::{
     entity_managers::organisation_members::OrganisationMembersManager,
 };
 
-#[openapi(
-    tag = "Organisation Members",
-    operation_id = "organisation.members.list"
-)]
-#[get("/users/me/orgs/<org_id>/members")]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct OrganisationMembersListPath {
     org_id: PalformDatabaseID<IDOrganisation>,
+}
+
+#[api_operation(tag = "Organisation Members", operation_id = "organisation.members.list")]
+pub async fn organisation_members_list(
+    path: Path<OrganisationMembersListPath>,
     _token: APITokenOrgViewer,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<Vec<APIOrgMember>>, (Status, Json<APIError>)> {
+    db: Data<DatabaseConnection>,
+) -> Result<Json<Vec<APIOrgMember>>, APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -28,7 +31,7 @@ pub async fn handler(
         .await
         .map_err(|e| e.to_internal_error())?;
 
-    let members = OrganisationMembersManager::list_all(&txn, org_id)
+    let members = OrganisationMembersManager::list_all(&txn, path.org_id)
         .await
         .map_err(|e| e.to_internal_error())?;
 

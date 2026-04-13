@@ -7,63 +7,75 @@
     import DatePickerWeekday from "./DatePickerWeekday.svelte";
     import DatePickerControls from "./DatePickerControls.svelte";
     import DatePickerDay from "./DatePickerDay.svelte";
-    import { createEventDispatcher } from "svelte";
 
-    export let selectedDate: DateTime | null = null;
-    export let disabled = false;
-    export let min: DateTime | undefined = undefined;
-    export let max: DateTime | undefined = undefined;
+    interface Props {
+        selectedDate?: DateTime | null;
+        disabled?: boolean;
+        min?: DateTime | undefined;
+        max?: DateTime | undefined;
+        class?: string;
+        onUpdate?: (date: DateTime) => void;
+    }
 
-    const dispatch = createEventDispatcher<{ update: undefined }>();
+    let {
+        selectedDate = $bindable(null),
+        disabled = false,
+        min = undefined,
+        max = undefined,
+        class: className,
+        onUpdate,
+    }: Props = $props();
 
-    let currentMonth = selectedDate?.month ?? DateTime.now().month;
-    let currentYear = selectedDate?.year ?? DateTime.now().year;
+    let currentMonth = $state(selectedDate?.month ?? DateTime.now().month);
+    let currentYear = $state(selectedDate?.year ?? DateTime.now().year);
 
     const brandCtx = getBrandCtx();
-    $: firstDay = DateTime.fromObject({
-        day: 1,
-        month: currentMonth,
-        year: currentYear,
-    }).startOf("week");
+    let firstDay = $derived(
+        DateTime.fromObject({
+            day: 1,
+            month: currentMonth,
+            year: currentYear,
+        }).startOf("week")
+    );
 
-    $: allDays = [
+    const allDays = [
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
         20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
         38, 39, 40, 41,
     ];
 
-    $: prevMonth = () => {
+    function prevMonth() {
         currentMonth -= 1;
         if (currentMonth < 1) {
             currentYear -= 1;
             currentMonth = 12;
         }
-    };
-    $: nextMonth = () => {
+    }
+    function nextMonth() {
         currentMonth += 1;
         if (currentMonth > 12) {
             currentYear += 1;
             currentMonth = 1;
         }
-    };
-    $: onSelect = (e: CustomEvent<DateTime>) => {
-        currentMonth = e.detail.month;
-        currentYear = e.detail.year;
-        selectedDate = e.detail;
-        dispatch("update");
-    };
+    }
+    function onSelect(date: DateTime) {
+        currentMonth = date.month;
+        currentYear = date.year;
+        selectedDate = date;
+        onUpdate?.(date);
+    }
 </script>
 
 <div
-    class={`grid grid-rows-6 grid-cols-7 border dark:border-gray-600 overflow-hidden ${$$props.class}`}
+    class={`grid grid-rows-6 grid-cols-7 border border-gray-200 dark:border-gray-600 overflow-hidden ${className ?? ""}`}
     style:border-radius={getRoundingAmountForBrand($brandCtx)}
 >
     <DatePickerControls
         class="col-span-7"
         {currentMonth}
         {currentYear}
-        on:prev={prevMonth}
-        on:next={nextMonth}
+        onprev={prevMonth}
+        onnext={nextMonth}
         {disabled}
     />
     <DatePickerWeekday>Mo</DatePickerWeekday>
@@ -80,7 +92,7 @@
             {selectedDate}
             {dayIndex}
             month={currentMonth}
-            on:click={onSelect}
+            onclick={onSelect}
             {disabled}
             {min}
             {max}

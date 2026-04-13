@@ -1,4 +1,4 @@
-use chrono::{NaiveDateTime, Utc};
+use chrono::{DateTime, Utc};
 use palform_entities::{organisation, organisation_invite, prelude::*};
 use palform_tsid::{
     resources::{IDOrganisation, IDOrganisationInvite},
@@ -31,14 +31,14 @@ impl OrganisationInviteManager {
     pub async fn create<T: ConnectionTrait>(
         conn: &T,
         org_id: PalformDatabaseID<IDOrganisation>,
-        expires_at: NaiveDateTime,
+        expires_at: DateTime<Utc>,
         single_use: bool,
     ) -> Result<organisation_invite::Model, DbErr> {
         let new_invite = organisation_invite::ActiveModel {
             id: Set(PalformDatabaseID::<IDOrganisationInvite>::random()),
             organisation_id: Set(org_id),
             single_use: Set(single_use),
-            expires_at: Set(expires_at),
+            expires_at: Set(expires_at.fixed_offset()),
             ..Default::default()
         };
         new_invite.insert(conn).await

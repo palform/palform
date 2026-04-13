@@ -1,5 +1,5 @@
 use anyhow::anyhow;
-use rand::{rngs, seq::SliceRandom, SeedableRng};
+use rand::{prelude::IndexedRandom, rngs::StdRng, SeedableRng};
 
 const PASSPHRASE_WORD_COUNT: usize = 16;
 
@@ -29,7 +29,7 @@ impl WordList {
 
     fn choose_random(&self) -> Option<String> {
         self.list
-            .choose(&mut rngs::StdRng::from_entropy())
+            .choose(&mut StdRng::from_os_rng())
             .map(|e| e.to_owned())
     }
 

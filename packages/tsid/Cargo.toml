@@ -8,12 +8,11 @@ publish = false
 path = "src/lib.rs"
 
 [dependencies]
-prefixed-tsid = { version = "0.3.0", default-features = false }
+prefixed-tsid = { version = "0.9.0", default-features = false }
 
 [features]
-default = ["sea-orm", "rocket", "serde", "schemars", "ts-rs"]
+default = ["sea-orm", "serde", "ts-rs", "apistos"]
 sea-orm = ["prefixed-tsid/sea-orm"]
-rocket = ["prefixed-tsid/rocket"]
 serde = ["prefixed-tsid/serde"]
-schemars = ["prefixed-tsid/schemars"]
 ts-rs = ["prefixed-tsid/ts-rs"]
+apistos = ["prefixed-tsid/apistos"]

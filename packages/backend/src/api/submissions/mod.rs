@@ -3,3 +3,4 @@ pub mod crypto;
 pub mod delete;
 pub mod list;
 pub mod num_since;
+pub mod scope;

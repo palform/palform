@@ -4,6 +4,7 @@ pub trait PalformS3Bucket {
     fn name(config: &Config) -> String;
 }
 
+#[derive(Clone)]
 pub struct S3BucketTeamAssets;
 impl PalformS3Bucket for S3BucketTeamAssets {
     fn name(config: &Config) -> String {
@@ -11,6 +12,7 @@ impl PalformS3Bucket for S3BucketTeamAssets {
     }
 }
 
+#[derive(Clone)]
 pub struct S3BucketSubmissionAssets;
 impl PalformS3Bucket for S3BucketSubmissionAssets {
     fn name(config: &Config) -> String {

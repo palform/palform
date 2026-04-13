@@ -1,17 +1,23 @@
-<script>
+<script lang="ts">
     import { Alert } from "flowbite-svelte";
     import LoadingButton from "../../LoadingButton.svelte";
     import { APIs } from "../../../data/common";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../../router";
     import { showSuccessToast } from "../../../data/toast";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { getFormAdminContext } from "../../../data/contexts/formAdmin";
 
+    interface Props {
+        class?: string;
+    }
+
+    let { class: className }: Props = $props();
+
     const orgCtx = getOrgContext();
     const formAdminCtx = getFormAdminContext();
 
-    let loading = false;
-    $: onDeleteClick = async () => {
+    let loading = $state(false);
+    let onDeleteClick = $derived(async () => {
         loading = true;
         await APIs.forms().then((a) =>
             a.formsDelete($orgCtx.org.id, $formAdminCtx.formId)
@@ -26,10 +32,10 @@
 
         await showSuccessToast("Form deleted");
         navigate(`/orgs/${$orgCtx.org.id}`);
-    };
+    });
 </script>
 
-<Alert color="red" class={$$props.class}>
+<Alert color="red" class={className}>
     <h3 class="text-lg">Delete form</h3>
     <p>This will also delete all responses and sharing tokens.</p>
     <LoadingButton
@@ -38,7 +44,7 @@
         outline
         disabled={loading}
         {loading}
-        on:click={onDeleteClick}
+        onclick={onDeleteClick}
     >
         Delete
     </LoadingButton>

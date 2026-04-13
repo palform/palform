@@ -6,7 +6,7 @@ use openidconnect::{
     Client, ClientId, ClientSecret, CsrfToken, IssuerUrl, Nonce, RedirectUrl, Scope,
 };
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
-use rocket_okapi::okapi::schemars::{self, JsonSchema};
+use schemars::JsonSchema;
 use sea_orm::ConnectionTrait;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -112,6 +112,7 @@ impl SocialAuthManager {
         auth_code: String,
         nonce: String,
         redirect_url: String,
+        config: &Config,
     ) -> Result<(NewAPIAuthToken, Option<PalformDatabaseID<IDOrganisation>>), TokenExchangeError>
     {
         let result = oidc_common_token_exchange(
@@ -171,7 +172,7 @@ impl SocialAuthManager {
         }
 
         let token_user_id = token_user_id.expect("token_user_id must be assigned by now");
-        let auth_token = TokenManager::issue_token(conn, token_user_id).await?;
+        let auth_token = TokenManager::issue_token(conn, token_user_id, config).await?;
         Ok((auth_token, created_org_id))
     }
 }

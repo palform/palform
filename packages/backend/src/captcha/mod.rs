@@ -1,17 +1,20 @@
+use std::{future::Future, pin::Pin};
+
+use actix_web::{dev::Payload, web::Data, FromRequest, HttpRequest};
+use apistos::ApiSecurity;
+use http::HeaderName;
 use palform_client_common::errors::error::APIError;
-use rocket::{
-    request::{self, FromRequest},
-    serde::json::Json,
-};
-use rocket_okapi::{
-    okapi::{schemars::schema::InstanceType, Map},
-    request::OpenApiFromRequest,
-};
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{config::Config, into_outcome};
+use crate::config::Config;
 
+#[derive(ApiSecurity)]
+#[openapi_security(scheme(security_type(api_key(
+    name = "X-Captcha-Response",
+    api_key_in = "header"
+))))]
 pub struct VerifiedCaptcha;
 
 #[derive(Debug, Error)]
@@ -44,7 +47,7 @@ impl VerifiedCaptcha {
             response: token.to_owned(),
         };
 
-        let resp = reqwest::Client::default()
+        let resp = Client::default()
             .post("https://challenges.cloudflare.com/turnstile/v0/siteverify")
             .form(&params)
             .send()
@@ -60,65 +63,31 @@ impl VerifiedCaptcha {
     }
 }
 
-#[rocket::async_trait]
-impl<'a> FromRequest<'a> for VerifiedCaptcha {
-    type Error = Json<APIError>;
-    async fn from_request(
-        request: &'a request::Request<'_>,
-    ) -> request::Outcome<Self, Self::Error> {
-        let header = into_outcome!(
-            request
+pub static CAPTCHA_HEADER: HeaderName = HeaderName::from_static("x-captcha-response");
+
+impl FromRequest for VerifiedCaptcha {
+    type Error = APIError;
+    type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
+    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
+        let req = req.clone();
+        let captcha_header_name = CAPTCHA_HEADER.clone();
+        Box::pin(async move {
+            let header = req
                 .headers()
-                .get_one("X-Captcha-Response")
-                .ok_or(APIError::CaptchaError("Header not found".to_string())),
-            request
-        );
+                .get(captcha_header_name)
+                .ok_or(APIError::CaptchaError("Header not found".to_string()))?
+                .to_str()
+                .map_err(|e| APIError::CaptchaError(e.to_string()))?;
 
-        let config = into_outcome!(request.rocket().state::<Config>().ok_or(APIError::Internal));
+            let config = req.app_data::<Data<Config>>().ok_or_else(|| {
+                APIError::report_internal_error_without_error("Config not in state")
+            })?;
 
-        into_outcome!(
             VerifiedCaptcha::verify_token(config, header)
                 .await
-                .map_err(|e| APIError::CaptchaError(e.to_string())),
-            request
-        );
+                .map_err(|e| APIError::CaptchaError(e.to_string()))?;
 
-        request::Outcome::Success(VerifiedCaptcha)
-    }
-}
-
-#[rocket::async_trait]
-impl<'a> OpenApiFromRequest<'a> for VerifiedCaptcha {
-    fn from_request_input(
-        _gen: &mut rocket_okapi::gen::OpenApiGenerator,
-        _name: String,
-        required: bool,
-    ) -> rocket_okapi::Result<rocket_okapi::request::RequestHeaderInput> {
-        Ok(rocket_okapi::request::RequestHeaderInput::Parameter(
-            rocket_okapi::okapi::openapi3::Parameter {
-                name: "X-Captcha-Response".to_string(),
-                location: "header".to_string(),
-                description: Some("Response from the Cloudflare Turnstile captcha".to_string()),
-                required,
-                deprecated: false,
-                allow_empty_value: false,
-                extensions: Map::new(),
-                value: rocket_okapi::okapi::openapi3::ParameterValue::Schema {
-                    style: Some(rocket_okapi::okapi::openapi3::ParameterStyle::Simple),
-                    schema: rocket_okapi::okapi::openapi3::SchemaObject {
-                        instance_type: Some(
-                            rocket_okapi::okapi::schemars::schema::SingleOrVec::Single(Box::new(
-                                InstanceType::String,
-                            )),
-                        ),
-                        ..Default::default()
-                    },
-                    explode: None,
-                    example: None,
-                    examples: None,
-                    allow_reserved: false,
-                },
-            },
-        ))
+            Ok(VerifiedCaptcha)
+        })
     }
 }

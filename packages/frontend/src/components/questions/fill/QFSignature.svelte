@@ -1,7 +1,4 @@
 <script lang="ts">
-    import type { QuestionSubmissionData } from "@paltiverse/palform-client-js-extra-types/QuestionSubmissionData";
-    import type { APIQuestionConfigurationOneOf7 } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher } from "svelte";
     import PaintCanvas from "../../paint/PaintCanvas.svelte";
     import InfoText from "../../type/InfoText.svelte";
     import { Button, Input, Label, Modal } from "flowbite-svelte";
@@ -14,6 +11,7 @@
     import {
         setQuestionValue,
         sGetSignature,
+        type QuestionFillProps,
     } from "../../../data/contexts/fill";
     import {
         getBrandCtx,
@@ -22,28 +20,33 @@
     import BrandedButton from "../../teams/brandings/BrandedButton.svelte";
     import { t } from "../../../data/contexts/i18n";
     import QfClearButton from "./QFClearButton.svelte";
+    import type { ConfigSignature } from "@palform/palform-typescript-openapi";
 
-    export let id: string;
-    export let config: APIQuestionConfigurationOneOf7;
-    export let currentValue: QuestionSubmissionData | undefined;
-    $: value = currentValue
-        ? sGetSignature(currentValue)
-        : { freeform: [], initial: "", full_name: "" };
+    interface Props extends QuestionFillProps<ConfigSignature> {}
 
-    const dispatch = createEventDispatcher<{ change: undefined }>();
+    let { id, config, currentValue, onchange }: Props = $props();
+    let value = $derived(
+        currentValue
+            ? sGetSignature(currentValue)
+            : { freeform: [], initial: "", full_name: "" }
+    );
+
     const brandCtx = getBrandCtx();
 
-    $: supportedMethodCount = Object.values(config.signature).filter(
-        (e) => e === true
-    ).length;
-    $: onlyOne = supportedMethodCount === 1;
-    let selectedMethod: "freeform" | "initial" | "full_name" | null = null;
+    let supportedMethodCount = $derived(
+        Object.values(config.signature).filter((e) => e === true).length
+    );
+    let onlyOne = $derived(supportedMethodCount === 1);
+    let selectedMethod: "freeform" | "initial" | "full_name" | null =
+        $state(null);
 
-    $: selectMethod = (method: "freeform" | "initial" | "full_name") => {
-        selectedMethod = method;
-    };
+    let selectMethod = $derived(
+        (method: "freeform" | "initial" | "full_name") => {
+            selectedMethod = method;
+        }
+    );
 
-    $: onUpdateFreeform = (e: CustomEvent<number[][][]>) => {
+    let onUpdateFreeform = $derived((e: CustomEvent<number[][][]>) => {
         setQuestionValue(id, {
             Signature: {
                 freeform: e.detail,
@@ -51,10 +54,10 @@
                 full_name: "",
             },
         });
-        dispatch("change");
-    };
+        onchange();
+    });
 
-    $: onUpdateInitials = (e: Event) => {
+    let onUpdateInitials = $derived((e: Event) => {
         const t = e.target as HTMLInputElement;
         setQuestionValue(id, {
             Signature: {
@@ -63,10 +66,10 @@
                 full_name: "",
             },
         });
-        dispatch("change");
-    };
+        onchange();
+    });
 
-    $: onUpdateFullName = (e: Event) => {
+    let onUpdateFullName = $derived((e: Event) => {
         const t = e.target as HTMLInputElement;
         setQuestionValue(id, {
             Signature: {
@@ -75,10 +78,10 @@
                 full_name: t.value,
             },
         });
-        dispatch("change");
-    };
+        onchange();
+    });
 
-    $: onClear = () => {
+    let onClear = $derived(() => {
         setQuestionValue(id, {
             Signature: {
                 freeform: [],
@@ -87,24 +90,24 @@
             },
         });
         selectedMethod = null;
-        dispatch("change");
-    };
+        onchange();
+    });
 
     const isTouchScreen = window.matchMedia("(pointer: coarse)").matches;
-    let modalOpen = false;
-    $: {
+    let modalOpen = $state(false);
+    $effect(() => {
         if (modalOpen) {
             document.body.classList.add("lock");
         } else {
             document.body.classList.remove("lock");
         }
-    }
+    });
 </script>
 
 {#if (onlyOne && config.signature.allow_initial) || selectedMethod === "initial" || value.initial.length > 0}
     <Label>
         {t("signature_initials")}
-        <Input class="mt-1" value={value.initial} on:input={onUpdateInitials} />
+        <Input class="mt-1" value={value.initial} oninput={onUpdateInitials} />
     </Label>
 
     {#if value.initial}
@@ -119,7 +122,7 @@
         <button
             class="h-32 border-2 dark:border-gray-700 w-full text-gray-600 dark:text-gray-400"
             style:border-radius={getRoundingAmountForBrand($brandCtx)}
-            on:click={() => (modalOpen = true)}
+            onclick={() => (modalOpen = true)}
             type="button"
         >
             {#if value.freeform.length > 0}
@@ -132,7 +135,7 @@
         <Modal bind:open={modalOpen} outsideclose title="Draw signature">
             <PaintCanvas points={value.freeform} on:update={onUpdateFreeform} />
 
-            <BrandedButton outline on:click={() => (modalOpen = false)}>
+            <BrandedButton outline onclick={() => (modalOpen = false)}>
                 {t("field_done")}
             </BrandedButton>
         </Modal>
@@ -145,7 +148,7 @@
         <Input
             class="mt-1"
             value={value.full_name}
-            on:input={onUpdateFullName}
+            oninput={onUpdateFullName}
         />
     </Label>
 {:else if selectedMethod === null}
@@ -155,7 +158,7 @@
         class={`mt-2 w-full grid ${supportedMethodCount === 2 ? "grid-cols-2" : "grid-cols-3"} gap-3`}
     >
         {#if config.signature.allow_initial}
-            <Button color="light" on:click={() => selectMethod("initial")}>
+            <Button color="light" onclick={() => selectMethod("initial")}>
                 <div>
                     <FontAwesomeIcon icon={faA} size="xl" class="mb-1" />
                     <span class="block">{t("signature_initial")}</span>
@@ -163,7 +166,7 @@
             </Button>
         {/if}
         {#if config.signature.allow_freeform}
-            <Button color="light" on:click={() => selectMethod("freeform")}>
+            <Button color="light" onclick={() => selectMethod("freeform")}>
                 <div>
                     <FontAwesomeIcon
                         icon={faSignature}
@@ -175,7 +178,7 @@
             </Button>
         {/if}
         {#if config.signature.allow_full_name}
-            <Button color="light" on:click={() => selectMethod("full_name")}>
+            <Button color="light" onclick={() => selectMethod("full_name")}>
                 <div>
                     <FontAwesomeIcon icon={faICursor} size="xl" class="mb-1" />
                     <span class="block">{t("signature_full_name")}</span>
@@ -186,5 +189,5 @@
 {/if}
 
 {#if value.initial.length > 0 || value.freeform.length > 0 || value.full_name.length > 0 || selectedMethod !== null}
-    <QfClearButton class="mt-2" on:click={onClear} />
+    <QfClearButton class="mt-2" onclick={onClear} />
 {/if}

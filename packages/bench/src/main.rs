@@ -102,7 +102,7 @@ async fn main() {
             encrypted_data: Set(encrypted_submission_data),
             form_id: Set(config.form_id),
             for_token: Set(None),
-            created_at: Set(current_time.naive_utc()),
+            created_at: Set(current_time.fixed_offset()),
         };
         new_submission
             .insert(&txn)

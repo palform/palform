@@ -1,25 +1,23 @@
 <script lang="ts">
     import { Button, Helper, Input, Label, Toggle } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
-    import type { APIQuestionGroupStepStrategyJumpCaseConditionMatcher } from "@paltiverse/palform-typescript-openapi";
+    import type { StrategyMatcherEventProps } from "../../../../../data/contexts/formEditor";
 
-    let value = "";
-    let caseSensitive = true;
-    let contains = false;
+    let value = $state("");
+    let caseSensitive = $state(true);
+    let contains = $state(false);
 
-    const dispatch = createEventDispatcher<{
-        save: APIQuestionGroupStepStrategyJumpCaseConditionMatcher;
-    }>();
+    interface Props extends StrategyMatcherEventProps {}
+    let { onsave }: Props = $props();
 
-    $: onSave = () => {
-        dispatch("save", {
+    let onSave = $derived(() => {
+        onsave({
             Text: {
                 value,
                 contains,
                 case_sensitive: caseSensitive,
             },
         });
-    };
+    });
 </script>
 
 <Label>
@@ -36,4 +34,4 @@
     Contains value (instead of exactly matches)
 </Toggle>
 
-<Button class="mt-4" size="sm" on:click={onSave}>Save</Button>
+<Button class="mt-4" size="sm" onclick={onSave}>Save</Button>

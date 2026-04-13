@@ -113,7 +113,7 @@ impl FormAnalysisManager {
             .question_indices_for_features
             .iter()
             .enumerate()
-            .filter(|(_, &this_question_index)| this_question_index == question_index)
+            .filter(|&(_, &this_question_index)| this_question_index == question_index)
             .map(|(feature_index, _)| feature_index)
             .find(|feature_index| {
                 self.feature_labels

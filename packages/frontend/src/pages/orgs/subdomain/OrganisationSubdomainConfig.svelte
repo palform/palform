@@ -12,9 +12,9 @@
     const entitled = isEntitled("subdomain");
     const orgCtx = getOrgContext();
 
-    let subdomain = "";
-    let loading = false;
-    $: onCreateClick = async (e: Event) => {
+    let subdomain = $state("");
+    let loading = $state(false);
+    let onCreateClick = $derived(async (e: Event) => {
         e.preventDefault();
         loading = true;
 
@@ -31,7 +31,7 @@
         }
 
         loading = false;
-    };
+    });
 </script>
 
 {#if !$entitled}
@@ -48,7 +48,7 @@
         </p>
     </Alert>
 
-    <form on:submit={onCreateClick}>
+    <form onsubmit={onCreateClick}>
         <Label>
             Choose your subdomain
             <Input class="mt-2" bind:value={subdomain} disabled={loading} />

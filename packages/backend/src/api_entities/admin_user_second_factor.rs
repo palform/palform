@@ -1,8 +1,8 @@
-use chrono::NaiveDateTime;
+use apistos::ApiComponent;
+use chrono::{DateTime, Utc};
 use palform_tsid::resources::IDAdminUserSecondAuthenticationFactor;
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
+use schemars::JsonSchema;
 use serde::Serialize;
 
 #[derive(Serialize, JsonSchema)]
@@ -11,10 +11,10 @@ pub enum APIAdminUserSecondAuthenticationFactorMethod {
     Webauthn,
 }
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct APIAdminUserSecondAuthenticationFactor {
     pub id: PalformDatabaseID<IDAdminUserSecondAuthenticationFactor>,
     pub nickname: String,
-    pub created_at: NaiveDateTime,
+    pub created_at: DateTime<Utc>,
     pub method: APIAdminUserSecondAuthenticationFactorMethod,
 }

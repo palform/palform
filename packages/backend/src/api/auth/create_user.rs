@@ -1,22 +1,19 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_entities::sea_orm_active_enums::AdminUserEmailVerificationPurposeEnum;
-use rocket::serde::json::Json;
-use rocket::{post, State};
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 use validator::Validate;
 
+use crate::actix_util::validated::Validated;
 use crate::captcha::VerifiedCaptcha;
 use crate::entity_managers::admin_users::AdminUserManager;
 use crate::entity_managers::email_verifications::EmailVerificationManager;
 use crate::mail::client::PalformMailClient;
-use crate::rocket_util::validated::Validated;
 
-#[derive(Debug, Deserialize, JsonSchema, Validate)]
-#[serde(crate = "rocket::serde")]
+#[derive(Debug, Deserialize, JsonSchema, Validate, ApiComponent)]
 pub struct CreateUserRequest {
     #[validate(email(message = "was not a valid email"))]
     email: String,
@@ -24,14 +21,13 @@ pub struct CreateUserRequest {
     password: String,
 }
 
-#[openapi(tag = "Authentication", operation_id = "auth.sign_up")]
-#[post("/users", data = "<request>")]
-pub async fn handler(
+#[api_operation(tag = "Authentication", operation_id = "auth.sign_up")]
+pub async fn auth_create_user(
     request: Validated<Json<CreateUserRequest>>,
-    db: &State<DatabaseConnection>,
-    mail: &State<PalformMailClient>,
+    db: Data<DatabaseConnection>,
+    mail: Data<PalformMailClient>,
     _captcha: VerifiedCaptcha,
-) -> Result<(), APIErrorWithStatus> {
+) -> Result<(), APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -40,7 +36,7 @@ pub async fn handler(
         .await
         .map_internal_error()?;
 
-    if AdminUserManager::get_user_by_email(db.inner(), request.email.clone())
+    if AdminUserManager::get_user_by_email(db.as_ref(), request.email.clone())
         .await
         .map_internal_error()?
         .is_some()
@@ -58,7 +54,7 @@ pub async fn handler(
         new_user_id,
         Some(request.email.clone()),
         AdminUserEmailVerificationPurposeEnum::NewEmail,
-        mail,
+        mail.as_ref(),
     )
     .await
     .map_err(|e| APIError::report_internal_error("send verification email", e))?;

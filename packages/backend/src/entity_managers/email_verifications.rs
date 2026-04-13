@@ -65,7 +65,7 @@ impl EmailVerificationManager {
             id: Set(verification_id),
             user_id: Set(user_id),
             purpose: Set(purpose.clone()),
-            expires_at: Set(expires_at.naive_utc()),
+            expires_at: Set(expires_at.fixed_offset()),
             ..Default::default()
         };
         new_verification_model.insert(conn).await?;

@@ -12,30 +12,32 @@
     import { faPlus } from "@fortawesome/free-solid-svg-icons";
     import LoadingButton from "../../LoadingButton.svelte";
     import { APIs } from "../../../data/common";
-    import { createEventDispatcher } from "svelte";
-    import type { APIFillToken } from "@paltiverse/palform-typescript-openapi";
+    import type { APIFillToken } from "@palform/palform-typescript-openapi";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import expiryTimeOptions from "../../../data/util/expiryTimeOptions";
     import { showFailureToast } from "../../../data/toast";
     import { isEntitled } from "../../../data/billing/entitlement";
-    import { Link } from "svelte-routing";
     import TokenEmbedOptions from "./TokenEmbedOptions.svelte";
     import { getFormAdminContext } from "../../../data/contexts/formAdmin";
+
+    interface Props {
+        onnewtoken: (token: APIFillToken) => void;
+    }
+
+    let { onnewtoken }: Props = $props();
 
     const orgCtx = getOrgContext();
     const formAdminCtx = getFormAdminContext();
     const subdomainEntitled = isEntitled("subdomain");
 
-    let modalOpen = false;
-    let expiryValue: null | number = null;
-    let nicknameValue = "Default";
-    let shortLinkValue = "";
-    let loading = false;
-    let justCreated: string | undefined = undefined;
+    let modalOpen = $state(false);
+    let expiryValue: null | number = $state(null);
+    let nicknameValue = $state("Default");
+    let shortLinkValue = $state("");
+    let loading = $state(false);
+    let justCreated: string | undefined = $state(undefined);
 
-    const dispatch = createEventDispatcher<{ newToken: APIFillToken }>();
-
-    $: onShareClick = async (e: SubmitEvent) => {
+    let onShareClick = $derived(async (e: SubmitEvent) => {
         e.preventDefault();
         loading = true;
         try {
@@ -48,23 +50,23 @@
                 })
             );
             justCreated = resp.data.id;
-            dispatch("newToken", resp.data);
+            onnewtoken(resp.data);
         } catch (e) {
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 
     const closeModal = () => {
         justCreated = undefined;
         modalOpen = false;
     };
-    $: {
+    $effect(() => {
         if (modalOpen === false) justCreated = undefined;
-    }
+    });
 </script>
 
-<Button class="mb-4" outline on:click={() => (modalOpen = true)}>
+<Button class="mb-4" onclick={() => (modalOpen = true)}>
     <FontAwesomeIcon icon={faPlus} class="mr-2" />
     Publish form
 </Button>
@@ -81,14 +83,14 @@
             shortLink={shortLinkValue || undefined}
         />
 
-        <Button class="mt-6" on:click={closeModal}>Close</Button>
+        <Button class="mt-6" onclick={closeModal}>Close</Button>
     {:else}
         <p>
             This will create a new Share Token (a unique URL) you can distribute
             to anyone who needs to fill your form.
         </p>
 
-        <form on:submit={onShareClick} class="space-y-6">
+        <form onsubmit={onShareClick} class="space-y-6">
             <Label>
                 Nickname
                 <Input
@@ -136,9 +138,10 @@
                 {:else}
                     <Alert color="blue">
                         Your subscription includes <strong>short links</strong>
-                        for forms. To start using them, <Link
-                            to={`/orgs/${$orgCtx.org.id}/settings/subdomain`}
-                            class="underline">set up a subdomain</Link
+                        for forms. To start using them,
+                        <a
+                            href={`/orgs/${$orgCtx.org.id}/settings/subdomain`}
+                            class="underline">set up a subdomain</a
                         >.
                     </Alert>
                 {/if}

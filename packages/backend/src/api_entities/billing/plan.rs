@@ -1,12 +1,12 @@
+use apistos::ApiComponent;
 use chrono::{DateTime, Utc};
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
+use schemars::JsonSchema;
 use serde::Serialize;
 use stripe::{Price, RecurringInterval};
 
 use crate::billing::error::BillingError;
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct APIBillingCurrencyResponse<T: Serialize + JsonSchema> {
     pub currency: String,
     pub data: T,
@@ -30,7 +30,7 @@ impl TryFrom<Price> for APIBillingPlanPrice {
     }
 }
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct APIBillingPlan {
     pub name: String,
     pub stripe_product_id: String,
@@ -57,7 +57,7 @@ impl TryFrom<RecurringInterval> for APIBillingSubscriptionFrequency {
     }
 }
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct APIBillingSubscription {
     pub stripe_subscription_id: String,
     pub stripe_plan_product_id: String,

@@ -1,6 +1,6 @@
 import { derived, readable } from "svelte/store";
 import { getOrgContext } from "../contexts/orgLayout";
-import type { APIEntitlementInfo } from "@paltiverse/palform-typescript-openapi";
+import type { APIEntitlementInfo } from "@palform/palform-typescript-openapi";
 
 export function isEntitled(
     key: keyof APIEntitlementInfo,

@@ -1,8 +1,10 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus};
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::APIError;
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
-use rocket::{post, serde::json::Json, State};
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
+use serde::Deserialize;
 
 use crate::{
     api_entities::billing::entitlement::APIEntitlementRequest,
@@ -10,20 +12,21 @@ use crate::{
     billing::entitlement::INTERNALBillingEntitlementManager,
 };
 
-#[openapi(
-    tag = "Billing Entitlements",
-    operation_id = "billing.entitlement.test"
-)]
-#[post("/users/me/orgs/<org_id>/billing/entitlements/test", data = "<data>")]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct BillingEntitlementsTestPath {
     org_id: PalformDatabaseID<IDOrganisation>,
+}
+
+#[api_operation(tag = "Billing Entitlements", operation_id = "billing.entitlement.test")]
+pub async fn billing_entitlements_test(
+    path: Path<BillingEntitlementsTestPath>,
     data: Json<APIEntitlementRequest>,
     _token: APITokenOrgViewer,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<bool>, APIErrorWithStatus> {
-    let manager = INTERNALBillingEntitlementManager::new(org_id);
+    db: Data<DatabaseConnection>,
+) -> Result<Json<bool>, APIError> {
+    let manager = INTERNALBillingEntitlementManager::new(path.org_id);
     let resp = manager
-        .check_entitlement(db.inner(), data.0)
+        .check_entitlement(db.as_ref(), data.0)
         .await
         .map_err(|e| APIError::report_internal_error("check entitlement", e))?;
     Ok(Json(resp))

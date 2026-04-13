@@ -10,20 +10,33 @@
     import LoadingButton from "../LoadingButton.svelte";
     import { createEventDispatcher, onMount } from "svelte";
 
-    export let flowType: "register" | "authenticate";
-    export let registerNickname: string | undefined = undefined;
-    export let authCredential: any | undefined = undefined;
-    export let forceLoading = false;
-    export let disabled = false;
-    export let initialAutoClick: boolean = false;
+    interface Props {
+        flowType: "register" | "authenticate";
+        registerNickname?: string;
+        authCredential?: any | undefined;
+        forceLoading?: boolean;
+        disabled?: boolean;
+        initialAutoClick?: boolean;
+        class?: string;
+    }
+
+    let {
+        flowType,
+        registerNickname = undefined,
+        authCredential = undefined,
+        forceLoading = false,
+        disabled = false,
+        initialAutoClick = false,
+        class: className,
+    }: Props = $props();
 
     const dispatch = createEventDispatcher<{
         enroll: string;
         authenticate: any;
     }>();
 
-    let loading = false;
-    $: onButtonClick = async () => {
+    let loading = $state(false);
+    async function onButtonClick() {
         loading = true;
 
         try {
@@ -62,18 +75,18 @@
         } finally {
             loading = false;
         }
-    };
+    }
 
     onMount(() => {
-        if (initialAutoClick) onButtonClick();
+        if (initialAutoClick) void onButtonClick();
     });
 </script>
 
 <LoadingButton
-    on:click={onButtonClick}
+    onclick={onButtonClick}
     loading={loading || forceLoading}
     disabled={loading || forceLoading || disabled}
-    buttonClass={$$props.class}
+    buttonClass={className}
 >
     <FontAwesomeIcon icon={faFingerprint} class="me-2" />
     {#if flowType === "register"}

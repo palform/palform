@@ -1,11 +1,13 @@
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
 use palform_tsid::{
     resources::{IDAdminPublicKey, IDOrganisation},
     tsid::PalformDatabaseID,
 };
-use rocket::{get, http::Status, serde::json::Json, State};
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
 use sequoia_openpgp::packet::key::SecretParts;
+use serde::Deserialize;
 
 use crate::{
     api::error::{APIError, APIInternalError},
@@ -15,22 +17,31 @@ use crate::{
     entity_managers::keys::UserKeyManager,
 };
 
-#[openapi(tag = "User keys", operation_id = "keys.get_backup")]
-#[get("/users/me/orgs/<org_id>/keys/<key_id>/backup")]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct KeysGetBackupPath {
     org_id: PalformDatabaseID<IDOrganisation>,
     key_id: PalformDatabaseID<IDAdminPublicKey>,
+}
+
+#[api_operation(tag = "User keys", operation_id = "keys.get_backup")]
+pub async fn keys_get_backup(
+    path: Path<KeysGetBackupPath>,
     token: APITokenOrgViewer,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<Option<String>>, (Status, Json<APIError>)> {
-    if !UserKeyManager::verify_key_org_and_user(db.inner(), key_id, org_id, token.get_user_id())
-        .await
-        .map_err(|e| e.to_internal_error())?
+    db: Data<DatabaseConnection>,
+) -> Result<Json<Option<String>>, APIError> {
+    if !UserKeyManager::verify_key_org_and_user(
+        db.as_ref(),
+        path.key_id,
+        path.org_id,
+        token.get_user_id(),
+    )
+    .await
+    .map_err(|e| e.to_internal_error())?
     {
         return Err(APIError::NotFound.into());
     }
 
-    let key = UserKeyManager::get_key_with_id(db.inner(), key_id)
+    let key = UserKeyManager::get_key_with_id(db.as_ref(), path.key_id)
         .await
         .map_err(|e| e.to_internal_error())?
         .ok_or(APIError::NotFound)?;

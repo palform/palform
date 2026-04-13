@@ -1,19 +1,20 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus};
-use rocket::{get, serde::json::Json, State};
-use rocket_okapi::openapi;
+use actix_web::{
+    web::{Data, Json},
+};
+use apistos::api_operation;
+use palform_client_common::errors::error::APIError;
 
 use crate::{
     api_entities::billing::plan::{APIBillingCurrencyResponse, APIBillingPlan},
     billing::{client_currency::ClientCurrency, manager::BillingManager},
 };
 
-#[openapi(tag = "Billing Plans", operation_id = "billing.plan.list")]
-#[get("/billing/plans")]
-pub async fn handler(
+#[api_operation(tag = "Billing Plans", operation_id = "billing.plan.list")]
+pub async fn billing_plans_list(
     currency: ClientCurrency,
-    stripe: &State<stripe::Client>,
-) -> Result<Json<APIBillingCurrencyResponse<Vec<APIBillingPlan>>>, APIErrorWithStatus> {
-    let manager = BillingManager::new(stripe);
+    stripe: Data<stripe::Client>,
+) -> Result<Json<APIBillingCurrencyResponse<Vec<APIBillingPlan>>>, APIError> {
+    let manager = BillingManager::new(stripe.as_ref());
     let plans = manager
         .list_plans(currency.clone().into())
         .await

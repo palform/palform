@@ -1,17 +1,16 @@
-use palform_client_common::errors::error::{APIErrorWithStatus, APIInternalErrorResult};
-use rocket::{delete, State};
-use rocket_okapi::openapi;
+use actix_web::web::Data;
+use apistos::api_operation;
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use sea_orm::DatabaseConnection;
 
 use crate::auth::tokens::{APIAuthToken, APIAuthTokenSourcePersonal, TokenManager};
 
-#[openapi(tag = "Authentication", operation_id = "auth.invalidate_token")]
-#[delete("/users/me/tokens/current")]
-pub async fn handler(
+#[api_operation(tag = "Authentication", operation_id = "auth.invalidate_token")]
+pub async fn auth_invalidate(
     token: APIAuthToken<APIAuthTokenSourcePersonal>,
-    db: &State<DatabaseConnection>,
-) -> Result<(), APIErrorWithStatus> {
-    TokenManager::delete_token_by_id(db.inner(), token.model.id)
+    db: Data<DatabaseConnection>,
+) -> Result<(), APIError> {
+    TokenManager::delete_token_by_id(db.as_ref(), token.model.id)
         .await
         .map_internal_error()?;
     Ok(())

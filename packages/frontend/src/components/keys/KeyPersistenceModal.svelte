@@ -1,10 +1,13 @@
 <script lang="ts">
     import { Button, Modal } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
 
-    export let open = false;
-    const dispatch = createEventDispatcher<{ granted: undefined }>();
+    interface Props {
+        open?: boolean;
+        ongranted: () => void;
+    }
+
+    let { open = $bindable(false), ongranted }: Props = $props();
 
     const onEnableClick = async () => {
         const allowed = await navigator.storage.persist();
@@ -16,7 +19,7 @@
         }
 
         await showSuccessToast("Nice!");
-        dispatch("granted");
+        ongranted();
     };
 </script>
 
@@ -30,5 +33,5 @@
         permission. Please accept the prompt to continue.
     </p>
 
-    <Button on:click={onEnableClick}>Enable storage</Button>
+    <Button onclick={onEnableClick}>Enable storage</Button>
 </Modal>

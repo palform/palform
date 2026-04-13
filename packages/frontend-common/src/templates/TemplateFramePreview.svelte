@@ -1,28 +1,44 @@
 <script lang="ts">
-    import type { APIFormTemplate } from "@paltiverse/palform-typescript-openapi";
+    import type { APIFormTemplate } from "@palform/palform-typescript-openapi";
     import { Badge, Button } from "flowbite-svelte";
     import LittleIcons from "../decorations/LittleIcons.svelte";
     import TemplateItemStats from "./TemplateItemStats.svelte";
 
-    export let categoryId: string | undefined = undefined;
-    export let template: APIFormTemplate;
-    export let appBaseURL: string;
-    export let showMarketing = true;
-    export let buttonLinkToAuth = true;
-    export let disabled = false;
+    interface Props {
+        categoryId?: string;
+        template: APIFormTemplate;
+        appBaseURL: string;
+        showMarketing?: boolean;
+        buttonLinkToAuth?: boolean;
+        disabled?: boolean;
+        class?: string;
+        onclick?: () => void;
+    }
 
-    const iframeURL = new URL(
-        `/fill/${template.organisation_id}/${template.id}/?f=${template.preview_token}`,
-        appBaseURL
+    let {
+        categoryId,
+        template,
+        appBaseURL,
+        showMarketing = true,
+        buttonLinkToAuth = true,
+        disabled = false,
+        class: className,
+        onclick,
+    }: Props = $props();
+
+    const iframeURL = $derived(
+        new URL(
+            `/fill/${template.organisation_id}/${template.id}/?f=${template.preview_token}`,
+            appBaseURL
+        )
     );
 
-    const useTemplateURL = new URL(
-        `/auth/signup/?intentTemplate=${template.id}`,
-        appBaseURL
+    const useTemplateURL = $derived(
+        new URL(`/auth/signup/?intentTemplate=${template.id}`, appBaseURL)
     );
 </script>
 
-<main class={$$props.class}>
+<main class={className}>
     <h1 class="mb-2 text-3xl font-display dark:text-gray-100">
         {template.name}
     </h1>
@@ -36,7 +52,7 @@
     <div class="flex xl:flex-row flex-col gap-10 mt-8">
         <iframe
             src={iframeURL.toString()}
-            class="xl:w-3/5 w-full h-[70vh] bg-slate-50/70 dark:bg-slate-800 border dark:border-gray-700 rounded-xl overflow-hidden"
+            class="xl:w-3/5 w-full h-[70vh] bg-slate-50/70 dark:bg-slate-800 border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden"
             title="Embedded preview of the Palform template"
         ></iframe>
 
@@ -58,7 +74,7 @@
                 class="mt-6"
                 href={buttonLinkToAuth ? useTemplateURL.toString() : undefined}
                 {disabled}
-                on:click
+                {onclick}
                 size="lg"
             >
                 Use this template
@@ -71,13 +87,12 @@
                     <Badge
                         class="mt-4"
                         href={`/templates/${categoryId}`}
-                        {disabled}
                         border
                     >
                         See similar templates
                     </Badge>
                 {/if}
-                <Badge class="mt-4" href={`/`} border {disabled}>
+                <Badge class="mt-4" href={`/`} border>
                     Learn more about Palform
                 </Badge>
             {/if}

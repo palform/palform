@@ -4,7 +4,7 @@
     import type {
         APIBillingSubscription,
         CancelPlanRequestReason,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import LoadingButton from "../../LoadingButton.svelte";
     import { APIs } from "../../../data/common";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
@@ -14,7 +14,11 @@
     import { DateTime } from "luxon";
 
     const orgCtx = getOrgContext();
-    export let subscription: APIBillingSubscription;
+    interface Props {
+        subscription: APIBillingSubscription;
+    }
+
+    let { subscription }: Props = $props();
     const dispatch = createEventDispatcher<{ cancel: undefined }>();
 
     const reasonItems: { name: string; value: CancelPlanRequestReason }[] = [
@@ -31,10 +35,10 @@
         { name: "Other/I don't want to specify", value: "Other" },
     ];
 
-    let loading = false;
-    let reason: CancelPlanRequestReason = "Other";
+    let loading = $state(false);
+    let reason: CancelPlanRequestReason = $state("Other");
 
-    $: onCancelClick = async () => {
+    let onCancelClick = $derived(async () => {
         loading = true;
 
         try {
@@ -56,7 +60,7 @@
         }
 
         loading = false;
-    };
+    });
 </script>
 
 <SectionHeading>Cancel plan</SectionHeading>
@@ -106,7 +110,7 @@
     color="red"
     {loading}
     disabled={loading}
-    on:click={onCancelClick}
+    onclick={onCancelClick}
 >
     Cancel {subscription.plan_name}
 </LoadingButton>

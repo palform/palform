@@ -1,4 +1,4 @@
-import { OrganisationMemberRoleEnum } from "@paltiverse/palform-typescript-openapi";
+import { OrganisationMemberRoleEnum } from "@palform/palform-typescript-openapi";
 
 export function orgMemberSelectItems() {
     return Object.values(OrganisationMemberRoleEnum).map((v) => ({

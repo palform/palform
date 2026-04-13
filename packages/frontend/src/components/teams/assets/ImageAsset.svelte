@@ -3,34 +3,58 @@
     import { formFillStore } from "../../../data/contexts/fill";
     import { Body } from "svelte-body";
 
-    export let id: string;
-    export let orgId: string | undefined = undefined;
-    export let teamId: string | undefined = undefined;
-    export let height: string | undefined = undefined;
-    export let width: string | undefined = undefined;
-    export let alt: string | undefined = undefined;
-    export let asBodyBackground = false;
+    interface Props {
+        id: string;
+        orgId?: string;
+        teamId?: string;
+        height?: string;
+        width?: string;
+        alt?: string;
+        asBodyBackground?: boolean;
+        class?: string;
+    }
 
-    $: assetUrl = $formFillStore
-        ? backendURL +
-          `/fill/orgs/${$formFillStore.organisationId}/forms/${$formFillStore.form.f.id}/assets/${id}?f=${$formFillStore.fillAccessToken}`
-        : undefined;
+    let {
+        id,
+        orgId = undefined,
+        teamId = undefined,
+        height = undefined,
+        width = undefined,
+        alt = undefined,
+        asBodyBackground = false,
+        class: className,
+    }: Props = $props();
 
-    let resolvedAssetUrl: string | undefined = undefined;
+    let assetUrl = $derived(
+        $formFillStore
+            ? backendURL +
+                  `/fill/orgs/${$formFillStore.organisationId}/forms/${$formFillStore.form.f.id}/assets/${id}?f=${$formFillStore.fillAccessToken}`
+            : undefined
+    );
 
-    $: (async () => {
-        if (
-            assetUrl === undefined &&
-            teamId !== undefined &&
-            orgId !== undefined
-        ) {
+    let resolvedAssetUrl = $state<string | undefined>(undefined);
+
+    $effect(() => {
+        if (assetUrl !== undefined) {
             resolvedAssetUrl = undefined;
-            const resp = await APIs.teamAssets().then((a) =>
-                a.organisationTeamAssetGet(orgId, teamId, id)
-            );
-            resolvedAssetUrl = resp.data;
+            return;
         }
-    })();
+        if (teamId === undefined || orgId === undefined || id === undefined) {
+            return;
+        }
+        resolvedAssetUrl = undefined;
+        let cancelled = false;
+        APIs.teamAssets()
+            .then((a) => a.organisationTeamAssetGet(orgId, teamId, id))
+            .then((resp) => {
+                if (!cancelled) {
+                    resolvedAssetUrl = resp.data;
+                }
+            });
+        return () => {
+            cancelled = true;
+        };
+    });
 </script>
 
 {#if asBodyBackground}
@@ -47,7 +71,7 @@
         src={assetUrl ?? resolvedAssetUrl}
         style:height
         style:width
-        class={$$props.class}
+        class={className}
         {alt}
     />
 {/if}

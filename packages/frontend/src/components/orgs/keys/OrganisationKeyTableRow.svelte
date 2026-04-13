@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIUserKeyWithIdentity } from "@paltiverse/palform-typescript-openapi";
+    import type { APIUserKeyWithIdentity } from "@palform/palform-typescript-openapi";
     import { TableBodyCell, TableBodyRow } from "flowbite-svelte";
     import { parseServerTime } from "../../../data/util/time";
     import { DateTime } from "luxon";
@@ -9,15 +9,19 @@
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import { createEventDispatcher } from "svelte";
 
-    export let key: APIUserKeyWithIdentity;
+    interface Props {
+        key: APIUserKeyWithIdentity;
+    }
+
+    let { key }: Props = $props();
     const dispatch = createEventDispatcher<{ delete: undefined }>();
     const orgCtx = getOrgContext();
-    $: createdAt = parseServerTime(key.created_at);
-    $: expiresAt = parseServerTime(key.expires_at);
-    $: expired = expiresAt < DateTime.now();
+    let createdAt = $derived(parseServerTime(key.created_at));
+    let expiresAt = $derived(parseServerTime(key.expires_at));
+    let expired = $derived(expiresAt < DateTime.now());
 
-    let loading = false;
-    $: onDelete = async () => {
+    let loading = $state(false);
+    let onDelete = $derived(async () => {
         loading = true;
         try {
             await APIs.keys().then((a) => a.keysDelete($orgCtx.org.id, key.id));
@@ -27,7 +31,7 @@
         } catch (e) {
             await showFailureToast(e);
         }
-    };
+    });
 </script>
 
 <TableBodyRow>
@@ -59,6 +63,6 @@
         </span>
     </TableBodyCell>
     <TableBodyCell>
-        <TableSingleAction on:click={onDelete}>Delete</TableSingleAction>
+        <TableSingleAction onclick={onDelete}>Delete</TableSingleAction>
     </TableBodyCell>
 </TableBodyRow>

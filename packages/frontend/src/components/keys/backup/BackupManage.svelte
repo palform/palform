@@ -5,34 +5,40 @@
     import { APIs } from "../../../data/common";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { showSuccessToast } from "../../../data/toast";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../../router";
     import DangerZone from "../../type/DangerZone.svelte";
     import BackupRecover from "./BackupRecover.svelte";
-    import type { APIUserKey } from "@paltiverse/palform-typescript-openapi";
+    import type { APIUserKey } from "@palform/palform-typescript-openapi";
     import SectionSeparator from "../../type/SectionSeparator.svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faLock } from "@fortawesome/free-solid-svg-icons";
 
-    export let key: APIUserKey;
-    export let privateKeyExistsLocally: boolean;
+    interface Props {
+        key: APIUserKey;
+        privateKeyExistsLocally: boolean;
+    }
+
+    let { key, privateKeyExistsLocally }: Props = $props();
     const orgCtx = getOrgContext();
 
-    let deleteLoading = false;
-    $: onDeleteClick = async () => {
+    let deleteLoading = $state(false);
+    let onDeleteClick = $derived(async () => {
         deleteLoading = true;
         await APIs.keys().then((a) =>
-            a.keysRegisterBackup($orgCtx.org.id, key.id, { key_data: null }),
+            a.keysRegisterBackup($orgCtx.org.id, key.id, { key_data: null })
         );
         deleteLoading = false;
         await showSuccessToast("Key backup deleted");
         navigate(`/orgs/${$orgCtx.org.id}/user/keys`);
-    };
+    });
 </script>
 
 <Alert class="mt-4">
-    <span slot="icon">
-        <FontAwesomeIcon icon={faLock} />
-    </span>
+    {#snippet icon()}
+        <span>
+            <FontAwesomeIcon icon={faLock} />
+        </span>
+    {/snippet}
     Your key is currently backed up securely.
 </Alert>
 
@@ -57,7 +63,7 @@
 <LoadingButton
     disabled={deleteLoading}
     loading={deleteLoading}
-    on:click={onDeleteClick}
+    onclick={onDeleteClick}
     color="red"
     buttonClass="mt-2"
 >

@@ -1,4 +1,4 @@
-import type { APISubmission } from "@paltiverse/palform-typescript-openapi";
+import type { APISubmission } from "@palform/palform-typescript-openapi";
 import type {
     DecryptedSubmission,
     DecryptedSubmissionBase,
@@ -7,8 +7,8 @@ import type {
 import type {
     decrypt_decode_submission_js,
     KeyResolver,
-} from "@paltiverse/palform-crypto";
-import type { InProgressSubmission } from "@paltiverse/palform-client-js-extra-types/InProgressSubmission";
+} from "@palform/palform-crypto";
+import type { InProgressSubmission } from "@palform/palform-client-js-extra-types/InProgressSubmission";
 
 export async function decryptAllSubmissionsInternal(
     encryptedSubmissions: APISubmission[],

@@ -7,16 +7,27 @@
     import { colorWithLightness } from "../../../data/util/color";
 
     const ctx = getBrandCtx();
-    export let textLighter = false;
-    export let ignoreColor = false;
-    export let sizeGroup: "h1+" | "h1" | "h2" | "p" | undefined = undefined;
+    interface Props {
+        textLighter?: boolean;
+        ignoreColor?: boolean;
+        sizeGroup?: "h1+" | "h1" | "h2" | "p" | undefined;
+        children?: import("svelte").Snippet;
+    }
 
-    let textColorOverride: string | undefined = undefined;
-    let fontSizeOverride: string | undefined = undefined;
-    $: fontFamilyOverride = $ctx
-        ? `${$ctx.google_font}, sans-serif`
-        : undefined;
-    $: (() => {
+    let {
+        textLighter = false,
+        ignoreColor = false,
+        sizeGroup = undefined,
+        children,
+    }: Props = $props();
+
+    let textColorOverride: string | undefined = $state(undefined);
+    let fontSizeOverride: string | undefined = $state(undefined);
+    let fontFamilyOverride = $derived(
+        $ctx ? `${$ctx.google_font}, sans-serif` : undefined
+    );
+
+    $effect(() => {
         if ($ctx !== undefined && !ignoreColor) {
             const isDark = isDarkMode();
 
@@ -58,7 +69,7 @@
         } else {
             fontSizeOverride = undefined;
         }
-    })();
+    });
 </script>
 
 <svelte:head>
@@ -75,5 +86,5 @@
     style:font-size={fontSizeOverride}
     style:color={textColorOverride}
 >
-    <slot />
+    {@render children?.()}
 </span>

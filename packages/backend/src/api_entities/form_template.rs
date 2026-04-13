@@ -1,12 +1,13 @@
+use apistos::ApiComponent;
 use palform_tsid::{
     resources::{IDFillAccessToken, IDForm, IDFormTemplateCategory, IDOrganisation},
     tsid::PalformDatabaseID,
 };
-use rocket_okapi::okapi::schemars::{self, JsonSchema};
+use schemars::JsonSchema;
 use sea_orm::FromQueryResult;
 use serde::Serialize;
 
-#[derive(Serialize, JsonSchema, FromQueryResult)]
+#[derive(Serialize, JsonSchema, FromQueryResult, ApiComponent)]
 pub struct APIFormTemplate {
     pub id: PalformDatabaseID<IDForm>,
     pub name: String,
@@ -18,7 +19,7 @@ pub struct APIFormTemplate {
     pub organisation_id: PalformDatabaseID<IDOrganisation>,
 }
 
-#[derive(Serialize, JsonSchema, FromQueryResult)]
+#[derive(Serialize, JsonSchema, FromQueryResult, ApiComponent)]
 pub struct APIFormTemplateCategory {
     pub id: PalformDatabaseID<IDFormTemplateCategory>,
     pub name: String,

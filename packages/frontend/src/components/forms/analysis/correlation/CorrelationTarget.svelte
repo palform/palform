@@ -10,16 +10,26 @@
     } from "@fortawesome/free-solid-svg-icons";
     import CorrelationGraph from "./CorrelationGraph.svelte";
 
-    export let fromQuestionId: string;
-    export let fromFeatureLabel: string;
-    export let targetQuestionId: string;
-    export let targetFeatureLabel: string;
-    export let strength: number;
+    interface Props {
+        fromQuestionId: string;
+        fromFeatureLabel: string;
+        targetQuestionId: string;
+        targetFeatureLabel: string;
+        strength: number;
+    }
 
-    let showGraph = false;
+    let {
+        fromQuestionId,
+        fromFeatureLabel,
+        targetQuestionId,
+        targetFeatureLabel,
+        strength,
+    }: Props = $props();
+
+    let showGraph = $state(false);
 </script>
 
-<Alert color="light">
+<Alert color="gray">
     <InfoText>
         <FormQuestionPathLabel
             questionId={targetQuestionId}
@@ -29,7 +39,7 @@
     <InfoText lighter>
         has a <strong>{(Math.abs(strength) * 100).toFixed(2)}%</strong> correlation
     </InfoText>
-    <TextButton on:click={() => (showGraph = !showGraph)}>
+    <TextButton onclick={() => (showGraph = !showGraph)}>
         {#if showGraph}
             <FontAwesomeIcon icon={faChevronUp} />
         {:else}

@@ -1,19 +1,17 @@
 <script lang="ts">
-    import type { APIQuestionConfigurationOneOf9 } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher } from "svelte";
+    import type { ConfigDateTime } from "@palform/palform-typescript-openapi";
     import { Alert, Button, Label, Toggle } from "flowbite-svelte";
     import { DateTime } from "luxon";
     import TextButton from "../../TextButton.svelte";
     import DateTimePicker from "../../datePicker/DateTimePicker.svelte";
-    import { getFormEditorCtx, type QuestionEditEvents } from "../../../data/contexts/formEditor";
+    import { getFormEditorCtx } from "../../../data/contexts/formEditor";
 
-    export let config: APIQuestionConfigurationOneOf9;
-    const ctx = getFormEditorCtx();
-    const dispatch = createEventDispatcher<QuestionEditEvents>();
+    interface Props {
+        config: ConfigDateTime;
+    }
 
-    $: onUpdate = () => {
-        dispatch("update", config);
-    };
+    let { config = $bindable() }: Props = $props();
+    let ctx = getFormEditorCtx();
 </script>
 
 {#if !config.date_time.collect_date && !config.date_time.collect_time}
@@ -22,18 +20,13 @@
     </Alert>
 {/if}
 
-<Toggle
-    bind:checked={config.date_time.collect_date}
-    on:change={onUpdate}
-    disabled={$ctx.loading}
->
+<Toggle bind:checked={config.date_time.collect_date} disabled={$ctx.loading}>
     Collect date
 </Toggle>
 
 <Toggle
     class="mt-4"
     bind:checked={config.date_time.collect_time}
-    on:change={onUpdate}
     disabled={$ctx.loading}
 >
     Collect time
@@ -43,7 +36,7 @@
     <Button
         class="mt-4"
         size="sm"
-        on:click={() => (config.date_time.min = DateTime.now().toISO())}
+        onclick={() => (config.date_time.min = DateTime.now().toISO())}
         disabled={$ctx.loading}
     >
         Add minimum date/time
@@ -59,7 +52,7 @@
 
     <TextButton
         class="mt-2"
-        on:click={() => (config.date_time.min = null)}
+        onclick={() => (config.date_time.min = null)}
         disabled={$ctx.loading}
     >
         Delete minimum date/time
@@ -70,7 +63,7 @@
     <Button
         class="mt-4"
         size="sm"
-        on:click={() => (config.date_time.max = DateTime.now().toISO())}
+        onclick={() => (config.date_time.max = DateTime.now().toISO())}
         disabled={$ctx.loading}
     >
         Add maximum date/time
@@ -86,7 +79,7 @@
 
     <TextButton
         class="mt-2"
-        on:click={() => (config.date_time.max = null)}
+        onclick={() => (config.date_time.max = null)}
         disabled={$ctx.loading}
     >
         Delete maximum date/time

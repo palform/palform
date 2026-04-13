@@ -1,19 +1,17 @@
 <script lang="ts">
-    import type { APIQuestionConfigurationOneOf1 } from "@paltiverse/palform-typescript-openapi";
     import { Input, Textarea } from "flowbite-svelte";
-    import type { QuestionSubmissionData } from "@paltiverse/palform-client-js-extra-types/QuestionSubmissionData";
-    import { createEventDispatcher } from "svelte";
     import {
         fillSendStore,
         sGetText,
         setQuestionValue,
+        type QuestionFillProps,
     } from "../../../data/contexts/fill";
+    import type { ConfigText } from "@palform/palform-typescript-openapi";
 
-    export let id: string;
-    export let config: APIQuestionConfigurationOneOf1;
-    export let currentValue: QuestionSubmissionData | undefined;
+    interface Props extends QuestionFillProps<ConfigText> {}
 
-    const dispatch = createEventDispatcher<{ change: undefined }>();
+    let { id, config, currentValue, onchange }: Props = $props();
+
     const onInput = (e: Event) => {
         if (currentValue === undefined) return;
         setQuestionValue(id, {
@@ -22,17 +20,18 @@
                     .value,
             },
         });
-        dispatch("change");
+        onchange();
     };
 
-    $: value = currentValue ? sGetText(currentValue).value : "";
+    let value = $derived(currentValue ? sGetText(currentValue).value : "");
 </script>
 
 {#if config.text.is_long}
     <Textarea
         {id}
+        class="w-full"
         disabled={$fillSendStore?.loading}
-        on:input={onInput}
+        oninput={onInput}
         {value}
     />
 {:else}
@@ -40,7 +39,7 @@
         {id}
         type={config.text.validator === "Email" ? "email" : "text"}
         disabled={$fillSendStore?.loading}
-        on:input={onInput}
+        oninput={onInput}
         {value}
     />
 {/if}

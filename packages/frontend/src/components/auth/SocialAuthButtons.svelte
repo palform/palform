@@ -1,17 +1,21 @@
 <script lang="ts">
-    import type { SocialAuthService } from "@paltiverse/palform-typescript-openapi";
+    import type { SocialAuthService } from "@palform/palform-typescript-openapi";
     import { APIs } from "../../data/common";
     import SocialAuthButton from "./SocialAuthButton.svelte";
     import { startSocialAuth } from "../../data/auth/social";
     import { showFailureToast } from "../../data/toast";
 
-    export let prefix = "";
-    let providers: SocialAuthService[] | undefined = undefined;
+    interface Props {
+        prefix?: string;
+    }
+
+    let { prefix = "" }: Props = $props();
+    let providers: SocialAuthService[] | undefined = $state(undefined);
     APIs.auth
         .authSocialList()
         .then((resp) => (providers = resp.data.available_providers));
 
-    let loading = false;
+    let loading = $state(false);
     const onClick = async (service: SocialAuthService) => {
         loading = true;
 
@@ -33,7 +37,7 @@
                 service={provider}
                 {prefix}
                 {loading}
-                on:click={() => onClick(provider)}
+                onclick={() => onClick(provider)}
             />
         {/each}
     </div>

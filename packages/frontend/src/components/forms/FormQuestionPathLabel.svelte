@@ -9,14 +9,18 @@
     } from "../../data/contexts/formAdmin";
     import { getFormCtx } from "../../data/contexts/orgLayout";
 
-    export let questionId: string;
-    export let featureName: string | undefined = undefined;
+    interface Props {
+        questionId: string;
+        featureName?: string | undefined;
+    }
+
+    let { questionId, featureName = undefined }: Props = $props();
 
     const formMetadataCtx = getFormCtx();
     const formAdminCtx = getFormAdminContext();
 
-    $: question = ctxGetQuestion(questionId);
-    $: group = $question ? ctxGetGroup($question.group_id) : undefined;
+    let question = $derived(ctxGetQuestion(questionId));
+    let group = $derived($question ? ctxGetGroup($question.group_id) : undefined);
 </script>
 
 {#if $question && $group}

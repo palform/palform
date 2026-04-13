@@ -18,7 +18,7 @@
             class="fixed top-8 left-0 w-full p-8 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity"
         >
             <div
-                class="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-lg shadow-lg shadow-slate-400/20 border border-slate-400/40 w-full rounded-2xl grid grid-cols-4 gap-4 p-4"
+                class="bg-slate-100/95 dark:bg-slate-800/95 backdrop-blur-lg shadow-lg shadow-slate-400/20 border border-slate-400/40 w-full rounded-2xl grid grid-cols-4 gap-4 p-4"
             >
                 {#each subItems as item (item.title)}
                     <NavSubItem subItem={item} />

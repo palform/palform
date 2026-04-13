@@ -3,7 +3,7 @@
         APIBillingPlan,
         APIBillingPlanPrice,
         APIBillingSubscription,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import SectionHeading from "../../type/SectionHeading.svelte";
     import PlanComparison from "../comparison/PlanComparison.svelte";
     import { APIs } from "../../../data/common";
@@ -11,32 +11,35 @@
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import SwitchPlanPreview from "./SwitchPlanPreview.svelte";
 
-    export let subscription: APIBillingSubscription;
+    interface Props {
+        subscription: APIBillingSubscription;
+    }
+
+    let { subscription }: Props = $props();
     const orgCtx = getOrgContext();
 
-    let loading = false;
-    let previewModalWithPriceId: APIBillingPlanPrice | undefined = undefined;
-    let previewModalAnnual = false;
+    let loading = $state(false);
+    let previewModalWithPriceId: APIBillingPlanPrice | undefined =
+        $state(undefined);
+    let previewModalAnnual = $state(false);
 
-    let showPreviewModal = false;
-    $: onSubscriptionSelect = async (
-        e: CustomEvent<{
+    let showPreviewModal = $state(false);
+    let onSubscriptionSelect = $derived(
+        async (e: {
             plan: APIBillingPlan;
             annual: boolean;
             trial: boolean;
-        }>
-    ) => {
-        const plan = e.detail.plan;
-        const priceId = e.detail.annual
-            ? plan.price_annually
-            : plan.price_monthly;
+        }) => {
+            const plan = e.plan;
+            const priceId = e.annual ? plan.price_annually : plan.price_monthly;
 
-        previewModalWithPriceId = priceId;
-        previewModalAnnual = e.detail.annual;
-        showPreviewModal = true;
-    };
+            previewModalWithPriceId = priceId;
+            previewModalAnnual = e.annual;
+            showPreviewModal = true;
+        }
+    );
 
-    $: onConfirmChange = async () => {
+    let onConfirmChange = $derived(async () => {
         if (previewModalWithPriceId === undefined) return;
 
         showPreviewModal = false;
@@ -54,7 +57,7 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 </script>
 
 <SectionHeading>Switch plan</SectionHeading>
@@ -62,7 +65,7 @@
     currentPriceId={subscription.stripe_plan_price_id}
     allowTrial={false}
     fixCurrency={subscription.currency}
-    on:select={onSubscriptionSelect}
+    onselect={onSubscriptionSelect}
     disabled={loading}
 />
 

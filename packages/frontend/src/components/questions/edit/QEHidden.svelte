@@ -1,16 +1,14 @@
 <script lang="ts">
-    import type { APIQuestionConfigurationOneOf10 } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher } from "svelte";
+    import type { ConfigHidden } from "@palform/palform-typescript-openapi";
     import { Helper, Input, Label } from "flowbite-svelte";
-    import { getFormEditorCtx, type QuestionEditEvents } from "../../../data/contexts/formEditor";
+    import { getFormEditorCtx } from "../../../data/contexts/formEditor";
 
-    export let config: APIQuestionConfigurationOneOf10;
+    interface Props {
+        config: ConfigHidden;
+    }
+
+    let { config = $bindable() }: Props = $props();
     const ctx = getFormEditorCtx();
-    const dispatch = createEventDispatcher<QuestionEditEvents>();
-
-    $: onUpdate = () => {
-        dispatch("update", config);
-    };
 </script>
 
 <Label>
@@ -18,7 +16,6 @@
     <Input
         class="mt-2"
         bind:value={config.hidden.parameter_name}
-        on:input={onUpdate}
         disabled={$ctx.loading}
     />
     {#if config.hidden.parameter_name.length > 0}

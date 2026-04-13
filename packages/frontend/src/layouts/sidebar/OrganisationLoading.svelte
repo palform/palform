@@ -2,8 +2,8 @@
     import { onMount } from "svelte";
     import { fade, slide } from "svelte/transition";
     import PalformLogo from "../../components/palform/PalformLogo.svelte";
-    let pulseLogo = false;
-    let stillLoading = false;
+    let pulseLogo = $state(false);
+    let stillLoading = $state(false);
     onMount(() => {
         setTimeout(() => {
             pulseLogo = true;

@@ -1,49 +1,36 @@
 <script lang="ts">
-    import { Input } from "flowbite-svelte";
+    import { Datepicker, type DateOrRange } from "flowbite-svelte";
     import { DateTime } from "luxon";
-    import { createEventDispatcher } from "svelte";
-    import SveltyPicker from "svelty-picker";
 
-    export let value: DateTime | null = null;
-    export let min: DateTime | null = null;
-    export let max: DateTime | null = null;
-    export let disabled = false;
+    interface Props {
+        value?: DateTime | null;
+        min?: DateTime | null;
+        max?: DateTime | null;
+        disabled?: boolean;
+        onchange: (newVal: DateTime | null) => void;
+    }
 
-    const dispatch = createEventDispatcher<{ change: DateTime | null }>();
+    let {
+        value = $bindable(null),
+        min = null,
+        max = null,
+        disabled = false,
+        onchange,
+    }: Props = $props();
 
-    $: localValue = value ? value.toFormat("yyyy-MM-dd") : null;
-    $: onDateChange = (e: CustomEvent<string>) => {
-        if (!e.detail) {
-            dispatch("change", null);
-            return;
-        }
-        value = DateTime.fromFormat(e.detail, "yyyy-MM-dd");
-        dispatch("change", value);
-    };
+    let localValue = $derived(value ? value.toJSDate() : undefined);
+    let onChange = $derived((date: DateOrRange) => {
+        if (!(date instanceof Date)) return;
+        value = DateTime.fromJSDate(date);
+        onchange(value);
+    });
 </script>
 
-<SveltyPicker
+<Datepicker
     bind:value={localValue}
-    on:change={onDateChange}
-    autocommit
-    startDate={min ? min.toJSDate() : null}
-    endDate={max ? max.toJSDate() : null}
+    availableFrom={min?.toJSDate()}
+    availableTo={max?.toJSDate()}
+    onselect={onChange}
+    firstDayOfWeek={1}
     {disabled}
->
-    <svelte:fragment
-        slot="inputs"
-        let:displayValue
-        let:onInputFocus
-        let:onInputBlur
-        let:onKeyDown
-    >
-        <Input
-            value={displayValue}
-            on:keydown={onKeyDown}
-            on:focus={onInputFocus}
-            on:blur={onInputBlur}
-            {disabled}
-            readonly
-        />
-    </svelte:fragment>
-</SveltyPicker>
+/>

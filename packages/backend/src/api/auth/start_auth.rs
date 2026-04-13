@@ -1,16 +1,15 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus};
+use actix_web::web::{Data, Json, Path, Query};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::APIError;
 use palform_tsid::resources::IDOrganisation;
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket::{get, serde::json::Json, State};
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::auth::oidc::OIDCManager;
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct StartAuthResponse {
     url: String,
     /// Make sure you verify the state returned in the callback is identical to this state value
@@ -18,22 +17,31 @@ pub struct StartAuthResponse {
     nonce: String,
 }
 
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct StartAuthQuery {
+    redirect_url: String,
+}
+
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct StartAuthPath {
+    org_id: PalformDatabaseID<IDOrganisation>,
+}
+
 /// Start authentication flow
 ///
 /// Generate an OIDC URL with the configured provider to start authentication
-#[openapi(tag = "Authentication", operation_id = "auth.start")]
-#[get("/auth/<org_id>/start?<redirect_url>")]
-pub async fn handler(
-    org_id: PalformDatabaseID<IDOrganisation>,
-    redirect_url: &str,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<StartAuthResponse>, APIErrorWithStatus> {
-    let client = OIDCManager::get_client_for_org(db.inner(), org_id)
+#[api_operation(tag = "Authentication", operation_id = "auth.start")]
+pub async fn auth_start_auth(
+    path: Path<StartAuthPath>,
+    Query(query): Query<StartAuthQuery>,
+    db: Data<DatabaseConnection>,
+) -> Result<Json<StartAuthResponse>, APIError> {
+    let client = OIDCManager::get_client_for_org(db.as_ref(), path.org_id)
         .await
         .map_err(|e| APIError::report_internal_error("get org OIDC client", e))?;
 
     let (url, csrf, nonce) = client
-        .authorization_url(redirect_url)
+        .authorization_url(&query.redirect_url)
         .map_err(|e| APIError::BadRequest(e.to_string()))?;
 
     Ok(Json(StartAuthResponse {

@@ -1,5 +1,9 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus};
-use rocket::{data::ToByteUnit, post, tokio::io::AsyncReadExt, Data, State};
+use std::io::Read;
+
+use actix_web::web::{Bytes, Data};
+use apistos::api_operation;
+use bytes::Buf;
+use palform_client_common::errors::error::APIError;
 use sea_orm::DatabaseConnection;
 use stripe::{EventObject, EventType, Webhook};
 
@@ -7,25 +11,24 @@ use crate::{billing::webhook::BillingWebhookManager, config::Config};
 
 use super::StripeSignature;
 
-#[post("/billing/webhook", data = "<data>")]
-pub async fn handler(
-    data: Data<'_>,
+#[api_operation(skip_args = "data", tag = "Billing Webhooks", operation_id = "billing.webhook.receive")]
+pub async fn billing_webhooks_receiver_handler(
+    data: Bytes,
     signature: StripeSignature,
-    config: &State<Config>,
-    stripe: &State<stripe::Client>,
-    db: &State<DatabaseConnection>,
-) -> Result<(), APIErrorWithStatus> {
-    let mut stream = data.open(5.mebibytes());
+    config: Data<Config>,
+    stripe: Data<stripe::Client>,
+    db: Data<DatabaseConnection>,
+) -> Result<(), APIError> {
+    let mut reader = data.reader();
     let mut data_string = String::default();
-    stream
+    reader
         .read_to_string(&mut data_string)
-        .await
         .map_err(|e| APIError::BadRequest(e.to_string()))?;
 
     let event = Webhook::construct_event(&data_string, &signature.0, &config.stripe_webhook_secret)
         .map_err(|e| APIError::BadRequest(e.to_string()))?;
 
-    let manager = BillingWebhookManager::new(stripe.inner(), db.inner());
+    let manager = BillingWebhookManager::new(stripe.as_ref(), db.as_ref());
 
     match event.type_ {
         EventType::CustomerSubscriptionCreated

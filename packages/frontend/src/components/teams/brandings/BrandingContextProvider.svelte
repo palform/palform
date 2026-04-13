@@ -5,13 +5,20 @@
         type BrandContext,
     } from "../../../data/contexts/brand";
 
-    export let ctx: BrandContext | null | undefined;
+    interface Props {
+        ctx: BrandContext | null | undefined;
+        children?: import("svelte").Snippet;
+    }
+
+    let { ctx, children }: Props = $props();
     const writableCtx = writable<BrandContext | undefined>(
-        ctx ? ctx : undefined,
+        ctx ? ctx : undefined
     );
     setBrandCtx(writableCtx);
 
-    $: writableCtx.set(ctx ? ctx : undefined);
+    $effect(() => {
+        writableCtx.set(ctx ? ctx : undefined);
+    });
 </script>
 
-<slot />
+{@render children?.()}

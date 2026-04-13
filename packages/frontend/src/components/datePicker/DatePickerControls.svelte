@@ -5,11 +5,24 @@
     } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { getBrandCtx } from "../../data/contexts/brand";
-    import { createEventDispatcher } from "svelte";
 
-    export let currentYear: number;
-    export let currentMonth: number;
-    export let disabled = false;
+    interface Props {
+        currentYear: number;
+        currentMonth: number;
+        disabled?: boolean;
+        class?: string;
+        onprev: () => void;
+        onnext: () => void;
+    }
+
+    let {
+        currentYear,
+        currentMonth,
+        disabled = false,
+        class: className,
+        onprev,
+        onnext,
+    }: Props = $props();
 
     const brandCtx = getBrandCtx();
     const months = [
@@ -27,26 +40,21 @@
         "Dec",
     ];
 
-    const dispatch = createEventDispatcher<{
-        next: undefined;
-        prev: undefined;
-    }>();
-
-    $: onPrev = (e: Event) => {
+    function onPrev(e: Event) {
         e.preventDefault();
-        dispatch("prev")
-    };
-    $: onNext = (e: Event) => {
+        onprev();
+    }
+    function onNext(e: Event) {
         e.preventDefault();
-        dispatch("next")
-    };
+        onnext();
+    }
 </script>
 
-<div class={`flex justify-stretch items-center ${$$props.class}`}>
+<div class={`flex justify-stretch items-center ${className ?? ""}`}>
     <button
         class="flex-1 hover:bg-gray-100 dark:hover:bg-gray-700 h-full"
         type="button"
-        on:click={onPrev}
+        onclick={onPrev}
         {disabled}
     >
         <FontAwesomeIcon
@@ -62,7 +70,7 @@
     <button
         class="flex-1 hover:bg-gray-100 dark:hover:bg-gray-700 h-full"
         type="button"
-        on:click={onNext}
+        onclick={onNext}
         {disabled}
     >
         <FontAwesomeIcon

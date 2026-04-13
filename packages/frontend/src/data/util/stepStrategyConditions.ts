@@ -1,15 +1,15 @@
 import {
-    type APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf1,
     type APIQuestionGroupStepStrategyJumpCaseConditionMatcher,
     type APIQuestionGroupStepStrategyJumpCaseConditionList,
-    type APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf,
-    type APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf2,
-    type APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf3,
-    type APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf4,
-    type APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf5,
-    type APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf6,
-    type APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf7,
-} from "@paltiverse/palform-typescript-openapi";
+    type MatcherText,
+    type MatcherChoice,
+    type MatcherScale,
+    type MatcherPhoneNumber,
+    type MatcherAddress,
+    type MatcherChoiceMatrix,
+    type MatcherDateTime,
+    type MatcherHidden,
+} from "@palform/palform-typescript-openapi";
 import { comparisonSymbol } from "./directionOperator";
 import { DateTime } from "luxon";
 import { labelForQuestionDate, timeZoneSummary } from "./time";
@@ -94,35 +94,18 @@ function conditionMatcherIs<
         strategy: APIQuestionGroupStepStrategyJumpCaseConditionMatcher
     ): strategy is T => Object.keys(strategy)[0] === label;
 }
-export const conditionMatcherIsText =
-    conditionMatcherIs<APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf1>(
-        "Text"
-    );
+export const conditionMatcherIsText = conditionMatcherIs<MatcherText>("Text");
 export const conditionMatcherIsChoice =
-    conditionMatcherIs<APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf>(
-        "Choice"
-    );
+    conditionMatcherIs<MatcherChoice>("Choice");
 export const conditionMatcherIsScale =
-    conditionMatcherIs<APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf2>(
-        "Scale"
-    );
+    conditionMatcherIs<MatcherScale>("Scale");
 export const conditionMatcherIsPhoneNumber =
-    conditionMatcherIs<APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf3>(
-        "PhoneNumber"
-    );
+    conditionMatcherIs<MatcherPhoneNumber>("PhoneNumber");
 export const conditionMatcherIsAddress =
-    conditionMatcherIs<APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf4>(
-        "Address"
-    );
+    conditionMatcherIs<MatcherAddress>("Address");
 export const conditionMatcherIsChoiceMatrix =
-    conditionMatcherIs<APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf5>(
-        "ChoiceMatrix"
-    );
+    conditionMatcherIs<MatcherChoiceMatrix>("ChoiceMatrix");
 export const conditionMatcherIsDateTime =
-    conditionMatcherIs<APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf6>(
-        "DateTime"
-    );
+    conditionMatcherIs<MatcherDateTime>("DateTime");
 export const conditionMatcherIsHidden =
-    conditionMatcherIs<APIQuestionGroupStepStrategyJumpCaseConditionMatcherOneOf7>(
-        "Hidden"
-    );
+    conditionMatcherIs<MatcherHidden>("Hidden");

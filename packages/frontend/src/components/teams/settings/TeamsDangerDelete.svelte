@@ -5,25 +5,25 @@
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { APIs } from "../../../data/common";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../../router";
 
     const orgCtx = getOrgContext();
     const teamCtx = getTeamCtx();
-    let loading = false;
+    let loading = $state(false);
 
-    $: onDeleteClick = async () => {
+    let onDeleteClick = $derived(async () => {
         loading = true;
 
         try {
             await APIs.orgTeams().then((a) =>
-                a.organisationTeamsDelete($orgCtx.org.id, $teamCtx.team.id),
+                a.organisationTeamsDelete($orgCtx.org.id, $teamCtx.team.id)
             );
             await showSuccessToast("Team deleted");
             orgCtx.update((ctx) => {
                 return {
                     ...ctx,
                     myTeams: ctx.myTeams.filter(
-                        (e) => e.team_id !== $teamCtx.team.id,
+                        (e) => e.team_id !== $teamCtx.team.id
                     ),
                 };
             });
@@ -33,7 +33,7 @@
         }
 
         loading = false;
-    };
+    });
 </script>
 
 <Alert color="red" class="mt-4">
@@ -51,7 +51,7 @@
         buttonClass="mt-2"
         disabled={loading || ($teamCtx.team.is_default ?? false)}
         {loading}
-        on:click={onDeleteClick}
+        onclick={onDeleteClick}
     >
         Delete team and all forms
     </LoadingButton>

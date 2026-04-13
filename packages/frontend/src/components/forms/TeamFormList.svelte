@@ -6,12 +6,16 @@
     import FormCard from "./FormCard.svelte";
     import { faPlus } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../router";
 
-    export let teamId: string;
+    interface Props {
+        teamId: string;
+    }
+
+    let { teamId }: Props = $props();
     const orgCtx = getOrgContext();
-    $: team = $orgCtx.myTeams.find((e) => e.team_id === teamId);
-    $: forms = $orgCtx.forms.filter((e) => e.team_id === teamId);
+    let team = $derived($orgCtx.myTeams.find((e) => e.team_id === teamId));
+    let forms = $derived($orgCtx.forms.filter((e) => e.team_id === teamId));
 </script>
 
 {#if team !== undefined}
@@ -20,12 +24,12 @@
     </SectionHeading>
 
     <Button
-        outline
         color="light"
         size="xs"
         class="mt-2 mb-4"
-        href={`/orgs/${$orgCtx.org.id}/forms/templates?team=${teamId}`}
-        on:click={navigateEvent}
+        href={p("/orgs/:orgId/forms/templates", {
+            params: { orgId: $orgCtx.org.id },
+        })}
     >
         <FontAwesomeIcon icon={faPlus} class="me-2" />
         Create form

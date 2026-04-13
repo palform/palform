@@ -56,6 +56,8 @@ mod m20241123_170713_webauthn;
 mod m20250308_153858_feedback;
 mod m20250928_151739_add_submission_audit;
 mod m20250928_171251_add_public_key_audit;
+mod m20260409_120000_timestamp_without_tz_to_timestamptz;
+mod m20260412_140006_audit_parent_id;
 
 pub struct Migrator;
 
@@ -119,6 +121,8 @@ impl MigratorTrait for Migrator {
             Box::new(m20250308_153858_feedback::Migration),
             Box::new(m20250928_151739_add_submission_audit::Migration),
             Box::new(m20250928_171251_add_public_key_audit::Migration),
+            Box::new(m20260409_120000_timestamp_without_tz_to_timestamptz::Migration),
+            Box::new(m20260412_140006_audit_parent_id::Migration),
         ]
     }
 }

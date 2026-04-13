@@ -1,12 +1,11 @@
 <script lang="ts">
-    import type { QuestionSubmissionData } from "@paltiverse/palform-client-js-extra-types/QuestionSubmissionData";
-    import type { APIQuestionConfigurationOneOf6 } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher } from "svelte";
+    import type { ConfigFileUpload } from "@palform/palform-typescript-openapi";
     import {
         fillSendStore,
         formFillStore,
         setQuestionValue,
         sGetFileUpload,
+        type QuestionFillProps,
     } from "../../../data/contexts/fill";
     import { Dropzone, Spinner } from "flowbite-svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
@@ -18,23 +17,24 @@
         getBrandCtx,
         getRoundingAmountForBrand,
     } from "../../../data/contexts/brand";
-    import { backendURL } from "../../../data/common";
+    import { APIs } from "../../../data/common";
     import { showFailureToast } from "../../../data/toast";
     import { encryptSubmissionAsset } from "../../../data/crypto/submissions";
     import { t } from "../../../data/contexts/i18n";
     import QfClearButton from "./QFClearButton.svelte";
 
     const brandCtx = getBrandCtx();
-    const dispatch = createEventDispatcher<{ change: undefined }>();
 
-    export let id: string;
-    export let config: APIQuestionConfigurationOneOf6;
-    export let currentValue: QuestionSubmissionData | undefined;
-    $: value = currentValue ? sGetFileUpload(currentValue) : { file_id: "" };
-    $: allowedTypeCount = config.file_upload.allowed_types.length;
+    interface Props extends QuestionFillProps<ConfigFileUpload> {}
 
-    let uploading = false;
-    $: uploadFile = async (file: File) => {
+    let { id, config, currentValue, onchange }: Props = $props();
+    let value = $derived(
+        currentValue ? sGetFileUpload(currentValue) : { file_id: "" }
+    );
+    let allowedTypeCount = $derived(config.file_upload.allowed_types.length);
+
+    let uploading = $state(false);
+    let uploadFile = $derived(async (file: File) => {
         if (!$formFillStore) return;
 
         uploading = true;
@@ -60,24 +60,19 @@
 
             const fd = new FormData();
             fd.append("encrypted", new Blob([encryptedAsset]));
-            const resp = await fetch(
-                backendURL +
-                    `/fill/orgs/${$formFillStore.organisationId}/forms/${$formFillStore.form.f.id}/assets?f=${$formFillStore.fillAccessToken}`,
+            const resp = await APIs.fill(
+                $formFillStore.fillAccessToken
+            ).submissionAssets.submissionAssetsUpload(
+                $formFillStore.form.f.id,
+                $formFillStore.organisationId,
                 {
-                    method: "POST",
-                    body: fd,
+                    data: fd,
                 }
             );
 
-            const respJson = (await resp.json()) as string;
-
-            if (!resp.ok) {
-                throw respJson;
-            }
-
             setQuestionValue(id, {
                 FileUpload: {
-                    file_id: respJson,
+                    file_id: resp.data.file_id,
                     content_type: file.type,
                 },
             });
@@ -85,19 +80,19 @@
             await showFailureToast(e);
         }
 
-        dispatch("change");
+        onchange();
         uploading = false;
-    };
+    });
 
-    $: onDrop = async (e: DragEvent) => {
+    let onDrop = $derived(async (e: DragEvent) => {
         if (e.dataTransfer?.files) {
             if (e.dataTransfer.files.length !== 1) {
                 await showFailureToast("Please drop exactly one file");
                 await uploadFile(e.dataTransfer.files.item(0)!);
             }
         }
-    };
-    $: onChange = async (e: Event) => {
+    });
+    let onChange = $derived(async (e: Event) => {
         const t = e.target as HTMLInputElement;
         if (!t.files) return;
         if (t.files.length !== 1) {
@@ -105,8 +100,8 @@
         }
 
         await uploadFile(t.files.item(0)!);
-    };
-    $: onClear = (e: Event) => {
+    });
+    let onClear = $derived((e: Event) => {
         e.stopPropagation();
 
         setQuestionValue(id, {
@@ -115,35 +110,35 @@
                 content_type: "",
             },
         });
-        dispatch("change");
-    };
+        onchange();
+    });
 
-    let accept = "";
-    $: {
-        accept = "";
+    const accept = $derived(() => {
+        let _accept = "";
         for (const type of config.file_upload.allowed_types) {
             switch (type) {
                 case "Image":
-                    accept += "image/*,";
+                    _accept += "image/*,";
                     break;
                 case "Video":
-                    accept += "video/*,";
+                    _accept += "video/*,";
                     break;
                 case "Document":
-                    accept +=
+                    _accept +=
                         "application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,";
                     break;
                 case "Slideshow":
-                    accept +=
+                    _accept +=
                         "application/ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation";
                     break;
                 case "Spreadsheet":
-                    accept +=
+                    _accept +=
                         "application/ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
                     break;
             }
         }
-    }
+        return _accept;
+    });
 </script>
 
 <div
@@ -152,11 +147,11 @@
 >
     <Dropzone
         class="h-32 rounded-none border-0"
-        on:drop={onDrop}
-        on:dragover={(e) => e.preventDefault()}
-        on:change={onChange}
+        {onDrop}
+        onDragOver={(e) => e.preventDefault()}
+        {onChange}
         disabled={uploading || $fillSendStore?.loading}
-        {accept}
+        accept={accept()}
     >
         {#if uploading}
             <Spinner />
@@ -175,7 +170,7 @@
             <p class="mt-1">
                 <QfClearButton
                     disabled={$fillSendStore?.loading}
-                    on:click={onClear}
+                    onclick={onClear}
                 />
             </p>
         {:else}

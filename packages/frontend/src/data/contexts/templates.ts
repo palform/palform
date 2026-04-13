@@ -1,7 +1,7 @@
 import type {
     APIFormTemplate,
     APIFormTemplateCategory,
-} from "@paltiverse/palform-typescript-openapi";
+} from "@palform/palform-typescript-openapi";
 import { getContext, setContext } from "svelte";
 import type { Writable } from "svelte/store";
 

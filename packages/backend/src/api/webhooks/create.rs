@@ -1,13 +1,11 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_tsid::{
     resources::{IDForm, IDOrganisation, IDWebhook},
     tsid::PalformDatabaseID,
 };
-use rocket::{post, serde::json::Json, State};
-use rocket_okapi::{
-    okapi::schemars::{self, JsonSchema},
-    openapi,
-};
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
 use url::Url;
@@ -16,26 +14,31 @@ use crate::{
     auth::rbac::requests::APITokenTeamEditorFromForm, entity_managers::webhooks::WebhookManager,
 };
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct CreateWebhookRequest {
     pub endpoint: Url,
 }
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct CreateWebhookResponse {
     pub id: PalformDatabaseID<IDWebhook>,
     pub signing_secret: String,
 }
 
-#[openapi(tag = "Webhooks", operation_id = "webhooks.create")]
-#[post("/users/me/orgs/<_org_id>/forms/<form_id>/webhooks", data = "<data>")]
-pub async fn handler(
-    _org_id: PalformDatabaseID<IDOrganisation>,
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct WebhooksCreatePath {
+    #[allow(unused)]
+    org_id: PalformDatabaseID<IDOrganisation>,
     form_id: PalformDatabaseID<IDForm>,
+}
+
+#[api_operation(tag = "Webhooks", operation_id = "webhooks.create")]
+pub async fn webhooks_create(
+    path: Path<WebhooksCreatePath>,
     data: Json<CreateWebhookRequest>,
     _token: APITokenTeamEditorFromForm,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<CreateWebhookResponse>, APIErrorWithStatus> {
+    db: Data<DatabaseConnection>,
+) -> Result<Json<CreateWebhookResponse>, APIError> {
     WebhookManager::validate_url(data.endpoint.clone())
         .map_err(|e| APIError::ValidationError(format!("Invalid URL: {}", e)))?;
 
@@ -43,7 +46,7 @@ pub async fn handler(
         .await
         .map_err(|e| APIError::ValidationError(format!("TCP connection test: {}", e)))?;
 
-    let new_webhook = WebhookManager::create(db.inner(), form_id, data.endpoint.clone())
+    let new_webhook = WebhookManager::create(db.as_ref(), path.form_id, data.endpoint.clone())
         .await
         .map_internal_error()?;
 

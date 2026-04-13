@@ -5,7 +5,7 @@ import type {
     APIOrganisationTeamMembership,
     APIUserKey,
     InductionStatus,
-} from "@paltiverse/palform-typescript-openapi";
+} from "@palform/palform-typescript-openapi";
 import { getContext, setContext } from "svelte";
 import {
     derived,
