@@ -1,7 +1,9 @@
 name: Build and deploy static marketing pages to Cloudflare
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
+      - static-assets
 concurrency:
   group: statics-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -10,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+      - uses: oven-sh/setup-bun@v2
       - name: Add empty packages to allow partial dependency install
         run: |
           mkdir packages/analysis-js
@@ -31,17 +33,31 @@ jobs:
         env:
           PUBLIC_BACKEND_URL: https://api.palform.app
           PUBLIC_APP_URL: https://dash.palform.app
-      - name: Deploy landing page to Cloudflare
-        uses: cloudflare/wrangler-action@v3
+      - name: Upload landing page artifact
+        uses: actions/upload-artifact@v7
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy --project-name palform-landing --branch main --commit-dirty packages/landing/dist
+          name: landing
+          path: packages/landing/dist
+          if-no-files-found: error
+          archive: true
+      # - name: Deploy landing page to Cloudflare
+      # uses: cloudflare/wrangler-action@v3
+      # with:
+      # apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      # accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # command: pages deploy --project-name palform-landing --branch main --commit-dirty packages/landing/dist
       - name: Build docs/blog
         run: bun run --cwd packages/blog-docs build
-      - name: Deploy blog/docs to Cloudflare
-        uses: cloudflare/wrangler-action@v3
+      - name: Upload docs/blog artifact
+        uses: actions/upload-artifact@v7
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy --project-name palform-blog-docs --branch main --commit-dirty packages/blog-docs/build
+          name: blog-docs
+          path: packages/blog-docs/build
+          if-no-files-found: error
+          archive: true
+      # - name: Deploy blog/docs to Cloudflare
+      # uses: cloudflare/wrangler-action@v3
+      # with:
+      # apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      # accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # command: pages deploy --project-name palform-blog-docs --branch main --commit-dirty packages/blog-docs/build
