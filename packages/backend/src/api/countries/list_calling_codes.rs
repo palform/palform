@@ -1,24 +1,18 @@
+use actix_web::web::Json;
+use apistos::{api_operation, ApiComponent};
 use keshvar::CountryIterator;
-use rocket::get;
-use rocket::serde::json::Json;
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use serde::Serialize;
 
-#[derive(JsonSchema, Serialize)]
+#[derive(JsonSchema, Serialize, ApiComponent)]
 pub struct APICountryWithCallingCode {
     flag_emoji: String,
     name: String,
     calling_code: usize,
 }
 
-#[openapi(
-    tag = "Country Metadata",
-    operation_id = "countries.list_calling_codes"
-)]
-#[get("/countries/calling_codes")]
-pub fn handler() -> Json<Vec<APICountryWithCallingCode>> {
+#[api_operation(tag = "Country Metadata", operation_id = "countries.list_calling_codes")]
+pub async fn countries_list_calling_codes() -> Json<Vec<APICountryWithCallingCode>> {
     let mut list = Vec::<APICountryWithCallingCode>::new();
     for country in CountryIterator::new() {
         list.push(APICountryWithCallingCode {

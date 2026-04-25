@@ -1,10 +1,19 @@
 <script lang="ts">
     import { faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
+    import type { Snippet } from "svelte";
 
-    export let href: string;
+    interface Props {
+        href: string;
+        children?: Snippet;
+    }
+
+    let { href, children }: Props = $props();
 </script>
 
 <a {href} class="underline" target="_blank">
-    <slot /><FontAwesomeIcon icon={faUpRightFromSquare} class="ms-2" />
+    {@render children?.()}<FontAwesomeIcon
+        icon={faUpRightFromSquare}
+        class="ms-2"
+    />
 </a>

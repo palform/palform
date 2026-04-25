@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIOrganisationInvitePreview } from "@paltiverse/palform-typescript-openapi";
+    import type { APIOrganisationInvitePreview } from "@palform/palform-typescript-openapi";
     import Main from "../../layouts/Main.svelte";
     import { APIs, humaniseAPIError } from "../../data/common";
     import { Alert, Button, Spinner } from "flowbite-svelte";
@@ -8,30 +8,30 @@
     import LoadingButton from "../../components/LoadingButton.svelte";
     import { showFailureToast, showToast } from "../../data/toast";
     import { faChampagneGlasses } from "@fortawesome/free-solid-svg-icons";
-    import { navigate } from "svelte-routing";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p, route, typedNavigate } from "../../router";
 
-    export let orgId: string;
-    export let inviteId: string;
+    let { orgId, inviteId } = route.getParams("/orgs/join/:orgId/:inviteId");
 
-    let preview: APIOrganisationInvitePreview | undefined;
-    let previewLoading = true;
-    let previewError: string | undefined = undefined;
-    $: APIs.orgInvites()
-        .then((a) => a.organisationInvitesPreview(orgId, inviteId))
-        .then((resp) => {
-            preview = resp.data;
-            previewError = undefined;
-        })
-        .catch((e) => {
-            previewError = humaniseAPIError(e);
-        })
-        .finally(() => {
-            previewLoading = false;
-        });
+    let preview: APIOrganisationInvitePreview | undefined = $state();
+    let previewLoading = $state(true);
+    let previewError: string | undefined = $state(undefined);
+    $effect(() => {
+        APIs.orgInvites()
+            .then((a) => a.organisationInvitesPreview(orgId, inviteId))
+            .then((resp) => {
+                preview = resp.data;
+                previewError = undefined;
+            })
+            .catch((e) => {
+                previewError = humaniseAPIError(e);
+            })
+            .finally(() => {
+                previewLoading = false;
+            });
+    });
 
-    let acceptLoading = false;
-    $: onInviteAccept = async () => {
+    let acceptLoading = $state(false);
+    let onInviteAccept = $derived(async () => {
         acceptLoading = true;
         try {
             await APIs.orgMembers().then((a) =>
@@ -45,19 +45,22 @@
                 color: "green",
                 icon: faChampagneGlasses,
             });
-            navigate(`/orgs/${orgId}/induction/member`);
+
+            typedNavigate("/orgs/:orgId/induction/member", {
+                params: { orgId },
+            });
         } catch (e) {
             await showFailureToast(e);
         }
 
         acceptLoading = false;
-    };
+    });
 </script>
 
 <Main title="Join an organisation">
     {#if previewLoading}
         <div class="text-center">
-            <Spinner size={14} />
+            <Spinner size="12" />
         </div>
     {/if}
 
@@ -70,8 +73,8 @@
             <h2 class="text-lg">You're invited!</h2>
 
             <p>
-                Your friends at <strong>{preview.org_display_name}</strong> have
-                invited you to join their organisation.
+                Your friends at <strong>{preview.org_display_name}</strong> have invited
+                you to join their organisation.
             </p>
             <p>
                 This invite expires {parseServerTime(
@@ -81,15 +84,13 @@
 
             <div class="mt-4 flex gap-x-2">
                 <LoadingButton
-                    on:click={onInviteAccept}
+                    onclick={onInviteAccept}
                     loading={acceptLoading}
                     disabled={acceptLoading}
                 >
                     Accept invite
                 </LoadingButton>
-                <Button outline href="/" on:click={navigateEvent}>
-                    Go back home
-                </Button>
+                <Button outline href={p("/")}>Go back home</Button>
             </div>
         </Alert>
     {/if}

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { useLocation } from "svelte-routing";
+    import { route } from "../../router";
     import FormDangerDelete from "../../components/forms/settings/FormDangerDelete.svelte";
     import FormDangerMove from "../../components/forms/settings/FormDangerMove.svelte";
     import FormEndConfiguration from "../../components/forms/settings/FormEndConfiguration.svelte";
@@ -12,9 +12,15 @@
     import { getFormCtx } from "../../data/contexts/orgLayout";
 
     const formCtx = getFormCtx();
-    const location = useLocation();
 
-    const selectField = $location.state.selectField as string | undefined;
+    const selectField = $derived(
+        route.state &&
+            typeof route.state === "object" &&
+            route.state !== null &&
+            "selectField" in route.state
+            ? (route.state as { selectField?: string }).selectField
+            : undefined,
+    );
 </script>
 
 <FormSettingsForm

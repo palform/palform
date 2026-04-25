@@ -2,10 +2,11 @@
 
 use super::sea_orm_active_enums::AuditLogTargetResourceEnum;
 use super::sea_orm_active_enums::AuditLogVerbEnum;
-use palform_tsid::{
-    resources::{IDAdminUser, IDAuditLogEntry, IDOrganisation, IDUnknown},
-    tsid::PalformDatabaseID,
-};
+use palform_tsid::resources::IDAdminUser;
+use palform_tsid::resources::IDAuditLogEntry;
+use palform_tsid::resources::IDOrganisation;
+use palform_tsid::resources::IDUnknown;
+use palform_tsid::tsid::PalformDatabaseID;
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -15,12 +16,13 @@ pub struct Model {
     pub target_resource_type: AuditLogTargetResourceEnum,
     pub verb: AuditLogVerbEnum,
     pub note: Option<String>,
-    pub created_at: DateTime,
+    pub created_at: DateTimeWithTimeZone,
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: PalformDatabaseID<IDAuditLogEntry>,
     pub target_resource_id: Option<PalformDatabaseID<IDUnknown>>,
     pub organisation_id: PalformDatabaseID<IDOrganisation>,
     pub user_id: PalformDatabaseID<IDAdminUser>,
+    pub target_resource_parent_ids: Vec<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

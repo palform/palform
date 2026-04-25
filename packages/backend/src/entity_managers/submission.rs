@@ -1,4 +1,4 @@
-use chrono::{DateTime, NaiveDateTime, Utc};
+use chrono::{DateTime, Utc};
 use lettre::{
     address::AddressError,
     message::{header::ContentType, Mailbox},
@@ -13,16 +13,19 @@ use palform_tsid::{
 };
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, Condition, ConnectionTrait, DbErr, EntityTrait, FromQueryResult,
-    JoinType, Order, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, RelationTrait, Set, StreamTrait,
+    JoinType, Order, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, RelationTrait, Set,
+    StreamTrait,
 };
 use serde::Serialize;
 use thiserror::Error;
 
 use crate::{
-    api_entities::submission::APISubmissionCountPerForm, entity_managers::webhook_jobs::WebhookJobsManager, mail::{
+    api_entities::submission::APISubmissionCountPerForm,
+    entity_managers::webhook_jobs::WebhookJobsManager,
+    mail::{
         client::PalformMailClient,
         headers::{MailgunHeader, MailgunTemplateNameHeader, MailgunVariableListHeader},
-    }
+    },
 };
 
 #[derive(Debug, Error)]
@@ -61,7 +64,7 @@ impl SubmissionManager {
         let mut condition = Condition::all().add(submission::Column::FormId.eq(form_id));
 
         if let Some(since_id) = since_id {
-            let mut since: Option<NaiveDateTime> = Submission::find_by_id(since_id)
+            let mut since: Option<DateTime<Utc>> = Submission::find_by_id(since_id)
                 .select_only()
                 .column(submission::Column::CreatedAt)
                 .into_tuple()

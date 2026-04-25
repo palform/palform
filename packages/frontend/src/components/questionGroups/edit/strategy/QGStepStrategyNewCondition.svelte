@@ -16,7 +16,7 @@
     import type {
         APIQuestionGroupStepStrategyJumpCaseCondition,
         APIQuestionGroupStepStrategyJumpCaseConditionMatcher,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import StrategyConfigChoice from "./conditionTypes/StrategyConfigChoice.svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import StrategyConfigScale from "./conditionTypes/StrategyConfigScale.svelte";
@@ -27,26 +27,32 @@
     import StrategyConfigHidden from "./conditionTypes/StrategyConfigHidden.svelte";
     import { getFormAdminContext } from "../../../../data/contexts/formAdmin";
 
-    export let fromGroupId: string;
-    const formAdminCtx = getFormAdminContext();
-    let isAdding = false;
+    interface Props {
+        fromGroupId: string;
+    }
 
-    let questionId = "";
-    $: question = $formAdminCtx.questions.find((e) => e.id === questionId);
+    let { fromGroupId }: Props = $props();
+    const formAdminCtx = getFormAdminContext();
+    let isAdding = $state(false);
+
+    let questionId = $state("");
+    let question = $derived(
+        $formAdminCtx.questions.find((e) => e.id === questionId)
+    );
 
     const dispatch = createEventDispatcher<{
         create: APIQuestionGroupStepStrategyJumpCaseCondition;
     }>();
-    $: onSave = (
-        e: CustomEvent<APIQuestionGroupStepStrategyJumpCaseConditionMatcher>
-    ) => {
-        if (!question) return;
-        dispatch("create", {
-            question_id: questionId,
-            matcher: e.detail,
-        });
-        isAdding = false;
-    };
+    let onSave = $derived(
+        (e: APIQuestionGroupStepStrategyJumpCaseConditionMatcher) => {
+            if (!question) return;
+            dispatch("create", {
+                question_id: questionId,
+                matcher: e,
+            });
+            isAdding = false;
+        }
+    );
 </script>
 
 <Button
@@ -54,7 +60,7 @@
     color="light"
     class="mt-2"
     outline
-    on:click={() => (isAdding = !isAdding)}
+    onclick={() => (isAdding = !isAdding)}
 >
     {#if !isAdding}
         <FontAwesomeIcon icon={faPlus} class="me-2" />
@@ -82,38 +88,38 @@
         {#if question !== undefined}
             <fieldset class="mt-4">
                 {#if qIsText(question.configuration)}
-                    <StrategyConfigText on:save={onSave} />
+                    <StrategyConfigText onsave={onSave} />
                 {:else if qIsChoice(question.configuration)}
                     <StrategyConfigChoice
                         configuration={question.configuration.choice}
-                        on:save={onSave}
+                        onsave={onSave}
                     />
                 {:else if qIsScale(question.configuration)}
                     <StrategyConfigScale
-                        on:save={onSave}
+                        onsave={onSave}
                         configuration={question.configuration.scale}
                     />
                 {:else if qIsPhoneNumber(question.configuration)}
-                    <StrategyConfigPhoneNumber on:save={onSave} />
+                    <StrategyConfigPhoneNumber onsave={onSave} />
                 {:else if qIsAddress(question.configuration)}
                     <StrategyConfigAddress
                         configuration={question.configuration.address}
-                        on:save={onSave}
+                        onsave={onSave}
                     />
                 {:else if qIsChoiceMatrix(question.configuration)}
                     <StrategyConfigChoiceMatrix
                         configuration={question.configuration.choice_matrix}
-                        on:save={onSave}
+                        onsave={onSave}
                     />
                 {:else if qIsDateTime(question.configuration)}
                     <StrategyConfigDateTime
                         configuration={question.configuration.date_time}
-                        on:save={onSave}
+                        onsave={onSave}
                     />
                 {:else if qIsHidden(question.configuration)}
                     <StrategyConfigHidden
                         configuration={question.configuration.hidden}
-                        on:save={onSave}
+                        onsave={onSave}
                     />
                 {/if}
             </fieldset>

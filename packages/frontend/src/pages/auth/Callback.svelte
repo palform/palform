@@ -6,16 +6,16 @@
         getOrgSubdomainIDForAuth,
         performAuthCallback,
     } from "../../data/auth";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../router";
     import ErrorMsg from "../../components/ErrorMsg.svelte";
     import { humaniseAPIError } from "../../data/common";
 
-    let error: string | null = null;
+    let error: string | null = $state(null);
 
     const urlParams = new URLSearchParams(location.search);
     const code = urlParams.get("code");
-    const state = urlParams.get("state");
-    if (code === null || state === null) {
+    const authState = urlParams.get("state");
+    if (code === null || authState === null) {
         error = "Missing code or state in URL";
     } else {
         (async () => {
@@ -26,7 +26,11 @@
             }
 
             try {
-                const userIsNew = await performAuthCallback(orgId, code, state);
+                const userIsNew = await performAuthCallback(
+                    orgId,
+                    code,
+                    authState
+                );
                 if (userIsNew) {
                     navigate(`/orgs/${orgId}/induction/member`);
                 } else {
@@ -45,7 +49,7 @@
 
 <AuthCard>
     {#if error}
-        <ErrorMsg e={error} retryable on:retry={onRetryClick} />
+        <ErrorMsg e={error} retryable onretry={onRetryClick} />
     {:else}
         <Spinner class="mb-4" />
         <p>Loading...</p>

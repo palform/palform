@@ -1,20 +1,25 @@
 <script lang="ts">
-    import type { SocialAuthService } from "@paltiverse/palform-typescript-openapi";
+    import type { SocialAuthService } from "@palform/palform-typescript-openapi";
     import LoadingButton from "../LoadingButton.svelte";
     import {
         socialAuthServiceIcon,
         socialAuthServiceName,
     } from "../../data/auth/social";
 
-    export let service: SocialAuthService;
-    export let prefix = "";
-    export let loading = false;
+    interface Props {
+        service: SocialAuthService;
+        prefix?: string;
+        loading?: boolean;
+        onclick: () => void;
+    }
+
+    let { service, prefix = "", loading = false, onclick }: Props = $props();
 </script>
 
 <LoadingButton
     buttonClass="w-full"
     color="light"
-    on:click
+    {onclick}
     {loading}
     disabled={loading}
 >

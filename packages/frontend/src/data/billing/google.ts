@@ -1,4 +1,4 @@
-import type { APIGenericAddress } from "@paltiverse/palform-client-js-extra-types/APIGenericAddress";
+import type { APIGenericAddress } from "@palform/palform-client-js-extra-types/APIGenericAddress";
 import { APIs } from "../common";
 import {
     AddressAutofillCore,
@@ -6,7 +6,7 @@ import {
     type AddressAutofillRetrieveResponse,
     type AddressAutofillSuggestion,
 } from "@mapbox/search-js-core";
-import type { APIGenericLocation } from "@paltiverse/palform-client-js-extra-types/APIGenericLocation";
+import type { APIGenericLocation } from "@palform/palform-client-js-extra-types/APIGenericLocation";
 
 const mapboxAPIKey = import.meta.env.VITE_MAPBOX_API_KEY as string;
 

@@ -1,27 +1,32 @@
 <script lang="ts">
-    import type { APIBillingInvoiceStatus } from "@paltiverse/palform-typescript-openapi";
-    import { Badge } from "flowbite-svelte";
-    import type { BadgeProps } from "flowbite-svelte/Badge.svelte";
+    import type { APIBillingInvoiceStatus } from "@palform/palform-typescript-openapi";
+    import { Badge, type BadgeProps } from "flowbite-svelte";
 
-    export let status: APIBillingInvoiceStatus;
+    interface Props {
+        status: APIBillingInvoiceStatus;
+        class?: string;
+    }
 
-    let color: BadgeProps["color"] = "primary";
-    $: {
+    let { status, class: className }: Props = $props();
+
+    let color: BadgeProps["color"] = $derived.by(() => {
         switch (status) {
             case "Draft":
-                color = "blue";
+                return "blue";
             case "Open":
-                color = "yellow";
+                return "yellow";
             case "Paid":
-                color = "green";
+                return "green";
             case "Uncollectible":
-                color = "dark";
+                return "gray";
             case "Void":
-                color = "dark";
+                return "gray";
+            default:
+                return "primary";
         }
-    }
+    });
 </script>
 
-<Badge class={$$props.class} color={"green"}>
+<Badge class={className} {color}>
     {status}
 </Badge>

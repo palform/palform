@@ -1,13 +1,13 @@
 <script lang="ts">
-    import type { APIBillingCustomer } from "@paltiverse/palform-typescript-openapi";
+    import type { APIBillingCustomer } from "@palform/palform-typescript-openapi";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { APIs } from "../../../data/common";
     import SkeletonPrimitive from "../../../components/SkeletonPrimitive.svelte";
     import PlanManager from "../../../components/billing/PlanManager.svelte";
 
     const orgCtx = getOrgContext();
-    let customerDetails: APIBillingCustomer | undefined;
-    let detailsLoading = true;
+    let customerDetails: APIBillingCustomer | undefined = $state();
+    let detailsLoading = $state(true);
     APIs.billingCustomers()
         .then((a) => a.billingCustomerGet($orgCtx.org.id))
         .then((resp) => {

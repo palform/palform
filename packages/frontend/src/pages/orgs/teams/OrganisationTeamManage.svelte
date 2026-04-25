@@ -7,22 +7,26 @@
     import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
     import { writable } from "svelte/store";
     import { setTeamCtx, type TeamContext } from "../../../data/contexts/team";
-    import { Route, Router } from "svelte-routing";
-    import TeamMembers from "./TeamMembers.svelte";
     import { Tabs } from "flowbite-svelte";
     import RoutedTabItem from "../../../components/tabs/RoutedTabItem.svelte";
-    import TeamBrandings from "./TeamBrandings.svelte";
-    import TeamSettings from "./TeamSettings.svelte";
+    import { route } from "../../../router";
+    import type { Snippet } from "svelte";
 
-    export let teamId: string;
+    interface Props {
+        children?: Snippet;
+    }
+
+    let { children }: Props = $props();
+
+    const teamId = $derived(route.params.teamId ?? "");
     const orgCtx = getOrgContext();
-    let teamLoading = true;
-    let membersLoading = true;
-    let brandingsLoading = true;
+    let teamLoading = $state(true);
+    let membersLoading = $state(true);
+    let brandingsLoading = $state(true);
 
     const teamCtx = writable<TeamContext>(
         // @ts-expect-error we'll only render components that depend on these values once we know they are defined
-        {},
+        {}
     );
     setTeamCtx(teamCtx);
 
@@ -60,15 +64,13 @@
         {$teamCtx.team.name}
     </MainTitle>
 
-    <Router>
-        <Tabs contentClass="mt-4">
-            <RoutedTabItem title="Members" path="members" />
-            <RoutedTabItem title="Branding" path="brandings" />
-            <RoutedTabItem title="Settings" path="settings" />
-        </Tabs>
+    <Tabs classes={{ content: "p-0 h-0 m-0" }}>
+        <RoutedTabItem title="Members" path="members" />
+        <RoutedTabItem title="Branding" path="brandings" />
+        <RoutedTabItem title="Settings" path="settings" />
+    </Tabs>
 
-        <Route path="/members" component={TeamMembers} />
-        <Route path="/brandings" component={TeamBrandings} />
-        <Route path="/settings" component={TeamSettings} />
-    </Router>
+    <div class="mt-4">
+        {@render children?.()}
+    </div>
 {/if}

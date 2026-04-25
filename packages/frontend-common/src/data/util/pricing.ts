@@ -1,4 +1,4 @@
-import type { APIBillingPlan } from "@paltiverse/palform-typescript-openapi";
+import type { APIBillingPlan } from "@palform/palform-typescript-openapi";
 
 export function formatDecimalCurrency(amount: number, round = false) {
     const v = amount / 100;
@@ -17,6 +17,8 @@ export function getCurrencySymbol(currency: string) {
             return "€";
         case "usd":
             return "US$";
+        case "chf":
+            return "Fr";
         default:
             return "";
     }

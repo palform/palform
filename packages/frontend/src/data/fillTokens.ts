@@ -13,8 +13,8 @@ export async function formatFillTokenURL(
 ) {
     const url = new URL(`/fill/${orgId}/${formId}?f=${tokenId}`, frontendURL);
 
-    const fingerprints = await getTeamKeyFingerprints(orgId, teamId);
-    return addFingerprintsToURL(url, fingerprints).toString();
+    const resp = await getTeamKeyFingerprints(orgId, teamId);
+    return addFingerprintsToURL(url, resp.fingerprints).toString();
 }
 
 export function formatShortLinkURL(subdomain: string, shortLink: string) {

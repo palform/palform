@@ -15,7 +15,7 @@
     const dispatch = createEventDispatcher<{ restart: undefined }>();
     const endConfiguration = $formFillStore?.form.f.end_configuration;
 
-    let redirecting = false;
+    let redirecting = $state(false);
     const onContinueClick = () => {
         if (!endConfiguration?.redirect_to) return;
         redirecting = true;
@@ -55,7 +55,7 @@
             {#if endConfiguration.redirect_to}
                 <BrandedButton
                     class="mt-2"
-                    on:click={onContinueClick}
+                    onclick={onContinueClick}
                     disabled={redirecting}
                 >
                     {t("form_end_continue")}
@@ -65,7 +65,7 @@
                 <BrandedButton
                     class="mt-2"
                     outline
-                    on:click={() => dispatch("restart")}
+                    onclick={() => dispatch("restart")}
                     disabled={redirecting}
                 >
                     <FontAwesomeIcon icon={faUndo} class="me-2" />

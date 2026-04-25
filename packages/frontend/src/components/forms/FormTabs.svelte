@@ -3,8 +3,8 @@
     import RoutedTabItem from "../tabs/RoutedTabItem.svelte";
 </script>
 
-<Tabs contentClass="mt-4">
-    <RoutedTabItem title="Overview" path="" />
+<Tabs classes={{ content: "p-0 h-0 m-0" }}>
+    <RoutedTabItem title="Overview" path="overview" />
     <RoutedTabItem title="Responses" path="responses" />
     <RoutedTabItem title="Edit" path="edit" />
     <RoutedTabItem title="Publish" path="tokens" />

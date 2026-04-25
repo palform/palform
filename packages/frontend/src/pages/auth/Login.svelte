@@ -9,14 +9,14 @@
     import InfoText from "../../components/type/InfoText.svelte";
     import { showFailureToast } from "../../data/toast";
     import { Helper, Input, Label } from "flowbite-svelte";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../router";
     import Captcha from "../../components/captcha/Captcha.svelte";
     import TextButton from "../../components/TextButton.svelte";
     import SocialAuthButtons from "../../components/auth/SocialAuthButtons.svelte";
-    import type { SignInResponseOneOf1SecondFactorRequired } from "@paltiverse/palform-typescript-openapi";
     import SecondFactor from "./SecondFactor.svelte";
+    import type { SecondFactorRequiredSecondFactorRequired } from "@palform/palform-typescript-openapi";
 
-    let loading = false;
+    let loading = $state(false);
     const isOrgLogin = getOrgSubdomain();
     const onOrgSignInClick = async () => {
         loading = true;
@@ -37,18 +37,18 @@
         }
     };
 
-    let email = "";
-    let password = "";
-    let captcha = "";
+    let email = $state("");
+    let password = $state("");
+    let captcha = $state("");
     const createInitialOrg = new URLSearchParams(window.location.search).has(
         "create_initial_org"
     );
 
-    let secondFactor: SignInResponseOneOf1SecondFactorRequired | undefined =
-        undefined;
-    let secondFactorNewOrgId: string | undefined = undefined;
+    let secondFactor: SecondFactorRequiredSecondFactorRequired | undefined =
+        $state(undefined);
+    let secondFactorNewOrgId: string | undefined = $state(undefined);
 
-    $: onSignInClick = async (e: Event) => {
+    let onSignInClick = $derived(async (e: Event) => {
         e.preventDefault();
         if (!email || !password) return;
         if (!captcha) {
@@ -79,7 +79,7 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 </script>
 
 {#if isOrgLogin}
@@ -87,7 +87,7 @@
         <InfoText class="mb-4">
             Sign in with your organisation to continue.
         </InfoText>
-        <LoadingButton {loading} disabled={loading} on:click={onOrgSignInClick}>
+        <LoadingButton {loading} disabled={loading} onclick={onOrgSignInClick}>
             Sign in
         </LoadingButton>
     </AuthCard>
@@ -95,7 +95,7 @@
     <SecondFactor tfa={secondFactor} newOrgId={secondFactorNewOrgId} />
 {:else}
     <AuthCard title="Welcome back">
-        <form class="space-y-6" on:submit={onSignInClick}>
+        <form class="space-y-6" onsubmit={onSignInClick}>
             <Label>
                 Email address
                 <Input
@@ -116,7 +116,7 @@
                     bind:value={password}
                 />
                 <Helper class="mt-2">
-                    <TextButton class="!text-xs" href="/auth/reset/password">
+                    <TextButton class="text-xs!" href="/auth/reset/password">
                         I forgot my password
                     </TextButton>
                 </Helper>
@@ -145,13 +145,13 @@
             </div>
         </form>
 
-        <svelte:fragment slot="footer">
+        {#snippet footer()}
             <InfoText>
                 Need an account?
                 <TextButton class="inline-block" href="/auth/signup"
                     >Sign up for free</TextButton
                 >
             </InfoText>
-        </svelte:fragment>
+        {/snippet}
     </AuthCard>
 {/if}

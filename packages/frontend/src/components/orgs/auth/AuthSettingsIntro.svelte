@@ -1,13 +1,11 @@
 <script lang="ts">
-    import { navigate } from "svelte-routing";
+    import { p } from "../../../router";
     import CardGrid from "../../../components/CardGrid.svelte";
     import InductionStepCard from "../../../components/induction/InductionStepCard.svelte";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { Button } from "flowbite-svelte";
 
     const orgCtx = getOrgContext();
-    $: onGetStartedClick = () =>
-        navigate(`/orgs/${$orgCtx.org.id}/settings/billing`);
 </script>
 
 <CardGrid>
@@ -25,8 +23,15 @@
         OpenID Connect authentication is available exclusively on our upgraded
         plans.
 
-        <Button class="block mt-2" on:click={onGetStartedClick}>
-            Get started
-        </Button>
+        {#snippet footer()}
+            <Button
+                class="mt-3"
+                href={p("/orgs/:orgId/settings/billing", {
+                    params: { orgId: $orgCtx.org.id },
+                })}
+            >
+                Get started
+            </Button>
+        {/snippet}
     </InductionStepCard>
 </CardGrid>

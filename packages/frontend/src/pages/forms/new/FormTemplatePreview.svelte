@@ -1,11 +1,8 @@
 <script lang="ts">
-    import { type APIFormTemplate } from "@paltiverse/palform-typescript-openapi";
+    import { type APIFormTemplate } from "@palform/palform-typescript-openapi";
     import { APIs } from "../../../data/common";
     import { showFailureToast } from "../../../data/toast";
-    import {
-        navigateEvent,
-        TemplateFramePreview,
-    } from "@paltiverse/palform-frontend-common";
+    import { TemplateFramePreview } from "@palform/palform-frontend-common";
     import TextButton from "../../../components/TextButton.svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -15,31 +12,49 @@
     } from "../../../data/contexts/orgLayout";
     import { Button, Modal } from "flowbite-svelte";
     import TeamDropdown from "../../../components/teams/TeamDropdown.svelte";
-    import { navigate } from "svelte-routing";
+    import { navigate, p, route } from "../../../router";
 
-    export let templateId: string;
-    export let teamId: string | null = null;
+    interface Props {
+        templateId?: string | undefined;
+        teamId?: string | null;
+    }
+
+    let { templateId, teamId = null }: Props = $props();
+
+    const templateIdResolved = $derived(
+        templateId ?? route.params.templateId ?? ""
+    );
 
     const orgCtx = getOrgContext();
 
-    let template: APIFormTemplate | undefined = undefined;
-    let templateLoading = true;
-    APIs.formTemplates
-        .formTemplatesGet(templateId)
-        .then((resp) => {
-            template = resp.data;
-        })
-        .catch(showFailureToast)
-        .finally(() => (templateLoading = false));
+    let template: APIFormTemplate | undefined = $state(undefined);
+    let templateLoading = $state(true);
 
-    APIs.formTemplates
-        .formTemplatesReportView(templateId)
-        .catch(showFailureToast);
+    $effect(() => {
+        const tid = templateIdResolved;
+        if (!tid) return;
 
-    let cloneLoading = false;
-    let showTeamModal = false;
-    let selectedTeam = teamId ?? "";
-    $: onCloneClick = async () => {
+        templateLoading = true;
+        APIs.formTemplates
+            .formTemplatesGet(tid)
+            .then((resp) => {
+                template = resp.data;
+            })
+            .catch(showFailureToast)
+            .finally(() => {
+                templateLoading = false;
+            });
+
+        APIs.formTemplates.formTemplatesReportView(tid).catch(showFailureToast);
+    });
+
+    let cloneLoading = $state(false);
+    let showTeamModal = $state(false);
+    let selectedTeam = $state("");
+    $effect(() => {
+        selectedTeam = teamId ?? "";
+    });
+    let onCloneClick = $derived(async () => {
         if ($orgCtx.myTeams.length > 1 && selectedTeam === "") {
             showTeamModal = true;
             return;
@@ -49,7 +64,7 @@
         cloneLoading = true;
         try {
             const newFormResp = await APIs.formTemplatesWithToken().then((a) =>
-                a.formTemplatesClone($orgCtx.org.id, templateId, {
+                a.formTemplatesClone($orgCtx.org.id, templateIdResolved, {
                     into_team: selectedTeam || $orgCtx.myTeams[0].team_id,
                 })
             );
@@ -62,13 +77,15 @@
                 };
             });
 
-            navigate(`/orgs/${$orgCtx.org.id}/forms/${newFormResp.data.id}/`);
+            navigate(
+                `/orgs/${$orgCtx.org.id}/forms/${newFormResp.data.id}/overview`
+            );
         } catch (e) {
             await showFailureToast(e);
         }
 
         cloneLoading = false;
-    };
+    });
 </script>
 
 <Modal
@@ -77,15 +94,16 @@
     outsideclose
 >
     <TeamDropdown bind:value={selectedTeam} />
-    <svelte:fragment slot="footer">
-        <Button on:click={onCloneClick}>Create</Button>
-    </svelte:fragment>
+    {#snippet footer()}
+        <Button onclick={onCloneClick}>Create</Button>
+    {/snippet}
 </Modal>
 
 <TextButton
     class="mb-4"
-    href={`/orgs/${$orgCtx.org.id}/forms/templates/`}
-    on:click={navigateEvent}
+    href={p("/orgs/:orgId/forms/templates", {
+        params: { orgId: $orgCtx.org.id },
+    })}
     disabled={cloneLoading}
 >
     <FontAwesomeIcon icon={faArrowLeft} />
@@ -99,6 +117,6 @@
         showMarketing={false}
         buttonLinkToAuth={false}
         disabled={cloneLoading}
-        on:click={onCloneClick}
+        onclick={onCloneClick}
     />
 {/if}

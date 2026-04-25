@@ -6,11 +6,11 @@
     import { APIs } from "../../data/common";
     import { showFailureToast } from "../../data/toast";
 
-    let email = "";
-    let loading = false;
-    let sent = false;
+    let email = $state("");
+    let loading = $state(false);
+    let sent = $state(false);
 
-    $: onSubmit = async (e: Event) => {
+    let onSubmit = $derived(async (e: Event) => {
         e.preventDefault();
 
         loading = true;
@@ -23,7 +23,7 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 </script>
 
 <AuthCard title="Reset password">
@@ -39,7 +39,7 @@
             email to reset your password.
         </InfoText>
 
-        <form class="mt-4" on:submit={onSubmit}>
+        <form class="mt-4" onsubmit={onSubmit}>
             <Label>
                 Email address
                 <Input

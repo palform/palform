@@ -1,10 +1,10 @@
-import { export_submissions_js } from "@paltiverse/palform-client-common";
-import type { ResponsesContext } from "./contexts/results";
+import { export_submissions_js } from "@palform/palform-client-common";
 import {
     submissionIsSuccess,
     type DecryptedSubmissionSuccess,
 } from "./crypto/results";
 import downloadFile from "./util/downloadFile";
+import type { FormAdminContext } from "./contexts/formAdmin";
 
 export interface ExportSubmissionsConfig {
     use_question_ids: boolean;
@@ -27,8 +27,8 @@ export const exportFormats: {
 ];
 
 export function exportFormSubmissions(
-    ctx: ResponsesContext,
-    config: ExportSubmissionsConfig,
+    ctx: FormAdminContext,
+    config: ExportSubmissionsConfig
 ) {
     const submissions = ctx.submissions
         .filter((e) => submissionIsSuccess(e))
@@ -45,7 +45,7 @@ export function exportFormSubmissions(
         ctx.groups,
         submissions,
         ctx.questions,
-        config,
+        config
     );
 
     let extension = "";

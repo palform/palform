@@ -55,7 +55,7 @@
 {:else}
     <div class="space-y-4 2xl:px-[20%]">
         <FormAutosave />
-        <FormQuestionLimitWarning class="!mt-6 !mb-4" />
+        <FormQuestionLimitWarning class="mt-6! mb-4!" />
 
         {#each $formEditorCtx.groups as group, index (group.id)}
             <div

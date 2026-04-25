@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
     import CreateQuestion from "../../questions/edit/CreateQuestion.svelte";
     import EditQuestion from "../../questions/edit/EditQuestion.svelte";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
@@ -14,15 +13,19 @@
     } from "../../../data/contexts/formEditor";
     import { flip } from "svelte/animate";
 
-    export let groupId: string;
-    const dispatch = createEventDispatcher<{ serverSync: undefined }>();
+    interface Props {
+        groupId: string;
+        onserverSync?: () => void;
+    }
+
+    let { groupId, onserverSync }: Props = $props();
 
     const formEditorCtx = getFormEditorCtx();
     const formMetadataCtx = getFormCtx();
-    $: questionsInGroup = getEditorQuestionsInGroup(groupId);
-    $: group = getEditorQuestionGroup(groupId);
+    let questionsInGroup = $derived(getEditorQuestionsInGroup(groupId));
+    let group = $derived(getEditorQuestionGroup(groupId));
 
-    $: onDelete = async () => {
+    let onDelete = $derived(async () => {
         if ($questionsInGroup.length > 0) {
             await showFailureToast(
                 "Please delete or move all the questions in the section first!"
@@ -32,11 +35,11 @@
 
         deleteGroup(formEditorCtx, groupId);
         await showSuccessToast("Section deleted");
-    };
+    });
 </script>
 
 {#if $group !== undefined}
-    <QgContainer group={$group} on:delete={onDelete}>
+    <QgContainer group={$group} ondelete={onDelete}>
         <div class="space-y-4 mb-4">
             {#each $questionsInGroup as question, index (question.id)}
                 <div
@@ -51,13 +54,10 @@
                         <CreateQuestion
                             {groupId}
                             beforeIndex={index}
-                            on:create={(_) => dispatch("serverSync")}
+                            oncreate={onserverSync}
                         />
                     {/if}
-                    <EditQuestion
-                        questionId={question.id}
-                        on:serverSync={() => dispatch("serverSync")}
-                    />
+                    <EditQuestion questionId={question.id} />
                 </div>
             {/each}
         </div>
@@ -66,7 +66,7 @@
             <CreateQuestion
                 {groupId}
                 beforeIndex={$questionsInGroup.length}
-                on:create={() => dispatch("serverSync")}
+                oncreate={onserverSync}
             />
         {/if}
 

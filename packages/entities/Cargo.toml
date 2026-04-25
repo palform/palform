@@ -7,7 +7,7 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+schemars = { package = "apistos-schemars", version = "0.8", default-features = false }
 sea-orm = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-schemars = { version = "0.8.17", features = ["chrono"] }
-palform-tsid = { path = "../tsid", features = ["sea-orm"] }
+palform-tsid = { path = "../tsid", features = ["sea-orm", "apistos"] }

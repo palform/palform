@@ -1,7 +1,7 @@
 <script lang="ts">
     import { faKey, faMobile } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-    import type { APIAdminUserSecondAuthenticationFactor } from "@paltiverse/palform-typescript-openapi";
+    import type { APIAdminUserSecondAuthenticationFactor } from "@palform/palform-typescript-openapi";
     import { TableBodyCell, TableBodyRow } from "flowbite-svelte";
     import { parseServerTime } from "../../../data/util/time";
     import TableSingleAction from "../../tables/TableSingleAction.svelte";
@@ -9,11 +9,15 @@
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import { createEventDispatcher } from "svelte";
 
-    export let method: APIAdminUserSecondAuthenticationFactor;
+    interface Props {
+        method: APIAdminUserSecondAuthenticationFactor;
+    }
+
+    let { method }: Props = $props();
     const dispatch = createEventDispatcher<{ delete: undefined }>();
 
-    let loading = false;
-    $: onDeleteClick = async () => {
+    let loading = $state(false);
+    let onDeleteClick = $derived(async () => {
         loading = true;
         try {
             await APIs.secondFactors().then((a) =>
@@ -25,7 +29,7 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 </script>
 
 <TableBodyRow>
@@ -41,7 +45,7 @@
         Created {parseServerTime(method.created_at).toRelative()}
     </TableBodyCell>
     <TableBodyCell>
-        <TableSingleAction on:click={onDeleteClick} disabled={loading}>
+        <TableSingleAction onclick={onDeleteClick} disabled={loading}>
             Delete
         </TableSingleAction>
     </TableBodyCell>

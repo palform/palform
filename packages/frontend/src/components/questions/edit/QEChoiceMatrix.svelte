@@ -1,21 +1,19 @@
 <script lang="ts">
-    import type { APIQuestionConfigurationOneOf8 } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher } from "svelte";
+    import type { ConfigChoiceMatrix } from "@palform/palform-typescript-openapi";
     import { Button, ButtonGroup, Input, Toggle } from "flowbite-svelte";
     import InfoText from "../../type/InfoText.svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-    import { getFormEditorCtx, type QuestionEditEvents } from "../../../data/contexts/formEditor";
+    import { getFormEditorCtx } from "../../../data/contexts/formEditor";
 
-    export let config: APIQuestionConfigurationOneOf8;
-    const ctx = getFormEditorCtx();
-    const dispatch = createEventDispatcher<QuestionEditEvents>();
+    interface Props {
+        config: ConfigChoiceMatrix;
+    }
 
-    $: onUpdate = () => {
-        dispatch("update", config);
-    };
+    let { config = $bindable() }: Props = $props();
+    let ctx = getFormEditorCtx();
 
-    $: onAddDim = (dim: "col" | "row") => {
+    function onAddDim(dim: "col" | "row") {
         if (dim === "col") {
             config.choice_matrix.columns = [
                 ...config.choice_matrix.columns,
@@ -24,27 +22,24 @@
         } else {
             config.choice_matrix.rows = [...config.choice_matrix.rows, ""];
         }
-        dispatch("update", config);
-    };
+    }
 
-    $: onDel = (dim: "col" | "row", val: string) => {
+    function onDel(dim: "col" | "row", val: string) {
         if (dim === "col") {
             config.choice_matrix.columns = config.choice_matrix.columns.filter(
-                (e) => e !== val
+                (e: string) => e !== val
             );
         } else {
             config.choice_matrix.rows = config.choice_matrix.rows.filter(
-                (e) => e !== val
+                (e: string) => e !== val
             );
         }
-        dispatch("update", config);
-    };
+    }
 </script>
 
 <Toggle
     class="mb-4"
     bind:checked={config.choice_matrix.multi_cols}
-    on:change={onUpdate}
     disabled={$ctx.loading}
 >
     Allow selecting multiple columns in each row
@@ -53,18 +48,17 @@
 <div class="grid grid-cols-2 gap-4">
     <div class="space-y-2">
         <InfoText>Rows</InfoText>
-        {#each config.choice_matrix.rows as row, index}
+        {#each config.choice_matrix.rows as _, index}
             <ButtonGroup>
                 <Input
-                    bind:value={row}
-                    on:input={onUpdate}
+                    bind:value={config.choice_matrix.rows[index]}
                     disabled={$ctx.loading}
                 />
                 {#if index !== 0}
                     <Button
                         color="light"
-                        outline
-                        on:click={() => onDel("row", row)}
+                        onclick={() =>
+                            onDel("row", config.choice_matrix.rows[index])}
                         disabled={$ctx.loading}
                     >
                         <FontAwesomeIcon icon={faTrash} />
@@ -77,7 +71,7 @@
             class="block"
             color="light"
             size="sm"
-            on:click={() => onAddDim("row")}
+            onclick={() => onAddDim("row")}
             disabled={$ctx.loading}
         >
             <FontAwesomeIcon icon={faPlus} />
@@ -86,18 +80,17 @@
     </div>
     <div class="space-y-2">
         <InfoText>Columns</InfoText>
-        {#each config.choice_matrix.columns as column, index}
+        {#each config.choice_matrix.columns as _, index}
             <ButtonGroup>
                 <Input
-                    bind:value={column}
-                    on:input={onUpdate}
+                    bind:value={config.choice_matrix.columns[index]}
                     disabled={$ctx.loading}
                 />
                 {#if index !== 0}
                     <Button
                         color="light"
-                        outline
-                        on:click={() => onDel("col", column)}
+                        onclick={() =>
+                            onDel("col", config.choice_matrix.columns[index])}
                         disabled={$ctx.loading}
                     >
                         <FontAwesomeIcon icon={faTrash} />
@@ -110,7 +103,7 @@
             class="block"
             color="light"
             size="sm"
-            on:click={() => onAddDim("col")}
+            onclick={() => onAddDim("col")}
             disabled={$ctx.loading}
         >
             <FontAwesomeIcon icon={faPlus} />

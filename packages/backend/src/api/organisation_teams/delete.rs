@@ -1,26 +1,36 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
-use palform_tsid::{resources::{IDOrganisation, IDTeam}, tsid::PalformDatabaseID};
-use rocket::{delete, State};
-use rocket_okapi::openapi;
+use palform_tsid::{
+    resources::{IDOrganisation, IDTeam},
+    tsid::PalformDatabaseID,
+};
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
+use serde::Deserialize;
 
 use crate::{
-    audit::AuditManager, auth::rbac::requests::APITokenTeamAdminFromTeam,
-    auth::tokens::APIAuthTokenSource,
+    actix_util::from_org_id::FromOrgId,
+    audit::{id_chains::IDChainEmpty, manager::AuditManager},
+    auth::{rbac::requests::APITokenTeamAdminFromTeam, tokens::APIAuthTokenSource},
     entity_managers::organisation_teams::OrganisationTeamsManager,
-    rocket_util::from_org_id::FromOrgId,
 };
 
-#[openapi(tag = "Organisation Teams", operation_id = "organisation.teams.delete")]
-#[delete("/users/me/orgs/<_org_id>/teams/<team_id>")]
-pub async fn handler(
-    _org_id: PalformDatabaseID<IDOrganisation>,
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct OrganisationTeamsDeletePath {
+    #[allow(unused)]
+    org_id: PalformDatabaseID<IDOrganisation>,
     team_id: PalformDatabaseID<IDTeam>,
+}
+
+#[api_operation(tag = "Organisation Teams", operation_id = "organisation.teams.delete")]
+pub async fn organisation_teams_delete(
+    path: Path<OrganisationTeamsDeletePath>,
     token: APITokenTeamAdminFromTeam,
-    db: &State<DatabaseConnection>,
-    audit: FromOrgId<AuditManager>,
-) -> Result<(), APIErrorWithStatus> {
+    db: Data<DatabaseConnection>,
+    audit: FromOrgId<AuditManager<IDChainEmpty>>,
+) -> Result<(), APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -29,7 +39,7 @@ pub async fn handler(
         .await
         .map_internal_error()?;
 
-    let team = OrganisationTeamsManager::get_by_id(&txn, team_id)
+    let team = OrganisationTeamsManager::get_by_id(&txn, path.team_id)
         .await
         .map_internal_error()?
         .ok_or(APIError::NotFound)?;
@@ -38,7 +48,7 @@ pub async fn handler(
         return Err(APIError::BadRequest("Cannot delete default team".to_string()).into());
     }
 
-    OrganisationTeamsManager::delete(&txn, team_id)
+    OrganisationTeamsManager::delete(&txn, path.team_id)
         .await
         .map_internal_error()?;
 
@@ -48,7 +58,7 @@ pub async fn handler(
             token.get_user_id(),
             AuditLogVerbEnum::Delete,
             AuditLogTargetResourceEnum::Team,
-            Some(team_id.into_unknown()),
+            Some(path.team_id.into_unknown()),
         )
         .await
         .map_internal_error()?;

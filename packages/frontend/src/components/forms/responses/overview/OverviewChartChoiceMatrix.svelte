@@ -1,17 +1,25 @@
 <script lang="ts">
-    import { Chart } from "flowbite-svelte";
     import { sGetChoiceMatrix } from "../../../../data/contexts/fill";
-    import { ctxGetQuestion, ctxSubmissionsForQuestion } from "../../../../data/contexts/formAdmin";
+    import {
+        ctxGetQuestion,
+        ctxSubmissionsForQuestion,
+    } from "../../../../data/contexts/formAdmin";
     import { qIsChoiceMatrix } from "../../../../data/contexts/formEditor";
+    import { Chart } from "@flowbite-svelte-plugins/chart";
 
-    export let questionId: string;
+    interface Props {
+        questionId: string;
+    }
 
-    $: question = ctxGetQuestion(questionId);
-    $: submissions = ctxSubmissionsForQuestion(questionId);
+    let { questionId }: Props = $props();
 
-    let series: ApexAxisChartSeries | null = null;
-    $: {
+    let question = $derived(ctxGetQuestion(questionId));
+    let submissions = $derived(ctxSubmissionsForQuestion(questionId));
+
+    const series: () => ApexAxisChartSeries = $derived(() => {
         if ($question && qIsChoiceMatrix($question.configuration)) {
+            const _series: ApexAxisChartSeries = [];
+
             for (const col of $question.configuration.choice_matrix.columns) {
                 const seriesData: number[] = [];
 
@@ -29,22 +37,23 @@
                     seriesData.push(count);
                 }
 
-                series = [
-                    ...(series ?? []),
-                    {
-                        name: col,
-                        data: seriesData,
-                    },
-                ];
+                _series.push({
+                    name: col,
+                    data: seriesData,
+                });
             }
+
+            return _series;
         }
-    }
+
+        return [];
+    });
 </script>
 
-{#if series && $question !== undefined && qIsChoiceMatrix($question.configuration)}
+{#if $question !== undefined && qIsChoiceMatrix($question.configuration)}
     <Chart
         options={{
-            series,
+            series: series(),
             chart: {
                 type: "bar",
                 height: 350,

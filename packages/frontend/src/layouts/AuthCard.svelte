@@ -2,7 +2,13 @@
     import AuthCardHelp from "./AuthCardHelp.svelte";
     import textLogo from "../assets/text_logo.svg";
 
-    export let title: string | undefined = undefined;
+    interface Props {
+        title?: string | undefined;
+        children?: import('svelte').Snippet;
+        footer?: import('svelte').Snippet;
+    }
+
+    let { title = undefined, children, footer }: Props = $props();
 </script>
 
 <main
@@ -22,18 +28,18 @@
                 </h1>
             {/if}
             <div class="w-full">
-                <slot />
+                {@render children?.()}
             </div>
             <div class="text-sm mt-8">
-                <slot name="footer" />
+                {@render footer?.()}
             </div>
         </div>
 
-        <div class="lg:h-12" />
+        <div class="lg:h-12"></div>
     </div>
 
     <div
-        class="hidden lg:flex w-1/2 h-full justify-center items-center bg-gradient-to-tr from-primary-400 to-blue-400 dark:from-primary-800 dark:to-blue-800"
+        class="hidden lg:flex w-1/2 h-full justify-center items-center bg-linear-to-tr from-primary-400 to-blue-400 dark:from-primary-800 dark:to-blue-800"
     >
         <AuthCardHelp />
     </div>

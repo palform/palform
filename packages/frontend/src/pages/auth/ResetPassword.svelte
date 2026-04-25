@@ -6,13 +6,15 @@
     import LoadingButton from "../../components/LoadingButton.svelte";
     import { APIs } from "../../data/common";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
-    import { navigate } from "svelte-routing";
+    import { navigate, route } from "../../router";
 
-    export let verificationId: string;
-    let newPassword = "";
-    let loading = false;
+    let { verificationId } = route.getParams(
+        "/auth/reset/password/:verificationId"
+    );
+    let newPassword = $state("");
+    let loading = $state(false);
 
-    $: onResetClick = async (e: Event) => {
+    let onResetClick = $derived(async (e: Event) => {
         e.preventDefault();
         loading = true;
         try {
@@ -28,14 +30,14 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 </script>
 
 <AuthCard title="Reset your password">
     <InfoText>Thanks for verifying your email address!</InfoText>
     <InfoText>To continue, please choose a new password.</InfoText>
 
-    <form class="mt-4" on:submit={onResetClick}>
+    <form class="mt-4" onsubmit={onResetClick}>
         <Label>
             New password
             <PasswordPicker

@@ -5,22 +5,23 @@
     import { generateNewTOTP, verifyTOTP } from "../../../../data/auth/2fa";
     import { showFailureToast } from "../../../../data/toast";
     import { APIs } from "../../../../data/common";
-    import { createEventDispatcher } from "svelte";
-    import type {
-        APIAdminUserSecondAuthenticationFactor,
-    } from "@paltiverse/palform-typescript-openapi";
+    import type { APIAdminUserSecondAuthenticationFactor } from "@palform/palform-typescript-openapi";
     import { DateTime } from "luxon";
 
-    export let nickname: string;
-    const dispatch = createEventDispatcher<{
-        enroll: APIAdminUserSecondAuthenticationFactor;
-    }>();
+    interface Props {
+        nickname: string;
+        onenroll: (factor: APIAdminUserSecondAuthenticationFactor) => void;
+    }
 
-    let data: { uri: string; secret: string } = generateNewTOTP(nickname);
-    let loading = false;
-    let sampleCode = "";
+    let { nickname, onenroll }: Props = $props();
 
-    $: onEnrollClick = async () => {
+    let data: { uri: string; secret: string } = $derived(
+        generateNewTOTP(nickname)
+    );
+    let loading = $state(false);
+    let sampleCode = $state("");
+
+    let onEnrollClick = $derived(async () => {
         if (!data) return;
 
         if (!verifyTOTP(sampleCode, data.secret)) {
@@ -37,16 +38,17 @@
                 })
             );
 
-            dispatch("enroll", {
+            onenroll({
                 id: resp.data,
                 nickname,
                 created_at: DateTime.now().toISO(),
+                method: "TOTP",
             });
             loading = false;
         } catch (e) {
             await showFailureToast(e);
         }
-    };
+    });
 </script>
 
 <QrCode uri={data.uri} />
@@ -63,6 +65,6 @@
     <Input class="mt-1" bind:value={sampleCode} disabled={loading} />
 </Label>
 
-<LoadingButton {loading} disabled={loading} on:click={onEnrollClick}>
+<LoadingButton {loading} disabled={loading} onclick={onEnrollClick}>
     Enroll
 </LoadingButton>

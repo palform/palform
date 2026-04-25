@@ -5,36 +5,32 @@
     import LoadingButton from "../../components/LoadingButton.svelte";
     import { APIs } from "../../data/common";
     import { showFailureToast } from "../../data/toast";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../router";
     import { saveAuthToken } from "../../data/auth";
     import type {
-        SignInResponseOneOf1SecondFactorRequired,
+        SecondFactorRequiredSecondFactorRequired,
         VerifyTFASecondFactorRequest,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import WebauthnButton from "../../components/auth/WebauthnButton.svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faFingerprint, faMobile } from "@fortawesome/free-solid-svg-icons";
 
-    export let tfa: SignInResponseOneOf1SecondFactorRequired;
-    export let newOrgId: string | undefined;
+    interface Props {
+        tfa: SecondFactorRequiredSecondFactorRequired;
+        newOrgId: string | undefined;
+    }
 
-    $: allowWebauthn = !!tfa.rcr;
-    $: allowTotp = tfa.totp;
-    $: allowBoth = allowWebauthn && allowTotp;
-    let selectedMethod: "webauthn" | "totp" | undefined = undefined;
+    let { tfa, newOrgId }: Props = $props();
 
-    let totpToken = "";
-    let loading = false;
-    $: onTotpSubmit = async (e: Event) => {
-        e.preventDefault();
-        await submitWith({ Totp: totpToken });
-    };
+    let selectedMethod: "webauthn" | "totp" | undefined = $state(undefined);
 
-    $: onWebauthnAuth = async (e: CustomEvent<any>) => {
-        await submitWith({ Webauthn: e.detail });
-    };
+    let totpToken = $state("");
+    let loading = $state(false);
 
-    $: submitWith = async (data: VerifyTFASecondFactorRequest) => {
+    let allowWebauthn = $derived(!!tfa.rcr);
+    let allowTotp = $derived(tfa.totp);
+    let allowBoth = $derived(allowWebauthn && allowTotp);
+    let submitWith = $derived(async (data: VerifyTFASecondFactorRequest) => {
         loading = true;
         try {
             const resp = await APIs.auth.authVerifyTfa({
@@ -59,7 +55,14 @@
         }
 
         loading = false;
-    };
+    });
+    let onTotpSubmit = $derived(async (e: Event) => {
+        e.preventDefault();
+        await submitWith({ Totp: totpToken });
+    });
+    let onWebauthnAuth = $derived(async (e: CustomEvent<any>) => {
+        await submitWith({ Webauthn: e.detail });
+    });
 </script>
 
 <AuthCard title="Verify your identity">
@@ -69,11 +72,11 @@
 
     {#if allowBoth && selectedMethod === undefined}
         <div class="mt-4">
-            <Button on:click={() => (selectedMethod = "totp")}>
+            <Button onclick={() => (selectedMethod = "totp")}>
                 <FontAwesomeIcon icon={faMobile} class="me-2" />
                 Authenticator app
             </Button>
-            <Button on:click={() => (selectedMethod = "webauthn")}>
+            <Button onclick={() => (selectedMethod = "webauthn")}>
                 <FontAwesomeIcon icon={faFingerprint} class="me-2" />
                 Passkey
             </Button>
@@ -87,7 +90,7 @@
             initialAutoClick
         />
     {:else if (!allowBoth && allowTotp) || selectedMethod === "totp"}
-        <form on:submit={onTotpSubmit}>
+        <form onsubmit={onTotpSubmit}>
             <Label class="mt-4">
                 Code
                 <Input
@@ -109,7 +112,7 @@
         </form>
     {/if}
 
-    <svelte:fragment slot="footer">
+    {#snippet footer()}
         <InfoText>Can't sign in? Please contact our support team.</InfoText>
-    </svelte:fragment>
+    {/snippet}
 </AuthCard>

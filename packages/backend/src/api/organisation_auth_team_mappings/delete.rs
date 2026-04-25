@@ -1,48 +1,58 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
-use palform_tsid::{resources::{IDOrganisation, IDOrganisationAuthTeamMapping}, tsid::PalformDatabaseID};
-use rocket::{delete, State};
-use rocket_okapi::openapi;
+use palform_tsid::{
+    resources::{IDOrganisation, IDOrganisationAuthTeamMapping},
+    tsid::PalformDatabaseID,
+};
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
+use serde::Deserialize;
 
 use crate::{
-    audit::AuditManager, auth::rbac::requests::APITokenOrgAdmin, auth::tokens::APIAuthTokenSource,
+    actix_util::from_org_id::FromOrgId,
+    audit::{id_chains::IDChainEmpty, manager::AuditManager},
+    auth::{rbac::requests::APITokenOrgAdmin, tokens::APIAuthTokenSource},
     entity_managers::organisation_auth_team_mappings::OrganisationAuthTeamMappingsManager,
-    rocket_util::from_org_id::FromOrgId,
 };
 
-#[openapi(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct OrganisationAuthTeamMappingsDeletePath {
+    org_id: PalformDatabaseID<IDOrganisation>,
+    mapping_id: PalformDatabaseID<IDOrganisationAuthTeamMapping>,
+}
+
+#[api_operation(
     tag = "Organisation Authentication Team Mappings",
     operation_id = "organisation.auth_config.mappings.delete"
 )]
-#[delete("/users/me/orgs/<org_id>/auth_config/mappings/<mapping_id>")]
-pub async fn handler(
-    org_id: PalformDatabaseID<IDOrganisation>,
-    mapping_id: PalformDatabaseID<IDOrganisationAuthTeamMapping>,
+pub async fn organisation_auth_team_mappings_delete(
+    path: Path<OrganisationAuthTeamMappingsDeletePath>,
     token: APITokenOrgAdmin,
-    db: &State<DatabaseConnection>,
-    audit: FromOrgId<AuditManager>,
+    db: Data<DatabaseConnection>,
+    audit: FromOrgId<AuditManager<IDChainEmpty>>,
     m: FromOrgId<OrganisationAuthTeamMappingsManager>,
-) -> Result<(), APIErrorWithStatus> {
+) -> Result<(), APIError> {
     if !m
-        .verify_mapping_org(db.inner(), mapping_id)
+        .verify_mapping_org(db.as_ref(), path.mapping_id)
         .await
         .map_internal_error()?
     {
         return Err(APIError::NotFound.into());
     }
 
-    m.delete(db.inner(), mapping_id)
+    m.delete(db.as_ref(), path.mapping_id)
         .await
         .map_internal_error()?;
 
     audit
         .log_event_with_note(
-            db.inner(),
+            db.as_ref(),
             token.get_user_id(),
             AuditLogVerbEnum::Update,
             AuditLogTargetResourceEnum::OrganisationAuthConfig,
-            Some(org_id.into_unknown()),
+            Some(path.org_id.into_unknown()),
             Some("Deleted team mapping".to_string()),
         )
         .await

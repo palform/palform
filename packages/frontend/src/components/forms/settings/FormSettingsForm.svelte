@@ -1,7 +1,6 @@
 <script lang="ts">
     import {
         Button,
-        ButtonGroup,
         Helper,
         Input,
         Label,
@@ -9,7 +8,7 @@
         Toggle,
         Tooltip,
     } from "flowbite-svelte";
-    import { Link, navigate } from "svelte-routing";
+    import { navigate, p } from "../../../router";
     import { APIs } from "../../../data/common";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import LoadingButton from "../../LoadingButton.svelte";
@@ -22,41 +21,64 @@
         APIForm,
         APIFormBranding,
         UpdateFormRequest,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import TeamDropdown from "../../teams/TeamDropdown.svelte";
     import { isEntitled } from "../../../data/billing/entitlement";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
 
-    export let initialValue: (UpdateFormRequest & { id: string }) | undefined;
-    export let initialTeamId: string | undefined = undefined;
-    export let oqpp: boolean | undefined = undefined;
-    export let selectField: string | undefined = undefined;
+    interface Props {
+        initialValue: (UpdateFormRequest & { id: string }) | undefined;
+        initialTeamId?: string | undefined;
+        oqpp?: boolean | undefined;
+        selectField?: string | undefined;
+    }
 
-    $: isNew = initialValue === undefined;
-    let editorName = initialValue?.editor_name ?? "";
-    let title = initialValue?.title ?? "";
-    let teamId = initialTeamId ?? "";
-    let captcha = initialValue?.enable_captcha ?? false;
-    let loading = false;
+    let {
+        initialValue,
+        initialTeamId = undefined,
+        oqpp = undefined,
+        selectField = undefined,
+    }: Props = $props();
+
+    let isNew = $derived(initialValue === undefined);
+    // svelte-ignore state_referenced_locally
+    let editorName = $state(initialValue?.editor_name ?? "");
+    // svelte-ignore state_referenced_locally
+    let title = $state(initialValue?.title ?? "");
+    // svelte-ignore state_referenced_locally
+    let teamId = $state(initialTeamId ?? "");
+    // svelte-ignore state_referenced_locally
+    let captcha = $state(initialValue?.enable_captcha ?? false);
+    let initialBrandingId = $derived(initialValue?.branding_id ?? "DEFAULT");
+    // svelte-ignore state_referenced_locally
+    let brandingId = $state(initialBrandingId);
+    let loading = $state(false);
+
+    let hasChanged = $derived(
+        editorName !== initialValue?.editor_name ||
+            title !== initialValue?.title ||
+            captcha !== initialValue?.enable_captcha ||
+            brandingId !== initialBrandingId
+    );
 
     const ctx = getOrgContext();
     const isBrandingEntitled = isEntitled("branding_count");
     const isCaptchaEntitled = isEntitled("form_captcha");
 
-    let brandings: APIFormBranding[] = [];
-    let brandingsLoading = true;
-    let brandingId = initialValue?.branding_id ?? "DEFAULT";
-    $: (async () => {
+    let brandings: APIFormBranding[] = $state([]);
+    let brandingsLoading = $state(true);
+    $effect(() => {
         if (teamId === "" || isNew) return;
-        brandingsLoading = true;
-        const resp = await APIs.formBrandings().then((a) =>
-            a.organisationTeamBrandingList($ctx.org.id, teamId)
-        );
-        brandings = resp.data;
-        brandingsLoading = false;
-    })();
+        (async () => {
+            brandingsLoading = true;
+            const resp = await APIs.formBrandings().then((a) =>
+                a.organisationTeamBrandingList($ctx.org.id, teamId)
+            );
+            brandings = resp.data;
+            brandingsLoading = false;
+        })();
+    });
 
-    $: onSubmit = async (e: Event) => {
+    let onSubmit = $derived(async (e: Event) => {
         e.preventDefault();
         if (!title || !brandingId || (!isNew && !editorName)) return;
 
@@ -93,7 +115,7 @@
                         forms: [resp.data, ...ctx.forms],
                     };
                 });
-                navigate(`/orgs/${$ctx.org.id}/forms/${resp.data.id}/`);
+                navigate(`/orgs/${$ctx.org.id}/forms/${resp.data.id}/overview`);
             }
             await showSuccessToast(isNew ? "Form created" : "Form saved");
         } catch (e) {
@@ -101,10 +123,10 @@
         }
 
         loading = false;
-    };
+    });
 </script>
 
-<form class="mt-4 space-y-4" on:submit={onSubmit}>
+<form class="mt-4 space-y-4" onsubmit={onSubmit}>
     {#if isNew}
         <fieldset>
             <Label class="font-medium">
@@ -175,12 +197,12 @@
                         class="mt-2"
                     />
                     <Helper class="mt-2">
-                        You can <Link
-                            to={`/orgs/${$ctx.org.id}/settings/teams/${teamId}/brandings`}
+                        You can <a
+                            href={`/orgs/${$ctx.org.id}/settings/teams/${teamId}/brandings`}
                             class="hover:underline text-primary-800 dark:text-primary-400"
                         >
                             configure branding schemes
-                        </Link>
+                        </a>
                         for this team.
                     </Helper>
                 {/if}
@@ -202,24 +224,17 @@
         {/if}
     {/if}
 
-    <ButtonGroup>
-        <LoadingButton
-            disabled={loading}
-            {loading}
-            type="submit"
-            outline={!isNew}
-        >
-            {isNew ? "Create!" : "Save!"}
+    {#if isNew || hasChanged}
+        <LoadingButton disabled={loading} {loading} type="submit">
+            {isNew ? "Create" : "Save"}
         </LoadingButton>
-        {#if isNew}
-            <Button
-                href={`/orgs/${$ctx.org.id}`}
-                on:click={navigateEvent}
-                outline
-                color="primary"
-            >
-                Cancel
-            </Button>
-        {/if}
-    </ButtonGroup>
+    {/if}
+    {#if isNew}
+        <Button
+            href={p("/orgs/:orgId", { params: { orgId: $ctx.org.id } })}
+            color="light"
+        >
+            Cancel
+        </Button>
+    {/if}
 </form>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIFillToken } from "@paltiverse/palform-typescript-openapi";
+    import type { APIFillToken } from "@palform/palform-typescript-openapi";
     import {
         Alert,
         Table,
@@ -13,16 +13,16 @@
 
     const formAdminCtx = getFormAdminContext();
 
-    $: insertNewToken = (newToken: CustomEvent<APIFillToken>) => {
-        $formAdminCtx.tokens = [...$formAdminCtx.tokens, newToken.detail];
-    };
+    let insertNewToken = $derived((newToken: APIFillToken) => {
+        $formAdminCtx.tokens = [...$formAdminCtx.tokens, newToken];
+    });
 
-    $: onTokenDelete = (id: string) => {
+    let onTokenDelete = $derived((id: string) => {
         $formAdminCtx.tokens = $formAdminCtx.tokens.filter((e) => e.id !== id);
-    };
+    });
 </script>
 
-<NewTokenModal on:newToken={insertNewToken} />
+<NewTokenModal onnewtoken={insertNewToken} />
 
 {#if $formAdminCtx.tokens.length === 0}
     <Alert color="blue">
@@ -44,7 +44,7 @@
         </TableHead>
         <TableBody>
             {#each $formAdminCtx.tokens as token (token.id)}
-                <TokenRow {token} on:delete={() => onTokenDelete(token.id)} />
+                <TokenRow {token} ondelete={() => onTokenDelete(token.id)} />
             {/each}
         </TableBody>
     </Table>

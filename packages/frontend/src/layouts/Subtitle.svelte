@@ -1,7 +1,12 @@
 <script lang="ts">
-  export let className = "";
+  interface Props {
+    className?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let { className = "", children }: Props = $props();
 </script>
 
 <h2 class={`text-xl ${className}`}>
-  <slot />
+  {@render children?.()}
 </h2>

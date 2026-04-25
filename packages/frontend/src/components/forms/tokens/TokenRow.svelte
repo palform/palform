@@ -1,44 +1,48 @@
 <script lang="ts">
-    import type { APIFillToken } from "@paltiverse/palform-typescript-openapi";
+    import type { APIFillToken } from "@palform/palform-typescript-openapi";
     import { Modal, TableBodyCell, TableBodyRow } from "flowbite-svelte";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { showSuccessToast } from "../../../data/toast";
     import { APIs } from "../../../data/common";
-    import { createEventDispatcher } from "svelte";
     import { parseServerTime } from "../../../data/util/time";
     import TableSingleAction from "../../tables/TableSingleAction.svelte";
     import { DateTime } from "luxon";
     import TokenEmbedOptions from "./TokenEmbedOptions.svelte";
     import { getFormAdminContext } from "../../../data/contexts/formAdmin";
 
-    export let token: APIFillToken;
+    interface Props {
+        token: APIFillToken;
+        ondelete: () => void;
+    }
+
+    let { token, ondelete }: Props = $props();
 
     const orgCtx = getOrgContext();
     const formAdminCtx = getFormAdminContext();
 
-    const dispatch = createEventDispatcher<{ delete: undefined }>();
+    let createdAt = $derived(parseServerTime(token.created_at));
+    let expiresAt = $derived(
+        token.expires_at ? parseServerTime(token.expires_at) : undefined
+    );
+    let expired = $derived(
+        expiresAt !== undefined && expiresAt < DateTime.now()
+    );
 
-    $: createdAt = parseServerTime(token.created_at);
-    $: expiresAt = token.expires_at
-        ? parseServerTime(token.expires_at)
-        : undefined;
-    $: expired = expiresAt !== undefined && expiresAt < DateTime.now();
-
-    let deleteLoading = false;
-    $: onDeleteClick = async (id: string) => {
+    let deleteLoading = $state(false);
+    let onDeleteClick = $derived(async (id: string) => {
         deleteLoading = true;
         await APIs.fillTokens().then((a) =>
             a.fillAccessTokensDelete($orgCtx.org.id, $formAdminCtx.formId, id)
         );
-        dispatch("delete");
+        ondelete();
         deleteLoading = false;
 
         await showSuccessToast(
             "Token deleted! Anyone with that link can no longer fill in your form."
         );
-    };
+    });
 
-    let showViewLinkModal = false;
+    let showViewLinkModal = $state(false);
 </script>
 
 <Modal
@@ -58,7 +62,7 @@
         <button
             class={`block hover:underline ${expired ? "text-red-600 line-through" : "text-primary-600"}`}
             title="Copy shareable URL"
-            on:click={() => (showViewLinkModal = true)}
+            onclick={() => (showViewLinkModal = true)}
         >
             View link
         </button>
@@ -79,7 +83,7 @@
     <TableBodyCell>
         <TableSingleAction
             disabled={deleteLoading}
-            on:click={() => onDeleteClick(token.id)}
+            onclick={() => onDeleteClick(token.id)}
         >
             Delete
         </TableSingleAction>

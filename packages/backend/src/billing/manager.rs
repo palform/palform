@@ -3,7 +3,7 @@ use std::{collections::HashMap, str::FromStr};
 use chrono::{DateTime, Utc};
 use palform_entities::{organisation, prelude::*};
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
-use rocket_okapi::okapi::schemars::{self, JsonSchema};
+use schemars::JsonSchema;
 use sea_orm::{ActiveModelTrait, ConnectionTrait, DbErr, EntityTrait, QuerySelect, Set};
 use serde::Deserialize;
 use stripe::{

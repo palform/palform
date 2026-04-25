@@ -2,6 +2,11 @@
     import { ctxGetCurrentGroup } from "../../../data/contexts/fill";
     import BrandedSpan from "../../teams/brandings/BrandedSpan.svelte";
     import GenericBrandBox from "../../teams/brandings/GenericBrandBox.svelte";
+    interface Props {
+        [key: string]: any
+    }
+
+    let { ...props }: Props = $props();
 
     const currentGroup = ctxGetCurrentGroup();
 </script>
@@ -9,7 +14,7 @@
 {#if $currentGroup && ($currentGroup.title || $currentGroup.description)}
     <GenericBrandBox
         neutralBorder
-        class={`bg-slate-50 dark:bg-slate-700 ${$$props.class}`}
+        class={`bg-slate-50 dark:bg-slate-700 ${props.class}`}
     >
         {#if $currentGroup.title}
             <h2 class="dark:text-gray-200">

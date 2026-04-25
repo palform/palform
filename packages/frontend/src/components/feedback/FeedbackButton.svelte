@@ -4,7 +4,11 @@
     import { Button } from "flowbite-svelte";
     import FeedbackMiniModal from "./FeedbackMiniModal.svelte";
 
-    export let showMiniModal = false;
+    interface Props {
+        showMiniModal?: boolean;
+    }
+
+    let { showMiniModal = $bindable(false) }: Props = $props();
 </script>
 
 {#if !showMiniModal}
@@ -12,11 +16,11 @@
         class="fixed bottom-4 right-4 z-10 shadow"
         size="sm"
         color="light"
-        on:click={() => (showMiniModal = true)}
+        onclick={() => (showMiniModal = true)}
     >
         <FontAwesomeIcon icon={faComment} class="me-3 text-gray-500" />
         Give feedback
     </Button>
 {:else}
-    <FeedbackMiniModal on:done={() => (showMiniModal = false)} />
+    <FeedbackMiniModal ondone={() => (showMiniModal = false)} />
 {/if}

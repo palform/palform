@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, ButtonGroup, Fileupload, Label } from "flowbite-svelte";
+    import { Alert, Button, Fileupload, Label } from "flowbite-svelte";
     import LoadingButton from "../../../components/LoadingButton.svelte";
     import {
         getOrgContext,
@@ -13,18 +13,20 @@
     } from "../../../data/toast";
     import { faWarning } from "@fortawesome/free-solid-svg-icons";
     import { importKey } from "../../../data/crypto/keyManager";
-    import { navigate } from "svelte-routing";
+    import { navigate, p } from "../../../router";
     import InfoText from "../../../components/type/InfoText.svelte";
     import MainTitle from "../../../layouts/MainTitle.svelte";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { isEntitled } from "../../../data/billing/entitlement";
 
     const orgCtx = getOrgContext();
 
-    let loading = false;
-    let keyFiles: FileList;
+    let loading = $state(false);
+    let keyFiles: FileList | undefined = $state();
+    let entitled = isEntitled("import_keys");
 
-    $: onSubmit = async (e: Event) => {
+    let onSubmit = $derived(async (e: Event) => {
         e.preventDefault();
+        if (!keyFiles) return;
 
         if (keyFiles.length !== 1) {
             await showToast({
@@ -49,43 +51,60 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 </script>
 
 <MainTitle>Import a key</MainTitle>
 
-<InfoText class="mt-2">
-    Import an OpenPGP certificate (including the secret) to use for encrypting
-    form responses.
-</InfoText>
-<InfoText class="mb-4">
-    Simply paste your ASCII-armored certificate in the field below and we'll
-    import it.
-</InfoText>
+{#if $entitled}
+    <InfoText class="mt-2">
+        Import an OpenPGP certificate (including the secret) to use for
+        encrypting form responses.
+    </InfoText>
+    <InfoText class="mb-4">
+        Simply paste your ASCII-armored certificate in the field below and we'll
+        import it.
+    </InfoText>
 
-<form on:submit={onSubmit}>
-    <fieldset>
-        <Label>
-            OpenPGP ASCII-armored certificate
-            <Fileupload
-                class="mt-2"
-                bind:files={keyFiles}
-                accept=".asc,.pgp,.key,application/pgp-keys"
-            />
-        </Label>
-    </fieldset>
+    <form onsubmit={onSubmit}>
+        <fieldset>
+            <Label>
+                OpenPGP ASCII-armored certificate
+                <Fileupload
+                    class="mt-2"
+                    bind:files={keyFiles}
+                    accept=".asc,.pgp,.key,application/pgp-keys"
+                />
+            </Label>
+        </fieldset>
 
-    <ButtonGroup class="mt-4">
-        <LoadingButton type="submit" disabled={loading} {loading}>
-            Import
-        </LoadingButton>
-        <Button
-            color="primary"
-            href={`/orgs/${$orgCtx.org.id}/user/keys`}
-            on:click={navigateEvent}
-            outline
+        <div class="mt-4">
+            <LoadingButton type="submit" disabled={loading} {loading}>
+                Import
+            </LoadingButton>
+            <Button
+                color="primary"
+                href={p("/orgs/:orgId/user/keys", {
+                    params: { orgId: $orgCtx.org.id },
+                })}
+                outline
+            >
+                Cancel
+            </Button>
+        </div>
+    </form>
+{:else}
+    <Alert border class="mt-4">
+        <h3 class="text-lg">Import your own OpenPGP certificates</h3>
+        <p>
+            Customise security to your own exact needs by bringing your own
+            OpenPGP certificate. Your secret will be stored securely in your
+            browser and will be sent to our server fully encrypted.
+        </p>
+        <p>To continue, please upgrade your plan.</p>
+
+        <Button class="mt-2" href={`/orgs/${$orgCtx.org.id}/settings/billing`}
+            >Continue</Button
         >
-            Cancel
-        </Button>
-    </ButtonGroup>
-</form>
+    </Alert>
+{/if}

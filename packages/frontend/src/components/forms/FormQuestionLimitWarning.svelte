@@ -1,28 +1,29 @@
 <script lang="ts">
     import { Alert, Button, Progressbar } from "flowbite-svelte";
     import { getOrgContext } from "../../data/contexts/orgLayout";
-    import { navigate } from "svelte-routing";
     import { rangeLerp } from "../../data/util/lerp";
     import { getFormAdminContext } from "../../data/contexts/formAdmin";
 
+    interface Props {
+        class?: string;
+    }
+
+    let { class: className }: Props = $props();
+
     const orgCtx = getOrgContext();
     const formAdminCtx = getFormAdminContext();
-    $: countLimit = $orgCtx.entitlements?.question_per_form_count;
-    $: currentCount = $formAdminCtx.questions.length;
-    $: progressValue = countLimit
-        ? rangeLerp(0, countLimit, 0, 100, currentCount)
-        : 0;
-
-    $: onUpgradeClick = () => {
-        navigate(`/orgs/${$orgCtx.org.id}/settings/billing`);
-    };
+    let countLimit = $derived($orgCtx.entitlements?.question_per_form_count);
+    let currentCount = $derived($formAdminCtx.questions.length);
+    let progressValue = $derived(
+        countLimit ? rangeLerp(0, countLimit, 0, 100, currentCount) : 0
+    );
 </script>
 
 {#if countLimit}
     <Alert
-        color={currentCount !== countLimit ? "light" : "primary"}
+        color={currentCount !== countLimit ? "secondary" : "primary"}
         border
-        class={$$props.class}
+        class={`${currentCount !== countLimit ? "border-gray-300 dark:border-gray-700" : ""} ${className}`}
     >
         <Progressbar class="mb-2" progress={progressValue} />
         {#if currentCount === countLimit}
@@ -36,6 +37,8 @@
                 in your plan.
             </p>
         {/if}
-        <Button class="mt-2" on:click={onUpgradeClick}>Upgrade</Button>
+        <Button class="mt-2" href={`/orgs/${$orgCtx.org.id}/settings/billing`}
+            >Upgrade</Button
+        >
     </Alert>
 {/if}

@@ -1,3 +1,4 @@
+use apistos::ApiComponent;
 use palform_entities::sea_orm_active_enums::{
     FormBrandingBorderIntensityEnum, FormBrandingBorderRoundingEnum, FormBrandingFontSizeEnum,
     FormBrandingSpacingEnum,
@@ -6,12 +7,11 @@ use palform_tsid::{
     resources::{IDFormBranding, IDTeam, IDTeamAsset},
     tsid::PalformDatabaseID,
 };
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
+use schemars::JsonSchema;
 use sea_orm::FromQueryResult;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, JsonSchema, FromQueryResult)]
+#[derive(Serialize, JsonSchema, FromQueryResult, ApiComponent)]
 pub struct APIFormBranding {
     pub id: PalformDatabaseID<IDFormBranding>,
     pub name: String,
@@ -34,7 +34,7 @@ pub struct APIFormBranding {
     pub background_color_accent: Option<String>,
 }
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct APIFormBrandingRequest {
     pub name: String,
     pub primary_color: String,
@@ -56,7 +56,7 @@ pub struct APIFormBrandingRequest {
     pub background_color_accent: Option<String>,
 }
 
-#[derive(Serialize, JsonSchema, FromQueryResult)]
+#[derive(Serialize, JsonSchema, FromQueryResult, ApiComponent)]
 pub struct APIFormBrandingAccess {
     pub team_id: PalformDatabaseID<IDTeam>,
     pub team_name: String,

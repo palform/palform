@@ -10,7 +10,10 @@ use crate::address::APIGenericLocation;
 
 use super::question_group::APIQuestionGroup;
 
-#[cfg_attr(feature = "backend", derive(schemars::JsonSchema))]
+#[cfg_attr(
+    feature = "backend",
+    derive(schemars::JsonSchema, apistos::ApiComponent)
+)]
 #[derive(Clone, Deserialize, Serialize)]
 pub struct APIQuestion {
     pub id: PalformDatabaseID<IDQuestion>,
@@ -82,8 +85,10 @@ impl PartialEq for APIQuestion {
 pub enum APIQuestionConfiguration {
     /// A purely informational non-interactive question that serves as (e.g.) a section heading.
     #[serde(rename = "info")]
+    #[cfg_attr(feature = "backend", schemars(title = "config_info"))]
     Info { background_color: Option<String> },
     #[serde(rename = "text")]
+    #[cfg_attr(feature = "backend", schemars(title = "config_text"))]
     Text {
         /// Will use a textarea instead of an input
         is_long: bool,
@@ -92,12 +97,14 @@ pub enum APIQuestionConfiguration {
         validator: Option<APIQuestionTextValidator>,
     },
     #[serde(rename = "choice")]
+    #[cfg_attr(feature = "backend", schemars(title = "config_choice"))]
     Choice {
         options: Vec<String>,
         /// Support multiple options in a submission (i.e. checkboxes instead of radio buttons)
         multi: bool,
     },
     #[serde(rename = "scale")]
+    #[cfg_attr(feature = "backend", schemars(title = "config_scale"))]
     Scale {
         min: i32,
         min_label: Option<String>,
@@ -107,28 +114,34 @@ pub enum APIQuestionConfiguration {
         icon: APIQuestionScaleIcon,
     },
     #[serde(rename = "address")]
+    #[cfg_attr(feature = "backend", schemars(title = "config_address"))]
     Address {
         search_centre: Option<APIGenericLocation>,
     },
     #[serde(rename = "phone_number")]
+    #[cfg_attr(feature = "backend", schemars(title = "config_phone_number"))]
     PhoneNumber {},
     #[serde(rename = "file_upload")]
+    #[cfg_attr(feature = "backend", schemars(title = "config_file_upload"))]
     FileUpload {
         allowed_types: Vec<APIQuestionFileUploadType>,
     },
     #[serde(rename = "signature")]
+    #[cfg_attr(feature = "backend", schemars(title = "config_signature"))]
     Signature {
         allow_freeform: bool,
         allow_initial: bool,
         allow_full_name: bool,
     },
     #[serde(rename = "choice_matrix")]
+    #[cfg_attr(feature = "backend", schemars(title = "config_choice_matrix"))]
     ChoiceMatrix {
         columns: Vec<String>,
         rows: Vec<String>,
         multi_cols: bool,
     },
     #[serde(rename = "date_time")]
+    #[cfg_attr(feature = "backend", schemars(title = "config_date_time"))]
     DateTime {
         collect_date: bool,
         collect_time: bool,
@@ -136,6 +149,7 @@ pub enum APIQuestionConfiguration {
         max: Option<DateTime<Local>>,
     },
     #[serde(rename = "hidden")]
+    #[cfg_attr(feature = "backend", schemars(title = "config_hidden"))]
     Hidden { parameter_name: String },
 }
 

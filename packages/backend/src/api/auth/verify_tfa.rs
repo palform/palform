@@ -1,11 +1,10 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_tsid::{
     resources::IDAdminUserSecondAuthenticationFactorSession, tsid::PalformDatabaseID,
 };
-use rocket::post;
-use rocket::{serde::json::Json, State};
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::{okapi::schemars, openapi};
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 use webauthn_rs::prelude::PublicKeyCredential;
@@ -20,25 +19,24 @@ use crate::{
 
 use super::common::SignInResponse;
 
-#[derive(Deserialize, JsonSchema, Clone)]
+#[derive(Deserialize, JsonSchema, Clone, ApiComponent)]
 pub enum VerifyTFASecondFactorRequest {
     Totp(String),
-    Webauthn(#[schemars(with = "String")] PublicKeyCredential),
+    Webauthn(#[schemars(with = "std::collections::HashMap<String, String>")] PublicKeyCredential),
 }
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct VerifyTFARequest {
     session_id: PalformDatabaseID<IDAdminUserSecondAuthenticationFactorSession>,
     factor: VerifyTFASecondFactorRequest,
 }
 
-#[openapi(tag = "Authentication", operation_id = "auth.verify_tfa")]
-#[post("/auth/tfa", data = "<request>")]
-pub async fn handler(
+#[api_operation(tag = "Authentication", operation_id = "auth.verify_tfa")]
+pub async fn auth_verify_tfa(
     request: Json<VerifyTFARequest>,
-    db: &State<DatabaseConnection>,
-    config: &State<Config>,
-) -> Result<Json<SignInResponse>, APIErrorWithStatus> {
+    db: Data<DatabaseConnection>,
+    config: Data<Config>,
+) -> Result<Json<SignInResponse>, APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::Serializable),
@@ -64,7 +62,7 @@ pub async fn handler(
         VerifyTFASecondFactorRequest::Webauthn(pkc) => {
             AdminUserSecondFactorManager::verify_webauthn_session(
                 &txn,
-                config,
+                config.as_ref(),
                 request.session_id.to_owned(),
                 pkc.to_owned(),
             )
@@ -81,7 +79,7 @@ pub async fn handler(
             .await
             .map_internal_error()?;
 
-        let token = TokenManager::issue_token(&txn, user_id)
+        let token = TokenManager::issue_token(&txn, user_id, config.as_ref())
             .await
             .map_err(|e| APIError::report_internal_error("issue token following 2FA", e))?;
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIUserKeyWithIdentity } from "@paltiverse/palform-typescript-openapi";
+    import type { APIUserKeyWithIdentity } from "@palform/palform-typescript-openapi";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { APIs } from "../../../data/common";
     import { showFailureToast } from "../../../data/toast";
@@ -14,8 +14,8 @@
     import OrganisationKeyTableRow from "./OrganisationKeyTableRow.svelte";
 
     const orgCtx = getOrgContext();
-    let loading = true;
-    let keys: APIUserKeyWithIdentity[] | null = null;
+    let loading = $state(true);
+    let keys: APIUserKeyWithIdentity[] | null = $state(null);
 
     APIs.orgKeys()
         .then((a) => a.orgKeysList($orgCtx.org.id))
@@ -25,10 +25,10 @@
         })
         .catch(showFailureToast);
 
-    $: onKeyDelete = (id: string) => {
+    let onKeyDelete = $derived((id: string) => {
         if (!keys) return;
         keys = keys.filter((e) => e.id !== id);
-    };
+    });
 </script>
 
 {#if loading}

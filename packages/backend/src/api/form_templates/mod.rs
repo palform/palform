@@ -5,3 +5,4 @@ pub mod list;
 pub mod list_categories;
 pub mod list_top;
 pub mod report_view;
+pub mod scope;

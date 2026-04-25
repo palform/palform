@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { SubmissionCryptoDetailsResponse } from "@paltiverse/palform-typescript-openapi";
+    import type { SubmissionCryptoDetailsResponse } from "@palform/palform-typescript-openapi";
     import {
         Alert,
         Spinner,
@@ -19,29 +19,33 @@
     import { showFailureToast } from "../../../data/toast";
     import { getFormAdminContext } from "../../../data/contexts/formAdmin";
 
-    export let submissionId: string;
+    interface Props {
+        submissionId: string;
+    }
+
+    let { submissionId }: Props = $props();
 
     const orgCtx = getOrgContext();
     const formAdminCtx = getFormAdminContext();
 
-    let details: SubmissionCryptoDetailsResponse | undefined;
-    let loading = true;
-    $: APIs.submissions()
-        .then((a) =>
-            a.submissionsCrypto(
-                $orgCtx.org.id,
-                $formAdminCtx.formId,
-                submissionId
+    let details: SubmissionCryptoDetailsResponse | undefined = $state();
+    let loading = $state(true);
+    $effect(() => {
+        let formId = $formAdminCtx.formId;
+        let _submissionId = submissionId;
+        APIs.submissions()
+            .then((a) =>
+                a.submissionsCrypto($orgCtx.org.id, formId, _submissionId)
             )
-        )
-        .then((resp) => {
-            details = resp.data;
-            loading = false;
-        })
-        .catch((e) => {
-            loading = false;
-            return showFailureToast(e);
-        });
+            .then((resp) => {
+                details = resp.data;
+                loading = false;
+            })
+            .catch((e) => {
+                loading = false;
+                return showFailureToast(e);
+            });
+    });
 </script>
 
 {#if loading}

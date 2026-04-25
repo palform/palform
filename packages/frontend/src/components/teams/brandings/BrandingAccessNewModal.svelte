@@ -1,9 +1,8 @@
 <script lang="ts">
     import { faPlus } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-    import type { APIFormBrandingAccess } from "@paltiverse/palform-typescript-openapi";
-    import { Button, Label, Modal, Select } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
+    import type { APIFormBrandingAccess } from "@palform/palform-typescript-openapi";
+    import { Button, Label, Modal } from "flowbite-svelte";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { getTeamCtx } from "../../../data/contexts/team";
     import TeamDropdown from "../TeamDropdown.svelte";
@@ -11,18 +10,22 @@
     import { APIs } from "../../../data/common";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
 
-    export let brandingId: string;
-    export let existingTeams: string[];
+    interface Props {
+        brandingId: string;
+        existingTeams: string[];
+        oncreate: (access: APIFormBrandingAccess) => void;
+    }
+
+    let { brandingId, existingTeams, oncreate }: Props = $props();
     const orgCtx = getOrgContext();
     const teamCtx = getTeamCtx();
 
-    const dispatch = createEventDispatcher<{ create: APIFormBrandingAccess }>();
-    let showModal = false;
+    let showModal = $state(false);
 
-    let teamId = "";
-    let addLoading = false;
+    let teamId = $state("");
+    let addLoading = $state(false);
 
-    $: onAddClick = async () => {
+    let onAddClick = $derived(async () => {
         if (teamId === "") {
             await showFailureToast("Please select a team");
             return;
@@ -40,17 +43,17 @@
                     }
                 )
             );
-            dispatch("create", resp.data);
+            oncreate(resp.data);
             await showSuccessToast(`Added access for ${resp.data.team_name}`);
             showModal = false;
         } catch (e) {
             await showFailureToast(e);
         }
         addLoading = false;
-    };
+    });
 </script>
 
-<Button on:click={() => (showModal = true)}>
+<Button onclick={() => (showModal = true)}>
     <FontAwesomeIcon icon={faPlus} class="me-2" />
     Add access
 </Button>
@@ -73,7 +76,7 @@
     <LoadingButton
         disabled={addLoading}
         loading={addLoading}
-        on:click={onAddClick}
+        onclick={onAddClick}
     >
         Add
     </LoadingButton>

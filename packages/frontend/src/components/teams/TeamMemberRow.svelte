@@ -2,7 +2,7 @@
     import type {
         APIOrganisationTeamMember,
         OrganisationMemberRoleEnum,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import {
         Select,
         TableBodyCell,
@@ -16,19 +16,23 @@
     import { showFailureToast, showSuccessToast } from "../../data/toast";
     import { createEventDispatcher } from "svelte";
 
-    export let member: APIOrganisationTeamMember;
-    export let teamId: string;
-    export let isDefaultTeam: boolean;
-    export let readonly: boolean;
+    interface Props {
+        member: APIOrganisationTeamMember;
+        teamId: string;
+        isDefaultTeam: boolean;
+        readonly: boolean;
+    }
+
+    let { member, teamId, isDefaultTeam, readonly }: Props = $props();
     const orgCtx = getOrgContext();
 
     const dispatch = createEventDispatcher<{
         update: OrganisationMemberRoleEnum;
         delete: undefined;
     }>();
-    let roleValue = member.role;
-    let loading = false;
-    $: onRoleChange = async () => {
+    let roleValue = $state(member.role);
+    let loading = $state(false);
+    let onRoleChange = $derived(async () => {
         loading = true;
         try {
             await APIs.orgTeamMembers().then((a) =>
@@ -36,7 +40,9 @@
                     $orgCtx.org.id,
                     teamId,
                     member.user_id,
-                    roleValue
+                    {
+                        new_role: roleValue,
+                    }
                 )
             );
             await showSuccessToast("Saved role");
@@ -46,9 +52,9 @@
         }
 
         loading = false;
-    };
+    });
 
-    $: onDelete = async () => {
+    let onDelete = $derived(async () => {
         loading = true;
         try {
             await APIs.orgTeamMembers().then((a) =>
@@ -63,7 +69,7 @@
         } catch (e) {
             await showFailureToast(e);
         }
-    };
+    });
 </script>
 
 <TableBodyRow>
@@ -82,7 +88,7 @@
         <Select
             items={orgMemberSelectItems()}
             bind:value={roleValue}
-            on:change={onRoleChange}
+            onchange={onRoleChange}
             disabled={readonly}
         />
         {#if readonly}
@@ -91,7 +97,7 @@
     </TableBodyCell>
     {#if !isDefaultTeam}
         <TableBodyCell>
-            <TableSingleAction on:click={onDelete}>Delete</TableSingleAction>
+            <TableSingleAction onclick={onDelete}>Delete</TableSingleAction>
         </TableBodyCell>
     {/if}
 </TableBodyRow>

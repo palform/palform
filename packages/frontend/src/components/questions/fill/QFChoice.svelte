@@ -1,23 +1,22 @@
 <script lang="ts">
-    import type { QuestionSubmissionData } from "@paltiverse/palform-client-js-extra-types/QuestionSubmissionData";
-    import { createEventDispatcher } from "svelte";
     import {
         fillSendStore,
         sGetChoice,
         setQuestionValue,
+        type QuestionFillProps,
     } from "../../../data/contexts/fill";
-    import type { APIQuestionConfigurationOneOf2 } from "@paltiverse/palform-typescript-openapi";
     import QfClearButton from "./QFClearButton.svelte";
     import QfChoiceLabelButton from "./QFChoiceLabelButton.svelte";
+    import type { ConfigChoice } from "@palform/palform-typescript-openapi";
 
-    const dispatch = createEventDispatcher<{ change: undefined }>();
+    interface Props extends QuestionFillProps<ConfigChoice> {}
 
-    export let id: string;
-    export let config: APIQuestionConfigurationOneOf2;
-    export let currentValue: QuestionSubmissionData | undefined;
-    $: value = currentValue ? sGetChoice(currentValue) : { option: [] };
+    let { id, config, currentValue, onchange }: Props = $props();
+    let value = $derived(
+        currentValue ? sGetChoice(currentValue) : { option: [] }
+    );
 
-    $: onChoiceChange = () => {
+    let onChoiceChange = $derived(() => {
         if (currentValue === undefined) return;
 
         setQuestionValue(id, {
@@ -25,8 +24,8 @@
                 option: value.option,
             },
         });
-        dispatch("change");
-    };
+        onchange();
+    });
 
     const onClear = async (e: Event) => {
         if (currentValue === undefined) return;
@@ -37,7 +36,7 @@
                 option: [],
             },
         });
-        dispatch("change");
+        onchange();
     };
 </script>
 
@@ -52,7 +51,7 @@
                 class="hidden"
                 bind:group={value.option}
                 disabled={$fillSendStore?.loading}
-                on:change={onChoiceChange}
+                onchange={onChoiceChange}
             />
         {:else}
             <input
@@ -63,7 +62,7 @@
                 class="hidden"
                 bind:group={value.option[0]}
                 disabled={$fillSendStore?.loading}
-                on:change={onChoiceChange}
+                onchange={onChoiceChange}
             />
         {/if}
 
@@ -76,6 +75,6 @@
     {/each}
 
     {#if value.option.length > 0}
-        <QfClearButton on:click={onClear} disabled={$fillSendStore?.loading} />
+        <QfClearButton onclick={onClear} disabled={$fillSendStore?.loading} />
     {/if}
 </ol>

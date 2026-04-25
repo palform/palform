@@ -1,8 +1,8 @@
 use openidconnect::{
-    reqwest::async_http_client, AdditionalClaims, AuthDisplay, AuthPrompt, AuthorizationCode,
-    Client, ErrorResponse, GenderClaim, IdTokenClaims, JsonWebKey, JsonWebKeyType, JsonWebKeyUse,
+    AdditionalClaims, AuthDisplay, AuthPrompt, AuthorizationCode, Client, ConfigurationError,
+    EndpointMaybeSet, EndpointState, ErrorResponse, GenderClaim, IdTokenClaims, JsonWebKey,
     JweContentEncryptionAlgorithm, JwsSigningAlgorithm, Nonce, RedirectUrl, RevocableToken,
-    TokenIntrospectionResponse, TokenResponse, TokenType, UserInfoClaims,
+    TokenIntrospectionResponse, TokenResponse, UserInfoClaims,
 };
 use palform_entities::admin_user;
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
@@ -40,6 +40,8 @@ pub enum TokenExchangeError {
     TeamMappingError(String),
     #[error("Conflict with existing user: {0}")]
     UserConflict(String),
+    #[error("OIDC service improperly configured: {0}")]
+    ConfigurationError(#[from] ConfigurationError),
 }
 
 pub(super) struct OIDCTokenExchangeResult<AC, GC>
@@ -64,6 +66,13 @@ where
     pub(super) sub_matched_user: Option<admin_user::Model>,
 }
 
+pub fn new_oidc_http_client() -> openidconnect::reqwest::Client {
+    openidconnect::reqwest::ClientBuilder::new()
+        .redirect(openidconnect::reqwest::redirect::Policy::none())
+        .build()
+        .expect("Client should build")
+}
+
 #[allow(clippy::type_complexity)]
 pub(super) async fn oidc_common_token_exchange<
     CO,
@@ -71,20 +80,39 @@ pub(super) async fn oidc_common_token_exchange<
     AD,
     GC,
     JE,
-    JS,
-    JT,
-    JU,
     K,
     P,
     TE,
     TR,
-    TT,
     TIR,
     RT,
     TRE,
+    HasAuthUrl,
+    HasDeviceAuthUrl,
+    HasIntrospectionUrl,
+    HasRevocationUrl,
 >(
     conn: &CO,
-    client: Client<AC, AD, GC, JE, JS, JT, JU, K, P, TE, TR, TT, TIR, RT, TRE>,
+    client: Client<
+        AC,
+        AD,
+        GC,
+        JE,
+        K,
+        P,
+        TE,
+        TR,
+        TIR,
+        RT,
+        TRE,
+        HasAuthUrl,
+        HasDeviceAuthUrl,
+        HasIntrospectionUrl,
+        HasRevocationUrl,
+        EndpointMaybeSet,
+        EndpointMaybeSet,
+    >,
+    http_client: &openidconnect::reqwest::Client,
     auth_code: String,
     nonce: String,
     redirect_url: String,
@@ -96,24 +124,26 @@ where
     AC: AdditionalClaims + Clone,
     AD: AuthDisplay + Clone,
     GC: GenderClaim + Clone,
-    JE: JweContentEncryptionAlgorithm<JT> + Clone,
-    JS: JwsSigningAlgorithm<JT> + Clone,
-    JT: JsonWebKeyType + Clone,
-    JU: JsonWebKeyUse + Clone,
-    K: JsonWebKey<JS, JT, JU> + Clone,
+    JE: JweContentEncryptionAlgorithm<
+        KeyType = <K::SigningAlgorithm as JwsSigningAlgorithm>::KeyType,
+    >,
+    K: JsonWebKey,
     P: AuthPrompt + Clone,
-    TE: ErrorResponse + 'static + Clone,
-    TR: TokenResponse<AC, GC, JE, JS, JT, TT> + Clone,
-    TT: TokenType + 'static + Clone,
-    TIR: TokenIntrospectionResponse<TT> + Clone,
+    TE: ErrorResponse + Clone + 'static,
+    TR: TokenResponse<AC, GC, JE, K::SigningAlgorithm> + Clone,
+    TIR: TokenIntrospectionResponse + Clone,
     RT: RevocableToken + Clone,
-    TRE: ErrorResponse + 'static + Clone,
+    TRE: ErrorResponse + Clone + 'static,
+    HasAuthUrl: EndpointState + Clone,
+    HasDeviceAuthUrl: EndpointState + Clone,
+    HasIntrospectionUrl: EndpointState + Clone,
+    HasRevocationUrl: EndpointState + Clone,
 {
     let token_resp = client
         .clone()
         .set_redirect_uri(RedirectUrl::new(redirect_url.to_string())?)
-        .exchange_code(AuthorizationCode::new(auth_code))
-        .request_async(async_http_client)
+        .exchange_code(AuthorizationCode::new(auth_code))?
+        .request_async(http_client)
         .await
         .map_err(|e| TokenExchangeError::ExchangeError(e.to_string()))?;
 
@@ -134,7 +164,7 @@ where
             Some(id_token_claims.subject().to_owned()),
         )
         .map_err(|e| TokenExchangeError::UserInfoError(e.to_string()))?
-        .request_async(async_http_client)
+        .request_async(http_client)
         .await
         .map_err(|e| TokenExchangeError::UserInfoError(e.to_string()))?;
 

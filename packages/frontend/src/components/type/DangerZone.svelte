@@ -2,9 +2,14 @@
     import { faSkull } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import InfoText from "./InfoText.svelte";
+    interface Props {
+        [key: string]: any
+    }
+
+    let { ...props }: Props = $props();
 </script>
 
-<h2 class={`text-xl text-red-500 font-bold ${$$props.class}`}>
+<h2 class={`text-xl text-red-500 font-bold ${props.class}`}>
     <FontAwesomeIcon icon={faSkull} />
     Danger Zone
 </h2>

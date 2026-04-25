@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIOrganisationAuthConfig } from "@paltiverse/palform-typescript-openapi";
+    import type { APIOrganisationAuthConfig } from "@palform/palform-typescript-openapi";
     import {
         Alert,
         Button,
@@ -14,26 +14,32 @@
     import { APIs } from "../../../data/common";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../../router";
 
-    export let initialValue: APIOrganisationAuthConfig | null;
+    interface Props {
+        initialValue: APIOrganisationAuthConfig | null;
+    }
+
+    let { initialValue = $bindable() }: Props = $props();
     const orgCtx = getOrgContext();
 
-    let discoveryUrl = initialValue?.oidc_discovery_url ?? "";
-    let clientId = initialValue?.client_id ?? "";
-    let clientSecret = initialValue?.client_secret ?? "";
-    let teamFieldName = initialValue?.team_mapping_field_name ?? "";
-    let revokeTeamMappings = initialValue?.revoke_team_mappings ?? false;
+    let discoveryUrl = $state(initialValue?.oidc_discovery_url ?? "");
+    let clientId = $state(initialValue?.client_id ?? "");
+    let clientSecret = $state(initialValue?.client_secret ?? "");
+    let teamFieldName = $state(initialValue?.team_mapping_field_name ?? "");
+    let revokeTeamMappings = $state(
+        initialValue?.revoke_team_mappings ?? false
+    );
 
-    let showSecret = false;
-    $: onSecretToggle = (e: Event) => {
+    let showSecret = $state(false);
+    let onSecretToggle = $derived((e: Event) => {
         e.preventDefault();
         showSecret = !showSecret;
-    };
+    });
 
-    let loading = false;
-    let newRegistrationComplete = false;
-    $: onSubmit = async (e: Event) => {
+    let loading = $state(false);
+    let newRegistrationComplete = $state(false);
+    let onSubmit = $derived(async (e: Event) => {
         e.preventDefault();
         loading = true;
         const request: APIOrganisationAuthConfig = {
@@ -58,11 +64,11 @@
         }
 
         loading = false;
-    };
+    });
 
-    $: onNewDomainContinueClick = () => {
+    let onNewDomainContinueClick = $derived(() => {
         window.location.href = `https://${$orgCtx.org.subdomain ?? ""}.palform.app/auth/login`;
-    };
+    });
 </script>
 
 <Modal
@@ -79,7 +85,9 @@
         To continue, you'll need to visit this site and sign in using OIDC. Make
         sure your OIDC email address matches your current Palform email address.
     </p>
-    <Button slot="footer" on:click={onNewDomainContinueClick}>Continue</Button>
+    {#snippet footer()}
+        <Button onclick={onNewDomainContinueClick}>Continue</Button>
+    {/snippet}
 </Modal>
 
 {#if initialValue === null}
@@ -124,7 +132,7 @@
     </Alert>
 {/if}
 
-<form class="space-y-6" on:submit={onSubmit}>
+<form class="space-y-6" onsubmit={onSubmit}>
     <Label>
         OIDC Discovery URL
         <Input
@@ -157,7 +165,7 @@
             required
         />
         <Helper class="mt-2">
-            <TextButton on:click={onSecretToggle} disabled={loading}>
+            <TextButton onclick={onSecretToggle} disabled={loading}>
                 {showSecret ? "Hide" : "Show"} secret
             </TextButton>
         </Helper>
@@ -189,8 +197,9 @@
 
     <TextButton
         class="block"
-        href={`/orgs/${$orgCtx.org.id}/settings/auth/mappings`}
-        on:click={navigateEvent}
+        href={p("/orgs/:orgId/settings/auth/mappings", {
+            params: { orgId: $orgCtx.org.id },
+        })}
     >
         Configure team mappings
     </TextButton>

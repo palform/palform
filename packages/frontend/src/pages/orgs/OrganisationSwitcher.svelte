@@ -7,7 +7,7 @@
     import Main from "../../layouts/Main.svelte";
     import CardBox from "../../components/cardBox/CardBox.svelte";
     import CardBoxTitle from "../../components/cardBox/CardBoxTitle.svelte";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../router";
 </script>
 
 <Main title="My organisations">
@@ -24,9 +24,7 @@
                 <CardBoxTitle class="font-medium">
                     Create a new organisation
                 </CardBoxTitle>
-                <Button class="mt-2" href="/orgs/new" on:click={navigateEvent}>
-                    Get started
-                </Button>
+                <Button class="mt-2" href={p("/orgs/new")}>Get started</Button>
             </CardBox>
         {:catch e}
             <ErrorMsg {e} />

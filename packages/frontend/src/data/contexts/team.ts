@@ -2,7 +2,7 @@ import type {
     APIFormBranding,
     APIOrganisationTeam,
     APIOrganisationTeamMember,
-} from "@paltiverse/palform-typescript-openapi";
+} from "@palform/palform-typescript-openapi";
 import { getContext, setContext } from "svelte";
 import type { Writable } from "svelte/store";
 

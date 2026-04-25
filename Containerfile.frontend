@@ -1,0 +1,67 @@
+# syntax=docker/dockerfile:1
+
+FROM docker.io/oven/bun:slim AS builder
+
+ARG BACKEND_URL
+ARG FRONTEND_URL
+ARG URLS_BASE
+ARG ENABLE_BILLING
+ARG MAPBOX_API_KEY
+ARG CAPTCHA_SITE_KEY
+ARG SKIP_CAPTCHA
+ENV VITE_BACKEND_URL=$BACKEND_URL
+ENV VITE_FRONTEND_URL=$FRONTEND_URL
+ENV VITE_URLS_BASE=$URLS_BASE
+ENV VITE_ENABLE_BILLING=$ENABLE_BILLING
+ENV VITE_MAPBOX_API_KEY=$MAPBOX_API_KEY
+ENV VITE_CAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY
+ENV VITE_SKIP_CAPTCHA=$SKIP_CAPTCHA
+
+WORKDIR /app
+
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends \
+		build-essential \
+		ca-certificates \
+		curl \
+		git \
+		make \
+		nodejs \
+		pkg-config \
+		libssl-dev \
+        rustup
+
+RUN rustup update stable && rustup default stable && rustup target add wasm32-unknown-unknown
+RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+COPY --parents packages/*/package.json .
+COPY --parents packages/*/Cargo.toml .
+COPY package.json bun.lock Cargo.toml Cargo.lock Makefile ./
+
+RUN mkdir packages/analysis-js && echo "{ \"name\": \"@palform/palform-analysis\" }" > packages/analysis-js/package.json
+RUN mkdir packages/client-js && echo "{ \"name\": \"@palform/palform-client-common\" }" > packages/client-js/package.json
+RUN mkdir packages/crypto-js && echo "{ \"name\": \"@palform/palform-crypto\" }" > packages/crypto-js/package.json
+
+RUN bun install --frozen-lockfile
+
+COPY packages packages
+
+RUN make build_analysis build_client_common build_crypto
+RUN bun run --cwd packages/frontend build
+
+FROM docker.io/nginx:alpine
+
+COPY --from=builder /app/packages/frontend/dist /usr/share/nginx/html
+RUN printf '%s\n' \
+	'server {' \
+	'    listen 80;' \
+	'    server_name _;' \
+	'    root /usr/share/nginx/html;' \
+	'    location / {' \
+	'        try_files $uri $uri/ /index.html;' \
+	'    }' \
+	'}' \
+	> /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

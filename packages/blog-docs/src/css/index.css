@@ -1,3 +1,41 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Tailwind v4: match v3 darkMode: ["class", '[data-theme="dark"]'] */
+@custom-variant dark (&:where(.dark, [data-theme="dark"], .dark *, [data-theme="dark"] *));
+
+/* Content paths (v4); preflight off to match prior tailwind.config (corePlugins.preflight: false) */
+@source "../../docs/**/*.{js,jsx,ts,tsx,md,mdx}";
+@source "../../blog/**/*.{js,jsx,ts,tsx,md,mdx}";
+@source "../**/*.{js,jsx,ts,tsx}";
+
+@theme {
+  --color-primary-50: #fcf3ff;
+  --color-primary-100: #f7e6ff;
+  --color-primary-200: #f0ccff;
+  --color-primary-300: #e7a3ff;
+  --color-primary-400: #db6dff;
+  --color-primary-500: #cb44ff;
+  --color-primary-600: #af16e3;
+  --color-primary-700: #930ebd;
+  --color-primary-800: #7a0e9a;
+  --color-primary-900: #68117e;
+  --color-primary-950: #430055;
+}
+
+@layer base {
+  /* See https://github.com/themesberg/flowbite-svelte/blob/3fbf1a186976dad6cbfbfb31979985829867319e/src/app.css#L56 */
+
+  button,
+  [role="button"] {
+    /* This is no longer the default setting in flowbite-svelte */
+    cursor: pointer;
+  }
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}

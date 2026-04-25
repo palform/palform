@@ -1,11 +1,16 @@
 <script lang="ts">
+    import type { HTMLAttributes } from "svelte/elements";
     import {
         getBrandCtx,
         getRoundingAmountForBrand,
     } from "../../data/contexts/brand";
     import { formFillStore } from "../../data/contexts/fill";
 
-    export let href: string;
+    interface Props extends HTMLAttributes<HTMLImageElement> {
+        href: string;
+    }
+
+    let { href, ...props }: Props = $props();
     const brandCtx = getBrandCtx();
 </script>
 
@@ -18,7 +23,7 @@
             role="presentation"
             alt="presentation"
             src={href.replaceAll("{{token}}", $formFillStore.fillAccessToken)}
-            {...$$props}
+            {...props}
         />
     </div>
 {/if}

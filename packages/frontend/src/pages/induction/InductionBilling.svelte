@@ -2,17 +2,13 @@
     import { Button } from "flowbite-svelte";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import InitiatePlan from "../../components/billing/InitiatePlan.svelte";
-    import { navigate } from "svelte-routing";
+    import { p } from "../../router";
     import BigAlert from "../../components/induction/bigAlert/BigAlert.svelte";
     import BigAlertText from "../../components/induction/bigAlert/BigAlertText.svelte";
     import BigAlertHeading from "../../components/induction/bigAlert/BigAlertHeading.svelte";
 
     const orgCtx = getOrgContext();
-    let firstScreenComplete = false;
-
-    const onFreePlanClick = () => {
-        navigate(`/orgs/${$orgCtx.org.id}/induction/key`);
-    };
+    let firstScreenComplete = $state(false);
 </script>
 
 {#if !firstScreenComplete}
@@ -29,7 +25,7 @@
         <Button
             class="mt-4"
             size="lg"
-            on:click={() => (firstScreenComplete = true)}
+            onclick={() => (firstScreenComplete = true)}
         >
             Get started
         </Button>
@@ -51,7 +47,12 @@
             plan and upgrade at any time!
         </BigAlertText>
 
-        <Button on:click={onFreePlanClick} class="mt-4">
+        <Button
+            href={p("/orgs/:orgId/induction/key", {
+                params: { orgId: $orgCtx.org.id },
+            })}
+            class="mt-4"
+        >
             Continue on free plan
         </Button>
     </BigAlert>

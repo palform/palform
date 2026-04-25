@@ -1,8 +1,13 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
-use palform_tsid::{resources::{IDOrganisation, IDTeam}, tsid::PalformDatabaseID};
-use rocket::{get, serde::json::Json, State};
-use rocket_okapi::openapi;
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
+use palform_tsid::{
+    resources::{IDOrganisation, IDTeam},
+    tsid::PalformDatabaseID,
+};
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
+use serde::Deserialize;
 
 use crate::{
     api_entities::form_brandings::APIFormBranding,
@@ -10,23 +15,25 @@ use crate::{
     entity_managers::form_brandings::FormBrandingManager,
 };
 
-#[openapi(
-    tag = "Form Brandings",
-    operation_id = "organisation.team.branding.list"
-)]
-#[get("/users/me/orgs/<_org_id>/teams/<team_id>/brandings")]
-pub async fn handler(
-    _org_id: PalformDatabaseID<IDOrganisation>,
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct FormBrandingsListPath {
+    #[allow(unused)]
+    org_id: PalformDatabaseID<IDOrganisation>,
     team_id: PalformDatabaseID<IDTeam>,
+}
+
+#[api_operation(tag = "Form Brandings", operation_id = "organisation.team.branding.list")]
+pub async fn form_brandings_list(
+    path: Path<FormBrandingsListPath>,
     org_admin_token: Option<APITokenOrgAdmin>,
     team_admin_token: Option<APITokenTeamAdminFromTeam>,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<Vec<APIFormBranding>>, APIErrorWithStatus> {
+    db: Data<DatabaseConnection>,
+) -> Result<Json<Vec<APIFormBranding>>, APIError> {
     if org_admin_token.is_none() && team_admin_token.is_none() {
         return Err(APIError::NotAllowed.into());
     }
 
-    FormBrandingManager::list_in_team(db.inner(), team_id)
+    FormBrandingManager::list_in_team(db.as_ref(), path.team_id)
         .await
         .map(Json)
         .map_internal_error()

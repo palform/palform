@@ -1,6 +1,8 @@
 use palform_entities::prelude::*;
-use palform_tsid::{resources::{IDAdminUser, IDOrganisation}, tsid::PalformDatabaseID};
-use rocket::{http::Status, serde::json::Json};
+use palform_tsid::{
+    resources::{IDAdminUser, IDOrganisation},
+    tsid::PalformDatabaseID,
+};
 use sea_orm::{ConnectionTrait, DbErr, EntityTrait};
 
 use crate::api::error::{APIError, APIInternalError};
@@ -59,7 +61,7 @@ impl OrgsRBACManager {
         &self,
         conn: &T,
         require_admin: bool,
-    ) -> Result<(), (Status, Json<APIError>)> {
+    ) -> Result<(), APIError> {
         let granted = self
             .require_permission(conn, require_admin)
             .await
@@ -68,7 +70,7 @@ impl OrgsRBACManager {
         if granted {
             Ok(())
         } else {
-            Err(APIError::NotAllowed.into())
+            Err(APIError::NotAllowed)
         }
     }
 }

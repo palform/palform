@@ -1,50 +1,49 @@
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
 use chrono::{Duration, Utc};
 use palform_client_common::errors::error::APIInternalErrorResult;
 use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
 use palform_tsid::resources::{IDForm, IDOrganisation};
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket::http::Status;
-use rocket::serde::json::Json;
-use rocket::{post, State};
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 
+use crate::actix_util::from_org_id::FromOrgId;
 use crate::api::error::{APIError, APIInternalError};
 use crate::api_entities::billing::entitlement::APIEntitlementRequest;
 use crate::api_entities::fill_token::APIFillToken;
-use crate::audit::AuditManager;
+use crate::audit::id_chains::IDChainEmpty;
+use crate::audit::manager::AuditManager;
 use crate::auth::fill_access::FillAccessTokenManager;
 use crate::auth::rbac::requests::APITokenTeamEditorFromForm;
 use crate::auth::tokens::APIAuthTokenSource;
 use crate::entity_managers::billing_entitlement_proxy::BillingEntitlementManager;
 use crate::entity_managers::forms::FormManager;
 use crate::entity_managers::orgs::OrganisationManager;
-use crate::rocket_util::from_org_id::FromOrgId;
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct NewTokenRequest {
     nickname: String,
     expires_in_seconds: Option<u32>,
     short_link: Option<String>,
 }
 
-#[openapi(tag = "Fill Access Tokens", operation_id = "fill_access_tokens.create")]
-#[post(
-    "/users/me/orgs/<org_id>/forms/<form_id>/fill_access_tokens",
-    data = "<data>"
-)]
-pub async fn handler(
+#[derive(Deserialize, ApiComponent, JsonSchema)]
+pub struct FillTokensCreatePath {
     org_id: PalformDatabaseID<IDOrganisation>,
     form_id: PalformDatabaseID<IDForm>,
+}
+
+#[api_operation(tag = "Fill Access Tokens", operation_id = "fill_access_tokens.create")]
+pub async fn fill_tokens_create(
+    path: Path<FillTokensCreatePath>,
     data: Json<NewTokenRequest>,
     token: APITokenTeamEditorFromForm,
-    db: &State<DatabaseConnection>,
-    audit: FromOrgId<AuditManager>,
+    db: Data<DatabaseConnection>,
+    audit: FromOrgId<AuditManager<IDChainEmpty>>,
     billing: FromOrgId<BillingEntitlementManager>,
-) -> Result<Json<APIFillToken>, (Status, Json<APIError>)> {
+) -> Result<Json<APIFillToken>, APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -53,7 +52,7 @@ pub async fn handler(
         .await
         .map_err(|e| e.to_internal_error())?;
 
-    if !FormManager::verify_form_org(&txn, form_id, org_id)
+    if !FormManager::verify_form_org(&txn, path.form_id, path.org_id)
         .await
         .map_err(|e| e.to_internal_error())?
     {
@@ -65,14 +64,14 @@ pub async fn handler(
             .check_entitlement(&txn, APIEntitlementRequest::Subdomain)
             .await?;
 
-        OrganisationManager::get_org_subdomain(&txn, org_id)
+        OrganisationManager::get_org_subdomain(&txn, path.org_id)
             .await
             .map_internal_error()?
             .ok_or(APIError::BadRequest(
                 "No subdomain set up for organisation; cannot use short links".to_string(),
             ))?;
 
-        if !FillAccessTokenManager::short_link_is_unique(&txn, org_id, short_link)
+        if !FillAccessTokenManager::short_link_is_unique(&txn, path.org_id, short_link)
             .await
             .map_internal_error()?
         {
@@ -82,11 +81,11 @@ pub async fn handler(
 
     let expires_at = data
         .expires_in_seconds
-        .map(|sec| (Utc::now() + Duration::seconds(i64::from(sec))).naive_utc());
+        .map(|sec| Utc::now() + Duration::seconds(i64::from(sec)));
 
     let new_token = FillAccessTokenManager::create(
         &txn,
-        form_id,
+        path.form_id,
         data.nickname.clone(),
         expires_at,
         data.short_link.clone(),
@@ -100,7 +99,7 @@ pub async fn handler(
             token.get_user_id(),
             AuditLogVerbEnum::Update,
             AuditLogTargetResourceEnum::Form,
-            Some(form_id.into_unknown()),
+            Some(path.form_id.into_unknown()),
             Some(format!("Created Fill Access Token {}", new_token.id)),
         )
         .await

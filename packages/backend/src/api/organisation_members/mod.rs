@@ -3,3 +3,4 @@ pub mod delete;
 pub mod join;
 pub mod am_i_admin;
 pub mod patch;
+pub mod scope;

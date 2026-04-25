@@ -15,19 +15,23 @@
     const brandCtx = getBrandCtx();
     const isDark = isDarkMode();
 
-    $: buttonColor = $brandCtx
-        ? isDark
-            ? colorWithLightness($brandCtx.primary_color, 20)
-            : colorWithLightness($brandCtx.primary_color, 90)
-        : undefined;
+    let buttonColor = $derived(
+        $brandCtx
+            ? isDark
+                ? colorWithLightness($brandCtx.primary_color, 20)
+                : colorWithLightness($brandCtx.primary_color, 90)
+            : undefined
+    );
 
-    $: iconColor = $brandCtx
-        ? isDark
-            ? colorWithLightness($brandCtx.primary_color, 80)
-            : colorWithLightness($brandCtx.primary_color, 30)
-        : undefined;
+    let iconColor = $derived(
+        $brandCtx
+            ? isDark
+                ? colorWithLightness($brandCtx.primary_color, 80)
+                : colorWithLightness($brandCtx.primary_color, 30)
+            : undefined
+    );
 
-    let showModal = false;
+    let showModal = $state(false);
 </script>
 
 <div class="fixed bottom-4 right-4 z-20">
@@ -36,10 +40,10 @@
         style:background-color={buttonColor}
         style:color={iconColor}
         style:border-radius={getRoundingAmountForBrand($brandCtx, true)}
-        on:click={() => (showModal = true)}
+        onclick={() => (showModal = true)}
     >
         <span class="me-3">
-            <FontAwesomeIcon icon={faLock} size="md" />
+            <FontAwesomeIcon icon={faLock} size="1x" />
         </span>
         <span class="leading-tight"
             >{t("encrypted_badge_1")}<br /><span class="text-xs"
@@ -52,7 +56,7 @@
 <Modal title={t("encrypted_modal_title")} bind:open={showModal} outsideclose>
     <p>
         {t("encrypted_modal_1")}<TextButton
-            class="inline !text-base"
+            class="inline text-base!"
             href="https://palform.app/?utm_source=encrypt_modal"
             target="_blank">Palform</TextButton
         >{t("encrypted_modal_2")}.

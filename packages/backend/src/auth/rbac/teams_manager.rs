@@ -1,7 +1,9 @@
 use log::warn;
-use palform_client_common::errors::error::APIErrorWithStatus;
 use palform_entities::{prelude::*, sea_orm_active_enums::OrganisationMemberRoleEnum};
-use palform_tsid::{resources::{IDAdminUser, IDOrganisation, IDTeam}, tsid::PalformDatabaseID};
+use palform_tsid::{
+    resources::{IDAdminUser, IDOrganisation, IDTeam},
+    tsid::PalformDatabaseID,
+};
 use sea_orm::{ConnectionTrait, DbErr, EntityTrait, FromQueryResult};
 use thiserror::Error;
 
@@ -82,7 +84,7 @@ impl TeamsRBACManager {
         team_id: PalformDatabaseID<IDTeam>,
         org_id: PalformDatabaseID<IDOrganisation>,
         requested_permission: OrganisationMemberRoleEnum,
-    ) -> Result<(), APIErrorWithStatus> {
+    ) -> Result<(), APIError> {
         let team_org_valid = OrganisationTeamsManager::verify_team_org(conn, team_id, org_id)
             .await
             .map_err(|e| e.to_internal_error())?;

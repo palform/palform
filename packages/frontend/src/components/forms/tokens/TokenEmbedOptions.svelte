@@ -4,7 +4,6 @@
         Input,
         InputAddon,
         Label,
-        NumberInput,
         TabItem,
         Tabs,
     } from "flowbite-svelte";
@@ -22,35 +21,43 @@
     import HiddenHelp from "../../HiddenHelp.svelte";
     import InfoText from "../../type/InfoText.svelte";
 
-    export let fatID: string;
-    export let shortLink: string | undefined;
+    interface Props {
+        fatID: string;
+        shortLink: string | undefined;
+    }
+
+    let { fatID, shortLink }: Props = $props();
 
     const orgCtx = getOrgContext();
     const formAdminCtx = getFormAdminContext();
     const formCtx = getFormCtx();
 
-    let longURL = "Loading...";
-    $: (async () => {
-        longURL = await formatFillTokenURL(
-            $orgCtx.org.id,
-            $formCtx.team_id,
-            $formAdminCtx.formId,
-            fatID
-        );
-    })();
+    let longURL = $state("Loading...");
+    $effect(() => {
+        (async () => {
+            longURL = await formatFillTokenURL(
+                $orgCtx.org.id,
+                $formCtx.team_id,
+                $formAdminCtx.formId,
+                fatID
+            );
+        })();
+    });
 
-    let frameHeight = 800;
-    let frameWidth = 600;
-    $: frameCode = `<iframe src="${longURL}" height="${frameHeight}px" width="${frameWidth}px" />`;
+    let frameHeight = $state(800);
+    let frameWidth = $state(600);
+    let frameCode = $derived(
+        `<iframe src="${longURL}" height="${frameHeight}px" width="${frameWidth}px" />`
+    );
 
-    $: onInputCopy = async (e: Event) => {
+    let onInputCopy = $derived(async (e: Event) => {
         const t = e.target as HTMLInputElement;
         await copyGenericValue(t.value);
-    };
+    });
 </script>
 
 <div>
-    <Tabs contentClass="mt-4">
+    <Tabs classes={{ content: "mt-4 p-0 bg-transparent" }}>
         <TabItem open title="Link">
             <Label>
                 Click to copy URL
@@ -58,7 +65,7 @@
                     class="mt-2"
                     readonly
                     value={longURL}
-                    on:click={onInputCopy}
+                    onclick={onInputCopy}
                 />
             </Label>
 
@@ -72,7 +79,7 @@
                             $orgCtx.org.subdomain,
                             shortLink
                         )}
-                        on:click={onInputCopy}
+                        onclick={onInputCopy}
                     />
                 </Label>
             {/if}
@@ -87,14 +94,14 @@
                 <Label>
                     Frame width
                     <ButtonGroup class="mt-2 flex">
-                        <NumberInput bind:value={frameWidth} />
+                        <Input type="number" bind:value={frameWidth} />
                         <InputAddon>px</InputAddon>
                     </ButtonGroup>
                 </Label>
                 <Label>
                     Frame height
                     <ButtonGroup class="mt-2 flex">
-                        <NumberInput bind:value={frameHeight} />
+                        <Input type="number" bind:value={frameHeight} />
                         <InputAddon>px</InputAddon>
                     </ButtonGroup>
                 </Label>
@@ -106,7 +113,7 @@
                     class="mt-2"
                     readonly
                     value={frameCode}
-                    on:click={onInputCopy}
+                    onclick={onInputCopy}
                 />
             </Label>
         </TabItem>

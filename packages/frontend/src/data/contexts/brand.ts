@@ -1,4 +1,4 @@
-import { type APIFormBranding } from "@paltiverse/palform-typescript-openapi";
+import { type APIFormBranding } from "@palform/palform-typescript-openapi";
 import { getContext, setContext } from "svelte";
 import type { Writable } from "svelte/store";
 

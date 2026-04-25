@@ -1,13 +1,11 @@
-use palform_client_common::errors::error::{APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_tsid::resources::IDOrganisation;
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket::serde::json::Json;
-use rocket::{get, State};
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::auth::rbac::requests::APITokenOrgViewer;
 use crate::auth::tokens::APIAuthTokenSource;
@@ -24,20 +22,24 @@ pub enum HideContext {
     Keys,
 }
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct AlertResponse {
     alert_type: AlertType,
     hide_on: Vec<HideContext>,
 }
 
-#[openapi(tag = "Induction", operation_id = "induction.alert")]
-#[get("/users/me/orgs/<org_id>/induction/alert")]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct InductionAlertPath {
     org_id: PalformDatabaseID<IDOrganisation>,
+}
+
+#[api_operation(tag = "Induction", operation_id = "induction.alert")]
+pub async fn induction_alert(
+    path: Path<InductionAlertPath>,
     token: APITokenOrgViewer,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<Option<AlertResponse>>, APIErrorWithStatus> {
-    let manager = InductionStatusManager::new(token.get_user_id(), org_id, db.inner());
+    db: Data<DatabaseConnection>,
+) -> Result<Json<Option<AlertResponse>>, APIError> {
+    let manager = InductionStatusManager::new(token.get_user_id(), path.org_id, db.as_ref());
     let has_active_key = manager.has_active_key().await.map_internal_error()?;
     if !has_active_key {
         return Ok(Json(Some(AlertResponse {

@@ -1,57 +1,59 @@
-use palform_client_common::errors::error::{APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_entities::sea_orm_active_enums::{AuditLogTargetResourceEnum, AuditLogVerbEnum};
-use palform_tsid::{resources::{IDForm, IDOrganisation}, tsid::PalformDatabaseID};
-use rocket::{put, serde::json::Json, State};
-use rocket_okapi::{
-    okapi::schemars::{self, JsonSchema},
-    openapi,
+use palform_tsid::{
+    resources::{IDForm, IDOrganisation},
+    tsid::PalformDatabaseID,
 };
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
 use serde::Deserialize;
 
 use crate::{
+    actix_util::from_org_id::FromOrgId,
     api_entities::billing::entitlement::APIEntitlementRequest,
-    audit::AuditManager,
-    auth::rbac::requests::APITokenTeamEditorFromForm,
-    auth::tokens::APIAuthTokenSource,
+    audit::{id_chains::IDChainEmpty, manager::AuditManager},
+    auth::{rbac::requests::APITokenTeamEditorFromForm, tokens::APIAuthTokenSource},
     entity_managers::{billing_entitlement_proxy::BillingEntitlementManager, forms::FormManager},
-    rocket_util::from_org_id::FromOrgId,
 };
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct SetSubmissionAutoDeleteRequest {
     days: Option<i32>,
 }
 
-#[openapi(tag = "Forms", operation_id = "forms.set_auto_delete")]
-#[put(
-    "/users/me/orgs/<_org_id>/forms/<form_id>/auto-delete",
-    data = "<data>"
-)]
-pub async fn handler(
-    _org_id: PalformDatabaseID<IDOrganisation>,
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct FormsSetAutoDeletePath {
+    #[allow(unused)]
+    org_id: PalformDatabaseID<IDOrganisation>,
     form_id: PalformDatabaseID<IDForm>,
+}
+
+#[api_operation(tag = "Forms", operation_id = "forms.set_auto_delete")]
+pub async fn forms_set_auto_delete(
+    path: Path<FormsSetAutoDeletePath>,
     data: Json<SetSubmissionAutoDeleteRequest>,
     token: APITokenTeamEditorFromForm,
-    db: &State<DatabaseConnection>,
-    audit: FromOrgId<AuditManager>,
+    db: Data<DatabaseConnection>,
+    audit: FromOrgId<AuditManager<IDChainEmpty>>,
     billing: FromOrgId<BillingEntitlementManager>,
-) -> Result<(), APIErrorWithStatus> {
+) -> Result<(), APIError> {
     billing
-        .check_entitlement(db.inner(), APIEntitlementRequest::SubmissionAutoDelete)
+        .check_entitlement(db.as_ref(), APIEntitlementRequest::SubmissionAutoDelete)
         .await?;
 
-    FormManager::set_auto_delete(db.inner(), form_id, data.days)
+    FormManager::set_auto_delete(db.as_ref(), path.form_id, data.days)
         .await
         .map_internal_error()?;
 
     audit
         .log_event_with_note(
-            db.inner(),
+            db.as_ref(),
             token.get_user_id(),
             AuditLogVerbEnum::Update,
             AuditLogTargetResourceEnum::Form,
-            Some(form_id.into_unknown()),
+            Some(path.form_id.into_unknown()),
             Some(format!(
                 "Set submission auto-delete to {}",
                 data.days

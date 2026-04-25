@@ -7,6 +7,7 @@ use sea_orm::{
     ActiveModelTrait, ColumnTrait, ConnectionTrait, DbErr, EntityTrait, PaginatorTrait,
     QueryFilter, Set,
 };
+use tokio::io::AsyncRead;
 
 use crate::{
     api_entities::team_asset::APITeamAsset,
@@ -29,13 +30,17 @@ impl TeamAssetsManager {
         format!("/{}/{}", self.team_id, asset_id)
     }
 
-    pub async fn create<T: ConnectionTrait>(
+    pub async fn create<T, R>(
         &self,
         conn: &T,
         s3: &PalformS3Client<S3BucketTeamAssets>,
-        data: &[u8],
+        file_stream: &mut R,
         content_type: &str,
-    ) -> Result<PalformDatabaseID<IDTeamAsset>, PalformS3Error> {
+    ) -> Result<APITeamAsset, PalformS3Error>
+    where
+        T: ConnectionTrait,
+        R: AsyncRead + Unpin,
+    {
         let asset_id = PalformDatabaseID::<IDTeamAsset>::random();
         let new_asset = team_asset::ActiveModel {
             id: Set(asset_id),
@@ -44,10 +49,16 @@ impl TeamAssetsManager {
         };
 
         s3.bucket
-            .put_object_with_content_type(self.asset_path(&asset_id), data, content_type)
+            .put_object_stream_with_content_type(
+                file_stream,
+                self.asset_path(&asset_id),
+                content_type,
+            )
             .await?;
-        new_asset.insert(conn).await?;
-        Ok(asset_id)
+        let created_asset = new_asset.insert(conn).await?;
+
+        let api_team_asset = self.create_api_team_asset(s3, created_asset).await?;
+        Ok(api_team_asset)
     }
 
     async fn create_api_team_asset(

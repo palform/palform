@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { v4 as uuid } from "uuid";
     import Map from "ol/Map";
     import View from "ol/View";
     import TileLayer from "ol/layer/Tile";
@@ -14,13 +13,21 @@
     import Style from "ol/style/Style";
     import Icon from "ol/style/Icon";
 
-    export let heatmapPoints: [number, number][] | undefined = undefined;
-    export let pinPoints: [number, number][] | undefined = undefined;
-    export let centerOn: [number, number] | undefined = undefined;
+    interface Props {
+        heatmapPoints?: [number, number][] | undefined;
+        pinPoints?: [number, number][] | undefined;
+        centerOn?: [number, number] | undefined;
+    }
 
-    const mapId = uuid();
-    let map: Map | null = null;
-    $: setupMap = (_: HTMLDivElement) => {
+    let {
+        heatmapPoints = undefined,
+        pinPoints = undefined,
+        centerOn = undefined,
+    }: Props = $props();
+
+    let map: Map | null = $state(null);
+    const mapId = $props.id();
+    let setupMap = $derived((_: HTMLDivElement) => {
         const layers: Layer[] = [new TileLayer({ source: new OSM() })];
         if (heatmapPoints) {
             layers.push(
@@ -88,7 +95,7 @@
                 }
             },
         };
-    };
+    });
 </script>
 
-<div id={mapId} use:setupMap class="h-96" />
+<div id={mapId} use:setupMap class="h-96"></div>

@@ -1,39 +1,49 @@
 <script lang="ts">
-    import { Chart } from "flowbite-svelte";
+    import { Chart } from "@flowbite-svelte-plugins/chart";
     import {
         getCorrelationContext,
         getFeatureGraphData,
     } from "../../../../data/contexts/analysis/correlation";
     import { lineToGraphPoints } from "../../../../data/util/lineToGraphPoints";
 
-    export let fromId: string;
-    export let fromFeature: string;
-    export let toId: string;
-    export let toFeature: string;
+    interface Props {
+        fromId: string;
+        fromFeature: string;
+        toId: string;
+        toFeature: string;
+    }
+
+    let { fromId, fromFeature, toId, toFeature }: Props = $props();
     const correlationCtx = getCorrelationContext();
 
-    const regressionResult = getFeatureGraphData(
-        $correlationCtx,
-        fromId,
-        fromFeature,
-        toId,
-        toFeature
+    const regressionResult = $derived(
+        getFeatureGraphData(
+            $correlationCtx,
+            fromId,
+            fromFeature,
+            toId,
+            toFeature
+        )
     );
 
-    $: zippedCorrelations = regressionResult
-        ? regressionResult.points[0].map((e, i) => {
-              return [e, regressionResult.points[1][i]];
-          })
-        : undefined;
+    let zippedCorrelations = $derived(
+        regressionResult
+            ? regressionResult.points[0].map((e, i) => {
+                  return [e, regressionResult.points[1][i]];
+              })
+            : undefined
+    );
 
-    $: linePoints = regressionResult
-        ? lineToGraphPoints(
-              regressionResult.intercept,
-              regressionResult.gradient,
-              -10,
-              10
-          )
-        : undefined;
+    let linePoints = $derived(
+        regressionResult
+            ? lineToGraphPoints(
+                  regressionResult.intercept,
+                  regressionResult.gradient,
+                  -10,
+                  10
+              )
+            : undefined
+    );
 </script>
 
 {#if zippedCorrelations && linePoints}

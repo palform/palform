@@ -1,10 +1,10 @@
-import type { InProgressSubmission } from "@paltiverse/palform-client-js-extra-types/InProgressSubmission";
-import type { APIQuestion } from "@paltiverse/palform-typescript-openapi";
+import type { InProgressSubmission } from "@palform/palform-client-js-extra-types/InProgressSubmission";
+import type { APIQuestion } from "@palform/palform-typescript-openapi";
 import {
     submissionIsSuccess,
     type DecryptedSubmission,
 } from "../../crypto/results";
-import { FormAnalysisManager } from "@paltiverse/palform-analysis";
+import { FormAnalysisManager } from "@palform/palform-analysis";
 import { getContext, setContext } from "svelte";
 import { derived, readable, type Writable } from "svelte/store";
 

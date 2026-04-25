@@ -7,4 +7,4 @@ pub mod validate;
 #[cfg(feature = "frontend-js")]
 pub mod backup;
 #[cfg(feature = "frontend-js")]
-pub mod gen;
+pub mod r#gen;

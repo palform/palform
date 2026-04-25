@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 import { privateKeyDb } from "../pouch";
-import type { KeyResolver } from "@paltiverse/palform-crypto";
+import type { KeyResolver } from "@palform/palform-crypto";
 
 export const privateKeyStore = writable<KeyResolver>();
 

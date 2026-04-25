@@ -7,13 +7,12 @@
     import LoadingButton from "../../components/LoadingButton.svelte";
     import { APIs } from "../../data/common";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
-    import { navigate } from "svelte-routing";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { navigate, p } from "../../router";
 
-    let displayName = "";
-    let loading = false;
+    let displayName = $state("");
+    let loading = $state(false);
 
-    $: onFormSubmit = async (e: Event) => {
+    let onFormSubmit = $derived(async (e: Event) => {
         e.preventDefault();
         loading = true;
         try {
@@ -28,11 +27,11 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 </script>
 
 <Main>
-    <Button size="xs" outline class="mb-2" href="/" on:click={navigateEvent}>
+    <Button size="xs" outline class="mb-2" href={p("/")}>
         <FontAwesomeIcon icon={faHome} class="me-2" />
         Back home
     </Button>
@@ -53,7 +52,7 @@
         </p>
     </Alert>
 
-    <form class="mt-4" on:submit={onFormSubmit}>
+    <form class="mt-4" onsubmit={onFormSubmit}>
         <Label>
             Organisation name
             <Input class="mt-2" bind:value={displayName} disabled={loading} />

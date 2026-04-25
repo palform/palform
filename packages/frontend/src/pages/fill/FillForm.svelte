@@ -11,7 +11,6 @@
     import { Alert } from "flowbite-svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-    import { onMount } from "svelte";
     import ErrorMsg from "../../components/ErrorMsg.svelte";
     import { humaniseAPIError } from "../../data/common";
     import QuestionGroupFiller from "../../components/questionGroups/fill/QuestionGroupFiller.svelte";
@@ -23,19 +22,26 @@
     import BrandingE2EeBadge from "../../components/teams/brandings/BrandingE2EEBadge.svelte";
     import FormFillLoading from "../../components/forms/fill/FormFillLoading.svelte";
     import BrandingBackgroundColor from "../../components/teams/brandings/BrandingBackgroundColor.svelte";
+    import { isActive, route } from "../../router";
 
-    export let orgId: string | undefined;
-    export let formId: string | undefined;
-    export let fillShortLink: string | undefined;
+    let pathVars = $derived.by(() => {
+        if (isActive("/fill/:orgId/:formId")) {
+            return route.getParams("/fill/:orgId/:formId");
+        } else if (isActive("/:fillShortLink")) {
+            return route.getParams("/:fillShortLink");
+        }
+
+        throw new Error("Unrecognised path, cannot extract path vars");
+    });
     const fillAccessToken = new URLSearchParams(location.search).get("f");
 
-    let initLoading = true;
-    let initError: string | undefined = undefined;
+    let initLoading = $state(true);
+    let initError: string | undefined = $state(undefined);
     const loadInit = async () => {
         initLoading = true;
         initError = undefined;
         try {
-            if (fillShortLink) {
+            if ("fillShortLink" in pathVars) {
                 const subdomain = getOrgSubdomain();
                 if (!subdomain) {
                     initError = "Organisation not found (missing subdomain)";
@@ -43,16 +49,28 @@
                     return;
                 }
 
-                await loadFormFillFromShortLink(subdomain, fillShortLink);
-            } else if (fillAccessToken && orgId && formId) {
-                await loadFormFill(orgId, formId, fillAccessToken, false);
+                await loadFormFillFromShortLink(
+                    subdomain,
+                    pathVars.fillShortLink
+                );
+            } else if (fillAccessToken && "orgId" in pathVars) {
+                await loadFormFill(
+                    pathVars.orgId,
+                    pathVars.formId,
+                    fillAccessToken,
+                    false
+                );
             }
         } catch (e) {
             initError = humaniseAPIError(e, "That form");
         }
         initLoading = false;
     };
-    onMount(() => loadInit());
+
+    $effect(() => {
+        pathVars;
+        loadInit();
+    });
 
     const newSubmission = async () => {
         $fillSendStore = undefined;
@@ -60,10 +78,11 @@
         await loadInit();
     };
 
-    $: isFirstPage =
+    let isFirstPage = $derived(
         $formFillStore &&
-        $formFillStore.form.g.length > 0 &&
-        $formFillStore.currentGroupId === $formFillStore.form.g[0].id;
+            $formFillStore.form.g.length > 0 &&
+            $formFillStore.currentGroupId === $formFillStore.form.g[0].id
+    );
 </script>
 
 {#if initLoading}
@@ -93,7 +112,7 @@
             <ErrorMsg
                 e={initError}
                 retryable
-                on:retry={loadInit}
+                onretry={loadInit}
                 targetDescriptor="form"
             />
         {:else if $formFillStore}
@@ -118,9 +137,11 @@
                 <QuestionGroupFiller />
                 {#if $fillSendStore?.error}
                     <Alert color="red" border class="mt-6">
-                        <span slot="icon">
-                            <FontAwesomeIcon icon={faExclamationCircle} />
-                        </span>
+                        {#snippet icon()}
+                            <span>
+                                <FontAwesomeIcon icon={faExclamationCircle} />
+                            </span>
+                        {/snippet}
                         {$fillSendStore.error}
                     </Alert>
                 {/if}

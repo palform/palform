@@ -3,7 +3,6 @@ import type { FontAwesomeIconProps } from "@fortawesome/svelte-fontawesome";
 import { Mutex } from "async-mutex";
 import { DateTime } from "luxon";
 import { writable } from "svelte/store";
-import { v4 as uuid } from "uuid";
 import { humaniseAPIError } from "./common";
 
 export interface ToastData {
@@ -22,7 +21,7 @@ const toastsMutex = new Mutex();
 export const toasts = writable<ToastDataInternal[]>([]);
 
 export async function showToast(data: Omit<ToastData, "id">) {
-    const id = uuid();
+    const id = Math.floor(Math.random() * 1_000_000_000).toString();
 
     const release = await toastsMutex.acquire();
     toasts.update((t) => {

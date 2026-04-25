@@ -1,36 +1,39 @@
 <script lang="ts">
-    import type { APICountryWithCallingCode } from "@paltiverse/palform-typescript-openapi";
+    import type {
+        APICountryWithCallingCode,
+        ConfigPhoneNumber,
+    } from "@palform/palform-typescript-openapi";
     import {
         setQuestionValue,
         sGetPhoneNumber,
+        type QuestionFillProps,
     } from "../../../data/contexts/fill";
-    import type { QuestionSubmissionData } from "@paltiverse/palform-client-js-extra-types/QuestionSubmissionData";
-    import { createEventDispatcher } from "svelte";
     import { Input } from "flowbite-svelte";
     import CallingCodeDropdown from "../../callingCode/CallingCodeDropdown.svelte";
     import { t } from "../../../data/contexts/i18n";
 
-    const dispatch = createEventDispatcher<{ change: undefined }>();
-    export let id: string;
-    export let currentValue: QuestionSubmissionData | undefined;
-    $: value = currentValue
-        ? sGetPhoneNumber(currentValue)
-        : { calling_code: "", number: "" };
+    interface Props extends QuestionFillProps<ConfigPhoneNumber> {}
 
-    $: onCallingCodeSelect = (e: CustomEvent<APICountryWithCallingCode>) => {
+    let { id, currentValue, onchange }: Props = $props();
+    let value = $derived(
+        currentValue
+            ? sGetPhoneNumber(currentValue)
+            : { calling_code: "", number: "" }
+    );
+
+    let onCallingCodeSelect = $derived((e: APICountryWithCallingCode) => {
         if (currentValue === undefined) return;
 
-        e.preventDefault();
         setQuestionValue(id, {
             PhoneNumber: {
-                calling_code: `+${e.detail.calling_code}`,
+                calling_code: `+${e.calling_code}`,
                 number: value.number,
             },
         });
-        dispatch("change");
-    };
+        onchange();
+    });
 
-    $: onNumberInput = (e: Event) => {
+    let onNumberInput = $derived((e: Event) => {
         if (currentValue === undefined) return;
 
         const t = (e.target as HTMLInputElement).value;
@@ -40,22 +43,22 @@
                 number: t,
             },
         });
-        dispatch("change");
-    };
+        onchange();
+    });
 </script>
 
 <div class="flex gap-2">
     <div>
         <CallingCodeDropdown
             bind:value={value.calling_code}
-            on:update={onCallingCodeSelect}
+            onupdate={onCallingCodeSelect}
         />
     </div>
     <Input
         disabled={value.calling_code === ""}
         type="tel"
         value={value.number}
-        on:input={onNumberInput}
+        oninput={onNumberInput}
         placeholder={value.calling_code === ""
             ? t("phone_pls_choose_country")
             : t("phone_enter_number")}

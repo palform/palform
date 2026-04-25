@@ -3,8 +3,12 @@
   import PalcrumbCrumb from "./PalcrumbCrumb.svelte";
   import type { PalcrumbPath } from "./types";
 
-  export let paths: PalcrumbPath[] = [];
-  export let navClass = "";
+  interface Props {
+    paths?: PalcrumbPath[];
+    navClass?: string;
+  }
+
+  let { paths = [], navClass = "" }: Props = $props();
 </script>
 
 <nav

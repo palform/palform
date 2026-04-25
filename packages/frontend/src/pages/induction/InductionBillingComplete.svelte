@@ -1,6 +1,6 @@
 <script>
     import { Button } from "flowbite-svelte";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../router";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import BigAlert from "../../components/induction/bigAlert/BigAlert.svelte";
     import BigAlertHeading from "../../components/induction/bigAlert/BigAlertHeading.svelte";
@@ -21,7 +21,7 @@
         Remember, you'll be able to change your billing plan whenever you'd
         like.
     </BigAlertText>
-    <Button color="primary" class="mt-4" size="lg" on:click={onContinueClick}>
+    <Button color="primary" class="mt-4" size="lg" onclick={onContinueClick}>
         Continue
     </Button>
 </BigAlert>

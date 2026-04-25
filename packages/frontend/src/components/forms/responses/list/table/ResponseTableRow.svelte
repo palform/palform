@@ -8,13 +8,17 @@
     import ResponseTableField from "./ResponseTableField.svelte";
     import { getFormAdminContext } from "../../../../../data/contexts/formAdmin";
 
-    export let submission: DecryptedSubmission;
-    export let submissionIndex: number;
+    interface Props {
+        submission: DecryptedSubmission;
+        submissionIndex: number;
+    }
+
+    let { submission, submissionIndex }: Props = $props();
     const formAdminCtx = getFormAdminContext();
 
     let observer: IntersectionObserver;
-    let trElement: HTMLTableRowElement;
-    let inView = false;
+    let trElement: HTMLTableRowElement | undefined = $state();
+    let inView = $state(false);
 
     const intersectionHandler = (
         e: IntersectionObserverEntry[],
@@ -24,12 +28,14 @@
     };
 
     onMount(() => {
+        if (!trElement) return;
         observer = new IntersectionObserver(intersectionHandler, {
             root: null,
         });
         observer.observe(trElement);
     });
     onDestroy(() => {
+        if (!trElement) return;
         observer.unobserve(trElement);
         observer.disconnect();
     });

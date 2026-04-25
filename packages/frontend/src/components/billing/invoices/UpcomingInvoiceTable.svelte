@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIBillingUpcomingInvoice } from "@paltiverse/palform-typescript-openapi";
+    import type { APIBillingUpcomingInvoice } from "@palform/palform-typescript-openapi";
     import TableContainer from "../../tables/TableContainer.svelte";
     import {
         Badge,
@@ -10,12 +10,17 @@
         TableHead,
         TableHeadCell,
     } from "flowbite-svelte";
-    import { formatCurrency } from "@paltiverse/palform-frontend-common";
+    import { formatCurrency } from "@palform/palform-frontend-common";
 
-    export let upcomingInvoice: APIBillingUpcomingInvoice;
+    interface Props {
+        upcomingInvoice: APIBillingUpcomingInvoice;
+        [key: string]: any
+    }
+
+    let { ...props }: Props = $props();
 </script>
 
-<TableContainer class={$$props.class}>
+<TableContainer class={props.class}>
     <Table divClass="" striped>
         <TableHead>
             <TableHeadCell>
@@ -28,7 +33,7 @@
             </TableHeadCell>
         </TableHead>
         <TableBody>
-            {#each upcomingInvoice.lines as line}
+            {#each props.upcomingInvoice.lines as line}
                 <TableBodyRow>
                     <TableBodyCell>
                         <span>
@@ -47,7 +52,7 @@
                     </TableBodyCell>
                     <TableBodyCell>
                         {formatCurrency(
-                            upcomingInvoice.currency,
+                            props.upcomingInvoice.currency,
                             line.unit_price
                         )}
                         {#if line.unit_price_per !== 1}
@@ -59,13 +64,13 @@
                     <TableBodyCell>{line.quantity}</TableBodyCell>
                     <TableBodyCell>
                         {formatCurrency(
-                            upcomingInvoice.currency,
+                            props.upcomingInvoice.currency,
                             line.total_price
                         )}
                     </TableBodyCell>
                 </TableBodyRow>
             {/each}
-            {#each upcomingInvoice.promotions as promotion}
+            {#each props.upcomingInvoice.promotions as promotion}
                 <TableBodyRow>
                     <TableBodyCell class="italic">
                         {promotion.name}
@@ -75,7 +80,7 @@
                     <TableBodyCell>
                         {#if promotion.amount_off}
                             {formatCurrency(
-                                upcomingInvoice.currency,
+                                props.upcomingInvoice.currency,
                                 promotion.amount_off * -1
                             )}
                         {:else if promotion.percent_off}
@@ -84,16 +89,16 @@
                     </TableBodyCell>
                 </TableBodyRow>
             {/each}
-            {#if upcomingInvoice.tax_amount !== 0}
+            {#if props.upcomingInvoice.tax_amount !== 0}
                 <TableBodyRow>
                     <TableBodyCell>Subtotal</TableBodyCell>
                     <TableBodyCell />
                     <TableBodyCell />
                     <TableBodyCell>
                         {formatCurrency(
-                            upcomingInvoice.currency,
-                            upcomingInvoice.total_amount -
-                                upcomingInvoice.tax_amount
+                            props.upcomingInvoice.currency,
+                            props.upcomingInvoice.total_amount -
+                                props.upcomingInvoice.tax_amount
                         )}
                     </TableBodyCell>
                 </TableBodyRow>
@@ -103,23 +108,23 @@
                     <TableBodyCell />
                     <TableBodyCell>
                         {formatCurrency(
-                            upcomingInvoice.currency,
-                            upcomingInvoice.tax_amount
+                            props.upcomingInvoice.currency,
+                            props.upcomingInvoice.tax_amount
                         )}
                     </TableBodyCell>
                 </TableBodyRow>
             {/if}
-            {#if upcomingInvoice.starting_balance !== 0}
+            {#if props.upcomingInvoice.starting_balance !== 0}
                 <TableBodyRow>
                     <TableBodyCell>Your balance contribution</TableBodyCell>
                     <TableBodyCell />
                     <TableBodyCell />
                     <TableBodyCell>
                         {formatCurrency(
-                            upcomingInvoice.currency,
+                            props.upcomingInvoice.currency,
                             Math.min(
-                                upcomingInvoice.starting_balance * -1,
-                                upcomingInvoice.total_amount
+                                props.upcomingInvoice.starting_balance * -1,
+                                props.upcomingInvoice.total_amount
                             ) * -1
                         )}
                     </TableBodyCell>
@@ -131,20 +136,20 @@
                 <TableBodyCell />
                 <TableBodyCell class="font-bold">
                     {formatCurrency(
-                        upcomingInvoice.currency,
-                        upcomingInvoice.amount_due
+                        props.upcomingInvoice.currency,
+                        props.upcomingInvoice.amount_due
                     )}
                 </TableBodyCell>
             </TableBodyRow>
-            {#if upcomingInvoice.ending_balance !== 0}
+            {#if props.upcomingInvoice.ending_balance !== 0}
                 <TableBodyRow>
                     <TableBodyCell>(new balance)</TableBodyCell>
                     <TableBodyCell />
                     <TableBodyCell />
                     <TableBodyCell>
                         {formatCurrency(
-                            upcomingInvoice.currency,
-                            upcomingInvoice.ending_balance * -1
+                            props.upcomingInvoice.currency,
+                            props.upcomingInvoice.ending_balance * -1
                         )}
                     </TableBodyCell>
                 </TableBodyRow>

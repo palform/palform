@@ -1,9 +1,9 @@
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
+use apistos::ApiComponent;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use stripe::{Address, PaymentMethod};
 
-#[derive(Serialize, Deserialize, JsonSchema)]
+#[derive(Serialize, Deserialize, JsonSchema, ApiComponent)]
 pub struct APIBillingCustomer {
     pub entity_name: Option<String>,
     pub email: Option<String>,

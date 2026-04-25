@@ -103,7 +103,7 @@ impl<'a, T: ConnectionTrait + StreamTrait> WebhookJobsManager<'a, T> {
                 };
 
                 match result {
-                    Ok(_) => new_job.done_at = Set(Some(Utc::now().naive_utc())),
+                    Ok(_) => new_job.done_at = Set(Some(Utc::now().fixed_offset())),
                     Err(e) => {
                         new_job.done_at = Set(None);
                         new_job.retries = Set(job.retries + 1);

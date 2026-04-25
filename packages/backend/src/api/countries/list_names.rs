@@ -1,20 +1,17 @@
+use actix_web::web::Json;
+use apistos::{api_operation, ApiComponent};
 use keshvar::CountryIterator;
-use rocket::get;
-use rocket::serde::json::Json;
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use serde::Serialize;
 
-#[derive(JsonSchema, Serialize)]
+#[derive(JsonSchema, Serialize, ApiComponent)]
 pub struct APICountryWithISOCode {
     name: String,
     iso_code: String,
 }
 
-#[openapi(tag = "Country Metadata", operation_id = "countries.list_names")]
-#[get("/countries/names")]
-pub fn handler() -> Json<Vec<APICountryWithISOCode>> {
+#[api_operation(tag = "Country Metadata", operation_id = "countries.list_names")]
+pub async fn countries_list_names() -> Json<Vec<APICountryWithISOCode>> {
     let mut list = Vec::<APICountryWithISOCode>::new();
     for country in CountryIterator::new() {
         list.push(APICountryWithISOCode {

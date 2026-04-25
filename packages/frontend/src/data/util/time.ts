@@ -1,4 +1,4 @@
-import type { APIQuestionConfigurationOneOf9DateTime } from "@paltiverse/palform-typescript-openapi";
+import type {  ConfigDateTimeDateTime } from "@palform/palform-typescript-openapi";
 import { DateTime } from "luxon";
 
 export function parseServerTime(timeString: string, utc = false) {
@@ -15,7 +15,7 @@ export function isDateOnlyEqual(d1: DateTime, d2: DateTime) {
 }
 
 export function labelForQuestionDate(
-    question: APIQuestionConfigurationOneOf9DateTime,
+    question: ConfigDateTimeDateTime,
     date: DateTime | string | null | undefined
 ) {
     if (!date) return "";

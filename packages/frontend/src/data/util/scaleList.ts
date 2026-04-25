@@ -1,5 +1,5 @@
 import { faStar, faHeart, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
-import type { APIQuestionScaleIcon } from "@paltiverse/palform-typescript-openapi";
+import type { APIQuestionScaleIcon } from "@palform/palform-typescript-openapi";
 
 export function genScaleList(from: number, to: number) {
     const l: number[] = [];

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type APIBillingSubscription } from "@paltiverse/palform-typescript-openapi";
+    import { type APIBillingSubscription } from "@palform/palform-typescript-openapi";
     import CardBox from "../cardBox/CardBox.svelte";
     import CardBoxTitle from "../cardBox/CardBoxTitle.svelte";
     import CardBoxSubtitle from "../cardBox/CardBoxSubtitle.svelte";
@@ -10,15 +10,19 @@
     import UpcomingInvoicePreview from "./invoices/UpcomingInvoicePreview.svelte";
     import SwitchPlan from "./manage/SwitchPlan.svelte";
     import SectionSeparator from "../type/SectionSeparator.svelte";
-    import { formatCurrency } from "@paltiverse/palform-frontend-common";
+    import { formatCurrency } from "@palform/palform-frontend-common";
 
-    export let subscription: APIBillingSubscription;
+    interface Props {
+        subscription: APIBillingSubscription;
+    }
 
-    let showManageModal = false;
-    $: onCancel = () => {
+    let { subscription = $bindable() }: Props = $props();
+
+    let showManageModal = $state(false);
+    let onCancel = $derived(() => {
         showManageModal = false;
         subscription.canceling_at_end = true;
-    };
+    });
 </script>
 
 <CardBox>
@@ -64,7 +68,7 @@
 
     <UpcomingInvoicePreview {subscription} />
 
-    <Button class="mt-2" on:click={() => (showManageModal = true)}>
+    <Button class="mt-2" onclick={() => (showManageModal = true)}>
         Manage
     </Button>
 </CardBox>

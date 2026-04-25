@@ -1,8 +1,8 @@
 import type {
     DecrpytingKey,
-    DecrpytingKeyOneOf,
-} from "@paltiverse/palform-typescript-openapi";
+    Known,
+} from "@palform/palform-typescript-openapi";
 
-export function isKnownKey(key: DecrpytingKey): key is DecrpytingKeyOneOf {
+export function isKnownKey(key: DecrpytingKey): key is Known {
     return "Known" in key;
 }

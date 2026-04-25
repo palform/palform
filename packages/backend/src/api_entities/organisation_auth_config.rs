@@ -1,10 +1,10 @@
+use apistos::ApiComponent;
 use palform_entities::organisation_auth_config;
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
+use schemars::JsonSchema;
 use sea_orm::{ActiveValue::NotSet, FromQueryResult, Set};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, JsonSchema, FromQueryResult, Clone)]
+#[derive(Serialize, Deserialize, JsonSchema, FromQueryResult, Clone, ApiComponent)]
 pub struct APIOrganisationAuthConfig {
     pub oidc_discovery_url: String,
     pub client_id: String,

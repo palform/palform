@@ -1,1 +1,1 @@
-pub use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalError};
+pub use palform_client_common::errors::error::{APIError, APIInternalError};

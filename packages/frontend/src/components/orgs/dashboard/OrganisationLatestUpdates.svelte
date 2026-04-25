@@ -5,7 +5,7 @@
         getOrgContext,
         markOrgViewNow,
     } from "../../../data/contexts/orgLayout";
-    import type { APISubmissionCountPerForm } from "@paltiverse/palform-typescript-openapi";
+    import type { APISubmissionCountPerForm } from "@palform/palform-typescript-openapi";
     import BigStat from "../../type/BigStat.svelte";
     import CardBox from "../../cardBox/CardBox.svelte";
     import BigStatCaption from "../../type/BigStatCaption.svelte";
@@ -14,7 +14,7 @@
     import TableContainer from "../../tables/TableContainer.svelte";
 
     const orgCtx = getOrgContext();
-    let newSubmissions: APISubmissionCountPerForm[] = [];
+    let newSubmissions: APISubmissionCountPerForm[] = $state([]);
     let loading = true;
     getLastOrgView($orgCtx.org.id)
         .then(async (lv) => {
@@ -36,10 +36,10 @@
             loading = false;
         });
 
-    $: totalNewSubmissions = newSubmissions.reduce(
+    let totalNewSubmissions = $derived(newSubmissions.reduce(
         (t, c) => t + c.new_submission_count,
         0
-    );
+    ));
 </script>
 
 <CardBox class="mt-4 inline-block min-w-96">

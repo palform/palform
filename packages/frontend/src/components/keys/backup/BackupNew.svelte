@@ -4,9 +4,8 @@
     import LoadingButton from "../../LoadingButton.svelte";
     import { backupKey } from "../../../data/crypto/keyManager";
     import { showSuccessToast } from "../../../data/toast";
-    import { createEventDispatcher } from "svelte";
     import InfoText from "../../type/InfoText.svelte";
-    import { generate_passphrase_js } from "@paltiverse/palform-crypto";
+    import { generate_passphrase_js } from "@palform/palform-crypto";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import {
         faCopy,
@@ -15,36 +14,40 @@
     } from "@fortawesome/free-solid-svg-icons";
     import { copyGenericValue } from "../../../data/util/clipboard";
 
-    export let keyId: string;
-    export let showInfo = true;
+    interface Props {
+        keyId: string;
+        showInfo?: boolean;
+        ondone: () => void;
+    }
+
+    let { keyId, showInfo = true, ondone }: Props = $props();
     const orgCtx = getOrgContext();
-    const dispatch = createEventDispatcher<{ done: undefined }>();
 
-    let recoveryWords = generate_passphrase_js();
-    $: recoveryPhrase = recoveryWords.join(" ");
+    let recoveryWords = $state(generate_passphrase_js());
+    let recoveryPhrase = $derived(recoveryWords.join(" "));
 
-    let phraseWrittenDown = false;
-    let backupLoading = false;
-    $: onBackupClick = async () => {
+    let phraseWrittenDown = $state(false);
+    let backupLoading = $state(false);
+    let onBackupClick = $derived(async () => {
         if (recoveryPhrase === "") return;
         backupLoading = true;
         await backupKey($orgCtx.org.id, keyId, recoveryPhrase);
         backupLoading = false;
         await showSuccessToast("Key backed up to Palform server");
-        dispatch("done");
-    };
+        ondone();
+    });
 
     const onRegenerate = () => {
         recoveryWords = generate_passphrase_js();
     };
 
-    $: onCopyClick = async () => {
+    let onCopyClick = $derived(async () => {
         if (recoveryPhrase === "") return;
         await copyGenericValue(recoveryPhrase);
         phraseWrittenDown = true;
-    };
+    });
 
-    $: onDownloadClick = async () => {
+    let onDownloadClick = $derived(async () => {
         if (recoveryPhrase === "") return;
         const el = document.createElement("a");
         el.setAttribute(
@@ -55,7 +58,7 @@
         el.click();
 
         phraseWrittenDown = true;
-    };
+    });
 </script>
 
 <div class="flex gap-4 flex-wrap">
@@ -70,15 +73,15 @@
 </div>
 
 <div class="mt-8 mb-8">
-    <Button color="light" on:click={onCopyClick} disabled={backupLoading}>
+    <Button color="light" onclick={onCopyClick} disabled={backupLoading}>
         <FontAwesomeIcon icon={faCopy} class="me-2" />
         Copy
     </Button>
-    <Button color="light" on:click={onDownloadClick} disabled={backupLoading}>
+    <Button color="light" onclick={onDownloadClick} disabled={backupLoading}>
         <FontAwesomeIcon icon={faDownload} class="me-2" />
         Download
     </Button>
-    <Button color="light" on:click={onRegenerate} disabled={backupLoading}>
+    <Button color="light" onclick={onRegenerate} disabled={backupLoading}>
         <FontAwesomeIcon icon={faRotateRight} class="me-2" />
         Generate new words
     </Button>
@@ -86,7 +89,11 @@
 
 {#if showInfo}
     <InfoText class="font-medium mt-4">
-        You could lose your form responses if this password gets lost!
+        This is your recovery password. Make sure to keep it safe!
+    </InfoText>
+
+    <InfoText class="font-medium mt-2">
+        You could lose your form responses if this password gets lost.
     </InfoText>
 
     <InfoText class="mt-2">
@@ -95,19 +102,17 @@
     </InfoText>
 {/if}
 
-<Checkbox
-    bind:checked={phraseWrittenDown}
-    class="mt-4"
-    disabled={backupLoading}
->
-    I have saved my words somewhere secure
-</Checkbox>
+<div class="mt-4">
+    <Checkbox bind:checked={phraseWrittenDown} disabled={backupLoading}>
+        I have saved my words somewhere secure
+    </Checkbox>
+</div>
 
 <LoadingButton
     buttonClass="mt-4"
     disabled={backupLoading || !phraseWrittenDown}
     loading={backupLoading}
-    on:click={onBackupClick}
+    onclick={onBackupClick}
     size="lg"
 >
     Finish key setup

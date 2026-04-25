@@ -1,34 +1,38 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_tsid::resources::IDOrganisation;
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket::get;
-use rocket::serde::json::Json;
-use rocket::State;
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
 use sequoia_openpgp::packet::key::PublicParts;
+use serde::Deserialize;
 
+use crate::actix_util::from_org_id::FromOrgId;
 use crate::api_entities::billing::entitlement::APIEntitlementRequest;
 use crate::api_entities::key::APIUserKeyWithIdentity;
 use crate::auth::rbac::requests::APITokenOrgAdmin;
 use crate::crypto::keys::{CryptoKeyRepr, KeyConversionError};
 use crate::entity_managers::billing_entitlement_proxy::BillingEntitlementManager;
 use crate::entity_managers::keys::UserKeyManager;
-use crate::rocket_util::from_org_id::FromOrgId;
 
-#[openapi(tag = "Organisation Keys", operation_id = "org.keys.list")]
-#[get("/users/me/orgs/<org_id>/keys/all", rank = 1)]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct KeysListOrgPath {
     org_id: PalformDatabaseID<IDOrganisation>,
+}
+
+#[api_operation(tag = "Organisation Keys", operation_id = "org.keys.list")]
+pub async fn keys_list_org(
+    path: Path<KeysListOrgPath>,
     _token: APITokenOrgAdmin,
-    db: &State<DatabaseConnection>,
+    db: Data<DatabaseConnection>,
     billing: FromOrgId<BillingEntitlementManager>,
-) -> Result<Json<Vec<APIUserKeyWithIdentity>>, APIErrorWithStatus> {
+) -> Result<Json<Vec<APIUserKeyWithIdentity>>, APIError> {
     billing
-        .check_entitlement(db.inner(), APIEntitlementRequest::CryptoDetails)
+        .check_entitlement(db.as_ref(), APIEntitlementRequest::CryptoDetails)
         .await?;
 
-    let all_keys = UserKeyManager::list_all_org_keys_with_identities(db.inner(), org_id)
+    let all_keys = UserKeyManager::list_all_org_keys_with_identities(db.as_ref(), path.org_id)
         .await
         .map_internal_error()?;
 

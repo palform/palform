@@ -1,10 +1,14 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../router";
 
-    export let href: string;
+    interface Props {
+        href: string;
+    }
+
+    let { href }: Props = $props();
 
     onMount(() => {
-        navigate(href);
+        void navigate(href);
     });
 </script>

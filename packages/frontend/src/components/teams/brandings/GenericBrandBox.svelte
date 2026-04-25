@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
     import {
         getBrandCtx,
         getBrandIsNonNeutralBackground,
@@ -9,20 +10,38 @@
     } from "../../../data/contexts/brand";
     import { isDarkMode } from "../../../data/util/darkMode";
     import { colorWithLightness } from "../../../data/util/color";
+    import type { MouseEventHandler } from "svelte/elements";
 
-    export let backgroundColor: string | undefined = undefined;
-    export let errorState = false;
-    export let neutralBorder = false;
-    export let ignorePadding = false;
-    export let element: "div" | "button" = "div";
-    export let disabled = false;
+    interface Props {
+        backgroundColor?: string;
+        errorState?: boolean;
+        neutralBorder?: boolean;
+        ignorePadding?: boolean;
+        element?: "div" | "button";
+        disabled?: boolean;
+        class?: string;
+        children?: Snippet;
+        onclick?: MouseEventHandler<HTMLDivElement | HTMLButtonElement>;
+    }
+
+    let {
+        backgroundColor = undefined,
+        errorState = false,
+        neutralBorder = false,
+        ignorePadding = false,
+        element = "div",
+        disabled = false,
+        class: className = "",
+        children,
+        onclick,
+    }: Props = $props();
 
     const brandCtx = getBrandCtx();
-    let borderColorOverride: string | undefined = undefined;
-    let shadowColorOverride: string | undefined = undefined;
-    let isNonNeutralBg = getBrandIsNonNeutralBackground($brandCtx);
+    let borderColorOverride = $state<string | undefined>(undefined);
+    let shadowColorOverride = $state<string | undefined>(undefined);
+    let isNonNeutralBg = $derived(getBrandIsNonNeutralBackground($brandCtx));
 
-    $: (() => {
+    $effect(() => {
         if ($brandCtx === undefined || errorState || neutralBorder) {
             borderColorOverride = undefined;
             shadowColorOverride = undefined;
@@ -32,34 +51,34 @@
         if (isDarkMode()) {
             borderColorOverride = colorWithLightness(
                 $brandCtx.accent_color ?? $brandCtx.primary_color,
-                20
+                20,
             );
             shadowColorOverride = colorWithLightness(
                 $brandCtx.accent_color ?? $brandCtx.primary_color,
-                10
+                10,
             );
         } else {
             const borderLightness = getLightnessForBrandBorder($brandCtx);
             borderColorOverride = colorWithLightness(
                 $brandCtx.accent_color ?? $brandCtx.primary_color,
                 borderLightness ?? 50,
-                borderLightness === undefined ? 0 : 1
+                borderLightness === undefined ? 0 : 1,
             );
             shadowColorOverride = colorWithLightness(
                 $brandCtx.accent_color ?? $brandCtx.primary_color,
                 40,
-                getShadowAlphaForBrandBorder($brandCtx)
+                getShadowAlphaForBrandBorder($brandCtx),
             );
         }
-    })();
+    });
 </script>
 
 <svelte:element
     this={element}
-    on:click
+    {onclick}
     {disabled}
     role={element === "button" ? "button" : ""}
-    class={`border ${neutralBorder ? "border-slate-200 dark:border-slate-600" : ""} shadow-sm ${isNonNeutralBg ? "bg-slate-50/80 dark:bg-slate-900" : ""} ${$$props.class ?? ""}`}
+    class={`border ${neutralBorder ? "border-slate-200 dark:border-slate-600" : ""} shadow-sm ${isNonNeutralBg ? "bg-slate-50/80 dark:bg-slate-900" : ""} ${className}`}
     style:background-color={backgroundColor}
     style:border-color={borderColorOverride}
     style:--tw-shadow-color={shadowColorOverride}
@@ -68,5 +87,5 @@
         ? undefined
         : getPaddingAmountForBrand($brandCtx)}
 >
-    <slot />
+    {@render children?.()}
 </svelte:element>

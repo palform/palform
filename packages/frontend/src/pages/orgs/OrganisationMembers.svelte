@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIOrgMember } from "@paltiverse/palform-typescript-openapi";
+    import type { APIOrgMember } from "@palform/palform-typescript-openapi";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import { APIs } from "../../data/common";
     import {
@@ -18,35 +18,40 @@
     import { isEntitled } from "../../data/billing/entitlement";
     import MissingEntitlementTooltip from "../../components/billing/entitlement/MissingEntitlementTooltip.svelte";
     import { getUserId } from "../../data/auth";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../router";
 
     const orgCtx = getOrgContext();
     const entitled = isEntitled("user_count", true);
 
-    let currentUserId: string | undefined = undefined;
-    $: getUserId().then((u) => (currentUserId = u));
+    let currentUserId: string | undefined = $state(undefined);
+    $effect(() => {
+        getUserId().then((u) => (currentUserId = u));
+    });
 
-    let members: APIOrgMember[] = [];
-    let membersLoading = true;
-    $: APIs.orgMembers()
-        .then((a) => a.organisationMembersList($orgCtx.org.id))
-        .then((resp) => {
-            members = resp.data;
-            membersLoading = false;
-        });
+    let members: APIOrgMember[] = $state([]);
+    let membersLoading = $state(true);
+    $effect(() => {
+        APIs.orgMembers()
+            .then((a) => a.organisationMembersList($orgCtx.org.id))
+            .then((resp) => {
+                members = resp.data;
+                membersLoading = false;
+            });
+    });
 
-    $: onMemberDelete = (id: string) => {
+    let onMemberDelete = $derived((id: string) => {
         members = members.filter((e) => e.user_id !== id);
-    };
-    $: onMemberUpdate = (id: string, data: APIOrgMember) => {
+    });
+    let onMemberUpdate = $derived((id: string, data: APIOrgMember) => {
         const i = members.findIndex((e) => e.user_id === id);
         members[i] = data;
-    };
+    });
 </script>
 
 <Button
-    href={`/orgs/${$orgCtx.org.id}/settings/members/invite`}
-    on:click={navigateEvent}
+    href={p("/orgs/:orgId/settings/members/invite", {
+        params: { orgId: $orgCtx.org.id },
+    })}
     disabled={!$entitled || $orgCtx.org.uses_oidc}
     outline
 >
@@ -62,7 +67,7 @@
 
 {#if membersLoading}
     <div class="text-center">
-        <Spinner size={14} />
+        <Spinner size="16" />
     </div>
 {:else}
     <TableContainer class="mt-4">

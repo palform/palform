@@ -9,10 +9,10 @@ use sea_orm::{
 };
 
 use crate::{
+    actix_util::from_org_id::FromOrgIdTrait,
     api_entities::organisation_auth_team_mapping::{
         APIOrganisationAuthTeamMapping, APIOrganisationAuthTeamMappingRequest,
     },
-    rocket_util::from_org_id::FromOrgIdTrait,
 };
 
 pub struct OrganisationAuthTeamMappingsManager {

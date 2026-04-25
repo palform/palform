@@ -2,35 +2,35 @@
     import { faKey } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { Button, Input, Label, Modal } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
-    import type { APIAdminUserSecondAuthenticationFactor } from "@paltiverse/palform-typescript-openapi";
+    import type { APIAdminUserSecondAuthenticationFactor } from "@palform/palform-typescript-openapi";
     import { showSuccessToast } from "../../../../data/toast";
     import EnrollTotp from "./EnrollTOTP.svelte";
     import EnrollWebauthn from "./EnrollWebauthn.svelte";
 
-    const dispatch = createEventDispatcher<{
-        enroll: APIAdminUserSecondAuthenticationFactor;
-    }>();
+    interface Props {
+        onenroll: (factor: APIAdminUserSecondAuthenticationFactor) => void;
+    }
+    let { onenroll }: Props = $props();
 
-    let showModal = false;
+    let showModal = $state(false);
 
-    let step: "choose" | "totp" | "webauthn" = "choose";
-    let nickname = "";
-    $: onContinueClick = (nextStep: "totp" | "webauthn") => {
+    let step: "choose" | "totp" | "webauthn" = $state("choose");
+    let nickname = $state("");
+    let onContinueClick = $derived((nextStep: "totp" | "webauthn") => {
         if (!nickname.trim()) return;
         step = nextStep;
-    };
+    });
 
-    $: onEnroll = async (
-        e: CustomEvent<APIAdminUserSecondAuthenticationFactor>
-    ) => {
-        await showSuccessToast("2FA method enrolled");
-        dispatch("enroll", e.detail);
-        showModal = false;
-    };
+    let onEnroll = $derived(
+        async (e: APIAdminUserSecondAuthenticationFactor) => {
+            await showSuccessToast("2FA method enrolled");
+            onenroll(e);
+            showModal = false;
+        }
+    );
 </script>
 
-<Button on:click={() => (showModal = true)}>
+<Button onclick={() => (showModal = true)}>
     <FontAwesomeIcon icon={faKey} class="me-3" />
     Enroll new method
 </Button>
@@ -49,15 +49,14 @@
 
         {#if nickname.trim().length !== 0}
             <p>Now, choose which method you'd like to enroll.</p>
-            <Button on:click={() => onContinueClick("totp")}>
+            <Button onclick={() => onContinueClick("totp")}>
                 Authenticator app
             </Button>
-            <Button on:click={() => onContinueClick("webauthn")}>Passkey</Button
-            >
+            <Button onclick={() => onContinueClick("webauthn")}>Passkey</Button>
         {/if}
     {:else if step === "totp"}
-        <EnrollTotp {nickname} on:enroll={onEnroll} />
+        <EnrollTotp {nickname} onenroll={onEnroll} />
     {:else if step === "webauthn"}
-        <EnrollWebauthn {nickname} on:enroll={onEnroll} />
+        <EnrollWebauthn {nickname} onenroll={onEnroll} />
     {/if}
 </Modal>

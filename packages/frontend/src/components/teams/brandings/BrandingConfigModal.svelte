@@ -5,9 +5,7 @@
         Helper,
         Input,
         Label,
-        RadioButton,
         Toggle,
-        Tooltip,
     } from "flowbite-svelte";
     import GoogleFontPicker from "./GoogleFontPicker.svelte";
     import type {
@@ -16,7 +14,7 @@
         FormBrandingBorderRoundingEnum,
         FormBrandingFontSizeEnum,
         FormBrandingSpacingEnum,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import LoadingButton from "../../LoadingButton.svelte";
     import { APIs } from "../../../data/common";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
@@ -34,40 +32,59 @@
     import SectionSeparator from "../../type/SectionSeparator.svelte";
     import BrandingColorPicker from "./BrandingColorPicker.svelte";
     import BrandingConfigPreview from "./BrandingConfigPreview.svelte";
+    import RadioButtonGroup from "../../radioButton/RadioButtonGroup.svelte";
 
-    export let modalOpen: boolean;
-    export let existingBranding: APIFormBranding | undefined = undefined;
+    interface Props {
+        modalOpen: boolean;
+        existingBranding?: APIFormBranding | undefined;
+    }
+
+    let { modalOpen = $bindable(), existingBranding = undefined }: Props =
+        $props();
     const orgCtx = getOrgContext();
     const teamCtx = getTeamCtx();
 
-    let primaryColor = existingBranding?.primary_color ?? "#3584e4";
-    let accentColor = existingBranding?.accent_color ?? "#33d17a";
-    let fontFamily = existingBranding?.google_font ?? "Roboto";
-    let brandingName = existingBranding?.name ?? "My custom scheme";
-    let borderRounding: FormBrandingBorderRoundingEnum =
-        existingBranding?.border_rounding ?? "Medium";
-    let spacing: FormBrandingSpacingEnum =
-        existingBranding?.spacing ?? "Normal";
-    let fontSize: FormBrandingFontSizeEnum =
-        existingBranding?.font_size ?? "Regular";
-    let logoId: string | null = existingBranding?.logo_asset_id ?? null;
-    let backgroundId: string | null =
-        existingBranding?.background_image_asset_id ?? null;
-    let includeAttribution =
-        existingBranding?.include_palform_attribution ?? false;
-    let extraFooterMessage = existingBranding?.extra_footer_message ?? null;
-    let termsLink = existingBranding?.terms_link ?? null;
-    let privacyLink = existingBranding?.privacy_link ?? null;
-    let borderIntensity = existingBranding?.border_intensity ?? "Medium";
-    let borderShadowIntensity =
-        existingBranding?.border_shadow_intensity ?? "Medium";
-    let e2eeBadge = existingBranding?.e2ee_badge ?? true;
-    let backgroundColor = existingBranding?.background_color ?? null;
-    let backgroundColorAccent =
-        existingBranding?.background_color_accent ?? null;
+    let primaryColor = $state(existingBranding?.primary_color ?? "#3584e4");
+    let accentColor = $state(existingBranding?.accent_color ?? "#33d17a");
+    let fontFamily = $state(existingBranding?.google_font ?? "Roboto");
+    let brandingName = $state(existingBranding?.name ?? "My custom scheme");
+    let borderRounding: FormBrandingBorderRoundingEnum = $state(
+        existingBranding?.border_rounding ?? "Medium"
+    );
+    let spacing: FormBrandingSpacingEnum = $state(
+        existingBranding?.spacing ?? "Normal"
+    );
+    let fontSize: FormBrandingFontSizeEnum = $state(
+        existingBranding?.font_size ?? "Regular"
+    );
+    let logoId: string | null = $state(existingBranding?.logo_asset_id ?? null);
+    let backgroundId: string | null = $state(
+        existingBranding?.background_image_asset_id ?? null
+    );
+    let includeAttribution = $state(
+        existingBranding?.include_palform_attribution ?? false
+    );
+    let extraFooterMessage = $state(
+        existingBranding?.extra_footer_message ?? null
+    );
+    let termsLink = $state(existingBranding?.terms_link ?? null);
+    let privacyLink = $state(existingBranding?.privacy_link ?? null);
+    let borderIntensity = $state(
+        existingBranding?.border_intensity ?? "Medium"
+    );
+    let borderShadowIntensity = $state(
+        existingBranding?.border_shadow_intensity ?? "Medium"
+    );
+    let e2eeBadge = $state(existingBranding?.e2ee_badge ?? true);
+    let backgroundColor = $state(
+        existingBranding?.background_color ?? undefined
+    );
+    let backgroundColorAccent = $state(
+        existingBranding?.background_color_accent ?? undefined
+    );
 
-    let loading = false;
-    $: onSaveClick = async () => {
+    let loading = $state(false);
+    let onSaveClick = $derived(async () => {
         if (brandingName === "") {
             await showFailureToast("Please set a nickname");
             return;
@@ -143,7 +160,7 @@
         }
 
         loading = false;
-    };
+    });
 </script>
 
 {#if modalOpen}
@@ -152,7 +169,7 @@
         transition:scale
     >
         <div
-            class="h-16 border-b dark:border-b-slate-600 flex items-center justify-between px-10 gap-10"
+            class="h-16 border-b border-b-slate-300 dark:border-b-slate-600 flex items-center justify-between px-10 gap-10"
         >
             <h2
                 class="text-xl text-gray-700 dark:text-gray-300 font-display font-medium"
@@ -161,8 +178,8 @@
             </h2>
             <Button
                 outline
-                class="!px-3 !py-2"
-                on:click={() => (modalOpen = false)}
+                class="px-3! py-2!"
+                onclick={() => (modalOpen = false)}
             >
                 <FontAwesomeIcon icon={faTimes} size="lg" />
             </Button>
@@ -208,167 +225,101 @@
 
                 <div>
                     <Label>Font size</Label>
-                    <ButtonGroup class="mt-2">
-                        <RadioButton value={"Tiny"} bind:group={fontSize}>
-                            <FontAwesomeIcon icon={faFont} size="xs" />
-                        </RadioButton>
-                        <Tooltip>Small</Tooltip>
-                        <RadioButton value={"Small"} bind:group={fontSize}>
-                            <FontAwesomeIcon icon={faFont} size="sm" />
-                        </RadioButton>
-                        <Tooltip>Small</Tooltip>
-                        <RadioButton value={"Regular"} bind:group={fontSize}>
-                            <FontAwesomeIcon icon={faFont} />
-                        </RadioButton>
-                        <Tooltip>Regular</Tooltip>
-                        <RadioButton value={"Large"} bind:group={fontSize}>
-                            <FontAwesomeIcon icon={faFont} size="lg" />
-                        </RadioButton>
-                        <Tooltip>Large</Tooltip>
-                        <RadioButton value={"VeryLarge"} bind:group={fontSize}>
-                            <FontAwesomeIcon icon={faFont} size="xl" />
-                        </RadioButton>
-                        <Tooltip>Very large</Tooltip>
-                    </ButtonGroup>
+                    <RadioButtonGroup
+                        class="mt-2"
+                        bind:selectedValue={fontSize}
+                        conjoined
+                        values={[
+                            {
+                                value: "Tiny",
+                                icon: faFont,
+                                iconSize: "xs",
+                                tooltip: "Tiny",
+                            },
+                            {
+                                value: "Small",
+                                icon: faFont,
+                                iconSize: "sm",
+                                tooltip: "Small",
+                            },
+                            {
+                                value: "Regular",
+                                icon: faFont,
+                                tooltip: "Regular",
+                            },
+                            {
+                                value: "Large",
+                                icon: faFont,
+                                iconSize: "lg",
+                                tooltip: "Large",
+                            },
+                            {
+                                value: "VeryLarge",
+                                icon: faFont,
+                                iconSize: "xl",
+                                tooltip: "Very large",
+                            },
+                        ]}
+                    />
                 </div>
 
                 <SectionSeparator />
 
                 <div>
                     <Label>Border rounding</Label>
-                    <div class="flex gap-2 mt-2">
-                        <RadioButton
-                            value={"None"}
-                            bind:group={borderRounding}
-                            color="light"
-                            class="!rounded-none"
-                        >
-                            None
-                        </RadioButton>
-                        <RadioButton
-                            value={"Small"}
-                            bind:group={borderRounding}
-                            color="light"
-                            class="!rounded-md"
-                        >
-                            Small
-                        </RadioButton>
-                        <RadioButton
-                            value={"Medium"}
-                            bind:group={borderRounding}
-                            color="light"
-                            class="!rounded-xl"
-                        >
-                            Medium
-                        </RadioButton>
-                        <RadioButton
-                            value={"Large"}
-                            bind:group={borderRounding}
-                            color="light"
-                            class="!rounded-3xl"
-                        >
-                            Large
-                        </RadioButton>
-                    </div>
+                    <RadioButtonGroup
+                        class="mt-2"
+                        bind:selectedValue={borderRounding}
+                        values={[
+                            { value: "None", label: "None" },
+                            { value: "Small", label: "Small" },
+                            { value: "Medium", label: "Medium" },
+                            { value: "Large", label: "Large" },
+                        ]}
+                    />
                 </div>
 
                 <div>
                     <Label>Question border intensity</Label>
-                    <div class="flex gap-2 mt-2">
-                        <RadioButton
-                            value={"Off"}
-                            bind:group={borderIntensity}
-                            color="light"
-                        >
-                            No border
-                        </RadioButton>
-                        <RadioButton
-                            value={"Low"}
-                            bind:group={borderIntensity}
-                            color="light"
-                        >
-                            Low
-                        </RadioButton>
-                        <RadioButton
-                            value={"Medium"}
-                            bind:group={borderIntensity}
-                            color="light"
-                        >
-                            Medium
-                        </RadioButton>
-                        <RadioButton
-                            value={"High"}
-                            bind:group={borderIntensity}
-                            color="light"
-                        >
-                            High
-                        </RadioButton>
-                    </div>
+                    <RadioButtonGroup
+                        class="mt-2"
+                        bind:selectedValue={borderIntensity}
+                        values={[
+                            { value: "Off", label: "No border" },
+                            { value: "Low", label: "Low" },
+                            { value: "Medium", label: "Medium" },
+                            { value: "High", label: "High" },
+                        ]}
+                    />
                 </div>
 
                 <div>
                     <Label>Question border shadow intensity</Label>
-                    <div class="flex gap-2 mt-2">
-                        <RadioButton
-                            value={"Off"}
-                            bind:group={borderShadowIntensity}
-                            color="light"
-                        >
-                            No shadow
-                        </RadioButton>
-                        <RadioButton
-                            value={"Low"}
-                            bind:group={borderShadowIntensity}
-                            color="light"
-                        >
-                            Low
-                        </RadioButton>
-                        <RadioButton
-                            value={"Medium"}
-                            bind:group={borderShadowIntensity}
-                            color="light"
-                        >
-                            Medium
-                        </RadioButton>
-                        <RadioButton
-                            value={"High"}
-                            bind:group={borderShadowIntensity}
-                            color="light"
-                        >
-                            High
-                        </RadioButton>
-                    </div>
+                    <RadioButtonGroup
+                        class="mt-2"
+                        bind:selectedValue={borderShadowIntensity}
+                        values={[
+                            { value: "Off", label: "No shadow" },
+                            { value: "Low", label: "Low" },
+                            { value: "Medium", label: "Medium" },
+                            { value: "High", label: "High" },
+                        ]}
+                    />
                 </div>
 
                 <SectionSeparator />
 
                 <div>
                     <Label>Spacing</Label>
-                    <div class="flex gap-2 mt-2">
-                        <RadioButton
-                            value={"Tight"}
-                            bind:group={spacing}
-                            color="light"
-                            class="!px-2"
-                        >
-                            Tight
-                        </RadioButton>
-                        <RadioButton
-                            value={"Normal"}
-                            bind:group={spacing}
-                            color="light"
-                        >
-                            Normal
-                        </RadioButton>
-                        <RadioButton
-                            value={"Comfy"}
-                            bind:group={spacing}
-                            color="light"
-                            class="!px-7"
-                        >
-                            Comfy
-                        </RadioButton>
-                    </div>
+                    <RadioButtonGroup
+                        class="mt-2"
+                        bind:selectedValue={spacing}
+                        values={[
+                            { value: "Tight", label: "Tight" },
+                            { value: "Normal", label: "Normal" },
+                            { value: "Comfy", label: "Comfy" },
+                        ]}
+                    />
                 </div>
 
                 <SectionSeparator />
@@ -429,7 +380,7 @@
                     <Button
                         size="xs"
                         color="light"
-                        on:click={() => (termsLink = "")}
+                        onclick={() => (termsLink = "")}
                     >
                         <FontAwesomeIcon icon={faPlus} class="me-2" />
                         Add terms link
@@ -439,7 +390,7 @@
                         Terms of Use link
                         <ButtonGroup class="flex mt-1">
                             <Input bind:value={termsLink} />
-                            <Button on:click={() => (termsLink = null)}>
+                            <Button onclick={() => (termsLink = null)}>
                                 <FontAwesomeIcon icon={faTrash} />
                             </Button>
                         </ButtonGroup>
@@ -449,7 +400,7 @@
                     <Button
                         size="xs"
                         color="light"
-                        on:click={() => (privacyLink = "")}
+                        onclick={() => (privacyLink = "")}
                     >
                         <FontAwesomeIcon icon={faPlus} class="me-2" />
                         Add privacy link
@@ -459,7 +410,7 @@
                         Privacy Policy link
                         <ButtonGroup class="flex mt-1">
                             <Input bind:value={privacyLink} />
-                            <Button on:click={() => (privacyLink = null)}>
+                            <Button onclick={() => (privacyLink = null)}>
                                 <FontAwesomeIcon icon={faTrash} />
                             </Button>
                         </ButtonGroup>
@@ -469,7 +420,7 @@
                     <Button
                         size="xs"
                         color="light"
-                        on:click={() => (extraFooterMessage = "")}
+                        onclick={() => (extraFooterMessage = "")}
                     >
                         <FontAwesomeIcon icon={faPlus} class="me-2" />
                         Add extra message to footer
@@ -479,9 +430,7 @@
                         Extra footer message
                         <ButtonGroup class="flex mt-1">
                             <Input bind:value={extraFooterMessage} />
-                            <Button
-                                on:click={() => (extraFooterMessage = null)}
-                            >
+                            <Button onclick={() => (extraFooterMessage = null)}>
                                 <FontAwesomeIcon icon={faTrash} />
                             </Button>
                         </ButtonGroup>
@@ -507,7 +456,7 @@
                 <LoadingButton
                     disabled={loading}
                     {loading}
-                    on:click={onSaveClick}
+                    onclick={onSaveClick}
                 >
                     Save
                 </LoadingButton>

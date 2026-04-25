@@ -2,9 +2,28 @@
     import FormSettingsForm from "../../components/forms/settings/FormSettingsForm.svelte";
     import MainTitle from "../../layouts/MainTitle.svelte";
     import FormOqppChoice from "../../components/forms/settings/FormOQPPChoice.svelte";
+    import { isActive, route } from "../../router";
 
-    export let initialTeamId: string | undefined = undefined;
-    export let oqpp: boolean | undefined = undefined;
+    interface Props {
+        initialTeamId?: string | undefined;
+        oqpp?: boolean | undefined;
+    }
+
+    let { initialTeamId = undefined, oqpp = $bindable(undefined) }: Props =
+        $props();
+
+    let initialTeamIdResolved = $derived.by(() => {
+        if (initialTeamId !== undefined) {
+            return initialTeamId;
+        }
+
+        if (isActive("/orgs/:orgId/forms/new/:initialTeamId")) {
+            return route.getParams("/orgs/:orgId/forms/new/:initialTeamId")
+                .initialTeamId;
+        }
+
+        return undefined;
+    });
 </script>
 
 {#if oqpp === undefined}
@@ -14,11 +33,15 @@
     <MainTitle>Create a new form</MainTitle>
     <button
         class="text-left font-display dark:text-slate-300"
-        on:click={() => (oqpp = undefined)}
+        onclick={() => (oqpp = undefined)}
     >
         {oqpp
             ? "with one question at a time"
             : "with multiple questions per page"}
     </button>
-    <FormSettingsForm initialValue={undefined} {initialTeamId} {oqpp} />
+    <FormSettingsForm
+        initialValue={undefined}
+        initialTeamId={initialTeamIdResolved}
+        {oqpp}
+    />
 {/if}

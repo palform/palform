@@ -4,30 +4,35 @@
     import { Button } from "flowbite-svelte";
     import QRCode from "qrcode";
 
-    export let uri: string;
-    export let download = false;
-    let canvas: HTMLCanvasElement | undefined;
+    interface Props {
+        uri: string;
+        download?: boolean;
+        class?: string;
+    }
 
-    $: {
+    let { uri, download = false, class: className }: Props = $props();
+    let canvas: HTMLCanvasElement | undefined = $state(undefined);
+
+    $effect(() => {
         if (canvas) {
             QRCode.toCanvas(canvas, uri);
         }
-    }
+    });
 
-    $: onDownloadClick = async () => {
+    async function onDownloadClick() {
         if (!canvas) return;
 
         const link = document.createElement("a");
         link.href = canvas.toDataURL();
         link.download = "qr_code.png";
         link.click();
-    };
+    }
 </script>
 
-<div class={$$props.class}>
-    <canvas bind:this={canvas} />
+<div class={className}>
+    <canvas bind:this={canvas}></canvas>
     {#if download}
-        <Button color="light" size="sm" class="mt-2" on:click={onDownloadClick}>
+        <Button color="light" size="sm" class="mt-2" onclick={onDownloadClick}>
             <FontAwesomeIcon icon={faDownload} class="me-2" />
             Download PNG
         </Button>

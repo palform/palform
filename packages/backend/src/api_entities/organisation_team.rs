@@ -1,12 +1,12 @@
+use apistos::ApiComponent;
 use palform_entities::sea_orm_active_enums::OrganisationMemberRoleEnum;
 use palform_tsid::resources::{IDAdminUser, IDOrganisation, IDTeam};
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
+use schemars::JsonSchema;
 use sea_orm::FromQueryResult;
 use serde::Serialize;
 
-#[derive(Serialize, JsonSchema, FromQueryResult)]
+#[derive(Serialize, JsonSchema, FromQueryResult, ApiComponent)]
 pub struct APIOrganisationTeam {
     pub id: PalformDatabaseID<IDTeam>,
     pub name: String,
@@ -15,14 +15,14 @@ pub struct APIOrganisationTeam {
     pub is_default: Option<bool>,
 }
 
-#[derive(Serialize, JsonSchema, FromQueryResult)]
+#[derive(Serialize, JsonSchema, FromQueryResult, ApiComponent)]
 pub struct APIOrganisationTeamMembership {
     pub team_id: PalformDatabaseID<IDTeam>,
     pub name: String,
     pub my_role: OrganisationMemberRoleEnum,
 }
 
-#[derive(Serialize, JsonSchema, FromQueryResult)]
+#[derive(Serialize, JsonSchema, FromQueryResult, ApiComponent)]
 pub struct APIOrganisationTeamMember {
     pub user_id: PalformDatabaseID<IDAdminUser>,
     pub user_display_name: Option<String>,

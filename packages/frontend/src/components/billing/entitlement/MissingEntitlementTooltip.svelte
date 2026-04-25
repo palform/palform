@@ -1,13 +1,16 @@
 <script lang="ts">
-    import type { APIEntitlementInfo } from "@paltiverse/palform-typescript-openapi";
+    import type { APIEntitlementInfo } from "@palform/palform-typescript-openapi";
     import { isEntitled } from "../../../data/billing/entitlement";
-    import { Tooltip } from "flowbite-svelte";
-    import type { TooltipProps } from "flowbite-svelte/Tooltip.svelte";
+    import { Tooltip, type TooltipProps } from "flowbite-svelte";
 
-    export let key: keyof APIEntitlementInfo;
-    export let multi = false;
-    export let placement: TooltipProps["placement"] = "right";
-    $: entitled = isEntitled(key, multi);
+    interface Props {
+        key: keyof APIEntitlementInfo;
+        multi?: boolean;
+        placement?: TooltipProps["placement"];
+    }
+
+    let { key, multi = false, placement = "right" }: Props = $props();
+    let entitled = $derived(isEntitled(key, multi));
 </script>
 
 {#if !$entitled}

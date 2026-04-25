@@ -2,7 +2,7 @@
     import type {
         APIBillingSubscription,
         APIBillingUpcomingInvoice,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import { Button, Modal, Spinner } from "flowbite-svelte";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { APIs } from "../../../data/common";
@@ -11,25 +11,36 @@
     import { createEventDispatcher } from "svelte";
     import { parseServerTime } from "../../../data/util/time";
     import { DateTime } from "luxon";
-    import { formatCurrency } from "@paltiverse/palform-frontend-common";
+    import { formatCurrency } from "@palform/palform-frontend-common";
 
-    export let subscription: APIBillingSubscription;
-    export let newPriceId: string;
-    export let newPriceAmount: number;
-    export let newPriceAnnual: boolean;
-    export let open = false;
+    interface Props {
+        subscription: APIBillingSubscription;
+        newPriceId: string;
+        newPriceAmount: number;
+        newPriceAnnual: boolean;
+        open?: boolean;
+    }
+
+    let {
+        subscription,
+        newPriceId,
+        newPriceAmount,
+        newPriceAnnual,
+        open = $bindable(false),
+    }: Props = $props();
 
     const orgCtx = getOrgContext();
     const dispatch = createEventDispatcher<{ accept: undefined }>();
 
-    let upcomingInvoice: APIBillingUpcomingInvoice | undefined;
-    let initLoading = true;
-    $: {
+    let upcomingInvoice: APIBillingUpcomingInvoice | undefined = $state();
+    let initLoading = $state(true);
+    $effect(() => {
         initLoading = true;
+        let _newPriceId = newPriceId;
         APIs.billingPlans()
             .then((a) =>
                 a.billingPlanSwitch($orgCtx.org.id, true, {
-                    new_stripe_price_id: newPriceId,
+                    new_stripe_price_id: _newPriceId,
                 })
             )
             .then((resp) => {
@@ -37,17 +48,21 @@
             })
             .catch(showFailureToast)
             .finally(() => (initLoading = false));
-    }
+    });
 
-    $: chargeTime = upcomingInvoice
-        ? parseServerTime(upcomingInvoice.next_payment_attempt)
-        : undefined;
-    $: isChargeNow = chargeTime ? chargeTime <= DateTime.now() : false;
+    let chargeTime = $derived(
+        upcomingInvoice
+            ? parseServerTime(upcomingInvoice.next_payment_attempt)
+            : undefined
+    );
+    let isChargeNow = $derived(
+        chargeTime ? chargeTime <= DateTime.now() : false
+    );
 </script>
 
 <Modal bind:open outsideclose title="Confirm new plan" size="lg">
     {#if initLoading}
-        <Spinner size="14" />
+        <Spinner size="12" />
     {:else if upcomingInvoice}
         <p>
             You will be charged the following invoice <strong>
@@ -82,6 +97,6 @@
             your plan.
         </p>
 
-        <Button on:click={() => dispatch("accept")}>Great, continue!</Button>
+        <Button onclick={() => dispatch("accept")}>Great, continue!</Button>
     {/if}
 </Modal>

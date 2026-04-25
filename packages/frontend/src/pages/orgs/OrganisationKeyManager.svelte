@@ -1,31 +1,14 @@
 <script lang="ts">
-    import type { APIUserKeyWithIdentity } from "@paltiverse/palform-typescript-openapi";
     import { getOrgContext } from "../../data/contexts/orgLayout";
-    import { APIs } from "../../data/common";
-    import { showFailureToast } from "../../data/toast";
     import { isEntitled } from "../../data/billing/entitlement";
     import OrganisationKeyBrowser from "../../components/orgs/keys/OrganisationKeyBrowser.svelte";
     import CardGrid from "../../components/CardGrid.svelte";
     import InductionStepCard from "../../components/induction/InductionStepCard.svelte";
     import { Button } from "flowbite-svelte";
-    import { navigate } from "svelte-routing";
+    import { p } from "../../router";
 
     const orgCtx = getOrgContext();
     const entitled = isEntitled("crypto_details");
-    let loading = true;
-    let keys: APIUserKeyWithIdentity[] | null = null;
-
-    APIs.orgKeys()
-        .then((a) => a.orgKeysList($orgCtx.org.id))
-        .then((resp) => {
-            keys = resp.data;
-            loading = false;
-        })
-        .catch(showFailureToast);
-
-    $: onContinueClick = () => {
-        navigate(`/orgs/${$orgCtx.org.id}/settings/billing`);
-    };
 </script>
 
 {#if !$entitled}
@@ -40,9 +23,16 @@
         </InductionStepCard>
         <InductionStepCard title="Get started">
             To access this page, please upgrade your plan.
-            <Button class="block mt-2" on:click={onContinueClick}>
-                Continue
-            </Button>
+            {#snippet footer()}
+                <Button
+                    class="mt-3"
+                    href={p("/orgs/:orgId/settings/billing", {
+                        params: { orgId: $orgCtx.org.id },
+                    })}
+                >
+                    Continue
+                </Button>
+            {/snippet}
         </InductionStepCard>
     </CardGrid>
 {:else}

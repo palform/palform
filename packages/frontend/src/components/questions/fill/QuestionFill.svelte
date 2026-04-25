@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIQuestion } from "@paltiverse/palform-typescript-openapi";
+    import type { APIQuestion } from "@palform/palform-typescript-openapi";
     import QfText from "./QFText.svelte";
     import QfChoice from "./QFChoice.svelte";
     import {
@@ -35,14 +35,18 @@
     import QfDateTime from "./QFDateTime.svelte";
     import QfHidden from "./QFHidden.svelte";
 
-    export let question: APIQuestion;
-    export let isSample = false;
-    const config = question.configuration;
-    $: id = question.id;
-    $: currentValue = isSample ? undefined : selectQuestion(id);
-    $: validationError = isSample
-        ? undefined
-        : selectQuestionValidationErrors(id);
+    interface Props {
+        question: APIQuestion;
+        isSample?: boolean;
+    }
+
+    let { question, isSample = false }: Props = $props();
+    const config = $derived(question.configuration);
+    const id = $derived(question.id);
+    let currentValue = $derived(isSample ? undefined : selectQuestion(id));
+    let validationError = $derived(
+        isSample ? undefined : selectQuestionValidationErrors(id)
+    );
 
     let timeout: number | undefined;
     const onUpdate = () => {
@@ -83,7 +87,7 @@
                     />
                 </CardBoxSubtitle>
             {:else}
-                <div class="h-2" />
+                <div class="h-2"></div>
             {/if}
 
             {#if $currentValue !== undefined || isSample}
@@ -92,67 +96,68 @@
                         {id}
                         {config}
                         currentValue={$currentValue}
-                        on:change={onUpdate}
+                        onchange={onUpdate}
                     />
                 {:else if qIsChoice(config)}
                     <QfChoice
                         {id}
                         {config}
                         currentValue={$currentValue}
-                        on:change={onUpdate}
+                        onchange={onUpdate}
                     />
                 {:else if qIsScale(config)}
                     <QfScale
                         {id}
                         {config}
                         currentValue={$currentValue}
-                        on:change={onUpdate}
+                        onchange={onUpdate}
                     />
                 {:else if qIsAddress(config)}
                     <QfAddress
                         {id}
                         {config}
                         currentValue={$currentValue}
-                        on:change={onUpdate}
+                        onchange={onUpdate}
                     />
                 {:else if qIsPhoneNumber(config)}
                     <QfPhoneNumber
                         {id}
+                        {config}
                         currentValue={$currentValue}
-                        on:change={onUpdate}
+                        onchange={onUpdate}
                     />
                 {:else if qIsFileUpload(config)}
                     <QfFileUpload
                         {id}
                         {config}
                         currentValue={$currentValue}
-                        on:change={onUpdate}
+                        onchange={onUpdate}
                     />
                 {:else if qIsSignature(config)}
                     <QfSignature
                         {id}
                         {config}
                         currentValue={$currentValue}
-                        on:change={onUpdate}
+                        onchange={onUpdate}
                     />
                 {:else if qIsChoiceMatrix(config)}
                     <QfChoiceMatrix
                         {id}
                         {config}
                         currentValue={$currentValue}
-                        on:change={onUpdate}
+                        onchange={onUpdate}
                     />
                 {:else if qIsDateTime(config)}
                     <QfDateTime
                         {id}
                         {config}
                         currentValue={$currentValue}
-                        on:change={onUpdate}
+                        onchange={onUpdate}
                     />
                 {/if}
             {/if}
         </fieldset>
     </CardBox>
 {:else}
-    <QfHidden {id} {config} on:change={onUpdate} />
+    <QfHidden {id} {config} currentValue={$currentValue} onchange={onUpdate} />
 {/if}

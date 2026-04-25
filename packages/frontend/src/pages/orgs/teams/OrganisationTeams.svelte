@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIOrganisationTeam } from "@paltiverse/palform-typescript-openapi";
+    import type { APIOrganisationTeam } from "@palform/palform-typescript-openapi";
     import { APIs } from "../../../data/common";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import CardBox from "../../../components/cardBox/CardBox.svelte";
@@ -14,19 +14,21 @@
     import NewTeamModal from "../../../components/teams/NewTeamModal.svelte";
     import CardGrid from "../../../components/CardGrid.svelte";
     import InductionStepCard from "../../../components/induction/InductionStepCard.svelte";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../../router";
 
     const orgCtx = getOrgContext();
 
-    let loading = true;
-    let teams: APIOrganisationTeam[] = [];
+    let loading = $state(true);
+    let teams: APIOrganisationTeam[] = $state([]);
 
-    $: APIs.orgTeams()
-        .then((a) => a.organisationTeamsList($orgCtx.org.id))
-        .then((resp) => {
-            teams = resp.data;
-            loading = false;
-        });
+    $effect(() => {
+        APIs.orgTeams()
+            .then((a) => a.organisationTeamsList($orgCtx.org.id))
+            .then((resp) => {
+                teams = resp.data;
+                loading = false;
+            });
+    });
 </script>
 
 <NewTeamModal class="mb-4" />
@@ -64,8 +66,9 @@
             <Button
                 outline
                 class="mt-2"
-                href={`/orgs/${$orgCtx.org.id}/settings/teams/${team.id}/members`}
-                on:click={navigateEvent}
+                href={p("/orgs/:orgId/settings/teams/:teamId/members", {
+                    params: { orgId: $orgCtx.org.id, teamId: team.id },
+                })}
             >
                 Manage
                 <FontAwesomeIcon icon={faArrowRight} class="ms-2" />

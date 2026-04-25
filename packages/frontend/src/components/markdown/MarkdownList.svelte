@@ -1,3 +1,13 @@
+<script lang="ts">
+    import type { Snippet } from "svelte";
+
+    interface Props {
+        children?: Snippet;
+    }
+
+    let { children }: Props = $props();
+</script>
+
 <ul class="list-inside list-disc">
-    <slot />
+    {@render children?.()}
 </ul>

@@ -1,6 +1,24 @@
 import { themes as prismThemes } from "prism-react-renderer";
-import type { Config } from "@docusaurus/types";
+import type { Config, Plugin } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+
+/** Webpack 5.106+ validates ProgressPlugin options; webpackbar stores extra fields on the same object and breaks the build. */
+function removeWebpackBarPlugin(): Plugin {
+  return {
+    name: "remove-webpackbar-webpack-106-workaround",
+    configureWebpack(config) {
+      return {
+        mergeStrategy: {
+          plugins: "replace",
+        },
+        plugins:
+          config.plugins?.filter(
+            (plugin) => plugin?.constructor?.name !== "WebpackBarPlugin",
+          ) ?? [],
+      };
+    },
+  };
+}
 
 const config: Config = {
   title: "Palform",
@@ -37,12 +55,12 @@ const config: Config = {
       return {
         name: "docusaurus-tailwindcss",
         configurePostCss(postcssOptions) {
-          postcssOptions.plugins.push(require("tailwindcss"));
-          postcssOptions.plugins.push(require("autoprefixer"));
+          postcssOptions.plugins.push(require("@tailwindcss/postcss"));
           return postcssOptions;
         },
       };
     },
+    removeWebpackBarPlugin,
   ],
 
   presets: [

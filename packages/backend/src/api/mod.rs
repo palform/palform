@@ -7,6 +7,7 @@ pub mod fill_tokens;
 pub mod form_brandings;
 pub mod form_templates;
 pub mod forms;
+pub mod health;
 pub mod induction;
 pub mod keys;
 pub mod organisation_auth_config;

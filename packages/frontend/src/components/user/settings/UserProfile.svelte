@@ -1,35 +1,38 @@
 <script lang="ts">
     import { Helper, Input, Label } from "flowbite-svelte";
     import SectionHeading from "../../type/SectionHeading.svelte";
-    import type { APIAdminUser } from "@paltiverse/palform-typescript-openapi";
+    import type { APIAdminUser } from "@palform/palform-typescript-openapi";
     import { APIs } from "../../../data/common";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import SkeletonPrimitive from "../../SkeletonPrimitive.svelte";
     import TextButton from "../../TextButton.svelte";
     import LoadingButton from "../../LoadingButton.svelte";
 
-    let profile: APIAdminUser | undefined;
-    let loading = true;
+    let profile: APIAdminUser | undefined = $state();
+    let displayName: string | undefined = $state();
+    let loading = $state(true);
+
     APIs.authWithToken()
         .then((a) => a.authTest())
         .then((resp) => {
             profile = resp.data.user;
+            displayName = profile.display_name ?? undefined;
         })
         .catch(showFailureToast)
         .finally(() => {
             loading = false;
         });
 
-    let saveLoading = false;
-    $: onSave = async (e: Event) => {
+    let saveLoading = $state(false);
+    let onSave = $derived(async (e: Event) => {
         e.preventDefault();
-        if (profile === undefined) return;
+        if (displayName === undefined) return;
 
         saveLoading = true;
         try {
             await APIs.adminUsers().then((a) =>
                 a.adminUsersUpdate({
-                    display_name: profile!.display_name || null,
+                    display_name: displayName || null,
                 })
             );
             await showSuccessToast("Saved");
@@ -38,7 +41,7 @@
         }
 
         saveLoading = false;
-    };
+    });
 </script>
 
 <SectionHeading>Your profile</SectionHeading>
@@ -49,7 +52,7 @@
     <SkeletonPrimitive height="35px" className="mt-4" />
     <SkeletonPrimitive height="35px" width="100px" className="mt-4" />
 {:else if profile}
-    <form class="space-y-4 mt-4" on:submit={onSave}>
+    <form class="space-y-4 mt-4" onsubmit={onSave}>
         <Label>
             User ID
             <Input
@@ -82,7 +85,7 @@
             Display name
             <Input
                 class="mt-1"
-                bind:value={profile.display_name}
+                bind:value={displayName}
                 disabled={saveLoading}
             />
             <Helper class="mt-1">

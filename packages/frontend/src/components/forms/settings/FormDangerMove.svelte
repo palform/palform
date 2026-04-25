@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Alert, Button, Label, Modal, Select } from "flowbite-svelte";
-    import { Link } from "svelte-routing";
     import {
         getFormCtx,
         getOrgContext,
@@ -10,34 +9,39 @@
     import LoadingButton from "../../LoadingButton.svelte";
     import { APIs } from "../../../data/common";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
+    interface Props {
+        [key: string]: any;
+    }
+
+    let { ...props }: Props = $props();
 
     const orgCtx = getOrgContext();
     const formMetadataCtx = getFormCtx();
 
-    let showModal = false;
-    let selectedTeam = "";
-    $: selectItems = $orgCtx.myTeams
-        .filter(
-            (e) =>
-                e.team_id !== $formMetadataCtx.team_id &&
-                (e.my_role === "Editor" || e.my_role === "Admin")
-        )
-        .map((t) => ({
-            name: t.name,
-            value: t.team_id,
-        }));
+    let showModal = $state(false);
+    let selectedTeam = $state("");
+    let selectItems = $derived(
+        $orgCtx.myTeams
+            .filter(
+                (e) =>
+                    e.team_id !== $formMetadataCtx.team_id &&
+                    (e.my_role === "Editor" || e.my_role === "Admin")
+            )
+            .map((t) => ({
+                name: t.name,
+                value: t.team_id,
+            }))
+    );
 
-    let loading = false;
-    $: onMoveClick = async () => {
+    let loading = $state(false);
+    let onMoveClick = $derived(async () => {
         if (selectedTeam === "") return;
         loading = true;
         try {
             await APIs.forms().then((a) =>
-                a.formsRelocate(
-                    $orgCtx.org.id,
-                    $formMetadataCtx.id,
-                    selectedTeam
-                )
+                a.formsRelocate($orgCtx.org.id, $formMetadataCtx.id, {
+                    target_team_id: selectedTeam,
+                })
             );
             await showSuccessToast("Form moved");
             updateFormCtx(orgCtx, $formMetadataCtx.id, (ctx) => {
@@ -49,10 +53,10 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 </script>
 
-<Alert color="yellow" class={$$props.class}>
+<Alert color="yellow" class={props.class}>
     <h3 class="text-lg">Move form to other team</h3>
 
     <p>
@@ -68,20 +72,15 @@
         branding schemes are team-specific.
     </p>
     <p>
-        To create or edit teams, visit your <Link
-            to={`/orgs/${$orgCtx.org.id}/settings/teams`}
+        To create or edit teams, visit your <a
+            href={`/orgs/${$orgCtx.org.id}/settings/teams`}
             class="underline"
         >
-            Teams page</Link
+            Teams page</a
         >.
     </p>
 
-    <Button
-        class="mt-2"
-        color="red"
-        outline
-        on:click={() => (showModal = true)}
-    >
+    <Button class="mt-2" color="red" outline onclick={() => (showModal = true)}>
         Move
     </Button>
 </Alert>
@@ -105,17 +104,17 @@
         </Label>
     {/if}
 
-    <svelte:fragment slot="footer">
+    {#snippet footer()}
         {#if selectItems.length === 0}
-            <Button on:click={() => (showModal = false)}>Close</Button>
+            <Button onclick={() => (showModal = false)}>Close</Button>
         {:else}
             <LoadingButton
                 disabled={selectedTeam === "" || loading}
                 {loading}
-                on:click={onMoveClick}
+                onclick={onMoveClick}
             >
                 Move
             </LoadingButton>
         {/if}
-    </svelte:fragment>
+    {/snippet}
 </Modal>

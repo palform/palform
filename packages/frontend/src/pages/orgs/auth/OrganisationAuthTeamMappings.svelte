@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIOrganisationAuthTeamMapping } from "@paltiverse/palform-typescript-openapi";
+    import type { APIOrganisationAuthTeamMapping } from "@palform/palform-typescript-openapi";
     import MainTitle from "../../../layouts/MainTitle.svelte";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { APIs } from "../../../data/common";
@@ -15,11 +15,12 @@
     } from "flowbite-svelte";
     import TeamMappingNewModal from "../../../components/orgs/auth/mappings/TeamMappingNewModal.svelte";
     import TeamMappingRow from "../../../components/orgs/auth/mappings/TeamMappingRow.svelte";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../../router";
 
     const orgCtx = getOrgContext();
-    let mappings: APIOrganisationAuthTeamMapping[] | undefined = undefined;
-    let loading = false;
+    let mappings: APIOrganisationAuthTeamMapping[] | undefined =
+        $state(undefined);
+    let loading = $state(false);
     APIs.orgAuthTeamMappings()
         .then((a) => a.organisationAuthConfigMappingsList($orgCtx.org.id))
         .then((resp) => {
@@ -30,22 +31,23 @@
             loading = false;
         });
 
-    $: onNewMapping = (e: CustomEvent<APIOrganisationAuthTeamMapping>) => {
+    let onNewMapping = $derived((e: APIOrganisationAuthTeamMapping) => {
         if (mappings === undefined) return;
-        mappings = [e.detail, ...mappings];
-    };
-    $: onMappingDelete = (id: string) => {
+        mappings = [e, ...mappings];
+    });
+    let onMappingDelete = $derived((id: string) => {
         if (mappings === undefined) return;
         mappings = mappings.filter((e) => e.id !== id);
-    };
+    });
 </script>
 
 <Button
     class="mb-4"
     outline
     size="xs"
-    href={`/orgs/${$orgCtx.org.id}/settings/auth`}
-    on:click={navigateEvent}
+    href={p("/orgs/:orgId/settings/auth", {
+        params: { orgId: $orgCtx.org.id },
+    })}
 >
     Back
 </Button>
@@ -64,7 +66,7 @@
 {/if}
 
 {#if mappings}
-    <TeamMappingNewModal class="mt-4" on:create={onNewMapping} />
+    <TeamMappingNewModal class="mt-4" oncreate={onNewMapping} />
 
     {#if mappings.length > 0}
         <TableContainer class="mt-6">
@@ -81,7 +83,7 @@
                     {#each mappings as mapping (mapping.id)}
                         <TeamMappingRow
                             {mapping}
-                            on:delete={() => onMappingDelete(mapping.id)}
+                            ondelete={() => onMappingDelete(mapping.id)}
                         />
                     {/each}
                 </TableBody>

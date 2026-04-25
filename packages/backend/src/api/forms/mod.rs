@@ -9,3 +9,4 @@ pub mod relocate;
 pub mod update;
 pub mod view;
 pub mod set_auto_delete;
+pub mod scope;

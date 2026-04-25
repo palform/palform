@@ -1,7 +1,15 @@
 <script lang="ts">
     import FormTemplateList from "./FormTemplateList.svelte";
 
-    export let categoryId: string;
+    import { route } from "../../../router";
+
+    interface Props {
+        categoryId?: string | undefined;
+    }
+
+    let { categoryId }: Props = $props();
+
+    const categoryIdResolved = $derived(categoryId ?? route.params.categoryId ?? "");
 </script>
 
-<FormTemplateList source={categoryId} />
+<FormTemplateList source={categoryIdResolved} />

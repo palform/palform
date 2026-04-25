@@ -5,13 +5,18 @@
         faUser,
     } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-    import type { APIFormTemplate } from "@paltiverse/palform-typescript-openapi";
+    import type { APIFormTemplate } from "@palform/palform-typescript-openapi";
 
-    export let template: APIFormTemplate;
-    export let includeAuthor = false;
+    interface Props {
+        template: APIFormTemplate;
+        includeAuthor?: boolean;
+        class?: string;
+    }
+
+    let { template, includeAuthor = false, class: className }: Props = $props();
 </script>
 
-<p class={`text-xs ${$$props.class}`}>
+<p class={`text-xs ${className}`}>
     <span class="align-text-bottom">
         <FontAwesomeIcon icon={faEye} class="inline-block h-3" size="sm" />
         {template.views}

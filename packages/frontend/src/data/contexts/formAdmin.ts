@@ -3,8 +3,8 @@ import type {
     APIQuestion,
     APIQuestionGroup,
     APIQuestionGroupStepStrategy,
-    APIQuestionGroupStepStrategyOneOf,
-} from "@paltiverse/palform-typescript-openapi";
+    JumpToSection,
+} from "@palform/palform-typescript-openapi";
 import {
     submissionIsSuccess,
     type DecryptedSubmission,
@@ -60,9 +60,7 @@ export function ctxSubmissionsForQuestion(questionId: string) {
     );
 }
 
-export function qgsIsJump(
-    t: APIQuestionGroupStepStrategy
-): t is APIQuestionGroupStepStrategyOneOf {
+export function qgsIsJump(t: APIQuestionGroupStepStrategy): t is JumpToSection {
     return !(typeof t === "string");
 }
 

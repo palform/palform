@@ -3,49 +3,62 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { Input, Label } from "flowbite-svelte";
 
-    export let value: string | null;
-    export let disabled = false;
-    export let name: string;
-    export let includeNullOption = false;
-    export let pastel = false;
+    interface Props {
+        value: string | undefined;
+        disabled?: boolean;
+        name: string;
+        includeNullOption?: boolean;
+        pastel?: boolean;
+    }
 
-    const _presetColors = pastel
-        ? [
-              "#aeccf2",
-              "#a4f2c7",
-              "#efe2a0",
-              "#f7caa3",
-              "#fcb0b4",
-              "#e5a9f9",
-              "#ad9e91",
-              "#bababa",
-              "#ff0000",
-          ]
-        : [
-              "#3584e4",
-              "#33d17a",
-              "#f6d32d",
-              "#ff7800",
-              "#e01b24",
-              "#9141ac",
-              "#986a44",
-              "#000000",
-              "#ff0000",
-          ];
+    let {
+        value = $bindable(),
+        disabled = false,
+        name,
+        includeNullOption = false,
+        pastel = false,
+    }: Props = $props();
 
-    $: isPreset =
-        (value === null && includeNullOption) ||
-        (value !== null && value !== "#ff0000" && presetColors.includes(value));
+    const _presetColors = $derived(
+        pastel
+            ? [
+                  "#aeccf2",
+                  "#a4f2c7",
+                  "#efe2a0",
+                  "#f7caa3",
+                  "#fcb0b4",
+                  "#e5a9f9",
+                  "#ad9e91",
+                  "#bababa",
+                  "#ff0000",
+              ]
+            : [
+                  "#3584e4",
+                  "#33d17a",
+                  "#f6d32d",
+                  "#ff7800",
+                  "#e01b24",
+                  "#9141ac",
+                  "#986a44",
+                  "#000000",
+                  "#ff0000",
+              ]
+    );
 
-    $: presetColors = includeNullOption
-        ? _presetColors.slice(1)
-        : _presetColors;
-
-    const onColorChange = (e: HTMLInputElement, color: string | null) => {
+    const onColorChange = (e: HTMLInputElement, color: string | undefined) => {
         if (e.checked) {
             value = color;
         }
     };
+    let presetColors = $derived(
+        includeNullOption ? _presetColors.slice(1) : _presetColors
+    );
+    let isPreset = $derived(
+        (value === undefined && includeNullOption) ||
+            (value !== undefined &&
+                value !== "#ff0000" &&
+                presetColors.includes(value))
+    );
 </script>
 
 <div class="grid grid-cols-10 gap-2 mt-2">
@@ -57,12 +70,12 @@
                 class="sr-only peer"
                 id={"NONE-" + name}
                 checked={value === null}
-                on:change={(e) => onColorChange(e.currentTarget, null)}
+                onchange={(e) => onColorChange(e.currentTarget, undefined)}
                 {disabled}
             />
             <label
                 for={"NONE-" + name}
-                class="flex items-center justify-center h-8 w-full rounded-md cursor-pointer peer-checked:outline outline-slate-600"
+                class="flex items-center justify-center h-8 w-full rounded-md cursor-pointer peer-checked:outline-2 outline-slate-600"
             >
                 <FontAwesomeIcon icon={faBan} class="text-red-600" />
             </label>
@@ -78,12 +91,12 @@
                 id={color + "-" + name}
                 checked={value === color ||
                     (index === presetColors.length - 1 && !isPreset)}
-                on:change={(e) => onColorChange(e.currentTarget, color)}
+                onchange={(e) => onColorChange(e.currentTarget, color)}
                 {disabled}
             />
             <label
                 for={color + "-" + name}
-                class="flex items-center justify-center h-8 w-full rounded-md cursor-pointer peer-checked:outline outline-slate-600"
+                class="flex items-center justify-center h-8 w-full rounded-md cursor-pointer peer-checked:outline-2 outline-slate-600"
                 style:background-color={index === presetColors.length - 1
                     ? undefined
                     : color}

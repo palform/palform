@@ -1,4 +1,4 @@
-import type { SocialAuthService } from "@paltiverse/palform-typescript-openapi";
+import type { SocialAuthService } from "@palform/palform-typescript-openapi";
 import googleLogo from "../../assets/social_auth/google.png";
 import { APIs, frontendURL } from "../common";
 import {

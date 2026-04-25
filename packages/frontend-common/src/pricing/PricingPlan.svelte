@@ -1,32 +1,47 @@
 <script lang="ts">
-    import type { APIBillingPlan } from "@paltiverse/palform-typescript-openapi";
+    import type { APIBillingPlan } from "@palform/palform-typescript-openapi";
     import { Badge, Button, Card } from "flowbite-svelte";
     import {
         formatCurrency,
         formatDecimalCurrency,
         getCurrencySymbol,
-        PricingFeatureItem,
-    } from "@paltiverse/palform-frontend-common";
-    import { createEventDispatcher } from "svelte";
+    } from "../data/util/pricing";
+    import PricingFeatureItem from "./PricingFeatureItem.svelte";
 
-    export let plan: APIBillingPlan;
-    export let everythingIn: string | undefined = undefined;
-    export let showButton = false;
-    export let annualBilling: boolean;
-    export let disabled = false;
-    export let currentPriceId: string | undefined;
-    export let allowTrial = true;
-    export let trialOnly = false;
-    export let isFree = false;
+    interface Props {
+        plan: APIBillingPlan;
+        everythingIn?: string | undefined;
+        showButton?: boolean;
+        annualBilling: boolean;
+        disabled?: boolean;
+        currentPriceId: string | undefined;
+        allowTrial?: boolean;
+        trialOnly?: boolean;
+        isFree?: boolean;
+        onclick?: (trial: boolean) => void;
+    }
 
-    const dispatch = createEventDispatcher<{ click: boolean }>();
+    let {
+        plan,
+        everythingIn = undefined,
+        showButton = false,
+        annualBilling,
+        disabled = false,
+        currentPriceId,
+        allowTrial = true,
+        trialOnly = false,
+        isFree = false,
+        onclick,
+    }: Props = $props();
 
-    $: isCurrent = annualBilling
-        ? plan.price_annually.stripe_price_id === currentPriceId
-        : plan.price_monthly.stripe_price_id === currentPriceId;
+    let isCurrent = $derived(
+        annualBilling
+            ? plan.price_annually.stripe_price_id === currentPriceId
+            : plan.price_monthly.stripe_price_id === currentPriceId
+    );
 </script>
 
-<Card padding="xl" size="none" shadow={false} class="rounded-2xl">
+<Card shadow={"xs"} class="rounded-2xl p-8 w-full max-w-full">
     <h4 class="text-xl text-gray-600 dark:text-gray-300">{plan.name}</h4>
     <div class="flex items-baseline text-gray-900 dark:text-white mt-4">
         <p class="text-3xl font-semibold">
@@ -52,7 +67,7 @@
                 )}
             </Badge>
         </p>
-        <p class="mt-1 text-sm">
+        <p class="mt-1 text-sm text-gray-700 dark:text-gray-300">
             Charged as {formatCurrency(
                 plan.currency,
                 plan.price_annually.amount
@@ -62,14 +77,19 @@
 
     {#if showButton}
         {#if isCurrent || isFree}
-            <Button class={`${isCurrent ? "mt-6" : "mt-20 mb-14"}`} size="lg" disabled color="light">
+            <Button
+                class={`${isCurrent ? "mt-6" : "mt-20 mb-14"}`}
+                size="lg"
+                disabled
+                color="light"
+            >
                 Current plan
             </Button>
         {:else if allowTrial}
             <Button
                 class="mt-6"
                 size="lg"
-                on:click={() => dispatch("click", true)}
+                onclick={() => onclick?.(true)}
                 {disabled}
             >
                 Try free for 14 days
@@ -79,7 +99,7 @@
                     class="mt-4"
                     outline
                     {disabled}
-                    on:click={() => dispatch("click", false)}
+                    onclick={() => onclick?.(false)}
                 >
                     Buy now
                 </Button>
@@ -89,14 +109,14 @@
                 class="mt-6"
                 {disabled}
                 size="lg"
-                on:click={() => dispatch("click", false)}
+                onclick={() => onclick?.(false)}
             >
                 Buy now
             </Button>
         {/if}
     {/if}
 
-    <ul class="mt-7 space-y-4">
+    <ul class="mt-8 space-y-4">
         {#if everythingIn}
             <PricingFeatureItem plus>
                 Everything in {everythingIn}

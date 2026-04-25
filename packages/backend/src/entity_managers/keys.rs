@@ -9,7 +9,6 @@ use palform_tsid::resources::IDAdminUser;
 use palform_tsid::resources::IDOrganisation;
 use palform_tsid::resources::IDTeam;
 use palform_tsid::tsid::PalformDatabaseID;
-use rocket::futures::TryFutureExt;
 use sea_orm::Condition;
 use sea_orm::PaginatorTrait;
 use sea_orm::{
@@ -139,10 +138,10 @@ impl UserKeyManager {
             public_key: Set(key_bytes),
             cert_fingerprint: Set(key_data.fingerprint().to_hex()),
             private_key_backup: Set(None),
-            expires_at: Set(key_expiration.naive_utc()),
+            expires_at: Set(key_expiration.fixed_offset()),
             created_at: NotSet,
         };
-        new_record.insert(conn).map_err(|e| e.into()).await
+        new_record.insert(conn).await.map_err(|e| e.into())
     }
 
     pub async fn delete_key_with_id<T: ConnectionTrait>(

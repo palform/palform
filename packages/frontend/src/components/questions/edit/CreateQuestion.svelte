@@ -4,25 +4,34 @@
     import { Button, Modal } from "flowbite-svelte";
     import { showFailureToast } from "../../../data/toast";
     import NewQuestionType from "./NewQuestionType.svelte";
-    import { createEventDispatcher } from "svelte";
     import {
         getFormEditorCtx,
         insertQuestion,
         insertQuestionGroup,
     } from "../../../data/contexts/formEditor";
 
-    // If groupId is undefined, this refers to group indexes. If groupId is defined, this refers to question indexes.
-    export let beforeIndex: number;
-    export let alertMode = false;
-    // If undefined, a new group will be created for the question
-    export let groupId: string | undefined;
+    interface Props {
+        // If groupId is undefined, this refers to group indexes. If groupId is defined, this refers to question indexes.
+        beforeIndex: number;
+        alertMode?: boolean;
+        // If undefined, a new group will be created for the question
+        groupId: string | undefined;
+        class?: string;
+        oncreate?: () => void;
+    }
+
+    let {
+        beforeIndex,
+        alertMode = false,
+        groupId,
+        class: className,
+        oncreate,
+    }: Props = $props();
 
     const formEditorCtx = getFormEditorCtx();
-    let showTypeSelectDropdown = false;
+    let showTypeSelectDropdown = $state(false);
 
-    const dispatch = createEventDispatcher<{ create: undefined }>();
-
-    $: onAddTypeClick = async (type: string) => {
+    async function onAddTypeClick(type: string) {
         $formEditorCtx.loading = true;
 
         try {
@@ -47,22 +56,21 @@
 
             $formEditorCtx.currentlyEditing = newId;
             showTypeSelectDropdown = false;
-            dispatch("create");
+            oncreate?.();
         } catch (e) {
             await showFailureToast(e);
         }
         $formEditorCtx.loading = false;
-    };
+    }
 </script>
 
 <Button
     color={alertMode ? "primary" : "light"}
     size={alertMode ? "sm" : "xs"}
-    outline={!alertMode}
     disabled={$formEditorCtx.loading ||
         $formEditorCtx.currentlyEditing !== undefined}
-    on:click={() => (showTypeSelectDropdown = true)}
-    class={$$props.class}
+    onclick={() => (showTypeSelectDropdown = true)}
+    class={className}
 >
     <FontAwesomeIcon icon={faPlus} class="me-2" />
     Add question
@@ -73,57 +81,57 @@
         <NewQuestionType
             title="Info"
             description="A title and description with no input"
-            on:click={() => onAddTypeClick("info")}
+            onclick={() => onAddTypeClick("info")}
         />
         <NewQuestionType
             title="Text"
             description="Simple text input with optional validation"
-            on:click={() => onAddTypeClick("text")}
+            onclick={() => onAddTypeClick("text")}
         />
         <NewQuestionType
             title="Choice"
             description="Single- or multi-select options"
-            on:click={() => onAddTypeClick("choice")}
+            onclick={() => onAddTypeClick("choice")}
         />
         <NewQuestionType
             title="Choice matrix"
             description="Grid-like options with rows and columns"
-            on:click={() => onAddTypeClick("choice_matrix")}
+            onclick={() => onAddTypeClick("choice_matrix")}
         />
         <NewQuestionType
             title="Scale"
             description="Numerical scale between any two integers"
-            on:click={() => onAddTypeClick("scale")}
+            onclick={() => onAddTypeClick("scale")}
         />
         <NewQuestionType
             title="Date"
             description="Interactive date and/or time selection"
-            on:click={() => onAddTypeClick("date_time")}
+            onclick={() => onAddTypeClick("date_time")}
         />
         <NewQuestionType
             title="Address"
             description="Validated international postal address (with autocomplete)"
-            on:click={() => onAddTypeClick("address")}
+            onclick={() => onAddTypeClick("address")}
         />
         <NewQuestionType
             title="Phone number"
             description="Calling code and phone number pairing"
-            on:click={() => onAddTypeClick("phone_number")}
+            onclick={() => onAddTypeClick("phone_number")}
         />
         <NewQuestionType
             title="File upload"
             description="Encrypt and upload any type of file"
-            on:click={() => onAddTypeClick("file_upload")}
+            onclick={() => onAddTypeClick("file_upload")}
         />
         <NewQuestionType
             title="Signature"
             description="Electronic signature with support for different formats"
-            on:click={() => onAddTypeClick("signature")}
+            onclick={() => onAddTypeClick("signature")}
         />
         <NewQuestionType
             title="Hidden"
             description="Import a value from a query parameter into the response"
-            on:click={() => onAddTypeClick("hidden")}
+            onclick={() => onAddTypeClick("hidden")}
         />
     </div>
 </Modal>

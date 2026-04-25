@@ -11,9 +11,9 @@ import {
     generate_certificate_js,
     get_key_metadata_js,
     strip_secret_bits_js,
-} from "@paltiverse/palform-crypto";
+} from "@palform/palform-crypto";
 import downloadFile from "../util/downloadFile";
-import type { APIUserKey } from "@paltiverse/palform-typescript-openapi";
+import type { APIUserKey } from "@palform/palform-typescript-openapi";
 
 export async function findKey(
     serverId: string

@@ -1,25 +1,24 @@
-<script lang="ts" generics="Props extends Record<string, any>">
-    import { onMount, type SvelteComponent } from "svelte";
+<script lang="ts">
+    import { onMount, type Component } from "svelte";
     import OrganisationLoading from "../../layouts/sidebar/OrganisationLoading.svelte";
 
-    type AsyncSvelteComponent = Promise<{
-        default: typeof SvelteComponent<Props>;
-    }>;
-    export let component: AsyncSvelteComponent;
-    export let props: Props;
+    interface LazyProps {
+        component: Promise<{ default: unknown }>;
+        componentProps: Record<string, unknown>;
+    }
 
-    let loadedComponent: typeof SvelteComponent<Props> | undefined;
+    let { component, componentProps }: LazyProps = $props();
+
+    let Loaded = $state<Component | undefined>(undefined);
     onMount(() => {
         component.then((c) => {
-            loadedComponent = c.default;
+            Loaded = c.default as Component;
         });
     });
 </script>
 
-{#if !loadedComponent}
+{#if !Loaded}
     <OrganisationLoading />
-{/if}
-
-{#if loadedComponent}
-    <svelte:component this={loadedComponent} {...props} />
+{:else}
+    <Loaded {...componentProps} />
 {/if}

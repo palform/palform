@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type APIOrgMember } from "@paltiverse/palform-typescript-openapi";
+    import { type APIOrgMember } from "@palform/palform-typescript-openapi";
     import { DropdownItem, TableBodyCell, TableBodyRow } from "flowbite-svelte";
     import TableActions from "../../tables/TableActions.svelte";
     import { APIs } from "../../../data/common";
@@ -17,8 +17,12 @@
     } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
 
-    export let member: APIOrgMember;
-    export let isSelf = false;
+    interface Props {
+        member: APIOrgMember;
+        isSelf?: boolean;
+    }
+
+    let { member, isSelf = false }: Props = $props();
     const dispatch = createEventDispatcher<{
         delete: undefined;
         update: APIOrgMember;
@@ -26,8 +30,8 @@
 
     const orgCtx = getOrgContext();
 
-    let loading = false;
-    $: onDelete = async () => {
+    let loading = $state(false);
+    let onDelete = $derived(async () => {
         if (loading) return;
         loading = true;
         await APIs.orgMembers().then((a) =>
@@ -40,9 +44,9 @@
         });
         dispatch("delete");
         loading = false;
-    };
+    });
 
-    $: setAdmin = async (admin: boolean) => {
+    let setAdmin = $derived(async (admin: boolean) => {
         loading = true;
 
         try {
@@ -61,7 +65,7 @@
         }
 
         loading = false;
-    };
+    });
 </script>
 
 <TableBodyRow>

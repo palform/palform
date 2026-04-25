@@ -1,8 +1,5 @@
 <script lang="ts">
-    import type {
-        APIAuditLogEntry,
-        AuditLogListRequest,
-    } from "@paltiverse/palform-typescript-openapi";
+    import type { APIAuditLogEntry } from "@palform/palform-typescript-openapi";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { APIs } from "../../../data/common";
     import SkeletonPrimitive from "../../SkeletonPrimitive.svelte";
@@ -17,33 +14,35 @@
     import AuditLogFilters from "./AuditLogFilters.svelte";
     import { DateTime } from "luxon";
     import { onMount } from "svelte";
+    import type { AuditLogRequestFilters } from "../../../data/audit/filters";
 
     const orgCtx = getOrgContext();
-    let logEntries: APIAuditLogEntry[] | undefined = [];
-    let logLoading = true;
+    let logEntries: APIAuditLogEntry[] | undefined = $state([]);
+    let logLoading = $state(true);
 
-    let filters: AuditLogListRequest = {
+    let filters: AuditLogRequestFilters = $state({
         from: DateTime.now().minus({ day: 3 }).toISO(),
         to: null,
         resource: null,
-    };
+    });
 
-    $: loadEntries = () => {
+    let loadEntries = $derived(() => {
         logLoading = true;
+        const { from, to, resource } = filters;
         APIs.audit()
-            .then((a) => a.auditList($orgCtx.org.id, filters))
+            .then((a) => a.auditList($orgCtx.org.id, from, resource, to))
             .then((resp) => {
                 logEntries = resp.data;
                 logLoading = false;
             });
-    };
+    });
 
     onMount(() => {
         loadEntries();
     });
 </script>
 
-<AuditLogFilters class="mb-4" bind:filters on:reload={() => loadEntries()} />
+<AuditLogFilters class="mb-4" bind:filters onreload={() => loadEntries()} />
 
 {#if logLoading}
     <SkeletonPrimitive className="p-4 space-y-2">

@@ -5,10 +5,16 @@
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
 
+    interface Props {
+        class?: string;
+    }
+
+    let { class: className }: Props = $props();
+
     const orgCtx = getOrgContext();
-    let loading = false;
-    let done = false;
-    $: onDeleteClick = async () => {
+    let loading = $state(false);
+    let done = $state(false);
+    let onDeleteClick = $derived(async () => {
         loading = true;
         try {
             await APIs.orgs().then((a) => a.orgsDelete($orgCtx.org.id));
@@ -19,10 +25,10 @@
         }
 
         loading = false;
-    };
+    });
 </script>
 
-<Alert color="red" class={$$props.class}>
+<Alert color="red" class={className}>
     <h2 class="text-lg">Delete your organisation</h2>
     {#if done}
         <p>
@@ -52,7 +58,7 @@
             color="red"
             {loading}
             disabled={loading}
-            on:click={onDeleteClick}
+            onclick={onDeleteClick}
         >
             Delete my organisation
         </LoadingButton>

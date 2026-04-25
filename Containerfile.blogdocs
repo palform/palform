@@ -1,0 +1,16 @@
+FROM docker.io/oven/bun:slim AS builder
+
+WORKDIR /app
+COPY --parents packages/*/package.json .
+COPY package.json bun.lock .
+
+RUN mkdir packages/analysis-js && echo "{ \"name\": \"@palform/palform-analysis\" }" > packages/analysis-js/package.json
+RUN mkdir packages/client-js && echo "{ \"name\": \"@palform/palform-client-common\" }" > packages/client-js/package.json
+RUN mkdir packages/crypto-js && echo "{ \"name\": \"@palform/palform-crypto\" }" > packages/crypto-js/package.json
+
+RUN bun install --frozen-lockfile
+
+COPY packages/blog-docs packages/blog-docs
+RUN bun run --cwd packages/blog-docs build
+
+CMD ["bun", "run", "--cwd", "packages/blog-docs", "serve", "--port", "80", "--host", "0.0.0.0"]

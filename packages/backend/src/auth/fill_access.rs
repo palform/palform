@@ -1,135 +1,90 @@
-use chrono::{NaiveDateTime, Utc};
+use std::{future::Future, pin::Pin};
+
+use actix_web::{
+    dev::Payload,
+    web::{self, Data},
+    FromRequest, HttpRequest,
+};
+use apistos::ApiSecurity;
+use chrono::{DateTime, Utc};
 use palform_client_common::errors::error::APIError;
 use palform_entities::{fill_access_token, form, organisation, prelude::*, team};
 use palform_tsid::{
     resources::{IDFillAccessToken, IDForm, IDOrganisation},
     tsid::PalformDatabaseID,
 };
-use rocket::{
-    outcome::try_outcome,
-    request::{self, FromRequest},
-    serde::json::Json,
-};
-use rocket_okapi::{
-    okapi::openapi3::{Object, SecurityRequirement, SecurityScheme, SecuritySchemeData},
-    request::{OpenApiFromRequest, RequestHeaderInput},
-};
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, Condition, ConnectionTrait, DatabaseConnection, DbErr,
     EntityTrait, JoinType, PaginatorTrait, QueryFilter, QuerySelect, RelationTrait, Set,
 };
+use serde::Deserialize;
 
 use crate::{
     api_entities::fill_token::{APIExchangedShortLink, APIFillToken},
     i18n::request::I18NManager,
-    into_outcome, pt,
+    pt,
 };
 
+#[derive(ApiSecurity)]
+#[openapi_security(scheme(security_type(api_key(name = "f", api_key_in = "query"))))]
 pub struct APIFillAccessToken {
     pub token_id: PalformDatabaseID<IDFillAccessToken>,
     pub form_id: PalformDatabaseID<IDForm>,
 }
 
-#[rocket::async_trait]
-impl<'a> FromRequest<'a> for APIFillAccessToken {
-    type Error = Json<APIError>;
-    async fn from_request(
-        request: &'a request::Request<'_>,
-    ) -> request::Outcome<Self, Self::Error> {
-        let i18n_manager = try_outcome!(I18NManager::from_request(request).await);
+impl FromRequest for APIFillAccessToken {
+    type Error = APIError;
+    type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
 
-        let fill_access_token = into_outcome!(
-            into_outcome!(
-                request
-                    .query_value::<PalformDatabaseID<IDFillAccessToken>>("f")
-                    .ok_or(APIError::BadRequest("Missing `f` parameter".to_string())),
-                request
-            )
-            .map_err(|e| {
-                APIError::BadRequest(format!("Failed to parse fill token: {}", e))
-            }),
-            request
-        );
+    fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
+        let i18n_manager_fut = I18NManager::from_request(&req, payload);
 
-        let form_id = into_outcome!(
-            into_outcome!(
-                request
-                    .param::<PalformDatabaseID<IDForm>>(4)
-                    .ok_or(APIError::BadRequest(
-                        "Wrong number of path segments".to_string(),
-                    )),
-                request
-            )
-            .map_err(|e| {
-                APIError::BadRequest(format!(
-                    "Failed to parse form_id segment: {}",
-                    e
-                ))
-            }),
-            request
-        );
-
-        let db = into_outcome!(
-            request
-                .rocket()
-                .state::<DatabaseConnection>()
-                .ok_or_else(|| APIError::report_internal_error_without_error(
-                    "DB not found in state"
-                )),
-            request
-        );
-
-        let token_data = into_outcome!(
-            into_outcome!(
-                FillAccessTokenManager::lookup(db, fill_access_token)
-                    .await
-                    .map_err(|e| APIError::report_internal_error("Lookup fill token data", e)),
-                request
-            )
-            .ok_or(APIError::NotAllowed),
-            request
-        );
-
-        if token_data.form_id != form_id {
-            let err = APIError::NotFound;
-            request.local_cache(|| err.clone());
-            return request::Outcome::Error(err.into());
+        #[derive(Deserialize)]
+        struct FillAccessTokenQuery {
+            f: PalformDatabaseID<IDFillAccessToken>,
         }
 
-        if let Some(expires_at) = token_data.expires_at {
-            if expires_at < Utc::now().naive_utc() {
-                let err = APIError::BadRequest(pt!(i18n_manager, "fill_form_expired",));
-                request.local_cache(|| err.clone());
-                return request::Outcome::Error(err.into());
+        let fill_access_token_fut = web::Query::<FillAccessTokenQuery>::from_request(&req, payload);
+        let req = req.clone();
+
+        Box::pin(async move {
+            let i18n_manager = i18n_manager_fut.await?;
+            let fill_access_token = fill_access_token_fut.await.map_err(|e| {
+                APIError::BadRequest(format!("Missing `f` parameter: {}", e.to_string()))
+            })?;
+
+            let form_id: PalformDatabaseID<IDForm> = req
+                .match_info()
+                .get("form_id")
+                .ok_or(APIError::BadRequest("Missing form_id in route".to_string()))?
+                .parse()
+                .map_err(|e| APIError::BadRequest(format!("Invalid form ID: {}", e)))?;
+
+            let db = req.app_data::<Data<DatabaseConnection>>().ok_or_else(|| {
+                APIError::report_internal_error_without_error("DB not found in app data")
+            })?;
+
+            let token_data = FillAccessTokenManager::lookup(db.as_ref(), fill_access_token.f)
+                .await
+                .map_err(|e| APIError::report_internal_error("Lookup fill token data", e))?
+                .ok_or(APIError::NotAllowed)?;
+
+            if token_data.form_id != form_id {
+                return Err(APIError::NotFound);
             }
-        }
 
-        request::Outcome::Success(APIFillAccessToken {
-            token_id: token_data.id,
-            form_id: token_data.form_id,
+            if let Some(expires_at) = token_data.expires_at {
+                if expires_at < Utc::now() {
+                    let err = APIError::BadRequest(pt!(i18n_manager, "fill_form_expired",));
+                    return Err(err);
+                }
+            }
+
+            Ok(APIFillAccessToken {
+                token_id: token_data.id,
+                form_id: token_data.form_id,
+            })
         })
-    }
-}
-
-impl<'a> OpenApiFromRequest<'a> for APIFillAccessToken {
-    fn from_request_input(
-        _gen: &mut rocket_okapi::gen::OpenApiGenerator,
-        _name: String,
-        _required: bool,
-    ) -> rocket_okapi::Result<rocket_okapi::request::RequestHeaderInput> {
-        let security_scheme = SecurityScheme {
-            description: Some("Requires a Fill Access Token (usually provided by the form author as part of a link) to view and submit a form".to_owned()),
-            data: SecuritySchemeData::ApiKey { name: "f".to_owned(), location: "query".to_owned() },
-            extensions: Object::default()
-        };
-
-        let mut security_req = SecurityRequirement::new();
-        security_req.insert("APIFillAccessToken".to_owned(), Vec::new());
-        Ok(RequestHeaderInput::Security(
-            "APIFillAccessToken".to_owned(),
-            security_scheme,
-            security_req,
-        ))
     }
 }
 
@@ -157,13 +112,13 @@ impl FillAccessTokenManager {
         conn: &T,
         form_id: PalformDatabaseID<IDForm>,
         nickname: String,
-        expires_at: Option<NaiveDateTime>,
+        expires_at: Option<DateTime<Utc>>,
         short_link: Option<String>,
     ) -> Result<APIFillToken, DbErr> {
         let new_token = fill_access_token::ActiveModel {
             id: Set(PalformDatabaseID::<IDFillAccessToken>::random()),
             form_id: Set(form_id),
-            expires_at: Set(expires_at),
+            expires_at: Set(expires_at.map(|v| v.fixed_offset())),
             nickname: Set(nickname),
             short_link: Set(short_link),
             ..Default::default()

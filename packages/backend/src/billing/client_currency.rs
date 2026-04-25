@@ -1,25 +1,38 @@
-use std::{fmt::Display, str::FromStr};
+use std::{fmt::Display, future::Future, net::IpAddr, pin::Pin, str::FromStr};
 
-use rocket::{
-    http::Status,
-    request::{self, FromRequest},
+use actix_web::{
+    dev::Payload,
+    web::{self, Data},
+    FromRequest, HttpRequest,
 };
-use rocket_okapi::{
-    okapi::{
-        openapi3::{ParameterValue, SchemaObject},
-        schemars::{
-            schema::{InstanceType, SingleOrVec},
-            Map,
-        },
-    },
-    request::OpenApiFromRequest,
-};
+use apistos::ApiComponent;
+use palform_client_common::errors::error::APIError;
+use schemars::JsonSchema;
+use serde::Deserialize;
 use stripe::Currency;
 
-use crate::{geo::IPGeolocator, into_outcome};
+use crate::geo::IPGeolocator;
+
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+struct ClientCurrencyQueryParams {
+    currency: Option<String>,
+}
 
 #[derive(Clone)]
 pub struct ClientCurrency(Currency);
+
+impl ClientCurrency {
+    pub fn from_stripe_currency(currency: Currency) -> Self {
+        if !Self::is_supported(currency) {
+            Self::default()
+        } else {
+            Self(currency)
+        }
+    }
+    pub fn is_supported(currency: Currency) -> bool {
+        vec![Currency::GBP, Currency::EUR, Currency::CHF, Currency::USD].contains(&currency)
+    }
+}
 
 impl From<ClientCurrency> for Currency {
     fn from(value: ClientCurrency) -> Self {
@@ -39,73 +52,70 @@ impl Display for ClientCurrency {
     }
 }
 
-#[rocket::async_trait]
-impl<'a> FromRequest<'a> for ClientCurrency {
-    type Error = String;
-    async fn from_request(
-        request: &'a request::Request<'_>,
-    ) -> request::Outcome<Self, Self::Error> {
-        let param = request.query_value::<&str>("currency");
+impl FromRequest for ClientCurrency {
+    type Error = APIError;
+    type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
+    fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
+        let param_fut = web::Query::<ClientCurrencyQueryParams>::from_request(req, payload);
+        let req = req.clone();
 
-        let currency_string = if let Some(param) = param {
-            into_outcome!(param.map_err(|e| (Status::BadRequest, e.to_string()))).to_owned()
-        } else {
-            let client_ip = request.client_ip();
+        Box::pin(async move {
+            let param = param_fut
+                .await
+                .map_err(|e| {
+                    APIError::BadRequest(format!("Failed to parse params: {}", e.to_string()))
+                })?
+                .currency
+                .clone();
 
-            if let Some(client_ip) = client_ip {
-                let ip_geolocator =
-                    into_outcome!(request.rocket().state::<IPGeolocator>().ok_or((
-                        Status::InternalServerError,
-                        "Missing IPGeolocator in state".to_string(),
-                    )));
-
-                let country = ip_geolocator.lookup_country(client_ip);
-
-                if let Ok(country) = country {
-                    country.currency_code().to_string()
-                } else {
-                    return request::Outcome::Success(ClientCurrency::default());
-                }
+            let currency_string = if let Some(param) = param {
+                param
             } else {
-                return request::Outcome::Success(ClientCurrency::default());
-            }
-        };
+                let connection_info = req.connection_info().to_owned();
+                let client_ip = connection_info.realip_remote_addr();
 
-        let currency =
-            into_outcome!(Currency::from_str(&currency_string)
-                .map_err(|e| (Status::BadRequest, e.to_string())));
+                if let Some(client_ip) = client_ip {
+                    let ip_geolocator = req.app_data::<Data<IPGeolocator>>().ok_or_else(|| {
+                        APIError::report_internal_error_without_error(
+                            "Missing IPGeolocator in state",
+                        )
+                    })?;
 
-        request::Outcome::Success(ClientCurrency(currency))
+                    let client_ip = IpAddr::from_str(client_ip).map_err(|e| {
+                        APIError::BadRequest(format!("Failed to parse client IP: {}", e))
+                    })?;
+                    let country = ip_geolocator.lookup_country(client_ip);
+
+                    if let Ok(country) = country {
+                        country.currency_code().to_string()
+                    } else {
+                        return Ok(ClientCurrency::default());
+                    }
+                } else {
+                    return Ok(ClientCurrency::default());
+                }
+            };
+
+            let currency = Currency::from_str(&currency_string.to_lowercase()).map_err(|e| {
+                APIError::BadRequest(format!("Invalid currency '{}': {}", currency_string, e))
+            })?;
+
+            Ok(ClientCurrency::from_stripe_currency(currency))
+        })
     }
 }
 
-impl<'a> OpenApiFromRequest<'a> for ClientCurrency {
-    fn from_request_input(
-        _gen: &mut rocket_okapi::gen::OpenApiGenerator,
-        _name: String,
-        _required: bool,
-    ) -> rocket_okapi::Result<rocket_okapi::request::RequestHeaderInput> {
-        Ok(rocket_okapi::request::RequestHeaderInput::Parameter(
-            rocket_okapi::okapi::openapi3::Parameter {
-                name: "currency".to_string(),
-                location: "query".to_string(),
-                description: Some("The currency the client is using, or the default currency based on the client's IP address country (if not provided).".to_string()),
-                required: false,
-                deprecated: false,
-                allow_empty_value: false,
-                extensions: Map::new(),
-                value: ParameterValue::Schema {
-                    style: None,
-                    explode: None,
-                    allow_reserved: false,
-                    example: None,
-                    examples: None,
-                    schema: SchemaObject {
-                        instance_type: Some(SingleOrVec::Single(Box::new(InstanceType::String))),
-                        ..Default::default()
-                    },
-                },
-            },
-        ))
+impl ApiComponent for ClientCurrency {
+    fn child_schemas() -> Vec<(String, apistos::reference_or::ReferenceOr<apistos::Schema>)> {
+        web::Query::<ClientCurrencyQueryParams>::child_schemas()
+    }
+    fn schema() -> Option<(String, apistos::reference_or::ReferenceOr<apistos::Schema>)> {
+        web::Query::<ClientCurrencyQueryParams>::schema()
+    }
+    fn raw_schema() -> Option<apistos::reference_or::ReferenceOr<apistos::Schema>> {
+        web::Query::<ClientCurrencyQueryParams>::raw_schema()
+    }
+    fn parameters() -> Vec<apistos::paths::Parameter> {
+        web::Query::<ClientCurrencyQueryParams>::parameters()
     }
 }

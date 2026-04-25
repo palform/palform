@@ -1,4 +1,5 @@
 pub mod auth_callback;
+pub mod scope;
 pub mod common;
 pub mod create_user;
 pub mod invalidate;

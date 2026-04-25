@@ -1,6 +1,6 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
-use rocket::{get, serde::json::Json, State};
-use rocket_okapi::openapi;
+use actix_web::web::{Data, Json};
+use apistos::api_operation;
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use sea_orm::DatabaseConnection;
 
 use crate::{
@@ -10,16 +10,15 @@ use crate::{
     entity_managers::admin_user_second_factors::AdminUserSecondFactorManager,
 };
 
-#[openapi(tag = "2FA Methods", operation_id = "user.second_factors.list")]
-#[get("/users/me/second_factors")]
-pub async fn handler(
+#[api_operation(tag = "2FA Methods", operation_id = "user.second_factors.list")]
+pub async fn auth_second_factors_list(
     token: APIAuthToken<APIAuthTokenSourcePersonal>,
-    db: &State<DatabaseConnection>,
-    config: &State<Config>,
-) -> Result<Json<Vec<APIAdminUserSecondAuthenticationFactor>>, APIErrorWithStatus> {
-    let resp = AdminUserSecondFactorManager::new(token.get_user_id(), config)
+    db: Data<DatabaseConnection>,
+    config: Data<Config>,
+) -> Result<Json<Vec<APIAdminUserSecondAuthenticationFactor>>, APIError> {
+    let resp = AdminUserSecondFactorManager::new(token.get_user_id(), config.as_ref())
         .map_err(|e| APIError::report_internal_error("init 2fa manager", e))?
-        .list(db.inner())
+        .list(db.as_ref())
         .await
         .map_internal_error()?;
 

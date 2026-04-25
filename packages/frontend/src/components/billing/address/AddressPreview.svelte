@@ -1,6 +1,10 @@
 <script lang="ts">
-    import type { APIBillingCustomerAddress } from "@paltiverse/palform-typescript-openapi";
-    export let address: APIBillingCustomerAddress;
+    import type { APIBillingCustomerAddress } from "@palform/palform-typescript-openapi";
+    interface Props {
+        address: APIBillingCustomerAddress;
+    }
+
+    let { address }: Props = $props();
 </script>
 
 {#if address.line1}

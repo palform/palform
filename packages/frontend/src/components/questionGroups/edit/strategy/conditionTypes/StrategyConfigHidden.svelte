@@ -1,24 +1,22 @@
 <script lang="ts">
-    import type {
-        APIQuestionConfigurationOneOf10Hidden,
-        APIQuestionGroupStepStrategyJumpCaseConditionMatcher,
-    } from "@paltiverse/palform-typescript-openapi";
+    import type { ConfigHiddenHidden } from "@palform/palform-typescript-openapi";
     import { Button, Input, Label } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
+    import type { StrategyMatcherEventProps } from "../../../../../data/contexts/formEditor";
 
-    export let configuration: APIQuestionConfigurationOneOf10Hidden;
-    const dispatch = createEventDispatcher<{
-        save: APIQuestionGroupStepStrategyJumpCaseConditionMatcher;
-    }>();
+    interface Props extends StrategyMatcherEventProps {
+        configuration: ConfigHiddenHidden;
+    }
 
-    let value = "";
-    $: onSave = () => {
-        dispatch("save", {
+    let { configuration, onsave }: Props = $props();
+
+    let value = $state("");
+    let onSave = $derived(() => {
+        onsave({
             Hidden: {
                 value,
             },
         });
-    };
+    });
 </script>
 
 <Label>
@@ -26,4 +24,4 @@
     <Input class="mt-2" bind:value />
 </Label>
 
-<Button class="mt-4" size="sm" on:click={onSave}>Save</Button>
+<Button class="mt-4" size="sm" onclick={onSave}>Save</Button>

@@ -1,26 +1,24 @@
 <script lang="ts">
-    import { type APIQuestionGroupStepStrategyJumpCaseConditionMatcher } from "@paltiverse/palform-typescript-openapi";
     import { Button, Label } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
     import CallingCodeDropdown from "../../../../callingCode/CallingCodeDropdown.svelte";
     import { showFailureToast } from "../../../../../data/toast";
+    import type { StrategyMatcherEventProps } from "../../../../../data/contexts/formEditor";
 
-    const dispatch = createEventDispatcher<{
-        save: APIQuestionGroupStepStrategyJumpCaseConditionMatcher;
-    }>();
+    interface Props extends StrategyMatcherEventProps {}
+    let { onsave }: Props = $props();
 
-    let callingCode = "";
-    $: onSave = async () => {
+    let callingCode = $state("");
+    let onSave = $derived(async () => {
         if (callingCode === "") {
             await showFailureToast("Please select a calling code");
             return;
         }
-        dispatch("save", {
+        onsave({
             PhoneNumber: {
                 calling_code: callingCode,
             },
         });
-    };
+    });
 </script>
 
 <Label>
@@ -28,4 +26,4 @@
     <CallingCodeDropdown bind:value={callingCode} class="block mt-2" />
 </Label>
 
-<Button class="mt-4" size="sm" on:click={onSave}>Save</Button>
+<Button class="mt-4" size="sm" onclick={onSave}>Save</Button>

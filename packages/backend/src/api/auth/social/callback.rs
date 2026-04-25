@@ -1,10 +1,8 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
-use rocket::{post, serde::json::Json, State};
-use rocket_okapi::{
-    okapi::schemars::{self, JsonSchema},
-    openapi,
-};
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::{Deserialize, Serialize};
 
@@ -16,7 +14,7 @@ use crate::{
     config::Config,
 };
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct SocialAuthCallbackRequest {
     service: SocialAuthService,
     nonce: String,
@@ -24,21 +22,20 @@ pub struct SocialAuthCallbackRequest {
     redirect_url: String,
 }
 
-#[derive(Serialize, JsonSchema)]
+#[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct SocialAuthCallbackResponse {
     token: NewAPIAuthToken,
     new_org_id: Option<PalformDatabaseID<IDOrganisation>>,
 }
 
-#[openapi(tag = "Authentication", operation_id = "auth.social.callback")]
-#[post("/auth/social/callback", data = "<data>")]
-pub async fn handler(
+#[api_operation(tag = "Authentication", operation_id = "auth.social.callback")]
+pub async fn auth_social_callback(
     data: Json<SocialAuthCallbackRequest>,
-    db: &State<DatabaseConnection>,
-    config: &State<Config>,
-    stripe: &State<stripe::Client>,
-) -> Result<Json<SocialAuthCallbackResponse>, APIErrorWithStatus> {
-    let client = SocialAuthManager::new(data.service.clone(), config)
+    db: Data<DatabaseConnection>,
+    config: Data<Config>,
+    stripe: Data<stripe::Client>,
+) -> Result<Json<SocialAuthCallbackResponse>, APIError> {
+    let client = SocialAuthManager::new(data.service.clone(), config.as_ref())
         .await
         .map_err(|e| APIError::report_internal_error("discover client for callback", e))?;
 
@@ -54,10 +51,11 @@ pub async fn handler(
         .token_exchange(
             &txn,
             #[cfg(feature = "saas")]
-            stripe,
+            stripe.as_ref(),
             data.code.clone(),
             data.nonce.clone(),
             data.redirect_url.clone(),
+            config.as_ref(),
         )
         .await
         .map_err(|e| APIError::report_internal_error("social auth token exchange", e))?;

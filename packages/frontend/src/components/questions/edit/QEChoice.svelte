@@ -1,37 +1,36 @@
 <script lang="ts">
-    import type { APIQuestionConfigurationOneOf2 } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher } from "svelte";
+    import type { ConfigChoice } from "@palform/palform-typescript-openapi";
     import { Alert, Button, Input, Toggle } from "flowbite-svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-    import { getFormEditorCtx, type QuestionEditEvents } from "../../../data/contexts/formEditor";
+    import { getFormEditorCtx } from "../../../data/contexts/formEditor";
 
-    export let config: APIQuestionConfigurationOneOf2;
-    const ctx = getFormEditorCtx();
-    const dispatch = createEventDispatcher<QuestionEditEvents>();
+    interface Props {
+        config: ConfigChoice;
+    }
 
-    $: onUpdate = () => {
-        dispatch("update", config);
-    };
-    $: onOptionAdd = () => {
+    let { config = $bindable() }: Props = $props();
+    let ctx = getFormEditorCtx();
+
+    function onOptionAdd() {
         config.choice.options = [...config.choice.options, ""];
-    };
-    $: onOptionRemove = (value: string) => {
+    }
+    function onOptionRemove(value: string) {
         config.choice.options = config.choice.options.filter(
-            (e) => e !== value,
+            (e: string) => e !== value
         );
-    };
-    $: isUnique = config.choice.options.every(
-        (o, oi) => !config.choice.options.some((e, ei) => o === e && oi !== ei),
+    }
+    let isUnique = $derived(
+        config.choice.options.every(
+            (o: string, oi: number) =>
+                !config.choice.options.some(
+                    (e: string, ei: number) => o === e && oi !== ei
+                )
+        )
     );
 </script>
 
-<Toggle
-    class="mb-4"
-    bind:checked={config.choice.multi}
-    disabled={$ctx.loading}
-    on:change={onUpdate}
->
+<Toggle class="mb-4" bind:checked={config.choice.multi} disabled={$ctx.loading}>
     Multi select
 </Toggle>
 
@@ -40,18 +39,16 @@
 {/if}
 
 <div class="space-y-2">
-    {#each config.choice.options as option, index}
+    {#each config.choice.options as _, index}
         <div class="flex gap-x-2">
             <Input
-                size="sm"
-                bind:value={option}
-                on:change={onUpdate}
+                bind:value={config.choice.options[index]}
                 disabled={$ctx.loading}
             />
             {#if index !== 0}
                 <Button
                     disabled={$ctx.loading}
-                    on:click={() => onOptionRemove(option)}
+                    onclick={() => onOptionRemove(config.choice.options[index])}
                 >
                     <FontAwesomeIcon icon={faTrash} />
                 </Button>
@@ -60,7 +57,7 @@
     {/each}
 </div>
 
-<Button size="sm" class="mt-3" on:click={onOptionAdd} disabled={$ctx.loading}>
+<Button size="sm" class="mt-3" onclick={onOptionAdd} disabled={$ctx.loading}>
     <FontAwesomeIcon icon={faPlus} class="me-2" />
     Add option
 </Button>

@@ -9,8 +9,8 @@ use sea_orm::{
 };
 
 use crate::{
+    actix_util::from_org_id::FromOrgIdTrait,
     api_entities::organisation_auth_config::APIOrganisationAuthConfig,
-    rocket_util::from_org_id::FromOrgIdTrait,
 };
 
 pub struct OrganisationAuthConfigManager {

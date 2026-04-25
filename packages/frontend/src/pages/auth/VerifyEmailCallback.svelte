@@ -3,28 +3,33 @@
     import InfoText from "../../components/type/InfoText.svelte";
     import AuthCard from "../../layouts/AuthCard.svelte";
     import { APIs } from "../../data/common";
-    import { navigate } from "svelte-routing";
+    import { navigate, route, typedNavigate } from "../../router";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
 
-    export let verificationId: string;
+    let { verificationId } = route.getParams("/auth/verify/:verificationId");
 
-    let loading = true;
-    APIs.auth
-        .authVerify(verificationId)
-        .then(() => {
-            navigate("/auth/login?create_initial_org");
-            showSuccessToast("Email verified! Please sign in.");
-        })
-        .catch((e) => {
-            loading = false;
-            showFailureToast(e);
-        });
+    let loading = $state(true);
+    $effect(() => {
+        APIs.auth
+            .authVerify(verificationId)
+            .then(() => {
+                typedNavigate("/auth/login", {
+                    search: { create_initial_org: "true" },
+                });
+                navigate("/auth/login?create_initial_org");
+                showSuccessToast("Email verified! Please sign in.");
+            })
+            .catch((e) => {
+                loading = false;
+                showFailureToast(e);
+            });
+    });
 </script>
 
 <AuthCard title="Verifying your email...">
     {#if loading}
         <InfoText>Please wait...</InfoText>
-        <Spinner class="mt-4" size={12} />
+        <Spinner class="mt-4" size="12" />
     {:else}
         <InfoText>
             Something went wrong. Please try following the verification link

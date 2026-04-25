@@ -1,4 +1,4 @@
-import type { DirectionOperator } from "@paltiverse/palform-typescript-openapi";
+import type { DirectionOperator } from "@palform/palform-typescript-openapi";
 
 export const comparisonItems: {
     value: DirectionOperator;

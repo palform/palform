@@ -4,10 +4,19 @@
     import InfoText from "../../../type/InfoText.svelte";
     import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 
-    export let freeform: number[][][];
-    export let initial: string;
-    export let fullName: string;
-    export let compact: boolean;
+    interface Props {
+        freeform: number[][][];
+        initial: string;
+        fullName: string;
+        compact: boolean;
+    }
+
+    let {
+        freeform,
+        initial,
+        fullName,
+        compact
+    }: Props = $props();
 </script>
 
 {#if compact}

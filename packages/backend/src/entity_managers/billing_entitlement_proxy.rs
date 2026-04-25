@@ -1,4 +1,4 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus};
+use palform_client_common::errors::error::APIError;
 use palform_tsid::{
     resources::{IDOrganisation, IDUnknown},
     tsid::PalformDatabaseID,
@@ -6,8 +6,8 @@ use palform_tsid::{
 use sea_orm::{ConnectionTrait, DbErr};
 
 use crate::{
+    actix_util::from_org_id::FromOrgIdTrait,
     api_entities::billing::entitlement::APIEntitlementRequest,
-    rocket_util::from_org_id::FromOrgIdTrait,
 };
 
 pub trait BillingEntitlementCountTrait {
@@ -47,7 +47,7 @@ impl BillingEntitlementManager {
         &self,
         conn: &T,
         entitlement_req: APIEntitlementRequest,
-    ) -> Result<(), APIErrorWithStatus> {
+    ) -> Result<(), APIError> {
         #[cfg(feature = "saas")]
         {
             let m = self.get_internal_manager();
@@ -56,7 +56,7 @@ impl BillingEntitlementManager {
                 .await
                 .map_err(|e| APIError::report_internal_error("check billing entitlement", e))?;
             if !allowed {
-                Err(APIError::SubscriptionLimit(entitlement_req.to_string()).into())
+                Err(APIError::SubscriptionLimit(entitlement_req.to_string()))
             } else {
                 Ok(())
             }

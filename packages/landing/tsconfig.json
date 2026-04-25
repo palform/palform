@@ -1,19 +1,27 @@
 {
-    "extends": ["astro/tsconfigs/strict", "@tsconfig/svelte/tsconfig.json"],
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.js",
-        "src/**/*.svelte",
-        "src/**/*.astro"
-    ],
-    "compilerOptions": {
-        "target": "ESNext",
-        "plugins": [
-            {
-                "name": "typescript-svelte-plugin",
-                "enabled": true,
-                "assumeIsSvelteProject": true
-            }
-        ]
-    }
+  "extends": [
+    "astro/tsconfigs/strict",
+    "@tsconfig/svelte/tsconfig.json"
+  ],
+  "exclude": [
+    "dist"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.js",
+    "src/**/*.svelte",
+    "src/**/*.astro",
+    ".astro/types.d.ts",
+    "./worker-configuration.d.ts"
+  ],
+  "compilerOptions": {
+    "target": "ESNext",
+    "plugins": [
+      {
+        "name": "typescript-svelte-plugin",
+        "enabled": true,
+        "assumeIsSvelteProject": true
+      }
+    ]
+  }
 }

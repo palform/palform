@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIOrganisationAuthConfig } from "@paltiverse/palform-typescript-openapi";
+    import type { APIOrganisationAuthConfig } from "@palform/palform-typescript-openapi";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { APIs } from "../../../data/common";
     import { showFailureToast } from "../../../data/toast";
@@ -7,8 +7,8 @@
     import SkeletonPrimitive from "../../../components/SkeletonPrimitive.svelte";
 
     const orgCtx = getOrgContext();
-    let config: APIOrganisationAuthConfig | null = null;
-    let getConfigLoading = true;
+    let config: APIOrganisationAuthConfig | null = $state(null);
+    let getConfigLoading = $state(true);
 
     APIs.orgAuthConfig()
         .then((a) => a.organisationAuthConfigGet($orgCtx.org.id))

@@ -6,17 +6,23 @@
     import { APIs } from "../../data/common";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../router";
     import { isEntitled } from "../../data/billing/entitlement";
     import MissingEntitlementTooltip from "../billing/entitlement/MissingEntitlementTooltip.svelte";
 
+    interface Props {
+        class?: string;
+    }
+
+    let { class: className }: Props = $props();
+
     const orgCtx = getOrgContext();
     const entitled = isEntitled("team_count", true);
-    let showModal = false;
-    let teamName = "";
-    let loading = false;
+    let showModal = $state(false);
+    let teamName = $state("");
+    let loading = $state(false);
 
-    $: onCreateClick = async () => {
+    let onCreateClick = $derived(async () => {
         loading = true;
 
         try {
@@ -47,12 +53,12 @@
         }
 
         loading = false;
-    };
+    });
 </script>
 
 <Button
-    class={$$props.class}
-    on:click={() => (showModal = true)}
+    class={className}
+    onclick={() => (showModal = true)}
     disabled={!$entitled}
 >
     <FontAwesomeIcon icon={faPlus} class="me-2" />
@@ -70,9 +76,9 @@
         </Helper>
     </Label>
 
-    <svelte:fragment slot="footer">
-        <LoadingButton disabled={loading} {loading} on:click={onCreateClick}>
+    {#snippet footer()}
+        <LoadingButton disabled={loading} {loading} onclick={onCreateClick}>
             Create
         </LoadingButton>
-    </svelte:fragment>
+    {/snippet}
 </Modal>

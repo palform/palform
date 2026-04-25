@@ -11,10 +11,12 @@
     import { showFailureToast } from "../../data/toast";
     import { humaniseAPIError } from "../../data/common";
     import ErrorMsg from "../../components/ErrorMsg.svelte";
-    import { navigate } from "svelte-routing";
+    import { navigate, route } from "../../router";
 
-    export let providerName: string;
-    let error: undefined | string = undefined;
+    let { providerName } = route.getParams(
+        "/auth/social/:providerName/callback"
+    );
+    let error: undefined | string = $state(undefined);
 
     onMount(() => {
         (async () => {
@@ -47,7 +49,7 @@
         title={`Signing you in with ${socialAuthServiceName(providerName)}`}
     >
         {#if error}
-            <ErrorMsg e={error} retryable on:retry={onRetry} />
+            <ErrorMsg e={error} retryable onretry={onRetry} />
         {:else}
             <Spinner class="mb-4" />
             <InfoText>Please wait...</InfoText>

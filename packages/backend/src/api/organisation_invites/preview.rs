@@ -1,7 +1,12 @@
-use palform_tsid::{resources::{IDOrganisation, IDOrganisationInvite}, tsid::PalformDatabaseID};
-use rocket::{get, http::Status, serde::json::Json, State};
-use rocket_okapi::openapi;
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_tsid::{
+    resources::{IDOrganisation, IDOrganisationInvite},
+    tsid::PalformDatabaseID,
+};
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
+use serde::Deserialize;
 
 use crate::{
     api::error::{APIError, APIInternalError},
@@ -10,23 +15,24 @@ use crate::{
     entity_managers::organisation_invites::OrganisationInviteManager,
 };
 
-#[openapi(
-    tag = "Organisation Invites",
-    operation_id = "organisation.invites.preview"
-)]
-#[get("/users/me/orgs/<org_id>/invites/<invite_id>/preview")]
-pub async fn handler(
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct OrganisationInvitesPreviewPath {
     org_id: PalformDatabaseID<IDOrganisation>,
     invite_id: PalformDatabaseID<IDOrganisationInvite>,
+}
+
+#[api_operation(tag = "Organisation Invites", operation_id = "organisation.invites.preview")]
+pub async fn organisation_invites_preview(
+    path: Path<OrganisationInvitesPreviewPath>,
     _token: APIAuthToken<APIAuthTokenSourcePersonal>,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<APIOrganisationInvitePreview>, (Status, Json<APIError>)> {
-    let preview = OrganisationInviteManager::preview(db.inner(), invite_id)
+    db: Data<DatabaseConnection>,
+) -> Result<Json<APIOrganisationInvitePreview>, APIError> {
+    let preview = OrganisationInviteManager::preview(db.as_ref(), path.invite_id)
         .await
         .map_err(|e| e.to_internal_error())?
         .ok_or(APIError::NotFound)?;
 
-    if preview.org_id != org_id {
+    if preview.org_id != path.org_id {
         return Err(APIError::NotFound.into());
     }
 

@@ -15,24 +15,27 @@
         APIOrganisationAuthTeamMapping,
         APIOrganisationAuthTeamMappingRequest,
         OrganisationMemberRoleEnum,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import LoadingButton from "../../../LoadingButton.svelte";
     import { APIs } from "../../../../data/common";
     import { getOrgContext } from "../../../../data/contexts/orgLayout";
     import { showFailureToast, showSuccessToast } from "../../../../data/toast";
-    import { createEventDispatcher } from "svelte";
+
+    interface Props {
+        class?: string;
+        oncreate: (mapping: APIOrganisationAuthTeamMapping) => void;
+    }
+
+    let { class: className, oncreate }: Props = $props();
 
     const orgCtx = getOrgContext();
-    const dispatch = createEventDispatcher<{
-        create: APIOrganisationAuthTeamMapping;
-    }>();
-    let showModal = false;
-    let fieldValue = "";
-    let teamId = "";
-    let role: OrganisationMemberRoleEnum = "Viewer";
-    let addLoading = false;
+    let showModal = $state(false);
+    let fieldValue = $state("");
+    let teamId = $state("");
+    let role: OrganisationMemberRoleEnum = $state("Viewer");
+    let addLoading = $state(false);
 
-    $: onAdd = async (e: Event) => {
+    let onAdd = $derived(async (e: Event) => {
         e.preventDefault();
         addLoading = true;
         try {
@@ -49,7 +52,7 @@
                 a.organisationTeamsGet($orgCtx.org.id, teamId)
             );
 
-            dispatch("create", {
+            oncreate({
                 ...mapping,
                 team_name: team.data.name,
                 id: resp.data,
@@ -61,16 +64,16 @@
         }
 
         addLoading = false;
-    };
+    });
 </script>
 
-<Button class={$$props.class} on:click={() => (showModal = true)}>
+<Button class={className} onclick={() => (showModal = true)}>
     <FontAwesomeIcon icon={faPlus} class="me-2" />
     Add rule
 </Button>
 
 <Modal bind:open={showModal} title="Add team mapping rule" outsideclose>
-    <form class="space-y-6" on:submit={onAdd}>
+    <form class="space-y-6" onsubmit={onAdd}>
         <Label>
             If OIDC groups field contains
             <Input

@@ -1,19 +1,22 @@
 <script lang="ts">
-  import { Link } from "svelte-routing";
   import type { PalcrumbPath } from "./types";
   import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
   import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
   import PalcrumbLabel from "./PalcrumbLabel.svelte";
 
-  export let path: PalcrumbPath;
-  export let isLast = false;
+  interface Props {
+    path: PalcrumbPath;
+    isLast?: boolean;
+  }
+
+  let { path, isLast = false }: Props = $props();
 </script>
 
 <li class={isLast ? "text-gray-600" : ""}>
   {#if path.href !== undefined}
-    <Link to={path.href} class="hover:underline">
+    <a href={path.href} class="hover:underline">
       <PalcrumbLabel {path} />
-    </Link>
+    </a>
   {:else}
     <PalcrumbLabel {path} />
   {/if}

@@ -4,25 +4,36 @@
         getFormCtx,
         getOrgContext,
     } from "../../../data/contexts/orgLayout";
-    import type { APISubmissionCountPerForm } from "@paltiverse/palform-typescript-openapi";
-    import { Link } from "svelte-routing";
+    import type { APISubmissionCountPerForm } from "@palform/palform-typescript-openapi";
+    import { p } from "../../../router";
+    interface Props {
+        data: APISubmissionCountPerForm;
+    }
 
-    export let data: APISubmissionCountPerForm;
-    const formCtx = getFormCtx(data.form_id);
+    let { data }: Props = $props();
+    const formCtx = $derived(getFormCtx(data.form_id));
     const orgCtx = getOrgContext();
 
-    $: team = $orgCtx.myTeams.find((e) => e.team_id === data.team_id);
+    let team = $derived(
+        $orgCtx.myTeams.find((e) => e.team_id === data.team_id)
+    );
 </script>
 
 {#if $formCtx && team}
     <TableBodyRow>
         <TableBodyCell>
-            <Link to={`/orgs/${$orgCtx.org.id}/forms/${data.form_id}/`}>
+            <a
+                href={p("/orgs/:orgId/forms/:formId/overview", {
+                    params: { orgId: $orgCtx.org.id, formId: $formCtx.id },
+                })}
+            >
                 <span class="block text-gray-500">
                     {team.name}
                 </span>
-                {$formCtx.title}
-            </Link>
+                <span class="text-gray-800 dark:text-gray-300">
+                    {$formCtx.editor_name}
+                </span>
+            </a>
         </TableBodyCell>
         <TableBodyCell class="text-xl text-green-600 dark:text-green-300">
             +{data.new_submission_count}

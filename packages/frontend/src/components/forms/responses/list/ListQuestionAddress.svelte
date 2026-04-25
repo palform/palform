@@ -1,15 +1,19 @@
 <script lang="ts">
-    import type { APIGenericAddress } from "@paltiverse/palform-client-js-extra-types/APIGenericAddress";
+    import type { APIGenericAddress } from "@palform/palform-client-js-extra-types/APIGenericAddress";
     import TextButton from "../../../TextButton.svelte";
     import { Modal } from "flowbite-svelte";
     import OpenLayersMap from "../../../map/OpenLayersMap.svelte";
-    import type { APIGenericLocation } from "@paltiverse/palform-client-js-extra-types/APIGenericLocation";
+    import type { APIGenericLocation } from "@palform/palform-client-js-extra-types/APIGenericLocation";
 
-    export let location: APIGenericLocation;
-    export let address: APIGenericAddress;
-    export let compact: boolean;
-    $: hasLocation = location.lat !== 0 && location.lng !== 0;
-    let showModal = false;
+    interface Props {
+        location: APIGenericLocation;
+        address: APIGenericAddress;
+        compact: boolean;
+    }
+
+    let { location, address, compact }: Props = $props();
+    let hasLocation = $derived(location.lat !== 0 && location.lng !== 0);
+    let showModal = $state(false);
 </script>
 
 {#if compact}
@@ -40,7 +44,7 @@
         {/if}
     </div>
     {#if hasLocation}
-        <TextButton class="mt-1" on:click={() => (showModal = true)}>
+        <TextButton class="mt-1" onclick={() => (showModal = true)}>
             Show on map
         </TextButton>
 

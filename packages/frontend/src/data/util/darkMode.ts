@@ -1,6 +1,3 @@
 export function isDarkMode() {
-    return (
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-    );
+    return document.documentElement.classList.contains("dark");
 }

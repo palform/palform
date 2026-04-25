@@ -1,18 +1,21 @@
 <script lang="ts">
-    import type { APIOrganisationAuthTeamMapping } from "@paltiverse/palform-typescript-openapi";
+    import type { APIOrganisationAuthTeamMapping } from "@palform/palform-typescript-openapi";
     import { TableBodyCell, TableBodyRow, Tooltip } from "flowbite-svelte";
     import { getOrgContext } from "../../../../data/contexts/orgLayout";
     import TableSingleAction from "../../../tables/TableSingleAction.svelte";
     import { APIs } from "../../../../data/common";
     import { showFailureToast, showSuccessToast } from "../../../../data/toast";
-    import { createEventDispatcher } from "svelte";
 
-    export let mapping: APIOrganisationAuthTeamMapping;
-    const dispatch = createEventDispatcher<{ delete: undefined }>();
+    interface Props {
+        mapping: APIOrganisationAuthTeamMapping;
+        ondelete: () => void;
+    }
+
+    let { mapping, ondelete }: Props = $props();
     const orgCtx = getOrgContext();
 
-    let deleteLoading = false;
-    $: onDeleteClick = async () => {
+    let deleteLoading = $state(false);
+    let onDeleteClick = $derived(async () => {
         deleteLoading = true;
         try {
             await APIs.orgAuthTeamMappings().then((a) =>
@@ -22,12 +25,12 @@
                 )
             );
             await showSuccessToast("Mapping deleted");
-            dispatch("delete");
+            ondelete();
         } catch (e) {
             await showFailureToast(e);
         }
         deleteLoading = false;
-    };
+    });
 </script>
 
 <TableBodyRow>
@@ -37,7 +40,7 @@
     </TableBodyCell>
     <TableBodyCell>{mapping.role}</TableBodyCell>
     <TableBodyCell>
-        <TableSingleAction disabled={deleteLoading} on:click={onDeleteClick}>
+        <TableSingleAction disabled={deleteLoading} onclick={onDeleteClick}>
             Delete
         </TableSingleAction>
         <Tooltip>This won't affect existing team memberships.</Tooltip>

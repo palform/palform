@@ -5,20 +5,28 @@
     } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { Alert, Button } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
     import { t } from "../data/contexts/i18n";
 
-    export let e: any;
-    export let targetDescriptor: string | undefined = undefined;
-    export let retryable: boolean = false;
-
-    const dispatch = createEventDispatcher<{ retry: undefined }>();
+    interface Props {
+        e: any;
+        targetDescriptor?: string;
+        retryable?: boolean;
+        class?: string;
+        onretry?: () => void;
+    }
+    let {
+        e,
+        targetDescriptor = undefined,
+        retryable = false,
+        class: className = undefined,
+        onretry,
+    }: Props = $props();
 </script>
 
-<Alert color="red" class={$$props.class}>
-    <span slot="icon">
+<Alert color="red" class={className}>
+    {#snippet icon()}
         <FontAwesomeIcon icon={faExclamationCircle} />
-    </span>
+    {/snippet}
     <p class="font-bold text-lg">
         {t("failed_to_load")}
         {targetDescriptor ?? ""}
@@ -28,12 +36,7 @@
     </p>
 
     {#if retryable}
-        <Button
-            color="red"
-            outline
-            class="mt-2"
-            on:click={() => dispatch("retry")}
-        >
+        <Button color="red" outline class="mt-2" onclick={() => onretry?.()}>
             <FontAwesomeIcon icon={faRefresh} class="me-2" />
             {t("try_again")}
         </Button>

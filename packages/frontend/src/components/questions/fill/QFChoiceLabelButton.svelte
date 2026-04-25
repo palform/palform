@@ -16,17 +16,21 @@
         faCircleCheck as circleEmpty,
     } from "@fortawesome/free-regular-svg-icons";
 
-    export let questionId: string;
-    export let option: string;
-    export let isActive: boolean;
-    export let isMulti: boolean;
+    interface Props {
+        questionId: string;
+        option: string;
+        isActive: boolean;
+        isMulti: boolean;
+    }
+
+    let { questionId, option, isActive, isMulti }: Props = $props();
 
     const brandCtx = getBrandCtx();
     const isDark = isDarkMode();
 
-    let backgroundColorOverride: string | undefined = undefined;
-    let borderColorOverride: string | undefined = undefined;
-    $: {
+    let backgroundColorOverride: string | undefined = $state(undefined);
+    let borderColorOverride: string | undefined = $state(undefined);
+    $effect(() => {
         if ($brandCtx !== undefined && isActive) {
             if (isActive) {
                 backgroundColorOverride = colorWithLightness(
@@ -42,14 +46,14 @@
             backgroundColorOverride = undefined;
             borderColorOverride = undefined;
         }
-    }
+    });
 
     const iconClass = "text-lg align-text-bottom text-gray-500 me-3";
 </script>
 
 <label
     for={`${questionId}-${option}`}
-    class={`border border-slate-200 dark:border-slate-800 text-gray-800 dark:text-gray-300 block p-4 text-sm cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800/80 ${isActive && $brandCtx === undefined ? "!bg-primary-200/60 dark:!bg-primary-950" : ""}`}
+    class={`border border-slate-200 dark:border-slate-800 text-gray-800 dark:text-gray-300 block p-4 text-sm cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800/80 ${isActive && $brandCtx === undefined ? "bg-primary-200/60! dark:bg-primary-950!" : ""}`}
     style:font-size={`${getBaseREMFontSizeForBrand($brandCtx) * 0.85}rem`}
     style:border-radius={getRoundingAmountForBrand($brandCtx, true)}
     style:background-color={backgroundColorOverride}

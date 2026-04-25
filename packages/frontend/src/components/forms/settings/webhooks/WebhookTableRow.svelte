@@ -4,7 +4,7 @@
     import { parseServerTime } from "../../../../data/util/time";
     import { DateTime } from "luxon";
     import TableSingleAction from "../../../tables/TableSingleAction.svelte";
-    import type { APIWebhook } from "@paltiverse/palform-typescript-openapi";
+    import type { APIWebhook } from "@palform/palform-typescript-openapi";
     import {
         faCheckCircle,
         faExclamationCircle,
@@ -14,19 +14,22 @@
         getFormCtx,
         getOrgContext,
     } from "../../../../data/contexts/orgLayout";
-    import { createEventDispatcher } from "svelte";
     import { showFailureToast, showSuccessToast } from "../../../../data/toast";
     import WebhookJobs from "./WebhookJobs.svelte";
 
-    export let webhook: APIWebhook;
+    interface Props {
+        webhook: APIWebhook;
+        ondelete: () => void;
+    }
+
+    let { webhook, ondelete }: Props = $props();
     const orgCtx = getOrgContext();
     const formCtx = getFormCtx();
-    const dispatch = createEventDispatcher<{ delete: undefined }>();
 
-    let loading = false;
-    let showModal = false;
+    let loading = $state(false);
+    let showModal = $state(false);
 
-    $: onDelete = async () => {
+    let onDelete = $derived(async () => {
         loading = true;
         try {
             await APIs.webhooks().then((a) =>
@@ -35,12 +38,12 @@
             await showSuccessToast(
                 "Webhook deleted. That endpoint will no longer receive data."
             );
-            dispatch("delete");
+            ondelete();
         } catch (e) {
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 </script>
 
 <Modal bind:open={showModal} outsideclose title="Webhook runs" size="lg">
@@ -52,7 +55,7 @@
         {webhook.endpoint}
     </TableBodyCell>
     <TableBodyCell>
-        <TableSingleAction on:click={() => (showModal = true)}>
+        <TableSingleAction onclick={() => (showModal = true)}>
             {#if webhook.is_healthy}
                 <span class="text-green-500">
                     <FontAwesomeIcon class="me-1" icon={faCheckCircle} />
@@ -74,7 +77,7 @@
         {parseServerTime(webhook.created_at).toRelative()}
     </TableBodyCell>
     <TableBodyCell>
-        <TableSingleAction on:click={onDelete} disabled={loading}>
+        <TableSingleAction onclick={onDelete} disabled={loading}>
             Delete
         </TableSingleAction>
     </TableBodyCell>

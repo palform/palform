@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIWebhook } from "@paltiverse/palform-typescript-openapi";
+    import type { APIWebhook } from "@palform/palform-typescript-openapi";
     import { APIs } from "../../../../data/common";
     import {
         getFormCtx,
@@ -20,11 +20,17 @@
     import NewWebhook from "./NewWebhook.svelte";
     import WebhookTableRow from "./WebhookTableRow.svelte";
 
+    interface Props {
+        class?: string;
+    }
+
+    let { class: className }: Props = $props();
+
     const orgCtx = getOrgContext();
     const formCtx = getFormCtx();
-    let webhooks: APIWebhook[] = [];
+    let webhooks: APIWebhook[] = $state([]);
 
-    let loading = true;
+    let loading = $state(true);
     APIs.webhooks()
         .then((a) => a.webhooksList($orgCtx.org.id, $formCtx.id))
         .then((resp) => {
@@ -32,17 +38,17 @@
         })
         .finally(() => (loading = false));
 
-    $: onNew = (e: CustomEvent<APIWebhook>) => {
-        webhooks = [...webhooks, e.detail];
-    };
+    let onNew = $derived((e: APIWebhook) => {
+        webhooks = [...webhooks, e];
+    });
 
-    let showNewModal = false;
-    $: onDelete = (id: string) => {
+    let showNewModal = $state(false);
+    let onDelete = $derived((id: string) => {
         webhooks = webhooks.filter((e) => e.id !== id);
-    };
+    });
 </script>
 
-<div class={$$props.class}>
+<div class={className}>
     <InfoText>Webhooks</InfoText>
 
     {#if !loading && webhooks.length === 0}
@@ -52,11 +58,11 @@
         </Alert>
     {/if}
 
-    <NewWebhook bind:show={showNewModal} on:create={onNew} />
+    <NewWebhook bind:show={showNewModal} oncreate={onNew} />
     <Button
         outline
         class="mt-2"
-        on:click={() => (showNewModal = true)}
+        onclick={() => (showNewModal = true)}
         size="sm"
     >
         <FontAwesomeIcon icon={faPlus} class="me-2" />
@@ -78,7 +84,7 @@
                     {#each webhooks as webhook (webhook.id)}
                         <WebhookTableRow
                             {webhook}
-                            on:delete={() => onDelete(webhook.id)}
+                            ondelete={() => onDelete(webhook.id)}
                         />
                     {/each}
                 </TableBody>

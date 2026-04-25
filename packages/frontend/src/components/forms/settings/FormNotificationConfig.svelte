@@ -13,9 +13,9 @@
     const orgCtx = getOrgContext();
     const formMetadataCtx = getFormCtx();
 
-    let email = $formMetadataCtx.notification_email;
-    let saveLoading = false;
-    $: onSave = async () => {
+    let email = $state($formMetadataCtx.notification_email);
+    let saveLoading = $state(false);
+    let onSave = $derived(async () => {
         saveLoading = true;
         try {
             await APIs.forms().then((a) =>
@@ -35,7 +35,7 @@
             await showFailureToast(e);
         }
         saveLoading = false;
-    };
+    });
 </script>
 
 <SectionHeading>Response notifications</SectionHeading>
@@ -44,7 +44,7 @@
     class="mt-4"
     bind:checked={email}
     disabled={saveLoading}
-    on:change={onSave}
+    onchange={onSave}
 >
     Email
 </Toggle>

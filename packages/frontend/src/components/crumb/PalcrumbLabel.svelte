@@ -2,7 +2,11 @@
   import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
   import type { PalcrumbPath } from "./types";
 
-  export let path: PalcrumbPath;
+  interface Props {
+    path: PalcrumbPath;
+  }
+
+  let { path }: Props = $props();
 </script>
 
 {#if path.icon !== undefined}

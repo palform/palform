@@ -10,7 +10,7 @@
     } from "@fortawesome/free-solid-svg-icons";
     import { isEntitled } from "../../data/billing/entitlement";
     import MissingEntitlementTooltip from "../../components/billing/entitlement/MissingEntitlementTooltip.svelte";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../router";
 
     const orgCtx = getOrgContext();
     const multiMemberEntitled = isEntitled("user_count", true);
@@ -25,8 +25,7 @@
             class="block mt-2 w-fit"
             size="sm"
             color="green"
-            href={`/orgs/${$orgCtx.org.id}`}
-            on:click={navigateEvent}
+            href={p("/orgs/:orgId", { params: { orgId: $orgCtx.org.id } })}
         >
             Continue
         </Button>
@@ -35,7 +34,9 @@
     <CardGrid class="mt-8">
         <InductionStepCard
             title="Create a key"
-            href={`/orgs/${$orgCtx.org.id}/user/keys`}
+            href={p("/orgs/:orgId/user/keys", {
+                params: { orgId: $orgCtx.org.id },
+            })}
             icon={faLock}
             checked={$orgCtx.induction.key_created}
         >
@@ -45,7 +46,9 @@
         {#if $orgCtx.induction.can_create_invite && !$orgCtx.org.uses_oidc}
             <InductionStepCard
                 title="Invite your team"
-                href={`/orgs/${$orgCtx.org.id}/settings/members/invite`}
+                href={p("/orgs/:orgId/settings/members/invite", {
+                    params: { orgId: $orgCtx.org.id },
+                })}
                 icon={faPeopleGroup}
                 checked={$orgCtx.induction.invite_created}
                 disabled={!$multiMemberEntitled}
@@ -61,7 +64,9 @@
         {/if}
         <InductionStepCard
             title="Create a form"
-            href={`/orgs/${$orgCtx.org.id}/forms/new`}
+            href={p("/orgs/:orgId/forms/new", {
+                params: { orgId: $orgCtx.org.id },
+            })}
             icon={faFileShield}
             checked={$orgCtx.induction.form_created}
         >

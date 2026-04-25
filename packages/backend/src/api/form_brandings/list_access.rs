@@ -1,11 +1,13 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json, Path};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_tsid::{
     resources::{IDFormBranding, IDOrganisation, IDTeam},
     tsid::PalformDatabaseID,
 };
-use rocket::{get, serde::json::Json, State};
-use rocket_okapi::openapi;
+use schemars::JsonSchema;
 use sea_orm::DatabaseConnection;
+use serde::Deserialize;
 
 use crate::{
     api_entities::form_brandings::APIFormBrandingAccess,
@@ -13,26 +15,32 @@ use crate::{
     entity_managers::form_brandings::FormBrandingManager,
 };
 
-#[openapi(
-    tag = "Form Brandings",
-    operation_id = "organisation.team.branding.list_access"
-)]
-#[get("/users/me/orgs/<_org_id>/teams/<team_id>/brandings/<branding_id>/access")]
-pub async fn handler(
-    _org_id: PalformDatabaseID<IDOrganisation>,
+#[derive(Deserialize, JsonSchema, ApiComponent)]
+pub struct FormBrandingsListAccessPath {
+    #[allow(unused)]
+    org_id: PalformDatabaseID<IDOrganisation>,
     team_id: PalformDatabaseID<IDTeam>,
     branding_id: PalformDatabaseID<IDFormBranding>,
+}
+
+#[api_operation(tag = "Form Brandings", operation_id = "organisation.team.branding.list_access")]
+pub async fn form_brandings_list_access(
+    path: Path<FormBrandingsListAccessPath>,
     _token: APITokenTeamViewerFromTeam,
-    db: &State<DatabaseConnection>,
-) -> Result<Json<Vec<APIFormBrandingAccess>>, APIErrorWithStatus> {
-    if !FormBrandingManager::verify_branding_team_allowed(db.inner(), branding_id, team_id)
-        .await
-        .map_internal_error()?
+    db: Data<DatabaseConnection>,
+) -> Result<Json<Vec<APIFormBrandingAccess>>, APIError> {
+    if !FormBrandingManager::verify_branding_team_allowed(
+        db.as_ref(),
+        path.branding_id,
+        path.team_id,
+    )
+    .await
+    .map_internal_error()?
     {
         return Err(APIError::NotFound.into());
     }
 
-    let accessing_teams = FormBrandingManager::list_accessing_teams(db.inner(), branding_id)
+    let accessing_teams = FormBrandingManager::list_accessing_teams(db.as_ref(), path.branding_id)
         .await
         .map_internal_error()?;
     Ok(Json(accessing_teams))

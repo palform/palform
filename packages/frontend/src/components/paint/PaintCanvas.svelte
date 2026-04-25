@@ -13,19 +13,27 @@
     const brandCtx = getBrandCtx();
 
     const dispatch = createEventDispatcher<{ update: number[][][] }>();
-    export let points: number[][][] = [];
-    export let readonly = false;
-    export let downloadButton = false;
+    interface Props {
+        points?: number[][][];
+        readonly?: boolean;
+        downloadButton?: boolean;
+    }
 
-    $: onPointerDown = (e: PointerEvent) => {
+    let {
+        points = $bindable([]),
+        readonly = false,
+        downloadButton = false,
+    }: Props = $props();
+
+    let onPointerDown = $derived((e: PointerEvent) => {
         if (readonly) return;
         const t = e.target as HTMLCanvasElement;
         t.setPointerCapture(e.pointerId);
         points = [...points, [[e.layerX, e.layerY, e.pressure]]];
         dispatch("update", points);
-    };
+    });
 
-    $: onPointerMove = (e: PointerEvent) => {
+    let onPointerMove = $derived((e: PointerEvent) => {
         if (readonly) return;
         if (e.buttons !== 1) return;
         points[points.length - 1] = [
@@ -33,20 +41,22 @@
             [e.layerX, e.layerY, e.pressure],
         ];
         dispatch("update", points);
-    };
+    });
 
-    $: strokes = points.map((e) =>
-        getStroke(e, {
-            size: 4,
-            thinning: 0.5,
-            smoothing: 0.5,
-            streamline: 0.5,
-        })
+    let strokes = $derived(
+        points.map((e) =>
+            getStroke(e, {
+                size: 4,
+                thinning: 0.5,
+                smoothing: 0.5,
+                streamline: 0.5,
+            })
+        )
     );
 
-    $: pathList = strokes.map((e) => getSvgPathFromStroke(e));
+    let pathList = $derived(strokes.map((e) => getSvgPathFromStroke(e)));
 
-    $: onDownloadClick = () => {
+    let onDownloadClick = $derived(() => {
         const svg = document.createElementNS(
             "http://www.w3.org/2000/svg",
             "svg"
@@ -70,7 +80,7 @@
         link.download = "signature.svg";
         link.click();
         URL.revokeObjectURL(url);
-    };
+    });
 </script>
 
 <div
@@ -78,8 +88,11 @@
     style:border-radius={getRoundingAmountForBrand($brandCtx)}
 >
     <svg
-        on:pointerdown={onPointerDown}
-        on:pointermove={onPointerMove}
+        onpointerdown={onPointerDown}
+        onpointermove={onPointerMove}
+        role="textbox"
+        aria-label="Signature input"
+        tabindex="0"
         class="h-full w-full dark:fill-white"
     >
         {#each pathList as pathData}
@@ -93,7 +106,7 @@
         size="sm"
         color="light"
         class="mt-4 text-left flex"
-        on:click={onDownloadClick}
+        onclick={onDownloadClick}
     >
         <FontAwesomeIcon icon={faDownload} class="me-3" />
         <span>

@@ -1,18 +1,18 @@
 <script lang="ts">
-    import type { APIQuestionConfigurationOneOf10 } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher, onMount } from "svelte";
+    import { onMount } from "svelte";
     import {
         hiddenQuestionValue,
         setQuestionValue,
+        type QuestionFillProps,
     } from "../../../data/contexts/fill";
+    import type { ConfigHidden } from "@palform/palform-typescript-openapi";
 
-    export let id: string;
-    export let config: APIQuestionConfigurationOneOf10;
+    interface Props extends QuestionFillProps<ConfigHidden> {}
 
-    const dispatch = createEventDispatcher<{ change: undefined }>();
+    let { id, config, onchange }: Props = $props();
 
     onMount(() => {
         setQuestionValue(id, hiddenQuestionValue(config.hidden.parameter_name));
-        dispatch("change");
+        onchange();
     });
 </script>

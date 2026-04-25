@@ -5,7 +5,7 @@
         APIOrgMember,
         APIOrganisationTeamMember,
         OrganisationMemberRoleEnum,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import {
         Button,
         Input,
@@ -21,29 +21,36 @@
     import { showFailureToast, showSuccessToast } from "../../data/toast";
     import { createEventDispatcher } from "svelte";
 
-    export let teamId: string;
-    export let existingTeamMemberIds: string[];
+    interface Props {
+        teamId: string;
+        existingTeamMemberIds: string[];
+        [key: string]: any;
+    }
+
+    let { ...props }: Props = $props();
     const dispatch = createEventDispatcher<{
         add: APIOrganisationTeamMember;
     }>();
     const orgCtx = getOrgContext();
-    let showModal = false;
-    let members: APIOrgMember[] = [];
-    let membersLoading = true;
-    let selectedMemberIds: string[] = [];
-    let role: OrganisationMemberRoleEnum = "Viewer";
+    let showModal = $state(false);
+    let members: APIOrgMember[] = $state([]);
+    let membersLoading = $state(true);
+    let selectedMemberIds: string[] = $state([]);
+    let role: OrganisationMemberRoleEnum = $state("Viewer");
 
-    $: APIs.orgMembers()
-        .then((a) => a.organisationMembersList($orgCtx.org.id))
-        .then((resp) => {
-            members = resp.data.filter(
-                (e) => !existingTeamMemberIds.includes(e.user_id)
-            );
-            membersLoading = false;
-        });
+    $effect(() => {
+        APIs.orgMembers()
+            .then((a) => a.organisationMembersList($orgCtx.org.id))
+            .then((resp) => {
+                members = resp.data.filter(
+                    (e) => !props.existingTeamMemberIds.includes(e.user_id)
+                );
+                membersLoading = false;
+            });
+    });
 
-    let addLoading = false;
-    $: onAddClick = async () => {
+    let addLoading = $state(false);
+    let onAddClick = $derived(async () => {
         addLoading = true;
         if (selectedMemberIds.length === 0) {
             return;
@@ -51,7 +58,7 @@
 
         try {
             await APIs.orgTeamMembers().then((a) =>
-                a.organisationTeamMembersAdd($orgCtx.org.id, teamId, {
+                a.organisationTeamMembersAdd($orgCtx.org.id, props.teamId, {
                     user_ids: selectedMemberIds,
                     role,
                 })
@@ -74,10 +81,10 @@
         }
 
         addLoading = false;
-    };
+    });
 </script>
 
-<Button on:click={() => (showModal = true)} class={$$props.class}>
+<Button onclick={() => (showModal = true)} class={props.class}>
     <FontAwesomeIcon icon={faPlus} class="me-2" />
     Add member(s)
 </Button>
@@ -86,7 +93,7 @@
     bind:open={showModal}
     outsideclose
     title="Add members"
-    classBody="!pb-40"
+    bodyClass="pb-40!"
 >
     <Label>
         Members
@@ -119,13 +126,13 @@
         />
     </Label>
 
-    <svelte:fragment slot="footer">
+    {#snippet footer()}
         <LoadingButton
             disabled={addLoading}
             loading={addLoading}
-            on:click={onAddClick}
+            onclick={onAddClick}
         >
             Add
         </LoadingButton>
-    </svelte:fragment>
+    {/snippet}
 </Modal>

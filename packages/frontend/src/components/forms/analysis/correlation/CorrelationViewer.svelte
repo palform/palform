@@ -6,17 +6,22 @@
     import CorrelationFromFeatureGroup from "./CorrelationFromFeatureGroup.svelte";
     import SectionSeparator from "../../../type/SectionSeparator.svelte";
 
-    export let questionId: string;
-    export let correlations: [string, [string, [string, number][]][]][];
-    $: someCorrelations = correlations.some(([_, e]) =>
-        e.some(([_, e]) => e.length > 0)
+    interface Props {
+        questionId: string;
+        correlations: [string, [string, [string, number][]][]][];
+        class?: string;
+    }
+
+    let { questionId, correlations, class: className }: Props = $props();
+    let someCorrelations = $derived(
+        correlations.some(([_, e]) => e.some(([_, e]) => e.length > 0))
     );
 
-    let showModal = false;
+    let showModal = $state(false);
 </script>
 
 {#if someCorrelations}
-    <TextButton class={$$props.class} on:click={() => (showModal = true)}>
+    <TextButton class={className} onclick={() => (showModal = true)}>
         <FontAwesomeIcon icon={faMagicWandSparkles} class="me-2" />
         What influences these responses?
     </TextButton>
@@ -36,7 +41,9 @@
 
     <Accordion flush>
         <AccordionItem>
-            <span slot="header" class="text-sm">What does this mean?</span>
+            {#snippet header()}
+                <span class="text-sm">What does this mean?</span>
+            {/snippet}
             <p class="text-sm">
                 Shown above are the <a
                     class="underline font-medium"

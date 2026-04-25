@@ -1,4 +1,4 @@
-import type { InProgressSubmission } from "@paltiverse/palform-client-js-extra-types/InProgressSubmission";
+import type { InProgressSubmission } from "@palform/palform-client-js-extra-types/InProgressSubmission";
 import PouchDB from "pouchdb-browser";
 import PouchDBFind from "pouchdb-find";
 import type { DecryptedSubmissionSuccess } from "./crypto/results";

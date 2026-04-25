@@ -8,20 +8,24 @@
         getGroupTitle,
     } from "../../../../../data/contexts/formAdmin";
 
-    export let groupId: string;
-    export let submission: DecryptedSubmissionSuccess;
+    interface Props {
+        groupId: string;
+        submission: DecryptedSubmissionSuccess;
+    }
+
+    let { groupId, submission }: Props = $props();
 
     const formAdminCtx = getFormAdminContext();
     const formMetadataCtx = getFormCtx();
 
-    $: group = ctxGetGroup(groupId);
-    $: questionSubmissions = submission.questions.filter((q) => {
+    let group = $derived(ctxGetGroup(groupId));
+    let questionSubmissions = $derived(submission.questions.filter((q) => {
         const question = $formAdminCtx.questions.find(
             (e) => e.id === q.question_id
         );
         if (!question) return false;
         return question.group_id === groupId;
-    });
+    }));
 </script>
 
 {#if $group !== undefined && !$formMetadataCtx.one_question_per_page}

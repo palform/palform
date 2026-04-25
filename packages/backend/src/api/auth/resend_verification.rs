@@ -1,10 +1,8 @@
-use palform_client_common::errors::error::{APIError, APIErrorWithStatus, APIInternalErrorResult};
+use actix_web::web::{Data, Json};
+use apistos::{api_operation, ApiComponent};
+use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
 use palform_entities::sea_orm_active_enums::AdminUserEmailVerificationPurposeEnum;
-use rocket::{post, serde::json::Json, State};
-use rocket_okapi::{
-    okapi::schemars::{self, JsonSchema},
-    openapi,
-};
+use schemars::JsonSchema;
 use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 
@@ -15,18 +13,17 @@ use crate::{
     mail::client::PalformMailClient,
 };
 
-#[derive(Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct ResendVerificationRequest {
     email: String,
 }
 
-#[openapi(tag = "Authentication", operation_id = "auth.resend_ verification")]
-#[post("/users/verification", data = "<request>")]
-pub async fn handler(
+#[api_operation(tag = "Authentication", operation_id = "auth.resend_ verification")]
+pub async fn auth_resend_verification(
     request: Json<ResendVerificationRequest>,
-    db: &State<DatabaseConnection>,
-    mail: &State<PalformMailClient>,
-) -> Result<(), APIErrorWithStatus> {
+    db: Data<DatabaseConnection>,
+    mail: Data<PalformMailClient>,
+) -> Result<(), APIError> {
     let txn = db
         .begin_with_config(
             Some(IsolationLevel::RepeatableRead),
@@ -49,7 +46,7 @@ pub async fn handler(
             user.id,
             Some(request.email.to_owned()),
             AdminUserEmailVerificationPurposeEnum::NewEmail,
-            mail,
+            mail.as_ref(),
         )
         .await
         .map_err(|e| APIError::report_internal_error("resend email verification", e))?;

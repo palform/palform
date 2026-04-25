@@ -2,11 +2,15 @@
     import SectionSeparator from "../../../type/SectionSeparator.svelte";
     import CorrelationTarget from "./CorrelationTarget.svelte";
 
-    export let fromQuestionId: string;
-    export let fromFeatureLabel: string;
-    export let targets: [string, [string, number][]][];
+    interface Props {
+        fromQuestionId: string;
+        fromFeatureLabel: string;
+        targets: [string, [string, number][]][];
+    }
 
-    $: isSome = targets.some(([_, e]) => e.length > 0);
+    let { fromQuestionId, fromFeatureLabel, targets }: Props = $props();
+
+    let isSome = $derived(targets.some(([_, e]) => e.length > 0));
 </script>
 
 {#if isSome}

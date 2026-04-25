@@ -5,13 +5,14 @@ use lettre::{
 
 use crate::config::Config;
 
+#[derive(Clone)]
 pub struct PalformMailClient {
     smtp: AsyncSmtpTransport<Tokio1Executor>,
     from_address: String,
 }
 
 impl PalformMailClient {
-    pub async fn new(config: Config) -> Self {
+    pub async fn new(config: &Config) -> Self {
         let transport = if config.smtp_starttls {
             AsyncSmtpTransport::<Tokio1Executor>::starttls_relay(&config.smtp_host)
         } else {
@@ -34,7 +35,7 @@ impl PalformMailClient {
 
         Self {
             smtp: transport,
-            from_address: config.smtp_from_address,
+            from_address: config.smtp_from_address.clone(),
         }
     }
 

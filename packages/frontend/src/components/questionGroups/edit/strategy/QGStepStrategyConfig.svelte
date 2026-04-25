@@ -4,7 +4,7 @@
     import type {
         APIQuestionGroupStepStrategy,
         APIQuestionGroupStepStrategyJumpCase,
-    } from "@paltiverse/palform-typescript-openapi";
+    } from "@palform/palform-typescript-openapi";
     import QgStepStrategyCase from "./QGStepStrategyCase.svelte";
     import QgStepStrategyNewCase from "./QGStepStrategyNewCase.svelte";
     import { slide } from "svelte/transition";
@@ -23,21 +23,27 @@
         qgsIsJump,
     } from "../../../../data/contexts/formAdmin";
 
-    export let groupId: string;
+    interface Props {
+        groupId: string;
+        [key: string]: any;
+    }
+
+    let { ...props }: Props = $props();
 
     const formMetadataCtx = getFormCtx();
     const formEditorCtx = getFormEditorCtx();
 
-    $: group = ctxGetGroup(groupId);
-    $: currentConfig = $group?.step_strategy;
+    let group = $derived(ctxGetGroup(props.groupId));
+    let currentConfig = $derived($group?.step_strategy);
 
-    $: currentActionValue =
+    let currentActionValue = $derived(
         currentConfig !== undefined && qgsIsJump(currentConfig)
             ? "JumpToSection"
-            : "NextPosition";
+            : "NextPosition"
+    );
 
-    let showJumpCases = false;
-    $: onActionValueChange = async (e: Event) => {
+    let showJumpCases = $state(false);
+    let onActionValueChange = $derived(async (e: Event) => {
         if (!$group) return;
         const t = e.target as HTMLSelectElement;
         let strategy: APIQuestionGroupStepStrategy;
@@ -54,38 +60,38 @@
             ...$group,
             step_strategy: strategy,
         });
-    };
+    });
 
-    $: onNewJumpCase = async (
-        e: CustomEvent<APIQuestionGroupStepStrategyJumpCase>
-    ) => {
-        if (!$group || !currentConfig || !qgsIsJump(currentConfig)) return;
-        updateQuestionGroup(formEditorCtx, {
-            ...$group,
-            step_strategy: {
-                JumpToSection: [...currentConfig.JumpToSection, e.detail],
-            },
-        });
-    };
+    let onNewJumpCase = $derived(
+        async (e: CustomEvent<APIQuestionGroupStepStrategyJumpCase>) => {
+            if (!$group || !currentConfig || !qgsIsJump(currentConfig)) return;
+            updateQuestionGroup(formEditorCtx, {
+                ...$group,
+                step_strategy: {
+                    JumpToSection: [...currentConfig.JumpToSection, e.detail],
+                },
+            });
+        }
+    );
 
-    $: onDeleteJumpCase = async (index: number) => {
+    let onDeleteJumpCase = $derived(async (index: number) => {
         if (!$group || !currentConfig || !qgsIsJump(currentConfig)) return;
         currentConfig.JumpToSection.splice(index, 1);
         updateQuestionGroup(formEditorCtx, {
             ...$group,
             step_strategy: currentConfig,
         });
-    };
+    });
 </script>
 
 {#if currentConfig !== undefined}
-    <Label class={$$props.class}>
+    <Label class={props.class}>
         Action
         <Select
             class="mt-1"
             size="sm"
             value={currentActionValue}
-            on:change={onActionValueChange}
+            onchange={onActionValueChange}
             disabled={!!$formEditorCtx.currentlyEditing}
             items={[
                 {
@@ -107,7 +113,7 @@
     {#if qgsIsJump(currentConfig)}
         <button
             class="mt-2 text-sm text-slate-700 dark:text-slate-300"
-            on:click={() => (showJumpCases = !showJumpCases)}
+            onclick={() => (showJumpCases = !showJumpCases)}
             disabled={!!$formEditorCtx.currentlyEditing}
         >
             <span class="inline-block w-4 me-1">
@@ -146,7 +152,7 @@
 
                 <QgStepStrategyNewCase
                     class="mt-2"
-                    fromGroupId={groupId}
+                    fromGroupId={props.groupId}
                     on:saveNew={onNewJumpCase}
                 />
             </div>

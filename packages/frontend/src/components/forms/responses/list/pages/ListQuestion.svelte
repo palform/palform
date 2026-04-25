@@ -1,16 +1,20 @@
 <script lang="ts">
-    import type { QuestionSubmission } from "@paltiverse/palform-client-js-extra-types/QuestionSubmission";
+    import type { QuestionSubmission } from "@palform/palform-client-js-extra-types/QuestionSubmission";
     import CardBox from "../../../../cardBox/CardBox.svelte";
     import CardBoxTitle from "../../../../cardBox/CardBoxTitle.svelte";
     import ListQuestionValue from "../ListQuestionValue.svelte";
     import { getFormAdminContext } from "../../../../../data/contexts/formAdmin";
 
-    export let questionSubmission: QuestionSubmission;
+    interface Props {
+        questionSubmission: QuestionSubmission;
+    }
+
+    let { questionSubmission }: Props = $props();
     const formAdminCtx = getFormAdminContext();
 
-    $: question = $formAdminCtx.questions.find(
+    let question = $derived($formAdminCtx.questions.find(
         (e) => e.id === questionSubmission.question_id
-    );
+    ));
 </script>
 
 <CardBox>

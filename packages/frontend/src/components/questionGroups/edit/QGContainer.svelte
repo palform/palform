@@ -7,8 +7,7 @@
         faTrash,
     } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-    import type { APIQuestionGroup } from "@paltiverse/palform-typescript-openapi";
-    import { createEventDispatcher } from "svelte";
+    import type { APIQuestionGroup } from "@palform/palform-typescript-openapi";
     import LoadingButton from "../../LoadingButton.svelte";
     import {
         Button,
@@ -31,21 +30,25 @@
     } from "../../../data/contexts/formEditor";
     import type { ArrayMoveDirection } from "../../../data/util/arraySwap";
 
-    export let group: APIQuestionGroup;
+    interface Props {
+        group: APIQuestionGroup;
+        children?: import("svelte").Snippet;
+        ondelete: () => void;
+    }
 
-    const dispatch = createEventDispatcher<{
-        delete: undefined;
-    }>();
+    let { group, children, ondelete }: Props = $props();
 
     const formMetadataCtx = getFormCtx();
     const formAdminCtx = getFormAdminContext();
     const formEditorCtx = getFormEditorCtx();
 
-    let groupTitle = group.title;
-    let groupDescription = group.description;
+    // svelte-ignore state_referenced_locally
+    let groupTitle = $state(group.title);
+    // svelte-ignore state_referenced_locally
+    let groupDescription = $state(group.description);
 
-    let editing = false;
-    $: onSaveClick = async () => {
+    let editing = $state(false);
+    let onSaveClick = $derived(async () => {
         try {
             const updatedGroup = {
                 ...group,
@@ -57,16 +60,19 @@
         } catch (e) {
             await showFailureToast(e);
         }
-    };
-    $: changed =
-        groupTitle !== group.title || groupDescription !== group.description;
+    });
+    let changed = $derived(
+        groupTitle !== group.title || groupDescription !== group.description
+    );
 
-    $: groupIndex = $formEditorCtx.groups.findIndex((e) => e.id === group.id);
-    $: canMoveUp = groupIndex > 0;
-    $: canMoveDown = groupIndex !== $formEditorCtx.groups.length - 1;
-    $: onMoveClick = (direction: ArrayMoveDirection) => {
+    let groupIndex = $derived(
+        $formEditorCtx.groups.findIndex((e) => e.id === group.id)
+    );
+    let canMoveUp = $derived(groupIndex > 0);
+    let canMoveDown = $derived(groupIndex !== $formEditorCtx.groups.length - 1);
+    let onMoveClick = $derived((direction: ArrayMoveDirection) => {
         moveQuestionGroup(formEditorCtx, group, direction);
-    };
+    });
 </script>
 
 <section
@@ -83,43 +89,44 @@
                                 <Input bind:value={groupTitle} />
                                 <Button
                                     color="light"
-                                    outline
-                                    on:click={() => (groupTitle = null)}
+                                    onclick={() => (groupTitle = null)}
+                                    aria-label="Delete title"
                                 >
                                     <FontAwesomeIcon icon={faTrash} />
                                 </Button>
-                                <Tooltip>Delete title</Tooltip>
                             </ButtonGroup>
                         </Label>
                     </div>
                 {:else}
-                    <Button size="sm" on:click={() => (groupTitle = "")}>
+                    <Button size="sm" onclick={() => (groupTitle = "")}>
                         <FontAwesomeIcon icon={faPlus} class="me-2" />
                         Add title
                     </Button>
                 {/if}
 
-                <div class="h-4" />
+                <div class="h-4"></div>
 
                 {#if typeof groupDescription === "string"}
                     <div class="flex justify-between gap-4">
                         <Label class="flex-1">
                             Description
                             <ButtonGroup class="flex mt-1">
-                                <Textarea bind:value={groupDescription} />
+                                <Textarea
+                                    bind:value={groupDescription}
+                                    class="w-full"
+                                />
                                 <Button
                                     color="light"
-                                    outline
-                                    on:click={() => (groupDescription = null)}
+                                    onclick={() => (groupDescription = null)}
+                                    aria-label="Delete description"
                                 >
                                     <FontAwesomeIcon icon={faTrash} />
                                 </Button>
-                                <Tooltip>Delete description</Tooltip>
                             </ButtonGroup>
                         </Label>
                     </div>
                 {:else}
-                    <Button size="sm" on:click={() => (groupDescription = "")}>
+                    <Button size="sm" onclick={() => (groupDescription = "")}>
                         <FontAwesomeIcon icon={faPlus} class="me-2" />
                         Add description
                     </Button>
@@ -128,13 +135,13 @@
                 {#if changed}
                     <LoadingButton
                         buttonClass="mt-4 block"
-                        on:click={onSaveClick}
+                        onclick={onSaveClick}
                     >
                         Save
                     </LoadingButton>
                 {:else}
                     <Button
-                        on:click={() => (editing = false)}
+                        onclick={() => (editing = false)}
                         color="light"
                         size="sm"
                         class="mt-4 block"
@@ -156,14 +163,14 @@
         <div>
             <ButtonGroup>
                 <Button
-                    on:click={() => onMoveClick("up")}
+                    onclick={() => onMoveClick("up")}
                     disabled={!canMoveUp}
                     color="light"
                 >
                     <FontAwesomeIcon icon={faArrowUp} />
                 </Button>
                 <Button
-                    on:click={() => onMoveClick("down")}
+                    onclick={() => onMoveClick("down")}
                     disabled={!canMoveDown}
                     color="light"
                 >
@@ -175,10 +182,9 @@
                 {#if !editing}
                     <Button
                         color="light"
-                        outline
                         size="sm"
                         disabled={!!$formEditorCtx.currentlyEditing}
-                        on:click={() => (editing = true)}
+                        onclick={() => (editing = true)}
                     >
                         <FontAwesomeIcon icon={faEdit} />
                     </Button>
@@ -189,7 +195,7 @@
                     outline
                     color="red"
                     title="Delete section"
-                    on:click={() => dispatch("delete")}
+                    onclick={() => ondelete()}
                     disabled={editing || !!$formEditorCtx.currentlyEditing}
                 >
                     <FontAwesomeIcon icon={faTrash} />
@@ -199,6 +205,6 @@
     </div>
 
     {#if !editing}
-        <slot />
+        {@render children?.()}
     {/if}
 </section>

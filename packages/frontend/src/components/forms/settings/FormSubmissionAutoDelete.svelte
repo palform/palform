@@ -3,14 +3,14 @@
         Alert,
         Button,
         ButtonGroup,
+        Input,
         InputAddon,
         Label,
-        NumberInput,
         Toggle,
     } from "flowbite-svelte";
     import { isEntitled } from "../../../data/billing/entitlement";
     import SectionHeading from "../../type/SectionHeading.svelte";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "../../../router";
     import {
         getFormCtx,
         getOrgContext,
@@ -19,7 +19,7 @@
     import { APIs } from "../../../data/common";
     import LoadingButton from "../../LoadingButton.svelte";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
-    import type { SetSubmissionAutoDeleteRequest } from "@paltiverse/palform-typescript-openapi";
+    import type { SetSubmissionAutoDeleteRequest } from "@palform/palform-typescript-openapi";
 
     const entitled = isEntitled("submission_auto_delete");
     const orgCtx = getOrgContext();
@@ -29,10 +29,14 @@
         navigate(`/orgs/${$orgCtx.org.id}/settings/billing`);
     };
 
-    let autoDeleteToggle = !!$formMetadataCtx.auto_delete_submission_after_days;
-    let newDayCount = $formMetadataCtx.auto_delete_submission_after_days ?? 30;
-    let loading = false;
-    $: onToggleChange = async () => {
+    let autoDeleteToggle = $state(
+        !!$formMetadataCtx.auto_delete_submission_after_days
+    );
+    let newDayCount = $state(
+        $formMetadataCtx.auto_delete_submission_after_days ?? 30
+    );
+    let loading = $state(false);
+    let onToggleChange = $derived(async () => {
         loading = true;
         const newValue: SetSubmissionAutoDeleteRequest = {
             days: autoDeleteToggle ? 30 : null,
@@ -53,9 +57,9 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 
-    $: onSaveClick = async () => {
+    let onSaveClick = $derived(async () => {
         loading = true;
         try {
             await APIs.forms().then((a) =>
@@ -71,7 +75,7 @@
             await showFailureToast(e);
         }
         loading = false;
-    };
+    });
 </script>
 
 <SectionHeading class="mb-4">Submission auto-deletion</SectionHeading>
@@ -83,12 +87,12 @@
             Automatically delete your old responses, making data retention
             compliance easier than ever!
         </p>
-        <Button class="mt-2" on:click={onBillingContinueClick}>Continue</Button>
+        <Button class="mt-2" onclick={onBillingContinueClick}>Continue</Button>
     </Alert>
 {:else}
     <Toggle
         bind:checked={autoDeleteToggle}
-        on:change={onToggleChange}
+        onchange={onToggleChange}
         disabled={loading}
     >
         Automatically delete responses after some time
@@ -99,7 +103,7 @@
             Delete submissions older than
             <div class="mt-1">
                 <ButtonGroup>
-                    <NumberInput type="number" bind:value={newDayCount} />
+                    <Input type="number" bind:value={newDayCount} />
                     <InputAddon>Days</InputAddon>
                 </ButtonGroup>
             </div>
@@ -110,7 +114,7 @@
                 buttonClass="mt-4"
                 {loading}
                 disabled={loading}
-                on:click={onSaveClick}
+                onclick={onSaveClick}
             >
                 Save
             </LoadingButton>

@@ -21,17 +21,23 @@
     import MissingEntitlementTooltip from "../../../../billing/entitlement/MissingEntitlementTooltip.svelte";
     import { parseServerTime } from "../../../../../data/util/time";
     import { getFormAdminContext } from "../../../../../data/contexts/formAdmin";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../../../../router";
 
     const formAdminCtx = getFormAdminContext();
     const orgCtx = getOrgContext();
     const cryptoDetailsEntitled = isEntitled("crypto_details");
 
-    export let selectedSubmissionIndex = 0;
-    $: selectedSubmission = $formAdminCtx.submissions[selectedSubmissionIndex];
+    interface Props {
+        selectedSubmissionIndex?: number;
+    }
 
-    let deleteLoading = false;
-    $: deleteSubmission = async (submissionId: string) => {
+    let { selectedSubmissionIndex = $bindable(0) }: Props = $props();
+    let selectedSubmission = $derived(
+        $formAdminCtx.submissions[selectedSubmissionIndex]
+    );
+
+    let deleteLoading = $state(false);
+    let deleteSubmission = $derived(async (submissionId: string) => {
         deleteLoading = true;
         try {
             await APIs.submissions().then((a) =>
@@ -56,13 +62,16 @@
         }
 
         deleteLoading = false;
-    };
+    });
 
-    $: fillToken =
+    let fillToken = $derived(
         selectedSubmission &&
-        $formAdminCtx.tokens.find((e) => selectedSubmission.forToken === e.id);
+            $formAdminCtx.tokens.find(
+                (e) => selectedSubmission.forToken === e.id
+            )
+    );
 
-    let showCryptoModal = false;
+    let showCryptoModal = $state(false);
 </script>
 
 <ListPaginator bind:currentIndex={selectedSubmissionIndex} />
@@ -81,14 +90,14 @@
 
     <div class="inline-flex items-center gap-2">
         <TextButton
-            on:click={() => deleteSubmission(selectedSubmission.id)}
+            onclick={() => deleteSubmission(selectedSubmission.id)}
             disabled={deleteLoading}
         >
             Delete response
         </TextButton>
         <span class="text-primary-400">&bull;</span>
         <TextButton
-            on:click={() => (showCryptoModal = true)}
+            onclick={() => (showCryptoModal = true)}
             disabled={!$cryptoDetailsEntitled}
         >
             View encryption details
@@ -101,7 +110,7 @@
     </Modal>
 
     {#if submissionIsError(selectedSubmission)}
-        <Alert color="red" border>
+        <Alert color="red" border class="mt-4">
             <p class="font-bold">We can't decrypt this submission</p>
             <p>
                 The key that was used to encrypt this submission is probably not
@@ -111,8 +120,9 @@
                 outline
                 color="red"
                 class="mt-2"
-                href={`/orgs/${$orgCtx.org.id}/user/keys`}
-                on:click={navigateEvent}
+                href={p("/orgs/:orgId/user/keys", {
+                    params: { orgId: $orgCtx.org.id },
+                })}
             >
                 Manage keys
                 <FontAwesomeIcon icon={faArrowRight} class="ml-2" />

@@ -1,17 +1,17 @@
+use apistos::ApiComponent;
 use chrono::{DateTime, Utc};
 use palform_entities::submission;
 use palform_tsid::{
     resources::{IDFillAccessToken, IDForm, IDSubmission, IDTeam},
     tsid::PalformDatabaseID,
 };
-use rocket_okapi::okapi::schemars;
-use rocket_okapi::okapi::schemars::JsonSchema;
+use schemars::JsonSchema;
 use sea_orm::FromQueryResult;
 use serde::Serialize;
 
 use crate::crypto::submissions::{CryptoSubmissionRepr, SubmissionConversionError};
 
-#[derive(Serialize, JsonSchema, Clone)]
+#[derive(Serialize, JsonSchema, Clone, ApiComponent)]
 pub struct APISubmissionStream {
     pub since: Option<PalformDatabaseID<IDSubmission>>,
     pub total: u64,
@@ -19,7 +19,7 @@ pub struct APISubmissionStream {
     pub deleted: Vec<PalformDatabaseID<IDSubmission>>,
 }
 
-#[derive(Serialize, JsonSchema, Clone)]
+#[derive(Serialize, JsonSchema, Clone, ApiComponent)]
 pub struct APISubmission {
     pub id: PalformDatabaseID<IDSubmission>,
     pub created_at: DateTime<Utc>,
@@ -33,7 +33,7 @@ impl TryFrom<submission::Model> for APISubmission {
         let pem_data = CryptoSubmissionRepr::to_pem_string(&value.encrypted_data)?;
         Ok(Self {
             id: value.id,
-            created_at: value.created_at.and_utc(),
+            created_at: value.created_at.to_utc(),
             for_token: value.for_token,
             data: pem_data,
         })
@@ -48,7 +48,7 @@ pub struct APISubmissionWebhookPayload {
     pub payload: String,
 }
 
-#[derive(Serialize, JsonSchema, Clone, FromQueryResult)]
+#[derive(Serialize, JsonSchema, Clone, FromQueryResult, ApiComponent)]
 pub struct APISubmissionCountPerForm {
     pub form_id: PalformDatabaseID<IDForm>,
     pub team_id: PalformDatabaseID<IDTeam>,

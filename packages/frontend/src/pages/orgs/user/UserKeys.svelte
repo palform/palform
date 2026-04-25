@@ -2,7 +2,6 @@
     import {
         Alert,
         Button,
-        ButtonGroup,
         Table,
         TableBody,
         TableHead,
@@ -18,9 +17,8 @@
     import TableContainer from "../../../components/tables/TableContainer.svelte";
     import { isEntitled } from "../../../data/billing/entitlement";
     import MissingEntitlementTooltip from "../../../components/billing/entitlement/MissingEntitlementTooltip.svelte";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../../router";
 
-    export let orgId: string;
     const orgCtx = getOrgContext();
     const importEntitled = isEntitled("import_keys");
 
@@ -29,28 +27,28 @@
     };
 </script>
 
-<ButtonGroup>
-    <Button
-        href={`/orgs/${orgId}/user/keys/register`}
-        on:click={navigateEvent}
-        color="primary"
-    >
-        <FontAwesomeIcon icon={faPlus} class="me-2" />
-        Register new
-    </Button>
+<Button
+    href={p("/orgs/:orgId/user/keys/register", {
+        params: { orgId: $orgCtx.org.id },
+    })}
+    color="primary"
+>
+    <FontAwesomeIcon icon={faPlus} class="me-2" />
+    Register new
+</Button>
 
-    <Button
-        outline
-        color="primary"
-        href={`/orgs/${orgId}/user/keys/import`}
-        on:click={navigateEvent}
-        disabled={!$importEntitled}
-    >
-        <FontAwesomeIcon icon={faFileImport} class="me-2" />
-        Import
-    </Button>
-    <MissingEntitlementTooltip key="import_keys" />
-</ButtonGroup>
+<Button
+    outline
+    color="primary"
+    href={p("/orgs/:orgId/user/keys/import", {
+        params: { orgId: $orgCtx.org.id },
+    })}
+    disabled={!$importEntitled}
+>
+    <FontAwesomeIcon icon={faFileImport} class="me-2" />
+    Import
+</Button>
+<MissingEntitlementTooltip key="import_keys" />
 
 {#if $orgCtx.myKeys.length === 0}
     <CardGrid class="mt-6">
@@ -101,7 +99,7 @@
             </TableHead>
             <TableBody>
                 {#each $orgCtx.myKeys as key (key.id)}
-                    <KeyTableRow {key} on:deleted={() => onKeyDelete(key.id)} />
+                    <KeyTableRow {key} ondelete={() => onKeyDelete(key.id)} />
                 {/each}
             </TableBody>
         </Table>

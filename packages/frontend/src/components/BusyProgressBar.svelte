@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
-    let left = 0;
+    let left = $state(0);
     onMount(() => {
         const interval = setInterval(() => {
             left++;
@@ -21,5 +21,5 @@
     <div
         class="absolute h-full w-[80px] rounded-lg bg-primary-600 dark:bg-primary-800"
         style:transform={`translateX(${left}px)`}
-    />
+></div>
 </div>

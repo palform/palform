@@ -14,9 +14,8 @@ impl sea_orm::TryGetable for APIFormEndConfiguration {
         res: &sea_orm::prelude::QueryResult,
         index: I,
     ) -> Result<Self, sea_orm::TryGetError> {
-        let json_value: serde_json::Value = res
-            .try_get_by(index)
-            .map_err(sea_orm::TryGetError::DbErr)?;
+        let json_value: serde_json::Value =
+            res.try_get_by(index).map_err(sea_orm::TryGetError::DbErr)?;
 
         let parsed = serde_json::from_value(json_value)
             .map_err(|e| sea_orm::TryGetError::DbErr(sea_orm::DbErr::Json(e.to_string())))?;

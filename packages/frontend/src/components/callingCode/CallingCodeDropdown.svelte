@@ -1,40 +1,44 @@
 <script lang="ts">
-    import type { APICountryWithCallingCode } from "@paltiverse/palform-typescript-openapi";
-    import { Button, Dropdown, Search } from "flowbite-svelte";
+    import type { APICountryWithCallingCode } from "@palform/palform-typescript-openapi";
+    import { Button, Dropdown, DropdownGroup, Search } from "flowbite-svelte";
     import { APIs } from "../../data/common";
-    import { createEventDispatcher } from "svelte";
     import { t } from "../../data/contexts/i18n";
 
-    export let value = "";
-    const dispatch = createEventDispatcher<{
-        update: APICountryWithCallingCode;
-    }>();
+    interface Props {
+        value?: string;
+        class?: string;
+        onupdate?: (val: APICountryWithCallingCode) => void;
+    }
 
-    let countries: APICountryWithCallingCode[] | undefined = undefined;
+    let { value = $bindable(""), class: className, onupdate }: Props = $props();
+
+    let countries = $state<APICountryWithCallingCode[] | undefined>(undefined);
     APIs.countries.countriesListCallingCodes().then((resp) => {
         countries = resp.data;
     });
 
-    let searchQuery = "";
-    $: filteredCountries = countries?.filter((c) => {
-        return (
-            c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            c.calling_code
-                .toString()
-                .startsWith(searchQuery.replaceAll("+", ""))
-        );
-    });
+    let searchQuery = $state("");
+    let filteredCountries = $derived(
+        countries?.filter((c) => {
+            return (
+                c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                c.calling_code
+                    .toString()
+                    .startsWith(searchQuery.replaceAll("+", ""))
+            );
+        })
+    );
 
-    let dropdownOpen = false;
-    $: onCallingCodeSelect = (e: Event, country: APICountryWithCallingCode) => {
+    let dropdownOpen = $state(false);
+    function onCallingCodeSelect(e: Event, country: APICountryWithCallingCode) {
         e.preventDefault();
         value = "+" + country.calling_code;
-        dispatch("update", country);
+        onupdate?.(country);
         dropdownOpen = false;
-    };
+    }
 </script>
 
-<Button color="light" class={$$props.class}>
+<Button color="light" class={className}>
     {#if value === ""}
         {t("phone_choose_country")}
     {:else}
@@ -43,9 +47,9 @@
 </Button>
 <Dropdown
     class="overflow-y-auto h-64 w-64 px-3 pb-3 text-sm"
-    bind:open={dropdownOpen}
+    bind:isOpen={dropdownOpen}
 >
-    <div slot="header" class="p-3">
+    <div class="p-3">
         <Search
             size="sm"
             bind:value={searchQuery}
@@ -54,19 +58,21 @@
         />
     </div>
 
-    {#each filteredCountries ?? [] as country (country.name)}
-        <li>
-            <button
-                class="w-full text-left rounded p-2 hover:bg-gray-50 dark:hover:bg-gray-600"
-                on:click={(e) => onCallingCodeSelect(e, country)}
-                type="button"
-            >
-                <span class="block">
-                    {country.flag_emoji}
-                    <strong>(+{country.calling_code})</strong>
-                </span>
-                {country.name}
-            </button>
-        </li>
-    {/each}
+    <DropdownGroup>
+        {#each filteredCountries ?? [] as country (country.name)}
+            <li>
+                <button
+                    class="w-full text-left rounded p-2 hover:bg-gray-50 dark:hover:bg-gray-600"
+                    onclick={(e) => onCallingCodeSelect(e, country)}
+                    type="button"
+                >
+                    <span class="block">
+                        {country.flag_emoji}
+                        <strong>(+{country.calling_code})</strong>
+                    </span>
+                    {country.name}
+                </button>
+            </li>
+        {/each}
+    </DropdownGroup>
 </Dropdown>

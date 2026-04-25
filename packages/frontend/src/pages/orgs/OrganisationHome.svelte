@@ -8,22 +8,21 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
     import OrganisationLatestUpdates from "../../components/orgs/dashboard/OrganisationLatestUpdates.svelte";
-    import { navigateEvent } from "@paltiverse/palform-frontend-common";
+    import { p } from "../../router";
 
     const orgCtx = getOrgContext();
     const currentTime = DateTime.now();
-    let greeting = "";
-    $: (() => {
+    let greeting = $derived.by(() => {
         if (currentTime.hour < 6) {
-            greeting = "Hey, night owl";
+            return "Hey, night owl";
         } else if (currentTime.hour < 12) {
-            greeting = "Good morning";
+            return "Good morning";
         } else if (currentTime.hour < 18) {
-            greeting = "Good afternoon";
+            return "Good afternoon";
         } else {
-            greeting = "Good evening";
+            return "Good evening";
         }
-    })();
+    });
 </script>
 
 <MainTitle className="font-bold">
@@ -45,8 +44,9 @@
         <Button
             class="mt-2"
             size="lg"
-            href={`/orgs/${$orgCtx.org.id}/induction`}
-            on:click={navigateEvent}
+            href={p("/orgs/:orgId/induction", {
+                params: { orgId: $orgCtx.org.id },
+            })}
         >
             Continue setup
             <FontAwesomeIcon class="ms-2" icon={faArrowRight} />

@@ -1,29 +1,45 @@
 <script lang="ts">
-    import type { APIBillingPlan } from "@paltiverse/palform-typescript-openapi";
+    import type { APIBillingPlan } from "@palform/palform-typescript-openapi";
     import { APIs } from "../../../data/common";
     import CardGrid from "../../CardGrid.svelte";
     import SkeletonPrimitive from "../../SkeletonPrimitive.svelte";
     import { Label, Select, Toggle } from "flowbite-svelte";
     import InfoText from "../../type/InfoText.svelte";
-    import { createEventDispatcher } from "svelte";
     import { fade } from "svelte/transition";
     import {
         freePlan,
         PricingFAQ,
         PricingPlan,
-    } from "@paltiverse/palform-frontend-common";
+    } from "@palform/palform-frontend-common";
 
-    export let disabled = false;
-    export let currentPriceId: string | undefined = undefined;
-    export let allowTrial = true;
-    export let fixCurrency: string | undefined = undefined;
+    interface Props {
+        disabled?: boolean;
+        currentPriceId?: string | undefined;
+        allowTrial?: boolean;
+        fixCurrency?: string | undefined;
+        onselect: (details: {
+            plan: APIBillingPlan;
+            annual: boolean;
+            trial: boolean;
+        }) => void;
+    }
 
-    let plans: APIBillingPlan[] | undefined = [];
-    let plansLoading = true;
-    let currency: string | undefined = fixCurrency;
+    let {
+        disabled = false,
+        currentPriceId = undefined,
+        allowTrial = true,
+        fixCurrency = undefined,
+        onselect,
+    }: Props = $props();
 
-    $: (() => {
+    let plans: APIBillingPlan[] | undefined = $state([]);
+    let plansLoading = $state(true);
+    let currency: string | undefined = $state(fixCurrency);
+
+    $effect(() => {
         plansLoading = true;
+        currency;
+
         APIs.billingPlans()
             .then((a) => a.billingPlanList(currency))
             .then((resp) => {
@@ -33,19 +49,16 @@
                 currency = resp.data.currency;
                 plansLoading = false;
             });
-    })();
+    });
 
-    let useAnnual = true;
-    const dispatch = createEventDispatcher<{
-        select: { plan: APIBillingPlan; annual: boolean; trial: boolean };
-    }>();
-    $: onSelect = (plan: APIBillingPlan, trial: boolean) => {
-        dispatch("select", {
+    let useAnnual = $state(true);
+    let onSelect = $derived((plan: APIBillingPlan, trial: boolean) => {
+        onselect({
             plan,
             annual: useAnnual,
             trial,
         });
-    };
+    });
 </script>
 
 {#if plansLoading}
@@ -74,6 +87,7 @@
                         { name: "£ (GBP)", value: "gbp" },
                         { name: "€ (EUR)", value: "eur" },
                         { name: "$ (USD)", value: "usd" },
+                        { name: "Fr (CHF)", value: "chf" },
                     ]}
                     bind:value={currency}
                 />
@@ -100,7 +114,7 @@
                     {plan}
                     everythingIn={index > 0 ? plans[index - 1].name : undefined}
                     showButton
-                    on:click={(e) => onSelect(plan, e.detail)}
+                    onclick={(e) => onSelect(plan, e)}
                     annualBilling={useAnnual}
                     {disabled}
                     {allowTrial}
