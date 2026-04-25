@@ -114,4 +114,4 @@ Hopefully you've gained some good tips on how to level up your forms and optimis
 
 This article was written by Pal Kerecsenyi, Founder of [Palform](https://palform.app). Sign up for free now and get unlimited responses with the world's most secure form builder.
 
-Got any questions? Email hey@palform.app and we'll get an actual friendly human to help you.
+Got any questions? Email mail@support.palform.app and we'll get an actual friendly human to help you.

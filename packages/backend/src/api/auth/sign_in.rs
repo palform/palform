@@ -61,7 +61,7 @@ pub async fn auth_sign_in(
     }
 
     if !user.manual_auth_email_verified.is_some_and(|v| v) {
-        return Err(APIError::BadRequest("Please verify your email address. If you didn't get an email, please contact hey@palform.app".to_string()).into());
+        return Err(APIError::BadRequest("Please verify your email address. If you didn't get an email, please contact mail@support.palform.app".to_string()).into());
     }
 
     let mut org_id = None::<PalformDatabaseID<IDOrganisation>>;

@@ -80,7 +80,7 @@
         <SectionHeading>Thanks!</SectionHeading>
         <InfoText class="mt-2 max-w-96" lighter>
             We've anonymously noted your feedback. If you'd like us to respond,
-            please email hey@palform.app.
+            please email mail@support.palform.app.
         </InfoText>
         <Button color="light" onclick={() => ondone()} class="mt-4">
             Close

@@ -10,9 +10,10 @@ However, we want to make sure these resources are available to you if you need t
 
 ## Speak to a human
 
-Simply message **hey@palform.app**. Make sure to include some way for us to identify your Palform account and organisation.
+Simply message **mail@support.palform.app**. Make sure to include some way for us to identify your Palform account and organisation.
 
 ### Response times
+
 We offer the following response times:
 
 - **5 business days** estimated for most queries
@@ -20,6 +21,7 @@ We offer the following response times:
 - **28 day** legally required response time for Subject Access Requests under the DPA/GDPR.
 
 ### Encrypted email
+
 We understand some of our customers need additional privacy
 protections that traditional email can't offer. You can send us
 PGP-encrypted emails to **secure@palform.app**.
@@ -27,9 +29,11 @@ PGP-encrypted emails to **secure@palform.app**.
 If you're emailing us from Proton Mail, your message will be encrypted automatically. Otherwise, please use [our public PGP key](/support_pubkey.asc) to encrypt your message.
 
 ### Subject Access Requests
+
 Please send all Subject Access Requests under UK and EU law to **dpo@palform.app**. Please note, as per our privacy policy, we _cannot_ provide access to or rectify data you submitted in a Palform, as this is encrypted in a way that means we don't have access to it. For data pertaining to a Palform you submitted, please contact the organisation operating the form.
 
 ### Priority Support guarantee
+
 Users with Priority Support are guaranteed a 24 hour first response time for any new support query they submit through one of the official sources listed on this page.
 
 Automatic responses from our systems, of course, do not count as first responses.

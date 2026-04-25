@@ -25,4 +25,4 @@ This can be a complex process, so feel free to email us and we'll help you throu
 
 ## I haven't received a verification email
 
-Please email us at hey@palform.app from the email you used to sign up, and we'll verify you manually.
+Please email us at mail@support.palform.app from the email you used to sign up, and we'll verify you manually.
