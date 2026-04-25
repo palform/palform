@@ -21,6 +21,19 @@ struct ClientCurrencyQueryParams {
 #[derive(Clone)]
 pub struct ClientCurrency(Currency);
 
+impl ClientCurrency {
+    pub fn from_stripe_currency(currency: Currency) -> Self {
+        if !Self::is_supported(currency) {
+            Self::default()
+        } else {
+            Self(currency)
+        }
+    }
+    pub fn is_supported(currency: Currency) -> bool {
+        vec![Currency::GBP, Currency::EUR, Currency::CHF, Currency::USD].contains(&currency)
+    }
+}
+
 impl From<ClientCurrency> for Currency {
     fn from(value: ClientCurrency) -> Self {
         value.0
@@ -62,12 +75,6 @@ impl FromRequest for ClientCurrency {
                 let client_ip = connection_info.realip_remote_addr();
 
                 if let Some(client_ip) = client_ip {
-                    log::debug!("Client IP is {}", client_ip);
-                } else {
-                    log::debug!("No client IP identified.");
-                }
-
-                if let Some(client_ip) = client_ip {
                     let ip_geolocator = req.app_data::<Data<IPGeolocator>>().ok_or_else(|| {
                         APIError::report_internal_error_without_error(
                             "Missing IPGeolocator in state",
@@ -89,10 +96,11 @@ impl FromRequest for ClientCurrency {
                 }
             };
 
-            let currency = Currency::from_str(&currency_string)
-                .map_err(|e| APIError::BadRequest(format!("Invalid currency: {}", e)))?;
+            let currency = Currency::from_str(&currency_string.to_lowercase()).map_err(|e| {
+                APIError::BadRequest(format!("Invalid currency '{}': {}", currency_string, e))
+            })?;
 
-            Ok(ClientCurrency(currency))
+            Ok(ClientCurrency::from_stripe_currency(currency))
         })
     }
 }

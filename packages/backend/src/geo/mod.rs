@@ -146,7 +146,7 @@ impl IPGeolocator {
         .ok_or(IPGeolocatorError::KeyNotFound)?;
 
         let alpha2 = keshvar::Alpha2::try_from(country_code.to_owned().as_str())?;
-        println!("resolved: {}", alpha2.to_string());
+        log::debug!("Resolved IP {} to country {}", ip, alpha2.to_string());
 
         Ok(alpha2.to_country())
     }
