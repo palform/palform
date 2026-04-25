@@ -43,7 +43,7 @@
     >
         {title}
     </h2>
-    <p class="mt-2 leading-tight">
+    <p class="mt-2 leading-tight text-gray-800 dark:text-gray-200">
         {@render children?.()}
     </p>
 

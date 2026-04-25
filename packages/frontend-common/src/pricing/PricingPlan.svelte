@@ -67,7 +67,7 @@
                 )}
             </Badge>
         </p>
-        <p class="mt-1 text-sm">
+        <p class="mt-1 text-sm text-gray-700 dark:text-gray-300">
             Charged as {formatCurrency(
                 plan.currency,
                 plan.price_annually.amount

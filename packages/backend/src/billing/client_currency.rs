@@ -62,6 +62,12 @@ impl FromRequest for ClientCurrency {
                 let client_ip = connection_info.realip_remote_addr();
 
                 if let Some(client_ip) = client_ip {
+                    log::debug!("Client IP is {}", client_ip);
+                } else {
+                    log::debug!("No client IP identified.");
+                }
+
+                if let Some(client_ip) = client_ip {
                     let ip_geolocator = req.app_data::<Data<IPGeolocator>>().ok_or_else(|| {
                         APIError::report_internal_error_without_error(
                             "Missing IPGeolocator in state",

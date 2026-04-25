@@ -37,6 +37,7 @@
 <div class="flex w-full justify-between">
     <div>
         <Input
+            type="number"
             placeholder="Min value"
             bind:value={config.scale.min}
             disabled={$ctx.loading}
@@ -57,7 +58,6 @@
                 <Button
                     color="light"
                     size="xs"
-                    outline
                     class="mt-2"
                     onclick={toggleMinLabel}
                     disabled={$ctx.loading}
@@ -88,9 +88,8 @@
                 </ButtonGroup>
             {:else}
                 <Button
-                    color="light"
                     size="xs"
-                    outline
+                    color="light"
                     class="mt-2"
                     onclick={toggleMaxLabel}
                     disabled={$ctx.loading}

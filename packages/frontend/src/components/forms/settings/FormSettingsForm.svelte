@@ -40,16 +40,24 @@
     }: Props = $props();
 
     let isNew = $derived(initialValue === undefined);
+    // svelte-ignore state_referenced_locally
     let editorName = $state(initialValue?.editor_name ?? "");
+    // svelte-ignore state_referenced_locally
     let title = $state(initialValue?.title ?? "");
+    // svelte-ignore state_referenced_locally
     let teamId = $state(initialTeamId ?? "");
+    // svelte-ignore state_referenced_locally
     let captcha = $state(initialValue?.enable_captcha ?? false);
+    let initialBrandingId = $derived(initialValue?.branding_id ?? "DEFAULT");
+    // svelte-ignore state_referenced_locally
+    let brandingId = $state(initialBrandingId);
     let loading = $state(false);
 
     let hasChanged = $derived(
         editorName !== initialValue?.editor_name ||
             title !== initialValue?.title ||
-            captcha !== initialValue?.enable_captcha
+            captcha !== initialValue?.enable_captcha ||
+            brandingId !== initialBrandingId
     );
 
     const ctx = getOrgContext();
@@ -58,7 +66,6 @@
 
     let brandings: APIFormBranding[] = $state([]);
     let brandingsLoading = $state(true);
-    let brandingId = $state(initialValue?.branding_id ?? "DEFAULT");
     $effect(() => {
         if (teamId === "" || isNew) return;
         (async () => {

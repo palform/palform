@@ -30,7 +30,9 @@
                 <span class="block text-gray-500">
                     {team.name}
                 </span>
-                {$formCtx.title}
+                <span class="text-gray-800 dark:text-gray-300">
+                    {$formCtx.editor_name}
+                </span>
             </a>
         </TableBodyCell>
         <TableBodyCell class="text-xl text-green-600 dark:text-green-300">

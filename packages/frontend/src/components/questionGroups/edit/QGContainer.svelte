@@ -42,7 +42,9 @@
     const formAdminCtx = getFormAdminContext();
     const formEditorCtx = getFormEditorCtx();
 
+    // svelte-ignore state_referenced_locally
     let groupTitle = $state(group.title);
+    // svelte-ignore state_referenced_locally
     let groupDescription = $state(group.description);
 
     let editing = $state(false);
@@ -87,12 +89,11 @@
                                 <Input bind:value={groupTitle} />
                                 <Button
                                     color="light"
-                                    outline
                                     onclick={() => (groupTitle = null)}
+                                    aria-label="Delete title"
                                 >
                                     <FontAwesomeIcon icon={faTrash} />
                                 </Button>
-                                <Tooltip>Delete title</Tooltip>
                             </ButtonGroup>
                         </Label>
                     </div>
@@ -110,15 +111,17 @@
                         <Label class="flex-1">
                             Description
                             <ButtonGroup class="flex mt-1">
-                                <Textarea bind:value={groupDescription} />
+                                <Textarea
+                                    bind:value={groupDescription}
+                                    class="w-full"
+                                />
                                 <Button
                                     color="light"
-                                    outline
                                     onclick={() => (groupDescription = null)}
+                                    aria-label="Delete description"
                                 >
                                     <FontAwesomeIcon icon={faTrash} />
                                 </Button>
-                                <Tooltip>Delete description</Tooltip>
                             </ButtonGroup>
                         </Label>
                     </div>
@@ -179,7 +182,6 @@
                 {#if !editing}
                     <Button
                         color="light"
-                        outline
                         size="sm"
                         disabled={!!$formEditorCtx.currentlyEditing}
                         onclick={() => (editing = true)}
