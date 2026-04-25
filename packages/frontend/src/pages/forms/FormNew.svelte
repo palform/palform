@@ -2,7 +2,7 @@
     import FormSettingsForm from "../../components/forms/settings/FormSettingsForm.svelte";
     import MainTitle from "../../layouts/MainTitle.svelte";
     import FormOqppChoice from "../../components/forms/settings/FormOQPPChoice.svelte";
-    import { route } from "../../router";
+    import { isActive, route } from "../../router";
 
     interface Props {
         initialTeamId?: string | undefined;
@@ -12,10 +12,18 @@
     let { initialTeamId = undefined, oqpp = $bindable(undefined) }: Props =
         $props();
 
-    let { initialTeamId: initialTeamIdRoute } = route.getParams(
-        "/orgs/:orgId/forms/new/:initialTeamId"
-    );
-    const initialTeamIdResolved = $derived(initialTeamId ?? initialTeamIdRoute);
+    let initialTeamIdResolved = $derived.by(() => {
+        if (initialTeamId !== undefined) {
+            return initialTeamId;
+        }
+
+        if (isActive("/orgs/:orgId/forms/new/:initialTeamId")) {
+            return route.getParams("/orgs/:orgId/forms/new/:initialTeamId")
+                .initialTeamId;
+        }
+
+        return undefined;
+    });
 </script>
 
 {#if oqpp === undefined}

@@ -109,7 +109,12 @@
                 {#each templates as template (template.id)}
                     <TemplateItemPreview
                         {template}
-                        link={`/orgs/${$orgCtx.org.id}/forms/templates/${template.id}`}
+                        link={p("/orgs/:orgId/forms/templates/:templateId", {
+                            params: {
+                                orgId: $orgCtx.org.id,
+                                templateId: template.id,
+                            },
+                        })}
                     />
                 {/each}
             {/if}
