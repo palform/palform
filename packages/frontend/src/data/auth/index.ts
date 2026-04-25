@@ -21,7 +21,7 @@ async function getActiveAuthentication() {
     const activeAuths = await authDb.find({
         selector: {
             expires: {
-                $gte: DateTime.now().toMillis(),
+                $gte: DateTime.now().toUTC().toMillis(),
             },
         },
         sort: [{ expires: "desc" }],
@@ -121,8 +121,8 @@ export async function saveAuthToken(token: NewAPIAuthToken) {
     await authDb.put({
         _id: token.id,
         tokenSecret: token.secret,
-        created: DateTime.now().toMillis(),
-        expires: DateTime.fromISO(token.expires_at).toMillis(),
+        created: DateTime.now().toUTC().toMillis(),
+        expires: DateTime.fromISO(token.expires_at).toUTC().toMillis(),
     });
 }
 

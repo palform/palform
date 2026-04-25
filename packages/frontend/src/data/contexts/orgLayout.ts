@@ -87,7 +87,7 @@ export async function markOrgViewNow(orgId: string) {
     await orgVisitDb.put({
         _id: orgId,
         _rev: currentRev,
-        time: DateTime.now().toMillis(),
+        time: DateTime.now().toUTC().toMillis(),
     });
 }
 export async function getLastOrgView(
@@ -95,7 +95,7 @@ export async function getLastOrgView(
 ): Promise<DateTime | undefined> {
     try {
         const visit = await orgVisitDb.get(orgId);
-        return DateTime.fromMillis(visit.time);
+        return DateTime.fromMillis(visit.time, { zone: "utc" });
     } catch (e) {
         return undefined;
     }
