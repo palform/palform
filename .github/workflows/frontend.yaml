@@ -3,8 +3,8 @@ name: Build frontend containers
 on:
   push:
     branches:
-      - main
-      - big-update
+      - "main"
+      - "staging/**"
 
 concurrency:
   group: frontends-${{ github.workflow }}-${{ github.event.pull_request.number ||

@@ -3,8 +3,8 @@ name: Build backend container
 on:
   push:
     branches:
-      - main
-      - big-update
+      - "main"
+      - "staging/**"
 
 concurrency:
   group: backend-${{ github.workflow }}-${{ github.event.pull_request.number ||
