@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { navigate } from "../../router";
+    import { navigate, typedNavigate } from "../../router";
     import BigAlert from "../../components/induction/bigAlert/BigAlert.svelte";
     import BigAlertHeading from "../../components/induction/bigAlert/BigAlertHeading.svelte";
     import BigAlertText from "../../components/induction/bigAlert/BigAlertText.svelte";
@@ -44,9 +44,13 @@
                 };
             });
 
-            navigate(`/orgs/${$orgCtx.org.id}/forms/${firstForm.id}/overview`);
+            typedNavigate("/orgs/:orgId/forms/:formId/overview", {
+                params: { orgId: $orgCtx.org.id, formId: firstForm.id },
+            });
         } else {
-            navigate(`/orgs/${$orgCtx.org.id}/induction`);
+            typedNavigate("/orgs/:orgId/induction", {
+                params: { orgId: $orgCtx.org.id },
+            });
         }
     });
 </script>

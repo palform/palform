@@ -22,21 +22,17 @@
     import BrandingE2EeBadge from "../../components/teams/brandings/BrandingE2EEBadge.svelte";
     import FormFillLoading from "../../components/forms/fill/FormFillLoading.svelte";
     import BrandingBackgroundColor from "../../components/teams/brandings/BrandingBackgroundColor.svelte";
-    import { route } from "../../router";
+    import { isActive, route } from "../../router";
 
-    interface Props {
-        orgId?: string | undefined;
-        formId?: string | undefined;
-        fillShortLink?: string | undefined;
-    }
+    let pathVars = $derived.by(() => {
+        if (isActive("/fill/:orgId/:formId")) {
+            return route.getParams("/fill/:orgId/:formId");
+        } else if (isActive("/:fillShortLink")) {
+            return route.getParams("/:fillShortLink");
+        }
 
-    let { orgId, formId, fillShortLink }: Props = $props();
-
-    const orgIdResolved = $derived(orgId ?? route.params.orgId);
-    const formIdResolved = $derived(formId ?? route.params.formId);
-    const fillShortLinkResolved = $derived(
-        fillShortLink ?? route.params.fillShortLink
-    );
+        throw new Error("Unrecognised path, cannot extract path vars");
+    });
     const fillAccessToken = new URLSearchParams(location.search).get("f");
 
     let initLoading = $state(true);
@@ -45,7 +41,7 @@
         initLoading = true;
         initError = undefined;
         try {
-            if (fillShortLinkResolved) {
+            if ("fillShortLink" in pathVars) {
                 const subdomain = getOrgSubdomain();
                 if (!subdomain) {
                     initError = "Organisation not found (missing subdomain)";
@@ -55,12 +51,12 @@
 
                 await loadFormFillFromShortLink(
                     subdomain,
-                    fillShortLinkResolved
+                    pathVars.fillShortLink
                 );
-            } else if (fillAccessToken && orgIdResolved && formIdResolved) {
+            } else if (fillAccessToken && "orgId" in pathVars) {
                 await loadFormFill(
-                    orgIdResolved,
-                    formIdResolved,
+                    pathVars.orgId,
+                    pathVars.formId,
                     fillAccessToken,
                     false
                 );
@@ -70,11 +66,10 @@
         }
         initLoading = false;
     };
+
     $effect(() => {
-        orgIdResolved;
-        formIdResolved;
-        fillShortLinkResolved;
-        void loadInit();
+        pathVars;
+        loadInit();
     });
 
     const newSubmission = async () => {

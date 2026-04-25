@@ -8,26 +8,16 @@
     import LoadingButton from "../../components/LoadingButton.svelte";
     import { showFailureToast, showToast } from "../../data/toast";
     import { faChampagneGlasses } from "@fortawesome/free-solid-svg-icons";
-    import { navigate, p, route } from "../../router";
+    import { p, route, typedNavigate } from "../../router";
 
-    interface Props {
-        orgId?: string | undefined;
-        inviteId?: string | undefined;
-    }
-
-    let { orgId, inviteId }: Props = $props();
-
-    const orgIdResolved = $derived(orgId ?? route.params.orgId ?? "");
-    const inviteIdResolved = $derived(inviteId ?? route.params.inviteId ?? "");
+    let { orgId, inviteId } = route.getParams("/orgs/join/:orgId/:inviteId");
 
     let preview: APIOrganisationInvitePreview | undefined = $state();
     let previewLoading = $state(true);
     let previewError: string | undefined = $state(undefined);
     $effect(() => {
         APIs.orgInvites()
-            .then((a) =>
-                a.organisationInvitesPreview(orgIdResolved, inviteIdResolved)
-            )
+            .then((a) => a.organisationInvitesPreview(orgId, inviteId))
             .then((resp) => {
                 preview = resp.data;
                 previewError = undefined;
@@ -45,8 +35,8 @@
         acceptLoading = true;
         try {
             await APIs.orgMembers().then((a) =>
-                a.organisationMembersJoin(orgIdResolved, {
-                    invite_id: inviteIdResolved,
+                a.organisationMembersJoin(orgId, {
+                    invite_id: inviteId,
                 })
             );
 
@@ -55,7 +45,10 @@
                 color: "green",
                 icon: faChampagneGlasses,
             });
-            void navigate(`/orgs/${orgIdResolved}/induction/member`);
+
+            typedNavigate("/orgs/:orgId/induction/member", {
+                params: { orgId },
+            });
         } catch (e) {
             await showFailureToast(e);
         }
@@ -80,8 +73,8 @@
             <h2 class="text-lg">You're invited!</h2>
 
             <p>
-                Your friends at <strong>{preview.org_display_name}</strong> have
-                invited you to join their organisation.
+                Your friends at <strong>{preview.org_display_name}</strong> have invited
+                you to join their organisation.
             </p>
             <p>
                 This invite expires {parseServerTime(

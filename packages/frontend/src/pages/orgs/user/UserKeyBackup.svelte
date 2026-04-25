@@ -14,8 +14,11 @@
     }
 
     let { keyId }: Props = $props();
+    let { keyId: keyIdRoute } = route.getParams(
+        "/orgs/:orgId/user/keys/:keyId/backup"
+    );
+    const keyIdResolved = $derived(keyId ?? keyIdRoute ?? "");
 
-    const keyIdResolved = $derived(keyId ?? route.params.keyId ?? "");
     let key: APIUserKey | undefined = $state();
     const orgCtx = getOrgContext();
     let loading = $state(true);

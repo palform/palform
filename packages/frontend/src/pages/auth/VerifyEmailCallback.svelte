@@ -3,20 +3,19 @@
     import InfoText from "../../components/type/InfoText.svelte";
     import AuthCard from "../../layouts/AuthCard.svelte";
     import { APIs } from "../../data/common";
-    import { navigate } from "../../router";
+    import { navigate, route, typedNavigate } from "../../router";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
 
-    interface Props {
-        verificationId: string;
-    }
-
-    let { verificationId }: Props = $props();
+    let { verificationId } = route.getParams("/auth/verify/:verificationId");
 
     let loading = $state(true);
     $effect(() => {
         APIs.auth
             .authVerify(verificationId)
             .then(() => {
+                typedNavigate("/auth/login", {
+                    search: { create_initial_org: "true" },
+                });
                 navigate("/auth/login?create_initial_org");
                 showSuccessToast("Email verified! Please sign in.");
             })

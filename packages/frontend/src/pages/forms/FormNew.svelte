@@ -12,9 +12,10 @@
     let { initialTeamId = undefined, oqpp = $bindable(undefined) }: Props =
         $props();
 
-    const initialTeamIdResolved = $derived(
-        initialTeamId ?? route.params.initialTeamId
+    let { initialTeamId: initialTeamIdRoute } = route.getParams(
+        "/orgs/:orgId/forms/new/:initialTeamId"
     );
+    const initialTeamIdResolved = $derived(initialTeamId ?? initialTeamIdRoute);
 </script>
 
 {#if oqpp === undefined}

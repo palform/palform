@@ -3,15 +3,13 @@ use std::collections::{HashMap, HashSet};
 use openidconnect::{
     core::{
         CoreAuthDisplay, CoreAuthPrompt, CoreAuthenticationFlow, CoreErrorResponseType,
-        CoreGenderClaim, CoreJsonWebKey, CoreJsonWebKeyType, CoreJsonWebKeyUse,
-        CoreJweContentEncryptionAlgorithm, CoreJwsSigningAlgorithm, CoreProviderMetadata,
-        CoreRevocableToken, CoreRevocationErrorResponse, CoreTokenIntrospectionResponse,
-        CoreTokenType,
+        CoreGenderClaim, CoreJsonWebKey, CoreJweContentEncryptionAlgorithm,
+        CoreJwsSigningAlgorithm, CoreProviderMetadata, CoreRevocableToken,
+        CoreRevocationErrorResponse, CoreTokenIntrospectionResponse, CoreTokenType,
     },
-    reqwest::async_http_client,
     AdditionalClaims, Client, ClientId, ClientSecret, CsrfToken, EmptyExtraTokenFields,
-    IdTokenClaims, IdTokenFields, IssuerUrl, Nonce, RedirectUrl, Scope, StandardErrorResponse,
-    StandardTokenResponse,
+    EndpointMaybeSet, EndpointNotSet, EndpointSet, IdTokenClaims, IdTokenFields, IssuerUrl, Nonce,
+    RedirectUrl, Scope, StandardErrorResponse, StandardTokenResponse,
 };
 use palform_entities::sea_orm_active_enums::OrganisationMemberRoleEnum;
 use palform_tsid::{
@@ -30,7 +28,10 @@ use crate::{
         organisation_auth_team_mapping::APIOrganisationAuthTeamMapping,
         organisation_team::APIOrganisationTeamMembership,
     },
-    auth::tokens::{NewAPIAuthToken, TokenManager},
+    auth::{
+        oidc_common::new_oidc_http_client,
+        tokens::{NewAPIAuthToken, TokenManager},
+    },
     config::Config,
     entity_managers::{
         admin_users::{AdminUserManagementError, AdminUserManager},
@@ -59,14 +60,18 @@ pub enum GetClientError {
 struct GroupsClaim(HashMap<String, serde_json::Value>);
 impl AdditionalClaims for GroupsClaim {}
 
-type GroupsClaimClient = Client<
+type GroupsClaimClient<
+    HasAuthUrl = EndpointSet,
+    HasDeviceAuthUrl = EndpointNotSet,
+    HasIntrospectionUrl = EndpointNotSet,
+    HasRevocationUrl = EndpointNotSet,
+    HasTokenUrl = EndpointMaybeSet,
+    HasUserInfoUrl = EndpointMaybeSet,
+> = Client<
     GroupsClaim,
     CoreAuthDisplay,
     CoreGenderClaim,
     CoreJweContentEncryptionAlgorithm,
-    CoreJwsSigningAlgorithm,
-    CoreJsonWebKeyType,
-    CoreJsonWebKeyUse,
     CoreJsonWebKey,
     CoreAuthPrompt,
     StandardErrorResponse<CoreErrorResponseType>,
@@ -77,20 +82,25 @@ type GroupsClaimClient = Client<
             CoreGenderClaim,
             CoreJweContentEncryptionAlgorithm,
             CoreJwsSigningAlgorithm,
-            CoreJsonWebKeyType,
         >,
         CoreTokenType,
     >,
-    CoreTokenType,
     CoreTokenIntrospectionResponse,
     CoreRevocableToken,
     CoreRevocationErrorResponse,
+    HasAuthUrl,
+    HasDeviceAuthUrl,
+    HasIntrospectionUrl,
+    HasRevocationUrl,
+    HasTokenUrl,
+    HasUserInfoUrl,
 >;
 
 pub struct OIDCManager {
     org_id: PalformDatabaseID<IDOrganisation>,
     client: GroupsClaimClient,
     config: APIOrganisationAuthConfig,
+    http_client: openidconnect::reqwest::Client,
 }
 
 impl OIDCManager {
@@ -101,14 +111,16 @@ impl OIDCManager {
         let m = OrganisationAuthConfigManager::new(org_id);
         let org_auth = m.get(conn).await?.ok_or(GetClientError::OrgNotFound)?;
 
+        let http_client = new_oidc_http_client();
+
         let provider_metadata = CoreProviderMetadata::discover_async(
             IssuerUrl::new(org_auth.oidc_discovery_url.clone())?,
-            async_http_client,
+            &http_client,
         )
         .await
         .map_err(|e| GetClientError::DiscoveryError(e.to_string()))?;
 
-        let client: GroupsClaimClient = Client::from_provider_metadata(
+        let client: GroupsClaimClient = GroupsClaimClient::from_provider_metadata(
             provider_metadata,
             ClientId::new(org_auth.client_id.clone()),
             Some(ClientSecret::new(org_auth.client_secret.clone())),
@@ -118,6 +130,7 @@ impl OIDCManager {
             org_id,
             client,
             config: org_auth,
+            http_client,
         })
     }
 
@@ -306,6 +319,7 @@ impl OIDCManager {
         let result = oidc_common_token_exchange(
             conn,
             self.client.clone(),
+            &self.http_client,
             auth_code,
             nonce,
             redirect_url,

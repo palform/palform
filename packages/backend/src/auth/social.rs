@@ -2,8 +2,8 @@ use std::fmt::Display;
 
 use openidconnect::{
     core::{CoreAuthenticationFlow, CoreClient, CoreProviderMetadata},
-    reqwest::async_http_client,
-    Client, ClientId, ClientSecret, CsrfToken, IssuerUrl, Nonce, RedirectUrl, Scope,
+    Client, ClientId, ClientSecret, CsrfToken, EndpointMaybeSet, EndpointNotSet, EndpointSet,
+    IssuerUrl, Nonce, RedirectUrl, Scope,
 };
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
 use schemars::JsonSchema;
@@ -13,6 +13,7 @@ use thiserror::Error;
 use url::Url;
 
 use crate::{
+    auth::oidc_common::new_oidc_http_client,
     config::Config,
     entity_managers::{
         admin_users::AdminUserManager, orgs::OrganisationManager,
@@ -48,7 +49,15 @@ pub enum SocialAuthError {
 
 pub struct SocialAuthManager {
     service: SocialAuthService,
-    client: CoreClient,
+    client: CoreClient<
+        EndpointSet,
+        EndpointNotSet,
+        EndpointNotSet,
+        EndpointNotSet,
+        EndpointMaybeSet,
+        EndpointMaybeSet,
+    >,
+    http_client: openidconnect::reqwest::Client,
 }
 
 impl SocialAuthManager {
@@ -67,10 +76,12 @@ impl SocialAuthManager {
             .find(|e| e.service == service)
             .ok_or(SocialAuthError::ServiceNotFound)?;
 
+        let http_client = new_oidc_http_client();
+
         let provider_metadata = CoreProviderMetadata::discover_async(
             IssuerUrl::new(matching_record.discovery_url.clone())
                 .map_err(|e| SocialAuthError::MetadataError(e.to_string()))?,
-            async_http_client,
+            &http_client,
         )
         .await
         .map_err(|e| SocialAuthError::MetadataError(e.to_string()))?;
@@ -81,7 +92,11 @@ impl SocialAuthManager {
             Some(ClientSecret::new(matching_record.client_secret.clone())),
         );
 
-        Ok(Self { service, client })
+        Ok(Self {
+            service,
+            client,
+            http_client,
+        })
     }
 
     pub fn authorization_url(
@@ -118,6 +133,7 @@ impl SocialAuthManager {
         let result = oidc_common_token_exchange(
             conn,
             self.client.clone(),
+            &self.http_client,
             auth_code,
             nonce,
             redirect_url,

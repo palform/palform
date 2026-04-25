@@ -6,13 +6,11 @@
     import LoadingButton from "../../components/LoadingButton.svelte";
     import { APIs } from "../../data/common";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
-    import { navigate } from "../../router";
+    import { navigate, route } from "../../router";
 
-    interface Props {
-        verificationId: string;
-    }
-
-    let { verificationId }: Props = $props();
+    let { verificationId } = route.getParams(
+        "/auth/reset/password/:verificationId"
+    );
     let newPassword = $state("");
     let loading = $state(false);
 

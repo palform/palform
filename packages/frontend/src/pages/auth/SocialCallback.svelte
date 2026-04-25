@@ -11,13 +11,11 @@
     import { showFailureToast } from "../../data/toast";
     import { humaniseAPIError } from "../../data/common";
     import ErrorMsg from "../../components/ErrorMsg.svelte";
-    import { navigate } from "../../router";
+    import { navigate, route } from "../../router";
 
-    interface Props {
-        providerName: string;
-    }
-
-    let { providerName }: Props = $props();
+    let { providerName } = route.getParams(
+        "/auth/social/:providerName/callback"
+    );
     let error: undefined | string = $state(undefined);
 
     onMount(() => {

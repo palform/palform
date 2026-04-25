@@ -71,13 +71,9 @@ const routerApi = createRouter({
         "/forms/:formId": {
             layout: FormAdmin,
             "/overview": () =>
-                import(
-                    "./components/forms/responses/overview/FormResponseOverview.svelte"
-                ),
+                import("./components/forms/responses/overview/FormResponseOverview.svelte"),
             "/responses": () =>
-                import(
-                    "./components/forms/responses/list/FormResponseList.svelte"
-                ),
+                import("./components/forms/responses/list/FormResponseList.svelte"),
             "/edit": () => import("./pages/forms/FormEditor.svelte"),
             "/tokens": () => import("./pages/forms/FormTokens.svelte"),
             "/export": () => import("./pages/forms/FormExport.svelte"),
@@ -85,8 +81,6 @@ const routerApi = createRouter({
         },
     },
     "/auth/login": () => import("./pages/auth/Login.svelte"),
-    "/auth/login/tfa/:sessionId": () =>
-        import("./pages/auth/SecondFactor.svelte"),
     "/auth/callback": () => import("./pages/auth/Callback.svelte"),
     "/auth/social/:providerName/callback": () =>
         import("./pages/auth/SocialCallback.svelte"),
@@ -104,6 +98,7 @@ const routerApi = createRouter({
 export const p = routerApi.p;
 export const isActive = routerApi.isActive;
 export const route = routerApi.route;
+export const typedNavigate = routerApi.navigate;
 
 /** Same URLs as before; wrapper avoids sv-router's strict literal route typing for dynamic paths. */
 export function navigate(
