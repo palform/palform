@@ -1,11 +1,15 @@
 <script lang="ts">
-    import { Alert } from "flowbite-svelte";
+    import { Alert, P } from "flowbite-svelte";
     import LoadingButton from "../../LoadingButton.svelte";
     import { APIs } from "../../../data/common";
     import { navigate } from "../../../router";
     import { showSuccessToast } from "../../../data/toast";
-    import { getOrgContext } from "../../../data/contexts/orgLayout";
+    import {
+        getFormCtx,
+        getOrgContext,
+    } from "../../../data/contexts/orgLayout";
     import { getFormAdminContext } from "../../../data/contexts/formAdmin";
+    import DestructiveModal from "../../DestructiveModal.svelte";
 
     interface Props {
         class?: string;
@@ -15,10 +19,10 @@
 
     const orgCtx = getOrgContext();
     const formAdminCtx = getFormAdminContext();
+    const formMetadataCtx = getFormCtx();
 
-    let loading = $state(false);
+    let showDeleteModal = $state(false);
     let onDeleteClick = $derived(async () => {
-        loading = true;
         await APIs.forms().then((a) =>
             a.formsDelete($orgCtx.org.id, $formAdminCtx.formId)
         );
@@ -28,12 +32,24 @@
                 forms: ctx.forms.filter((e) => e.id !== $formAdminCtx.formId),
             };
         });
-        loading = false;
 
         await showSuccessToast("Form deleted");
         navigate(`/orgs/${$orgCtx.org.id}`);
     });
 </script>
+
+<DestructiveModal
+    bind:show={showDeleteModal}
+    targetName={$formMetadataCtx.editor_name}
+    confirmationWord={$formMetadataCtx.editor_name}
+    ondelete={onDeleteClick}
+>
+    <P>
+        This will <strong>irreversibly</strong> delete this form and all of its
+        <strong>{$formMetadataCtx.response_count} response(s)</strong>.
+    </P>
+    <P>All published links to fill your form will stop working immediately.</P>
+</DestructiveModal>
 
 <Alert color="red" class={className}>
     <h3 class="text-lg">Delete form</h3>
@@ -42,9 +58,7 @@
         buttonClass="mt-2"
         color="red"
         outline
-        disabled={loading}
-        {loading}
-        onclick={onDeleteClick}
+        onclick={() => (showDeleteModal = true)}
     >
         Delete
     </LoadingButton>

@@ -56,7 +56,7 @@
     });
 </script>
 
-<Alert color="yellow" class={props.class}>
+<Alert color="orange" class={props.class}>
     <h3 class="text-lg">Move form to other team</h3>
 
     <p>

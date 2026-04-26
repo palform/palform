@@ -2,6 +2,7 @@
     import type { APIUserKey } from "@palform/palform-typescript-openapi";
     import {
         DropdownItem,
+        P,
         TableBodyCell,
         TableBodyRow,
         Tooltip,
@@ -23,6 +24,7 @@
         reloadGlobalAlert,
     } from "../../data/contexts/orgLayout";
     import { p } from "../../router";
+    import DestructiveModal from "../DestructiveModal.svelte";
 
     interface Props {
         key: APIUserKey;
@@ -33,6 +35,7 @@
     const orgCtx = getOrgContext();
     let matchedLocalKey: CryptoKeyRecord | null | undefined = $state(undefined);
     let keyMetadata: KeyMetadata | undefined = $state(undefined);
+    let showDeleteModal = $state(false);
 
     $effect(() => {
         findKey(key.id).then((resp) => {
@@ -43,9 +46,7 @@
         })();
     });
 
-    let loading = $state(false);
     let onDelete = $derived(async () => {
-        loading = true;
         try {
             await APIs.keys().then((a) => a.keysDelete($orgCtx.org.id, key.id));
             if (matchedLocalKey) {
@@ -58,7 +59,6 @@
         } catch (e) {
             await showFailureToast(e);
         }
-        loading = false;
     });
 
     const onDownload = () => {
@@ -70,6 +70,17 @@
     let expiresAt = $derived(parseServerTime(key.expires_at));
     let expired = $derived(expiresAt < DateTime.now());
 </script>
+
+<DestructiveModal
+    bind:show={showDeleteModal}
+    targetName="this key"
+    ondelete={onDelete}
+>
+    <P weight="bold">
+        Form responses may be lost permanently without this key! Only continue
+        if you know what you're doing.
+    </P>
+</DestructiveModal>
 
 <TableBodyRow>
     <TableBodyCell>
@@ -115,16 +126,15 @@
     </TableBodyCell>
     <TableBodyCell>
         <TableActions>
-            <DropdownItem disabled={loading} onclick={onDelete}>
+            <DropdownItem onclick={() => (showDeleteModal = true)}>
                 Delete
             </DropdownItem>
             {#if matchedLocalKey}
-                <DropdownItem disabled={loading} onclick={onDownload}>
+                <DropdownItem onclick={onDownload}>
                     Download private key
                 </DropdownItem>
             {/if}
             <DropdownItem
-                disabled={loading}
                 href={p("/orgs/:orgId/user/keys/:keyId/backup", {
                     params: { orgId: $orgCtx.org.id, keyId: key.id },
                 })}
