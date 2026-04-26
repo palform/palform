@@ -638,6 +638,9 @@ export interface ConfigAddress {
     'address': ConfigAddressAddress;
 }
 export interface ConfigAddressAddress {
+    /**
+     * Weights the auto-complete suggestions to prefer a specific location
+     */
     'search_centre'?: APIGenericLocation | null;
 }
 export interface ConfigChoice {
@@ -686,10 +689,23 @@ export interface ConfigInfo {
     'info': ConfigInfoInfo;
 }
 export interface ConfigInfoInfo {
+    /**
+     * @deprecated
+     */
     'background_color'?: string | null;
 }
 export interface ConfigPhoneNumber {
-    'phone_number': object;
+    'phone_number': ConfigPhoneNumberPhoneNumber;
+}
+export interface ConfigPhoneNumberPhoneNumber {
+    /**
+     * Only shows these calling codes. Empty list (default) means all codes allowed.
+     */
+    'allowed_calling_codes'?: Array<string>;
+    /**
+     * Pre-selects this calling code
+     */
+    'default_calling_code'?: string | null;
 }
 export interface ConfigScale {
     'scale': ConfigScaleScale;

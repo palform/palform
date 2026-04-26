@@ -132,7 +132,7 @@
             {/if}
 
             {#if $fillSendStore?.done}
-                <FormFillEndScreen on:restart={newSubmission} />
+                <FormFillEndScreen onrestart={newSubmission} />
             {:else}
                 <QuestionGroupFiller />
                 {#if $fillSendStore?.error}

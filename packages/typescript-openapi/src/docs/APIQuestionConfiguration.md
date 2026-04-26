@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 **choice** | [**ConfigChoiceChoice**](ConfigChoiceChoice.md) |  | [default to undefined]
 **scale** | [**ConfigScaleScale**](ConfigScaleScale.md) |  | [default to undefined]
 **address** | [**ConfigAddressAddress**](ConfigAddressAddress.md) |  | [default to undefined]
-**phone_number** | **object** |  | [default to undefined]
+**phone_number** | [**ConfigPhoneNumberPhoneNumber**](ConfigPhoneNumberPhoneNumber.md) |  | [default to undefined]
 **file_upload** | [**ConfigFileUploadFileUpload**](ConfigFileUploadFileUpload.md) |  | [default to undefined]
 **signature** | [**ConfigSignatureSignature**](ConfigSignatureSignature.md) |  | [default to undefined]
 **choice_matrix** | [**ConfigChoiceMatrixChoiceMatrix**](ConfigChoiceMatrixChoiceMatrix.md) |  | [default to undefined]

@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**phone_number** | **object** |  | [default to undefined]
+**phone_number** | [**ConfigPhoneNumberPhoneNumber**](ConfigPhoneNumberPhoneNumber.md) |  | [default to undefined]
 
 ## Example
 

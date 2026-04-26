@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**search_centre** | [**APIGenericLocation**](APIGenericLocation.md) |  | [optional] [default to undefined]
+**search_centre** | [**APIGenericLocation**](APIGenericLocation.md) | Weights the auto-complete suggestions to prefer a specific location | [optional] [default to undefined]
 
 ## Example
 

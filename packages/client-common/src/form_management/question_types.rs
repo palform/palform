@@ -86,7 +86,10 @@ pub enum APIQuestionConfiguration {
     /// A purely informational non-interactive question that serves as (e.g.) a section heading.
     #[serde(rename = "info")]
     #[cfg_attr(feature = "backend", schemars(title = "config_info"))]
-    Info { background_color: Option<String> },
+    Info {
+        #[deprecated(note = "Unused; styling is provided by the branding context.")]
+        background_color: Option<String>,
+    },
     #[serde(rename = "text")]
     #[cfg_attr(feature = "backend", schemars(title = "config_text"))]
     Text {
@@ -116,11 +119,19 @@ pub enum APIQuestionConfiguration {
     #[serde(rename = "address")]
     #[cfg_attr(feature = "backend", schemars(title = "config_address"))]
     Address {
+        /// Weights the auto-complete suggestions to prefer a specific location
         search_centre: Option<APIGenericLocation>,
     },
     #[serde(rename = "phone_number")]
     #[cfg_attr(feature = "backend", schemars(title = "config_phone_number"))]
-    PhoneNumber {},
+    PhoneNumber {
+        /// Pre-selects this calling code
+        #[serde(default)]
+        default_calling_code: Option<String>,
+        /// Only shows these calling codes. Empty list (default) means all codes allowed.
+        #[serde(default)]
+        allowed_calling_codes: Vec<String>,
+    },
     #[serde(rename = "file_upload")]
     #[cfg_attr(feature = "backend", schemars(title = "config_file_upload"))]
     FileUpload {
@@ -158,6 +169,7 @@ impl APIQuestionConfiguration {
         !matches!(
             self,
             Self::Info {
+                #[allow(deprecated)]
                 background_color: _
             }
         )
@@ -244,7 +256,10 @@ impl APIQuestionConfiguration {
             "address" | "Address" => Ok(APIQuestionConfiguration::Address {
                 search_centre: None,
             }),
-            "phone_number" | "PhoneNumber" => Ok(APIQuestionConfiguration::PhoneNumber {}),
+            "phone_number" | "PhoneNumber" => Ok(APIQuestionConfiguration::PhoneNumber {
+                allowed_calling_codes: Vec::default(),
+                default_calling_code: None,
+            }),
             "file_upload" | "FileUpload" => Ok(APIQuestionConfiguration::FileUpload {
                 allowed_types: vec![APIQuestionFileUploadType::Any],
             }),

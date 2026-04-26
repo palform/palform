@@ -14,7 +14,7 @@
 
     interface Props extends QuestionFillProps<ConfigPhoneNumber> {}
 
-    let { id, currentValue, onchange }: Props = $props();
+    let { id, currentValue, onchange, config }: Props = $props();
     let value = $derived(
         currentValue
             ? sGetPhoneNumber(currentValue)
@@ -52,6 +52,7 @@
         <CallingCodeDropdown
             bind:value={value.calling_code}
             onupdate={onCallingCodeSelect}
+            allowedValues={config.phone_number.allowed_calling_codes}
         />
     </div>
     <Input

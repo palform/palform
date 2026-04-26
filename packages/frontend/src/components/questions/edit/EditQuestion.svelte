@@ -285,7 +285,7 @@
                 {:else if qIsAddress(questionConfiguration)}
                     <QeAddress bind:config={questionConfiguration} />
                 {:else if qIsPhoneNumber(questionConfiguration)}
-                    <QePhoneNumber />
+                    <QePhoneNumber bind:config={questionConfiguration} />
                 {:else if qIsFileUpload(questionConfiguration)}
                     <QeFileUpload bind:config={questionConfiguration} />
                 {:else if qIsSignature(questionConfiguration)}

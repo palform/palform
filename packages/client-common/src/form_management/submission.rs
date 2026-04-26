@@ -193,7 +193,8 @@ impl TryFrom<APIQuestion> for QuestionSubmission {
     fn try_from(value: APIQuestion) -> Result<Self, Self::Error> {
         let data: QuestionSubmissionData = match value.configuration {
             APIQuestionConfiguration::Info {
-                background_color: _,
+                #[allow(deprecated)]
+                    background_color: _,
             } => return Err("Cannot create submission for Info question".to_string()),
             APIQuestionConfiguration::Text {
                 is_long: _,
@@ -225,8 +226,11 @@ impl TryFrom<APIQuestion> for QuestionSubmission {
                     point: APIGenericLocation::default(),
                 }
             }
-            APIQuestionConfiguration::PhoneNumber {} => QuestionSubmissionData::PhoneNumber {
-                calling_code: String::default(),
+            APIQuestionConfiguration::PhoneNumber {
+                default_calling_code,
+                allowed_calling_codes: _,
+            } => QuestionSubmissionData::PhoneNumber {
+                calling_code: default_calling_code.unwrap_or_default(),
                 number: String::default(),
             },
             APIQuestionConfiguration::FileUpload { allowed_types: _ } => {

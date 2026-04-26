@@ -7,14 +7,33 @@
     interface Props {
         value?: string;
         class?: string;
+        disabled?: boolean;
+        autoOpen?: boolean;
+        allowedValues?: string[];
         onupdate?: (val: APICountryWithCallingCode) => void;
     }
 
-    let { value = $bindable(""), class: className, onupdate }: Props = $props();
+    let {
+        value = $bindable(""),
+        class: className,
+        onupdate,
+        disabled,
+        allowedValues,
+        autoOpen = false,
+    }: Props = $props();
 
     let countries = $state<APICountryWithCallingCode[] | undefined>(undefined);
-    APIs.countries.countriesListCallingCodes().then((resp) => {
-        countries = resp.data;
+    $effect(() => {
+        allowedValues;
+        APIs.countries.countriesListCallingCodes().then((resp) => {
+            if (allowedValues !== undefined && allowedValues.length > 0) {
+                countries = resp.data.filter((e) =>
+                    allowedValues.includes(`+${e.calling_code}`)
+                );
+            } else {
+                countries = resp.data;
+            }
+        });
     });
 
     let searchQuery = $state("");
@@ -29,7 +48,8 @@
         })
     );
 
-    let dropdownOpen = $state(false);
+    // svelte-ignore state_referenced_locally
+    let dropdownOpen = $state(autoOpen);
     function onCallingCodeSelect(e: Event, country: APICountryWithCallingCode) {
         e.preventDefault();
         value = "+" + country.calling_code;
@@ -38,7 +58,7 @@
     }
 </script>
 
-<Button color="light" class={className}>
+<Button color="light" class={className} {disabled}>
     {#if value === ""}
         {t("phone_choose_country")}
     {:else}
