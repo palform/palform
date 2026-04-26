@@ -8,7 +8,7 @@
     } from "@simplewebauthn/browser";
     import { showFailureToast } from "../../data/toast";
     import LoadingButton from "../LoadingButton.svelte";
-    import { createEventDispatcher, onMount } from "svelte";
+    import { onMount } from "svelte";
 
     interface Props {
         flowType: "register" | "authenticate";
@@ -18,6 +18,8 @@
         disabled?: boolean;
         initialAutoClick?: boolean;
         class?: string;
+        onenroll?: (data: string) => void;
+        onauthenticate?: (data: any) => void;
     }
 
     let {
@@ -28,12 +30,9 @@
         disabled = false,
         initialAutoClick = false,
         class: className,
+        onenroll,
+        onauthenticate,
     }: Props = $props();
-
-    const dispatch = createEventDispatcher<{
-        enroll: string;
-        authenticate: any;
-    }>();
 
     let loading = $state(false);
     async function onButtonClick() {
@@ -59,14 +58,14 @@
                     })
                 );
 
-                dispatch("enroll", enrollResp.data);
+                onenroll?.(enrollResp.data);
             } else if (flowType === "authenticate") {
                 if (!authCredential) return;
 
                 const result = await startAuthentication({
                     optionsJSON: authCredential.publicKey,
                 });
-                dispatch("authenticate", result);
+                onauthenticate?.(result);
             }
         } catch (_) {
             await showFailureToast(

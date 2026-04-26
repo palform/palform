@@ -1,24 +1,17 @@
 <script lang="ts">
     import { Modal } from "flowbite-svelte";
     import Captcha from "../../captcha/Captcha.svelte";
-    import { createEventDispatcher } from "svelte";
 
     interface Props {
         open: boolean;
+        oncomplete: (captchaResult: string) => void;
+        onclear: () => void;
     }
 
-    let { open = $bindable() }: Props = $props();
-
-    const dispatch = createEventDispatcher<{
-        complete: string;
-        clear: undefined;
-    }>();
+    let { open = $bindable(), oncomplete, onclear }: Props = $props();
 </script>
 
 <Modal bind:open title="One last step...">
     <p>Please verify your identity to submit this form.</p>
-    <Captcha
-        on:complete={(e) => dispatch("complete", e.detail)}
-        on:clear={() => dispatch("clear")}
-    />
+    <Captcha oncomplete={(e) => oncomplete(e)} onclear={() => onclear()} />
 </Modal>

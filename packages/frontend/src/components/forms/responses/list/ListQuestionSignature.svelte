@@ -11,12 +11,7 @@
         compact: boolean;
     }
 
-    let {
-        freeform,
-        initial,
-        fullName,
-        compact
-    }: Props = $props();
+    let { freeform, initial, fullName, compact }: Props = $props();
 </script>
 
 {#if compact}

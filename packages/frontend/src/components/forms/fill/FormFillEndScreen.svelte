@@ -5,14 +5,17 @@
     } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { Alert } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
     import BrandedButton from "../../teams/brandings/BrandedButton.svelte";
     import { formFillStore } from "../../../data/contexts/fill";
     import MarkdownView from "../../markdown/MarkdownView.svelte";
     import BrandedSpan from "../../teams/brandings/BrandedSpan.svelte";
     import { t } from "../../../data/contexts/i18n";
 
-    const dispatch = createEventDispatcher<{ restart: undefined }>();
+    interface Props {
+        onrestart: () => void;
+    }
+
+    let { onrestart }: Props = $props();
     const endConfiguration = $formFillStore?.form.f.end_configuration;
 
     let redirecting = $state(false);
@@ -65,7 +68,7 @@
                 <BrandedButton
                     class="mt-2"
                     outline
-                    onclick={() => dispatch("restart")}
+                    onclick={() => onrestart()}
                     disabled={redirecting}
                 >
                     <FontAwesomeIcon icon={faUndo} class="me-2" />

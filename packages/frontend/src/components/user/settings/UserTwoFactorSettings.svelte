@@ -59,7 +59,7 @@
                     {#each methods as method (method.id)}
                         <UserTwoFactorRow
                             {method}
-                            on:delete={() => onDelete(method.id)}
+                            ondelete={() => onDelete(method.id)}
                         />
                     {/each}
                 </TableBody>

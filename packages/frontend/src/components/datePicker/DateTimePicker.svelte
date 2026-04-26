@@ -2,7 +2,6 @@
     import { DateTime } from "luxon";
     import DatePicker from "./DatePicker.svelte";
     import TimePicker from "./TimePicker.svelte";
-    import { createEventDispatcher } from "svelte";
     import InfoText from "../type/InfoText.svelte";
     import { timeZoneSummary } from "../../data/util/time";
 
@@ -15,6 +14,7 @@
         pickDate?: boolean;
         pickTime?: boolean;
         class?: string;
+        onupdate?: (dateTime: string) => void;
     }
 
     let {
@@ -26,6 +26,7 @@
         pickDate = true,
         pickTime = true,
         class: className,
+        onupdate,
     }: Props = $props();
 
     let parsedDateTime = $state<DateTime | null>(
@@ -38,14 +39,12 @@
             : null;
     });
 
-    const dispatch = createEventDispatcher<{ update: string }>();
-
     function onChange() {
         if (parsedDateTime) {
             const i = parsedDateTime.toISO();
             if (!i) return;
             selectedDateTime = i;
-            dispatch("update", i);
+            onupdate?.(i);
         }
     }
 
@@ -69,7 +68,7 @@
             class="flex-1"
             bind:selectedTime={parsedDateTime}
             {disabled}
-            on:update={onChange}
+            onupdate={onChange}
             min={parsedMin}
             max={parsedMax}
         />

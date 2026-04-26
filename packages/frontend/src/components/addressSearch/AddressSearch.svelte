@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { APIGenericAddress } from "@palform/palform-client-js-extra-types/APIGenericAddress";
-    import { createEventDispatcher, onMount } from "svelte";
+    import { onMount } from "svelte";
     import {
         getMapboxAPI,
         parseAddressComponents,
@@ -21,6 +21,10 @@
         locationBias?: LngLatLike | string;
         class?: string;
         disabled?: boolean;
+        onselect: (location: {
+            address: APIGenericAddress;
+            location: APIGenericLocation;
+        }) => void;
     }
 
     let {
@@ -28,11 +32,8 @@
         locationBias,
         class: className,
         disabled,
+        onselect,
     }: Props = $props();
-
-    const dispatch = createEventDispatcher<{
-        select: { address: APIGenericAddress; location: APIGenericLocation };
-    }>();
 
     let api = $state<MapboxAPIType | undefined>(undefined);
 
@@ -78,7 +79,7 @@
         const parsedLocation = parseResponseGeometry(resp);
         if (!parsedLocation) return;
 
-        dispatch("select", {
+        onselect({
             address: parsedComponents,
             location: parsedLocation,
         });

@@ -9,18 +9,22 @@
     import { restoreKeyFromBackup } from "../../../data/crypto/keyManager";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import { navigate } from "../../../router";
-    import { createEventDispatcher } from "svelte";
 
     interface Props {
         key: APIUserKey;
         showInfo?: boolean;
         disableLink?: boolean;
+        onsuccessfulimport?: () => void;
     }
 
-    let { key, showInfo = true, disableLink = false }: Props = $props();
+    let {
+        key,
+        showInfo = true,
+        disableLink = false,
+        onsuccessfulimport,
+    }: Props = $props();
 
     const orgCtx = getOrgContext();
-    const dispatch = createEventDispatcher<{ successfulImport: undefined }>();
 
     let recoverLoading = $state(false);
     let recoveryPhrase = $state("");
@@ -33,7 +37,7 @@
             await showSuccessToast(
                 "Successfully restored from backup! You can now use this key to decrypt responses."
             );
-            dispatch("successfulImport");
+            onsuccessfulimport?.();
 
             if (!disableLink) {
                 navigate(`/orgs/${$orgCtx.org.id}/user/keys`);

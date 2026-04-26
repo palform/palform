@@ -1,23 +1,21 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from "svelte";
+    import { onMount } from "svelte";
     import { Turnstile } from "svelte-turnstile";
+
     interface Props {
-        [key: string]: any
+        class?: string;
+        oncomplete: (value: string) => void;
+        onclear: () => void;
     }
 
-    let { ...props }: Props = $props();
+    let { class: className, oncomplete, onclear }: Props = $props();
 
     const siteKey = import.meta.env.VITE_CAPTCHA_SITE_KEY;
-    const dispatch = createEventDispatcher<{
-        complete: string;
-        clear: undefined;
-    }>();
-
     const skipCaptcha = import.meta.env.VITE_SKIP_CAPTCHA === "true";
 
     onMount(() => {
         if (skipCaptcha) {
-            dispatch("complete", "abc");
+            oncomplete("abc");
         }
     });
 </script>
@@ -25,11 +23,11 @@
 {#if !skipCaptcha}
     <Turnstile
         {siteKey}
-        class={props.class}
+        class={className}
         responseField={false}
-        on:callback={(e) => dispatch("complete", e.detail.token)}
-        on:timeout={() => dispatch("clear")}
-        on:expired={() => dispatch("clear")}
-        on:error={() => dispatch("clear")}
+        on:callback={(e) => oncomplete(e.detail.token)}
+        on:timeout={() => onclear()}
+        on:expired={() => onclear()}
+        on:error={() => onclear()}
     />
 {/if}

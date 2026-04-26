@@ -84,9 +84,8 @@
                 {#each members as member (member.user_id)}
                     <OrganisationMemberRow
                         {member}
-                        on:delete={() => onMemberDelete(member.user_id)}
-                        on:update={(e) =>
-                            onMemberUpdate(member.user_id, e.detail)}
+                        ondelete={() => onMemberDelete(member.user_id)}
+                        onupdate={(e) => onMemberUpdate(member.user_id, e)}
                         isSelf={currentUserId == member.user_id}
                     />
                 {/each}

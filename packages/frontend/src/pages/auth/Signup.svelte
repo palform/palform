@@ -71,8 +71,8 @@
 {#if signUpComplete}
     <AuthCard title="Verify your email">
         <InfoText>
-            We've sent a message to <strong>{email}</strong> with a link. Please
-            click it within the next 15 minutes to verify your email address.
+            We've sent a message to <strong>{email}</strong> with a link. Please click
+            it within the next 15 minutes to verify your email address.
         </InfoText>
 
         <LoadingButton
@@ -132,8 +132,8 @@
 
             {#if !loading}
                 <Captcha
-                    on:complete={(e) => (captcha = e.detail)}
-                    on:clear={() => (captcha = "")}
+                    oncomplete={(e) => (captcha = e)}
+                    onclear={() => (captcha = "")}
                 />
             {/if}
 

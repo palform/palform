@@ -10,9 +10,9 @@
 
     let { nickname, onenroll }: Props = $props();
 
-    let onEnroll = $derived((e: CustomEvent<string>) => {
+    let onEnroll = $derived((e: string) => {
         onenroll({
-            id: e.detail,
+            id: e,
             nickname,
             created_at: DateTime.now().toISO(),
             method: "Webauthn",
@@ -25,5 +25,5 @@
 <WebauthnButton
     flowType="register"
     registerNickname={nickname}
-    on:enroll={onEnroll}
+    onenroll={onEnroll}
 />

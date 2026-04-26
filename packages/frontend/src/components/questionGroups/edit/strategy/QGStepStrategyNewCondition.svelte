@@ -12,7 +12,6 @@
         qIsText,
     } from "../../../../data/contexts/formEditor";
     import StrategyConfigText from "./conditionTypes/StrategyConfigText.svelte";
-    import { createEventDispatcher } from "svelte";
     import type {
         APIQuestionGroupStepStrategyJumpCaseCondition,
         APIQuestionGroupStepStrategyJumpCaseConditionMatcher,
@@ -29,9 +28,12 @@
 
     interface Props {
         fromGroupId: string;
+        oncreate: (
+            newCondition: APIQuestionGroupStepStrategyJumpCaseCondition
+        ) => void;
     }
 
-    let { fromGroupId }: Props = $props();
+    let { fromGroupId, oncreate }: Props = $props();
     const formAdminCtx = getFormAdminContext();
     let isAdding = $state(false);
 
@@ -40,13 +42,10 @@
         $formAdminCtx.questions.find((e) => e.id === questionId)
     );
 
-    const dispatch = createEventDispatcher<{
-        create: APIQuestionGroupStepStrategyJumpCaseCondition;
-    }>();
     let onSave = $derived(
         (e: APIQuestionGroupStepStrategyJumpCaseConditionMatcher) => {
             if (!question) return;
-            dispatch("create", {
+            oncreate({
                 question_id: questionId,
                 matcher: e,
             });
@@ -59,7 +58,6 @@
     size="xs"
     color="light"
     class="mt-2"
-    outline
     onclick={() => (isAdding = !isAdding)}
 >
     {#if !isAdding}

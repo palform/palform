@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Input } from "flowbite-svelte";
     import { DateTime } from "luxon";
-    import { createEventDispatcher } from "svelte";
     import { isDateOnlyEqual } from "../../data/util/time";
 
     interface Props {
@@ -10,6 +9,7 @@
         min?: DateTime | undefined;
         max?: DateTime | undefined;
         class?: string;
+        onupdate: () => void;
     }
 
     let {
@@ -18,9 +18,8 @@
         min = undefined,
         max = undefined,
         class: className,
+        onupdate,
     }: Props = $props();
-
-    const dispatch = createEventDispatcher<{ update: undefined }>();
 
     async function onHourChange(e: Event, value: "hour" | "minute") {
         e.preventDefault();
@@ -43,7 +42,7 @@
         if (value === "hour") {
             v = Math.min(
                 maxToday?.hour ?? 23,
-                Math.max(minToday?.hour ?? 0, v),
+                Math.max(minToday?.hour ?? 0, v)
             );
         }
         if (value === "minute") {
@@ -60,7 +59,7 @@
             selectedTime = newDate;
         }
 
-        dispatch("update");
+        onupdate();
     }
 </script>
 

@@ -12,6 +12,7 @@
 
     let { ctx, children }: Props = $props();
     const writableCtx = writable<BrandContext | undefined>(
+        // svelte-ignore state_referenced_locally
         ctx ? ctx : undefined
     );
     setBrandCtx(writableCtx);

@@ -9,17 +9,16 @@
     import { APIs } from "../../../data/common";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
-    import { createEventDispatcher } from "svelte";
     import { parseServerTime } from "../../../data/util/time";
     import { DateTime } from "luxon";
 
     const orgCtx = getOrgContext();
     interface Props {
         subscription: APIBillingSubscription;
+        oncancel: () => void;
     }
 
-    let { subscription }: Props = $props();
-    const dispatch = createEventDispatcher<{ cancel: undefined }>();
+    let { subscription, oncancel }: Props = $props();
 
     const reasonItems: { name: string; value: CancelPlanRequestReason }[] = [
         { name: "Poor customer service", value: "CustomerService" },
@@ -54,7 +53,7 @@
             await showSuccessToast(
                 "Plan cancelled. We're sorry to see you go :("
             );
-            dispatch("cancel");
+            oncancel();
         } catch (e) {
             await showFailureToast(e);
         }

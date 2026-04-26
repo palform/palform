@@ -76,6 +76,6 @@
         newPriceAmount={previewModalWithPriceId.amount}
         newPriceAnnual={previewModalAnnual}
         bind:open={showPreviewModal}
-        on:accept={onConfirmChange}
+        onaccept={onConfirmChange}
     />
 {/if}

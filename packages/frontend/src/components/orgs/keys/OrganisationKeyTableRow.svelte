@@ -7,14 +7,13 @@
     import { APIs } from "../../../data/common";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
-    import { createEventDispatcher } from "svelte";
 
     interface Props {
         key: APIUserKeyWithIdentity;
+        ondelete: () => void;
     }
 
-    let { key }: Props = $props();
-    const dispatch = createEventDispatcher<{ delete: undefined }>();
+    let { key, ondelete }: Props = $props();
     const orgCtx = getOrgContext();
     let createdAt = $derived(parseServerTime(key.created_at));
     let expiresAt = $derived(parseServerTime(key.expires_at));
@@ -25,7 +24,7 @@
         loading = true;
         try {
             await APIs.keys().then((a) => a.keysDelete($orgCtx.org.id, key.id));
-            dispatch("delete");
+            ondelete();
             await showSuccessToast("Key deleted");
             loading = false;
         } catch (e) {
@@ -63,6 +62,8 @@
         </span>
     </TableBodyCell>
     <TableBodyCell>
-        <TableSingleAction onclick={onDelete}>Delete</TableSingleAction>
+        <TableSingleAction onclick={onDelete} disabled={loading}>
+            Delete
+        </TableSingleAction>
     </TableBodyCell>
 </TableBodyRow>

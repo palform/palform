@@ -36,6 +36,7 @@
                 // For some reason Axios auto-parses the bytes response into a string but the OpenAPI generator thinks it's still number[]
                 resp.data as unknown as string
             );
+            // @ts-ignore Incorrect types returned from WASM
             const blob = new Blob([decryptedData], { type: props.contentType });
 
             const link = document.createElement("a");

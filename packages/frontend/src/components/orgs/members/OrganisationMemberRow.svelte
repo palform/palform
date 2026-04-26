@@ -4,7 +4,6 @@
     import TableActions from "../../tables/TableActions.svelte";
     import { APIs } from "../../../data/common";
     import { getOrgContext } from "../../../data/contexts/orgLayout";
-    import { createEventDispatcher } from "svelte";
     import {
         showFailureToast,
         showSuccessToast,
@@ -20,14 +19,11 @@
     interface Props {
         member: APIOrgMember;
         isSelf?: boolean;
+        ondelete: () => void;
+        onupdate: (member: APIOrgMember) => void;
     }
 
-    let { member, isSelf = false }: Props = $props();
-    const dispatch = createEventDispatcher<{
-        delete: undefined;
-        update: APIOrgMember;
-    }>();
-
+    let { member, isSelf = false, ondelete, onupdate }: Props = $props();
     const orgCtx = getOrgContext();
 
     let loading = $state(false);
@@ -42,7 +38,7 @@
             color: "green",
             icon: faCheck,
         });
-        dispatch("delete");
+        ondelete();
         loading = false;
     });
 
@@ -55,7 +51,7 @@
                     is_admin: admin,
                 })
             );
-            dispatch("update", {
+            onupdate({
                 ...member,
                 is_admin: admin,
             });
@@ -95,11 +91,11 @@
     </TableBodyCell>
     <TableBodyCell>
         <TableActions>
-            <DropdownItem on:click={onDelete} disabled={isSelf}>
+            <DropdownItem onclick={onDelete} disabled={isSelf}>
                 Delete
             </DropdownItem>
             <DropdownItem
-                on:click={() => setAdmin(!member.is_admin)}
+                onclick={() => setAdmin(!member.is_admin)}
                 disabled={isSelf}
             >
                 {member.is_admin ? "Remove admin powers" : "Make admin"}

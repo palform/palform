@@ -35,6 +35,7 @@
 
     let group = $derived(ctxGetGroup(props.groupId));
     let currentConfig = $derived($group?.step_strategy);
+    $effect(() => console.log("currentConfig", currentConfig));
 
     let currentActionValue = $derived(
         currentConfig !== undefined && qgsIsJump(currentConfig)
@@ -43,7 +44,7 @@
     );
 
     let showJumpCases = $state(false);
-    let onActionValueChange = $derived(async (e: Event) => {
+    let onActionValueChange = $derived((e: Event) => {
         if (!$group) return;
         const t = e.target as HTMLSelectElement;
         let strategy: APIQuestionGroupStepStrategy;
@@ -62,24 +63,23 @@
         });
     });
 
-    let onNewJumpCase = $derived(
-        async (e: CustomEvent<APIQuestionGroupStepStrategyJumpCase>) => {
-            if (!$group || !currentConfig || !qgsIsJump(currentConfig)) return;
-            updateQuestionGroup(formEditorCtx, {
-                ...$group,
-                step_strategy: {
-                    JumpToSection: [...currentConfig.JumpToSection, e.detail],
-                },
-            });
-        }
-    );
-
-    let onDeleteJumpCase = $derived(async (index: number) => {
+    let onNewJumpCase = $derived((e: APIQuestionGroupStepStrategyJumpCase) => {
         if (!$group || !currentConfig || !qgsIsJump(currentConfig)) return;
-        currentConfig.JumpToSection.splice(index, 1);
         updateQuestionGroup(formEditorCtx, {
             ...$group,
-            step_strategy: currentConfig,
+            step_strategy: {
+                JumpToSection: [...currentConfig.JumpToSection, e],
+            },
+        });
+    });
+
+    let onDeleteJumpCase = $derived((index: number) => {
+        if (!$group || !currentConfig || !qgsIsJump(currentConfig)) return;
+        const newCaseList = [...currentConfig.JumpToSection];
+        newCaseList.splice(index, 1);
+        updateQuestionGroup(formEditorCtx, {
+            ...$group,
+            step_strategy: { JumpToSection: newCaseList },
         });
     });
 </script>
@@ -132,7 +132,7 @@
                         {#each currentConfig.JumpToSection as strategyCase, index (`${strategyCase.target_group_id}-${index}`)}
                             <QgStepStrategyCase
                                 {strategyCase}
-                                on:delete={() => onDeleteJumpCase(index)}
+                                ondelete={() => onDeleteJumpCase(index)}
                             />
 
                             {#if index < currentConfig.JumpToSection.length - 1}
@@ -153,7 +153,7 @@
                 <QgStepStrategyNewCase
                     class="mt-2"
                     fromGroupId={props.groupId}
-                    on:saveNew={onNewJumpCase}
+                    onsavenew={onNewJumpCase}
                 />
             </div>
         {/if}

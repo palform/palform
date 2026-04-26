@@ -56,7 +56,7 @@
                 {#each keys as key (key.id)}
                     <OrganisationKeyTableRow
                         {key}
-                        on:delete={() => onKeyDelete(key.id)}
+                        ondelete={() => onKeyDelete(key.id)}
                     />
                 {/each}
             </TableBody>

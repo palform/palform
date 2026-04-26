@@ -3,7 +3,6 @@
     import { Button } from "flowbite-svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faTrash } from "@fortawesome/free-solid-svg-icons";
-    import { createEventDispatcher } from "svelte";
     import { matcherLabel } from "../../../../data/util/stepStrategyConditions";
     import { getFormAdminContext } from "../../../../data/contexts/formAdmin";
 
@@ -11,17 +10,21 @@
         condition: APIQuestionGroupStepStrategyJumpCaseCondition;
         showDelete?: boolean;
         class?: string;
+        ondelete?: () => void;
     }
 
-    let { condition, showDelete = false, class: className }: Props = $props();
+    let {
+        condition,
+        showDelete = false,
+        class: className,
+        ondelete,
+    }: Props = $props();
 
     const formAdminCtx = getFormAdminContext();
 
     let question = $derived(
         $formAdminCtx.questions.find((e) => e.id === condition.question_id)
     );
-
-    const dispatch = createEventDispatcher<{ delete: undefined }>();
 </script>
 
 {#if question}
@@ -32,12 +35,7 @@
         </p>
 
         {#if showDelete}
-            <Button
-                size="sm"
-                color="red"
-                outline
-                onclick={() => dispatch("delete")}
-            >
+            <Button size="sm" color="red" outline onclick={() => ondelete?.()}>
                 <FontAwesomeIcon icon={faTrash} />
             </Button>
         {/if}

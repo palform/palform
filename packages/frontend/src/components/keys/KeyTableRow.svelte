@@ -11,12 +11,8 @@
     import TableActions from "../tables/TableActions.svelte";
     import { parseServerTime } from "../../data/util/time";
     import { APIs } from "../../data/common";
-    import { createEventDispatcher } from "svelte";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
-    import {
-        KeyMetadata,
-        get_key_metadata_js,
-    } from "@palform/palform-crypto";
+    import { KeyMetadata, get_key_metadata_js } from "@palform/palform-crypto";
     import {
         deleteLocalKey,
         downloadPrivateKey,

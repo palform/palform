@@ -124,8 +124,8 @@
 
             {#if !loading}
                 <Captcha
-                    on:complete={(e) => (captcha = e.detail)}
-                    on:clear={() => (captcha = "")}
+                    oncomplete={(e) => (captcha = e)}
+                    onclear={() => (captcha = "")}
                 />
             {/if}
 

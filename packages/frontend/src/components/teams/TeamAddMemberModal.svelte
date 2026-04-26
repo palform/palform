@@ -19,18 +19,20 @@
     import { orgMemberSelectItems } from "../../data/util/orgMemberEnum";
     import LoadingButton from "../LoadingButton.svelte";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
-    import { createEventDispatcher } from "svelte";
 
     interface Props {
         teamId: string;
         existingTeamMemberIds: string[];
-        [key: string]: any;
+        class?: string;
+        onadd: (newMember: APIOrganisationTeamMember) => void;
     }
 
-    let { ...props }: Props = $props();
-    const dispatch = createEventDispatcher<{
-        add: APIOrganisationTeamMember;
-    }>();
+    let {
+        teamId,
+        existingTeamMemberIds,
+        onadd,
+        class: className,
+    }: Props = $props();
     const orgCtx = getOrgContext();
     let showModal = $state(false);
     let members: APIOrgMember[] = $state([]);
@@ -43,7 +45,7 @@
             .then((a) => a.organisationMembersList($orgCtx.org.id))
             .then((resp) => {
                 members = resp.data.filter(
-                    (e) => !props.existingTeamMemberIds.includes(e.user_id)
+                    (e) => !existingTeamMemberIds.includes(e.user_id)
                 );
                 membersLoading = false;
             });
@@ -58,7 +60,7 @@
 
         try {
             await APIs.orgTeamMembers().then((a) =>
-                a.organisationTeamMembersAdd($orgCtx.org.id, props.teamId, {
+                a.organisationTeamMembersAdd($orgCtx.org.id, teamId, {
                     user_ids: selectedMemberIds,
                     role,
                 })
@@ -68,7 +70,7 @@
             for (const userId of selectedMemberIds) {
                 const member = members.find((e) => e.user_id === userId)!;
 
-                dispatch("add", {
+                onadd({
                     user_id: userId,
                     user_email: member.user_email,
                     user_display_name: member.user_display_name,
@@ -84,7 +86,7 @@
     });
 </script>
 
-<Button onclick={() => (showModal = true)} class={props.class}>
+<Button onclick={() => (showModal = true)} class={className}>
     <FontAwesomeIcon icon={faPlus} class="me-2" />
     Add member(s)
 </Button>

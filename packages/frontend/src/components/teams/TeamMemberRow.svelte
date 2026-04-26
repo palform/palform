@@ -14,22 +14,21 @@
     import { APIs } from "../../data/common";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
-    import { createEventDispatcher } from "svelte";
 
     interface Props {
         member: APIOrganisationTeamMember;
         teamId: string;
         isDefaultTeam: boolean;
         readonly: boolean;
+        onupdate: (newRole: OrganisationMemberRoleEnum) => void;
+        ondelete: () => void;
     }
 
-    let { member, teamId, isDefaultTeam, readonly }: Props = $props();
+    let { member, teamId, isDefaultTeam, readonly, onupdate, ondelete }: Props =
+        $props();
     const orgCtx = getOrgContext();
 
-    const dispatch = createEventDispatcher<{
-        update: OrganisationMemberRoleEnum;
-        delete: undefined;
-    }>();
+    // svelte-ignore state_referenced_locally
     let roleValue = $state(member.role);
     let loading = $state(false);
     let onRoleChange = $derived(async () => {
@@ -46,7 +45,7 @@
                 )
             );
             await showSuccessToast("Saved role");
-            dispatch("update", roleValue);
+            onupdate(roleValue);
         } catch (e) {
             await showFailureToast(e);
         }
@@ -65,7 +64,7 @@
                 )
             );
             await showSuccessToast("Removed user from team");
-            dispatch("delete");
+            ondelete();
         } catch (e) {
             await showFailureToast(e);
         }

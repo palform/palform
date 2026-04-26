@@ -8,7 +8,6 @@
     import { APIs } from "../../../data/common";
     import { showFailureToast } from "../../../data/toast";
     import UpcomingInvoiceTable from "../invoices/UpcomingInvoiceTable.svelte";
-    import { createEventDispatcher } from "svelte";
     import { parseServerTime } from "../../../data/util/time";
     import { DateTime } from "luxon";
     import { formatCurrency } from "@palform/palform-frontend-common";
@@ -19,6 +18,7 @@
         newPriceAmount: number;
         newPriceAnnual: boolean;
         open?: boolean;
+        onaccept: () => void;
     }
 
     let {
@@ -27,10 +27,10 @@
         newPriceAmount,
         newPriceAnnual,
         open = $bindable(false),
+        onaccept,
     }: Props = $props();
 
     const orgCtx = getOrgContext();
-    const dispatch = createEventDispatcher<{ accept: undefined }>();
 
     let upcomingInvoice: APIBillingUpcomingInvoice | undefined = $state();
     let initLoading = $state(true);
@@ -97,6 +97,6 @@
             your plan.
         </p>
 
-        <Button onclick={() => dispatch("accept")}>Great, continue!</Button>
+        <Button onclick={() => onaccept()}>Great, continue!</Button>
     {/if}
 </Modal>

@@ -1,20 +1,17 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-
     interface Props {
         class?: string;
+        onselect: (oqpp: boolean) => void;
     }
 
-    let { class: className }: Props = $props();
-
-    const dispatch = createEventDispatcher<{ select: boolean }>();
+    let { class: className, onselect }: Props = $props();
 </script>
 
 <div class={`w-full grid lg:grid-cols-2 gap-8 ${className ?? ""}`}>
     <button
         class="px-4 relative text-left border dark:border-slate-600 rounded-2xl flex items-center justify-center h-80 hover:bg-slate-100/80 dark:hover:bg-slate-800 shadow-sm"
         type="button"
-        onclick={() => dispatch("select", true)}
+        onclick={() => onselect(true)}
     >
         <div class="max-w-64">
             <p class="dark:text-gray-400 font-display">What's your name?</p>
@@ -36,7 +33,7 @@
     <button
         class="px-4 relative text-left border dark:border-slate-600 rounded-2xl flex justify-center h-80 hover:bg-slate-100/80 dark:hover:bg-slate-800 shadow-sm"
         type="button"
-        onclick={() => dispatch("select", false)}
+        onclick={() => onselect(false)}
     >
         <div class="max-w-64 mt-6">
             <p class="dark:text-gray-400 font-display">What's your name?</p>

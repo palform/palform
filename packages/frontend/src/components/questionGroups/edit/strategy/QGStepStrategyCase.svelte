@@ -5,7 +5,6 @@
     import { Button } from "flowbite-svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faTrash } from "@fortawesome/free-solid-svg-icons";
-    import { createEventDispatcher } from "svelte";
     import { getFormCtx } from "../../../../data/contexts/orgLayout";
     import {
         getFormAdminContext,
@@ -14,16 +13,16 @@
 
     interface Props {
         strategyCase: APIQuestionGroupStepStrategyJumpCase;
+        ondelete: () => void;
     }
 
-    let { strategyCase }: Props = $props();
+    let { strategyCase, ondelete }: Props = $props();
     const formAdminCtx = getFormAdminContext();
     const formMetadataCtx = getFormCtx();
     let targetGroup = $formAdminCtx.groups.find(
         (e) => e.id === strategyCase.target_group_id
     );
 
-    const dispatch = createEventDispatcher<{ delete: undefined }>();
     let conditionList = $derived(extractConditionList(strategyCase.conditions));
 </script>
 
@@ -64,8 +63,7 @@
         class={conditionList.length === 0 ? "mt-2" : "mt-3"}
         size="xs"
         color="light"
-        outline
-        onclick={() => dispatch("delete")}
+        onclick={() => ondelete()}
     >
         <FontAwesomeIcon icon={faTrash} class="me-2" />
         Delete case

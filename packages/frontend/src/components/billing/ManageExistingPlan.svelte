@@ -86,6 +86,6 @@
     {#if subscription.canceling_at_end}
         <p>This plan will be cancelled at the end of its period.</p>
     {:else}
-        <CancelPlan {subscription} on:cancel={onCancel} />
+        <CancelPlan {subscription} oncancel={onCancel} />
     {/if}
 </Modal>

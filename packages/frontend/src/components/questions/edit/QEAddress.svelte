@@ -13,11 +13,9 @@
 
     let focus = $state(!!config.address.search_centre);
 
-    let onAddressClick = $derived(
-        (e: CustomEvent<{ location: APIGenericLocation }>) => {
-            config.address.search_centre = e.detail.location;
-        }
-    );
+    let onAddressClick = $derived((e: { location: APIGenericLocation }) => {
+        config.address.search_centre = e.location;
+    });
     let onEnterManuallyClick = $derived(() => {
         config.address.search_centre = { lat: 0, lng: 0 };
     });
@@ -37,7 +35,7 @@
 
 {#if focus}
     {#if !config.address.search_centre}
-        <AddressSearch class="mt-4" on:select={onAddressClick} />
+        <AddressSearch class="mt-4" onselect={onAddressClick} />
         <Helper class="mt-1">
             <TextButton onclick={onEnterManuallyClick}>
                 Enter coordinates manually

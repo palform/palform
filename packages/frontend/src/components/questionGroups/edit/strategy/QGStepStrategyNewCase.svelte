@@ -9,7 +9,6 @@
     } from "@palform/palform-typescript-openapi";
     import QgStepStrategyNewCondition from "./QGStepStrategyNewCondition.svelte";
     import ConditionLabel from "./ConditionLabel.svelte";
-    import { createEventDispatcher } from "svelte";
     import { getFormCtx } from "../../../../data/contexts/orgLayout";
     import {
         getFormAdminContext,
@@ -19,9 +18,10 @@
     interface Props {
         fromGroupId: string;
         class?: string;
+        onsavenew: (newCase: APIQuestionGroupStepStrategyJumpCase) => void;
     }
 
-    let { fromGroupId, class: className = "" }: Props = $props();
+    let { fromGroupId, class: className, onsavenew }: Props = $props();
     const formAdminCtx = getFormAdminContext();
     const formMetadataCtx = getFormCtx();
 
@@ -34,19 +34,15 @@
     );
 
     const onNewCondition = (
-        e: CustomEvent<APIQuestionGroupStepStrategyJumpCaseCondition>
+        e: APIQuestionGroupStepStrategyJumpCaseCondition
     ) => {
-        conditions = [...conditions, e.detail];
+        conditions = [...conditions, e];
     };
 
     const onDeleteCondition = (index: number) => {
         conditions.splice(index, 1);
         conditions = conditions;
     };
-
-    const dispatch = createEventDispatcher<{
-        saveNew: APIQuestionGroupStepStrategyJumpCase;
-    }>();
 
     let selectItems = $derived([
         ...$formAdminCtx.groups
@@ -69,7 +65,7 @@
     function onSaveClick() {
         if (!valid) return;
 
-        dispatch("saveNew", {
+        onsavenew({
             target_group_id: targetGroupId === "SUBMIT" ? null : targetGroupId,
             conditions:
                 binaryOperation === "And"
@@ -89,7 +85,6 @@
 <Button
     size="xs"
     color="light"
-    outline
     class={className}
     onclick={() => (showCreateModal = true)}
 >
@@ -125,13 +120,13 @@
                         {condition}
                         class="bg-gray-50 dark:bg-slate-700"
                         showDelete
-                        on:delete={() => onDeleteCondition(index)}
+                        ondelete={() => onDeleteCondition(index)}
                     />
                 {/each}
             </div>
         {/if}
 
-        <QgStepStrategyNewCondition {fromGroupId} on:create={onNewCondition} />
+        <QgStepStrategyNewCondition {fromGroupId} oncreate={onNewCondition} />
     </fieldset>
 
     {#if conditions.length === 0}

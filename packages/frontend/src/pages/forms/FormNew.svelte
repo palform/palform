@@ -28,7 +28,7 @@
 
 {#if oqpp === undefined}
     <MainTitle>Choose a form style</MainTitle>
-    <FormOqppChoice class="mt-8" on:select={(e) => (oqpp = e.detail)} />
+    <FormOqppChoice class="mt-8" onselect={(e) => (oqpp = e)} />
 {:else}
     <MainTitle>Create a new form</MainTitle>
     <button

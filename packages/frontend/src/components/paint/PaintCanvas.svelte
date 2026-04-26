@@ -5,24 +5,24 @@
     } from "../../data/contexts/brand";
     import { getStroke } from "perfect-freehand";
     import { getSvgPathFromStroke } from "../../data/util/painting";
-    import { createEventDispatcher } from "svelte";
     import { Button } from "flowbite-svelte";
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faDownload } from "@fortawesome/free-solid-svg-icons";
 
     const brandCtx = getBrandCtx();
 
-    const dispatch = createEventDispatcher<{ update: number[][][] }>();
     interface Props {
         points?: number[][][];
         readonly?: boolean;
         downloadButton?: boolean;
+        onupdate?: (points: number[][][]) => void;
     }
 
     let {
         points = $bindable([]),
         readonly = false,
         downloadButton = false,
+        onupdate,
     }: Props = $props();
 
     let onPointerDown = $derived((e: PointerEvent) => {
@@ -30,7 +30,7 @@
         const t = e.target as HTMLCanvasElement;
         t.setPointerCapture(e.pointerId);
         points = [...points, [[e.layerX, e.layerY, e.pressure]]];
-        dispatch("update", points);
+        onupdate?.(points);
     });
 
     let onPointerMove = $derived((e: PointerEvent) => {
@@ -40,7 +40,7 @@
             ...points[points.length - 1],
             [e.layerX, e.layerY, e.pressure],
         ];
-        dispatch("update", points);
+        onupdate?.(points);
     });
 
     let strokes = $derived(

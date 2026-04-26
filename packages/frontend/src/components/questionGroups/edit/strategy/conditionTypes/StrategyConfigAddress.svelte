@@ -19,7 +19,9 @@
     let { configuration, onsave }: Props = $props();
 
     let isNear = $state(false);
+    // svelte-ignore state_referenced_locally
     let nearLat = $state(configuration.search_centre?.lat ?? 0);
+    // svelte-ignore state_referenced_locally
     let nearLng = $state(configuration.search_centre?.lng ?? 0);
     let nearRadius = $state(10);
 

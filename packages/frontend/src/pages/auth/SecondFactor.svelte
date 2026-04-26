@@ -60,8 +60,8 @@
         e.preventDefault();
         await submitWith({ Totp: totpToken });
     });
-    let onWebauthnAuth = $derived(async (e: CustomEvent<any>) => {
-        await submitWith({ Webauthn: e.detail });
+    let onWebauthnAuth = $derived(async (e: any) => {
+        await submitWith({ Webauthn: e });
     });
 </script>
 
@@ -86,7 +86,7 @@
             flowType="authenticate"
             class="mt-4"
             authCredential={tfa.rcr}
-            on:authenticate={onWebauthnAuth}
+            onauthenticate={onWebauthnAuth}
             initialAutoClick
         />
     {:else if (!allowBoth && allowTotp) || selectedMethod === "totp"}

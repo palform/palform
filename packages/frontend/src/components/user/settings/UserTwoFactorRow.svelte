@@ -7,14 +7,13 @@
     import TableSingleAction from "../../tables/TableSingleAction.svelte";
     import { APIs } from "../../../data/common";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
-    import { createEventDispatcher } from "svelte";
 
     interface Props {
         method: APIAdminUserSecondAuthenticationFactor;
+        ondelete: () => void;
     }
 
-    let { method }: Props = $props();
-    const dispatch = createEventDispatcher<{ delete: undefined }>();
+    let { method, ondelete }: Props = $props();
 
     let loading = $state(false);
     let onDeleteClick = $derived(async () => {
@@ -24,7 +23,7 @@
                 a.userSecondFactorsDelete(method.id)
             );
             await showSuccessToast("Method deleted");
-            dispatch("delete");
+            ondelete();
         } catch (e) {
             await showFailureToast(e);
         }
