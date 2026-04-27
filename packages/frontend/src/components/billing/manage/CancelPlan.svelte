@@ -11,6 +11,7 @@
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import { parseServerTime } from "../../../data/util/time";
     import { DateTime } from "luxon";
+    import CancelPlanReasonSelect from "./CancelPlanReasonSelect.svelte";
 
     const orgCtx = getOrgContext();
     interface Props {
@@ -19,20 +20,6 @@
     }
 
     let { subscription, oncancel }: Props = $props();
-
-    const reasonItems: { name: string; value: CancelPlanRequestReason }[] = [
-        { name: "Poor customer service", value: "CustomerService" },
-        { name: "The quality of Palform is too low", value: "LowQuality" },
-        { name: "I am missing some features", value: "MissingFeatures" },
-        { name: "I am switching to another service", value: "SwitchedService" },
-        {
-            name: "Palform is too complicated for my needs",
-            value: "TooComplex",
-        },
-        { name: "Palform costs too much", value: "TooExpensive" },
-        { name: "I don't use Palform enough", value: "Unused" },
-        { name: "Other/I don't want to specify", value: "Other" },
-    ];
 
     let loading = $state(false);
     let reason: CancelPlanRequestReason = $state("Other");
@@ -101,7 +88,7 @@
 
 <Label>
     Reason for cancellation
-    <Select class="mt-2" items={reasonItems} bind:value={reason} />
+    <CancelPlanReasonSelect bind:value={reason} />
 </Label>
 
 <LoadingButton

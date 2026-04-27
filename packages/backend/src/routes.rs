@@ -16,6 +16,7 @@ use crate::api::{
     keys::scope::{organisation_keys_scope, organisation_team_keys_scope},
     organisation_auth_config::scope::organisation_auth_config_scope,
     organisation_auth_team_mappings::scope::organisation_auth_team_mappings_scope,
+    organisation_deletion_requests::scope::organisation_deletion_requests_scope,
     organisation_invites::scope::organisation_invites_scope,
     organisation_members::scope::organisation_members_scope,
     organisation_team_members::scope::organisation_team_members_scope,
@@ -49,6 +50,7 @@ pub fn main_routes() -> Scope {
                     .service(organisation_auth_team_mappings_scope())
                     .service(organisation_invites_scope())
                     .service(organisation_members_scope())
+                    .service(organisation_deletion_requests_scope())
                     .service(induction_scope())
                     .service(audit_logs_scope())
                     .service(organisation_keys_scope())

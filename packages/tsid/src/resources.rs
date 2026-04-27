@@ -21,6 +21,7 @@ id_resource_type!(IDOrganisation, "org");
 id_resource_type!(IDOrganisationAuthConfig, "org_auth_conf");
 id_resource_type!(IDOrganisationAuthTeamMapping, "org_auth_team_map");
 id_resource_type!(IDOrganisationInvite, "org_invite");
+id_resource_type!(IDOrganisationDeletionRequest, "org_delete");
 id_resource_type!(IDQuestion, "qu");
 id_resource_type!(IDQuestionGroup, "qg");
 id_resource_type!(IDSubmission, "sub");

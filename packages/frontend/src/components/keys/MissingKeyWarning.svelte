@@ -10,7 +10,10 @@
         showModal?: boolean;
     }
 
-    let { missingKey = $bindable(undefined), showModal = $bindable(false) }: Props = $props();
+    let {
+        missingKey = $bindable(undefined),
+        showModal = $bindable(false),
+    }: Props = $props();
     const orgCtx = getOrgContext();
 
     (async () => {
@@ -31,7 +34,7 @@
             key={missingKey}
             showInfo={false}
             disableLink
-            on:successfulImport={() => (showModal = false)}
+            onsuccessfulimport={() => (showModal = false)}
         />
     {/if}
 </Modal>

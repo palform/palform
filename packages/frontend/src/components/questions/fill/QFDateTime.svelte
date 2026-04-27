@@ -13,10 +13,10 @@
     let { id, config, currentValue, onchange }: Props = $props();
     let value = $derived(currentValue ? sGetDateTime(currentValue).value : "");
 
-    let onSubmissionUpdate = $derived((e: CustomEvent<string>) => {
+    let onSubmissionUpdate = $derived((e: string) => {
         setQuestionValue(id, {
             DateTime: {
-                value: e.detail,
+                value: e,
             },
         });
         onchange();
@@ -26,7 +26,7 @@
 <DateTimePicker
     selectedDateTime={value === "" ? null : (value ?? null)}
     disabled={$fillSendStore?.loading}
-    on:update={onSubmissionUpdate}
+    onupdate={onSubmissionUpdate}
     class="mt-2"
     min={config.date_time.min ?? undefined}
     max={config.date_time.max ?? undefined}

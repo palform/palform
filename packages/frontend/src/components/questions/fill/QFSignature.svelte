@@ -46,10 +46,10 @@
         }
     );
 
-    let onUpdateFreeform = $derived((e: CustomEvent<number[][][]>) => {
+    let onUpdateFreeform = $derived((e: number[][][]) => {
         setQuestionValue(id, {
             Signature: {
-                freeform: e.detail,
+                freeform: e,
                 initial: "",
                 full_name: "",
             },
@@ -133,14 +133,14 @@
         </button>
 
         <Modal bind:open={modalOpen} outsideclose title="Draw signature">
-            <PaintCanvas points={value.freeform} on:update={onUpdateFreeform} />
+            <PaintCanvas points={value.freeform} onupdate={onUpdateFreeform} />
 
             <BrandedButton outline onclick={() => (modalOpen = false)}>
                 {t("field_done")}
             </BrandedButton>
         </Modal>
     {:else}
-        <PaintCanvas points={value.freeform} on:update={onUpdateFreeform} />
+        <PaintCanvas points={value.freeform} onupdate={onUpdateFreeform} />
     {/if}
 {:else if (onlyOne && config.signature.allow_full_name) || selectedMethod === "full_name" || value.full_name.length > 0}
     <Label>

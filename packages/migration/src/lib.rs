@@ -58,6 +58,7 @@ mod m20250928_151739_add_submission_audit;
 mod m20250928_171251_add_public_key_audit;
 mod m20260409_120000_timestamp_without_tz_to_timestamptz;
 mod m20260412_140006_audit_parent_id;
+mod m20260426_175512_org_deletion;
 
 pub struct Migrator;
 
@@ -123,6 +124,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20250928_171251_add_public_key_audit::Migration),
             Box::new(m20260409_120000_timestamp_without_tz_to_timestamptz::Migration),
             Box::new(m20260412_140006_audit_parent_id::Migration),
+            Box::new(m20260426_175512_org_deletion::Migration),
         ]
     }
 }

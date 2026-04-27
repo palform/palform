@@ -159,7 +159,14 @@ export async function signInWithEmailAndPassword(
 export async function signOut() {
     const auth = await getActiveAuthentication();
     if (!auth) return;
-    await APIs.authWithToken().then((a) => a.authInvalidateToken());
+    try {
+        await APIs.authWithToken().then((a) => a.authInvalidateToken());
+    } catch (e) {
+        console.warn(
+            "Failed to invalidate token on backend, continuing anyway",
+            e
+        );
+    }
     await authDb.remove(auth);
 }
 

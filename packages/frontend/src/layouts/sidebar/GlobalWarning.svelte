@@ -26,7 +26,7 @@
             {$ctx.globalWarning.message}
         </p>
         <Button class="ms-10 mt-2" color="light" href={$ctx.globalWarning.link}>
-            Fix now
+            {$ctx.globalWarning.buttonText}
             <FontAwesomeIcon icon={faArrowRight} class="ms-2" />
         </Button>
     </div>

@@ -1,6 +1,7 @@
 use chrono::{Duration, Utc};
 use palform_entities::{
-    admin_public_key, form, organisation, organisation_invite, prelude::*, team,
+    admin_public_key, form, organisation, organisation_deletion_request, organisation_invite,
+    prelude::*, sea_orm_active_enums::OrganisationDeletionRequestStatusEnum, team,
 };
 use palform_tsid::{
     resources::{IDAdminUser, IDOrganisation},
@@ -43,13 +44,12 @@ impl<'a, T: ConnectionTrait> InductionStatusManager<'a, T> {
     }
 
     pub async fn can_create_invite(&self) -> Result<bool, DbErr> {
-        let membership =
-            OrganisationMembership::find_by_id((self.org_id, self.user_id))
-                .one(self.conn)
-                .await?
-                .ok_or(DbErr::RecordNotFound(
-                    "User is not member of org".to_string(),
-                ))?;
+        let membership = OrganisationMembership::find_by_id((self.org_id, self.user_id))
+            .one(self.conn)
+            .await?
+            .ok_or(DbErr::RecordNotFound(
+                "User is not member of org".to_string(),
+            ))?;
 
         Ok(membership.is_admin)
     }
@@ -90,6 +90,18 @@ impl<'a, T: ConnectionTrait> InductionStatusManager<'a, T> {
                     .add(admin_public_key::Column::OrganisationId.eq(self.org_id))
                     .add(admin_public_key::Column::UserId.eq(self.user_id))
                     .add(admin_public_key::Column::ExpiresAt.gt(Utc::now())),
+            )
+            .count(self.conn)
+            .await
+            .map(|c| c > 0)
+    }
+
+    pub async fn has_pending_deletion(&self) -> Result<bool, DbErr> {
+        OrganisationDeletionRequest::find()
+            .filter(organisation_deletion_request::Column::OrganisationId.eq(self.org_id))
+            .filter(
+                organisation_deletion_request::Column::Status
+                    .eq(OrganisationDeletionRequestStatusEnum::GracePeriod),
             )
             .count(self.conn)
             .await

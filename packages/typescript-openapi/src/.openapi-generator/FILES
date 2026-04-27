@@ -44,8 +44,10 @@ docs/APIOrganisation.md
 docs/APIOrganisationAuthConfig.md
 docs/APIOrganisationAuthTeamMapping.md
 docs/APIOrganisationAuthTeamMappingRequest.md
+docs/APIOrganisationDeletionRequest.md
 docs/APIOrganisationInvite.md
 docs/APIOrganisationInvitePreview.md
+docs/APIOrganisationManifest.md
 docs/APIOrganisationTeam.md
 docs/APIOrganisationTeamMember.md
 docs/APIOrganisationTeamMembership.md
@@ -173,6 +175,8 @@ docs/NewTokenRequest.md
 docs/Or.md
 docs/OrganisationAuthenticationConfigurationApi.md
 docs/OrganisationAuthenticationTeamMappingsApi.md
+docs/OrganisationDeletionRequestStatusEnum.md
+docs/OrganisationDeletionRequestsApi.md
 docs/OrganisationInvitesApi.md
 docs/OrganisationKeysApi.md
 docs/OrganisationMemberRoleEnum.md
@@ -181,6 +185,7 @@ docs/OrganisationTeamMembersApi.md
 docs/OrganisationTeamMembersPatchRequest.md
 docs/OrganisationTeamsApi.md
 docs/OrganisationsApi.md
+docs/OrganisationsDeleteRequest.md
 docs/Other.md
 docs/PasswordResetsApi.md
 docs/PatchOrgMemberRequest.md

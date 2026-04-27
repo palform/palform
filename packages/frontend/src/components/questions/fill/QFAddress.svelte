@@ -24,16 +24,11 @@
     let empty = $derived(currentValue ? !sIsNonEmpty(currentValue) : true);
 
     let onAddressClick = $derived(
-        (
-            e: CustomEvent<{
-                address: APIGenericAddress;
-                location: APIGenericLocation;
-            }>
-        ) => {
+        (e: { address: APIGenericAddress; location: APIGenericLocation }) => {
             setQuestionValue(id, {
                 Address: {
-                    address: e.detail.address,
-                    point: e.detail.location,
+                    address: e.address,
+                    point: e.location,
                 },
             });
             onchange();
@@ -73,12 +68,14 @@
 
     let countries: { name: string; value: string }[] | undefined =
         $state(undefined);
-    getCountryList().then((resp) => (countries = resp));
+    $effect(() => {
+        getCountryList().then((resp) => (countries = resp));
+    });
 </script>
 
 {#if empty}
     <AddressSearch
-        on:select={onAddressClick}
+        onselect={onAddressClick}
         disabled={$fillSendStore?.loading || currentValue === undefined}
         locationBias={config.address.search_centre
             ? {

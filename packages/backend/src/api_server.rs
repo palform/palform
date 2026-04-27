@@ -12,7 +12,6 @@ use sea_orm::DatabaseConnection;
 
 use crate::{
     actix_util::not_found::not_found_handler,
-    billing::client::init_stripe_client,
     captcha::CAPTCHA_HEADER,
     config::Config,
     geo::IPGeolocator,
@@ -25,7 +24,11 @@ use crate::{
     routes::{legacy_compat_routes, main_routes},
 };
 
-pub async fn run_api_server(config: &Config, db: &DatabaseConnection) -> std::io::Result<()> {
+pub async fn run_api_server(
+    config: &Config,
+    db: &DatabaseConnection,
+    stripe: &stripe::Client,
+) -> std::io::Result<()> {
     let bind_addr = config.bind_addr.clone();
     let config = config.clone();
     let db = db.clone();
@@ -35,9 +38,9 @@ pub async fn run_api_server(config: &Config, db: &DatabaseConnection) -> std::io
         .expect("init submission assets s3");
     let s3_team_assets =
         PalformS3Client::<S3BucketTeamAssets>::init(&config).expect("init team assets s3");
-    let stripe = init_stripe_client(&config);
     let geo = IPGeolocator::new().await.expect("geolocator init");
     let captcha_header_name = CAPTCHA_HEADER.clone();
+    let stripe = stripe.clone();
 
     HttpServer::new(move || {
         let cors_regex = Regex::new(&config.cors_origin).expect("parse cors regex");

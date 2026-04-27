@@ -17,6 +17,7 @@ import {
     InductionApi,
     OrganisationAuthenticationConfigurationApi,
     OrganisationAuthenticationTeamMappingsApi,
+    OrganisationDeletionRequestsApi,
     OrganisationInvitesApi,
     OrganisationKeysApi,
     OrganisationMembersApi,
@@ -66,6 +67,8 @@ export const APIs = {
         apiWithAuth(OrganisationAuthenticationTeamMappingsApi, baseAPIConfig),
     orgMembers: () => apiWithAuth(OrganisationMembersApi, baseAPIConfig),
     orgInvites: () => apiWithAuth(OrganisationInvitesApi, baseAPIConfig),
+    orgDeletionRequests: () =>
+        apiWithAuth(OrganisationDeletionRequestsApi, baseAPIConfig),
     orgTeams: () => apiWithAuth(OrganisationTeamsApi, baseAPIConfig),
     orgTeamMembers: () =>
         apiWithAuth(OrganisationTeamMembersApi, baseAPIConfig),

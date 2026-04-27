@@ -1,6 +1,7 @@
 use palform_entities::{
-    organisation, organisation_membership, prelude::*,
-    sea_orm_active_enums::OrganisationMemberRoleEnum,
+    audit_log_entry, form, form_branding, form_branding_team_access, organisation,
+    organisation_membership, prelude::*, question, question_group,
+    sea_orm_active_enums::OrganisationMemberRoleEnum, submission, team, team_asset,
 };
 use palform_tsid::{
     resources::{IDAdminUser, IDOrganisation},
@@ -8,17 +9,13 @@ use palform_tsid::{
 };
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, Condition, ConnectionTrait, DbErr, EntityTrait, JoinType,
-    QueryFilter, QuerySelect, RelationTrait, Set,
+    PaginatorTrait, QueryFilter, QuerySelect, RelationTrait, Set,
 };
 use thiserror::Error;
 
-use crate::{
-    api_entities::org::APIOrganisation,
-    config::Config,
-    mail::{
-        client::PalformMailClient,
-        events::{EventNotficationManager, EventNotificationError},
-    },
+use crate::api_entities::{
+    billing::plan::APIBillingSubscription,
+    org::{APIOrganisation, APIOrganisationManifest},
 };
 
 use super::{
@@ -28,6 +25,15 @@ use super::{
 
 #[derive(Error, Debug)]
 pub enum BootstrapOrgError {
+    #[error("{0}")]
+    DBError(#[from] DbErr),
+    #[cfg(feature = "saas")]
+    #[error("{0}")]
+    BillingError(#[from] crate::billing::error::BillingError),
+}
+
+#[derive(Error, Debug)]
+pub enum OrgManifestError {
     #[error("{0}")]
     DBError(#[from] DbErr),
     #[cfg(feature = "saas")]
@@ -179,17 +185,84 @@ impl OrganisationManager {
             .await
     }
 
-    pub async fn send_staff_deletion_request(
+    pub async fn generate_manifest<T: ConnectionTrait>(
+        conn: &T,
         org_id: PalformDatabaseID<IDOrganisation>,
-        config: &Config,
-        mail: &PalformMailClient,
-    ) -> Result<(), EventNotificationError> {
-        EventNotficationManager::notify_event(
-            mail,
-            config,
-            "organisation requested deletion".to_string(),
-            org_id.into_unknown(),
-        )
-        .await
+        #[cfg(feature = "saas")] stripe: &stripe::Client,
+    ) -> Result<APIOrganisationManifest, OrgManifestError> {
+        let form_count = Form::find()
+            .join(JoinType::InnerJoin, form::Relation::Team.def())
+            .filter(team::Column::OrganisationId.eq(org_id))
+            .count(conn)
+            .await?;
+
+        let submission_count = Submission::find()
+            .join(JoinType::InnerJoin, submission::Relation::Form.def())
+            .join(JoinType::InnerJoin, form::Relation::Team.def())
+            .filter(team::Column::OrganisationId.eq(org_id))
+            .count(conn)
+            .await?;
+
+        let question_count = Question::find()
+            .join(JoinType::InnerJoin, question::Relation::QuestionGroup.def())
+            .join(JoinType::InnerJoin, question_group::Relation::Form.def())
+            .join(JoinType::InnerJoin, form::Relation::Team.def())
+            .filter(team::Column::OrganisationId.eq(org_id))
+            .count(conn)
+            .await?;
+
+        let member_count = OrganisationMembership::find()
+            .filter(organisation_membership::Column::OrganisationId.eq(org_id))
+            .count(conn)
+            .await?;
+
+        let team_count = Team::find()
+            .filter(team::Column::OrganisationId.eq(org_id))
+            .count(conn)
+            .await?;
+
+        let team_asset_count = TeamAsset::find()
+            .join(JoinType::InnerJoin, team_asset::Relation::Team.def())
+            .filter(team::Column::OrganisationId.eq(org_id))
+            .count(conn)
+            .await?;
+
+        let branding_count = FormBranding::find()
+            .join(
+                JoinType::InnerJoin,
+                form_branding::Relation::FormBrandingTeamAccess.def(),
+            )
+            .join(
+                JoinType::InnerJoin,
+                form_branding_team_access::Relation::Team.def(),
+            )
+            .filter(team::Column::OrganisationId.eq(org_id))
+            .count(conn)
+            .await?;
+
+        let audit_log_count = AuditLogEntry::find()
+            .filter(audit_log_entry::Column::OrganisationId.eq(org_id))
+            .count(conn)
+            .await?;
+
+        #[allow(unused, reason = "Only unused without feature")]
+        let mut active_subscriptions = Vec::<APIBillingSubscription>::default();
+        #[cfg(feature = "saas")]
+        {
+            let manager = crate::billing::manager::BillingManager::new(stripe);
+            active_subscriptions = manager.get_org_plans(conn, org_id).await?;
+        }
+
+        Ok(APIOrganisationManifest {
+            form_count,
+            submission_count,
+            question_count,
+            member_count,
+            team_count,
+            team_asset_count,
+            branding_count,
+            audit_log_count,
+            active_subscriptions,
+        })
     }
 }

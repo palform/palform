@@ -1,11 +1,11 @@
-use std::{collections::HashMap, str::FromStr};
+use std::{collections::HashMap, fmt::Display, str::FromStr};
 
 use chrono::{DateTime, Utc};
 use palform_entities::{organisation, prelude::*};
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};
 use schemars::JsonSchema;
 use sea_orm::{ActiveModelTrait, ConnectionTrait, DbErr, EntityTrait, QuerySelect, Set};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use stripe::{
     BillingPortalSession, CancelSubscription, CancellationDetails, CancellationDetailsFeedback,
     CheckoutSession, CheckoutSessionBillingAddressCollection, CheckoutSessionMode,
@@ -13,10 +13,11 @@ use stripe::{
     CreateCheckoutSessionCustomerUpdateAddress, CreateCheckoutSessionCustomerUpdateName,
     CreateCheckoutSessionLineItems, CreateCheckoutSessionSubscriptionData,
     CreateCheckoutSessionTaxIdCollection, CreateCustomer, Currency, Customer, CustomerId,
-    IdOrCreate, Invoice, List, ListInvoices, ListPrices, ListSubscriptions, Object, Price, PriceId,
-    Product, RecurringInterval, Scheduled, Subscription, SubscriptionId, SubscriptionItemId,
-    SubscriptionStatus, UpdateSubscription, UpdateSubscriptionCancellationDetails,
-    UpdateSubscriptionCancellationDetailsFeedback, UpdateSubscriptionItems,
+    ErrorType, IdOrCreate, Invoice, List, ListInvoices, ListPrices, ListSubscriptions, Object,
+    Price, PriceId, Product, RecurringInterval, Scheduled, StripeError, Subscription,
+    SubscriptionId, SubscriptionItemId, SubscriptionStatus, UpdateSubscription,
+    UpdateSubscriptionCancellationDetails, UpdateSubscriptionCancellationDetailsFeedback,
+    UpdateSubscriptionItems,
 };
 
 use crate::api_entities::billing::{
@@ -34,7 +35,7 @@ use super::{
     util::stripe_timestamp_to_chrono,
 };
 
-#[derive(Deserialize, JsonSchema, Clone)]
+#[derive(Deserialize, Serialize, JsonSchema, Clone)]
 pub enum CancelPlanRequestReason {
     CustomerService,
     LowQuality,
@@ -47,6 +48,20 @@ pub enum CancelPlanRequestReason {
 }
 
 // i hate rust sometimes
+
+impl Display for CancelPlanRequestReason {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let val = serde_json::to_string(self).map_err(|_| std::fmt::Error)?;
+        write!(f, "{}", val)
+    }
+}
+
+impl FromStr for CancelPlanRequestReason {
+    type Err = serde_json::Error;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        serde_json::from_str(s)
+    }
+}
 
 impl From<CancelPlanRequestReason> for CancellationDetailsFeedback {
     fn from(value: CancelPlanRequestReason) -> Self {
@@ -346,7 +361,7 @@ impl<'a> BillingManager<'a> {
         conn: &T,
         org_id: PalformDatabaseID<IDOrganisation>,
         subscription_id: String,
-    ) -> Result<APIBillingUpcomingInvoice, BillingError> {
+    ) -> Result<Option<APIBillingUpcomingInvoice>, BillingError> {
         let customer_id = Self::get_org_customer_id(conn, org_id).await?;
         let subscription_id = SubscriptionId::from_str(&subscription_id)?;
         let response = InvoiceOverride::upcoming(
@@ -360,9 +375,18 @@ impl<'a> BillingManager<'a> {
                 ]),
             },
         )
-        .await?;
+        .await;
 
-        response.try_into()
+        if let Err(error) = response {
+            if let StripeError::Stripe(error) = &error {
+                if error.http_status == 404 && error.error_type == ErrorType::InvalidRequest {
+                    return Ok(None);
+                }
+            }
+            return Err(error.into());
+        }
+
+        response.unwrap().try_into().map(Some)
     }
 
     pub async fn create_checkout_session<T: ConnectionTrait>(
@@ -508,6 +532,16 @@ impl<'a> BillingManager<'a> {
             .await?;
         }
 
+        Ok(())
+    }
+
+    pub async fn delete_customer<T: ConnectionTrait>(
+        &self,
+        conn: &T,
+        org_id: PalformDatabaseID<IDOrganisation>,
+    ) -> Result<(), BillingError> {
+        let org_customer_id = Self::get_org_customer_id(conn, org_id).await?;
+        Customer::delete(self.stripe, &org_customer_id).await?;
         Ok(())
     }
 

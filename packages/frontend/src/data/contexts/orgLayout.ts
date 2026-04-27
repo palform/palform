@@ -18,11 +18,13 @@ import { APIs } from "../common";
 import { orgVisitDb } from "../pouch";
 import { DateTime } from "luxon";
 import { getFormAdminContext } from "./formAdmin";
+import { p } from "../../router";
 
 export interface GlobalWarningMessage {
     message: string;
     link: string;
     hideOnPaths: string[];
+    buttonText: string;
 }
 
 export interface OrgContext {
@@ -127,8 +129,21 @@ export async function reloadGlobalAlert(ctx: Writable<OrgContext>) {
             ctx.globalWarning = {
                 message:
                     "Your account doesn't have an active key. You won't be able to receive form responses until you create one.",
-                link: `/orgs/${val.org.id}/user/keys`,
+                link: p("/orgs/:orgId/user/keys", {
+                    params: { orgId: val.org.id },
+                }),
                 hideOnPaths,
+                buttonText: "Fix now",
+            };
+        } else if (resp.data.alert_type === "PendingDeletion") {
+            ctx.globalWarning = {
+                message:
+                    "This organisation is pending deletion within 24 hours. All data will be permanently deleted.",
+                link: p("/orgs/:orgId/settings/org", {
+                    params: { orgId: val.org.id },
+                }),
+                hideOnPaths,
+                buttonText: "More information",
             };
         }
 

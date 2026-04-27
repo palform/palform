@@ -362,6 +362,18 @@ export interface APIOrganisationAuthTeamMappingRequest {
 }
 
 
+export interface APIOrganisationDeletionRequest {
+    'created_at': string;
+    'deletion_at': string;
+    'id': string;
+    'include_user': boolean;
+    'organisation_id': string;
+    'reason': CancelPlanRequestReason;
+    'status': OrganisationDeletionRequestStatusEnum;
+    'user_id': string;
+}
+
+
 export interface APIOrganisationInvite {
     'created_at': string;
     'expires_at': string;
@@ -372,6 +384,17 @@ export interface APIOrganisationInvitePreview {
     'expires_at': string;
     'org_display_name': string;
     'org_id': string;
+}
+export interface APIOrganisationManifest {
+    'active_subscriptions': Array<APIBillingSubscription>;
+    'audit_log_count': number;
+    'branding_count': number;
+    'form_count': number;
+    'member_count': number;
+    'question_count': number;
+    'submission_count': number;
+    'team_asset_count': number;
+    'team_count': number;
 }
 export interface APIOrganisationTeam {
     'id': string;
@@ -549,6 +572,7 @@ export interface AlertResponse {
 
 export const AlertType = {
     NoActiveKey: 'NoActiveKey',
+    PendingDeletion: 'PendingDeletion',
 } as const;
 
 export type AlertType = typeof AlertType[keyof typeof AlertType];
@@ -983,6 +1007,17 @@ export interface Or {
     'Or': Array<APIQuestionGroupStepStrategyJumpCaseCondition>;
 }
 
+export const OrganisationDeletionRequestStatusEnum = {
+    GracePeriod: 'GracePeriod',
+    Paused: 'Paused',
+    Deleted: 'Deleted',
+    Cancelled: 'Cancelled',
+} as const;
+
+export type OrganisationDeletionRequestStatusEnum = typeof OrganisationDeletionRequestStatusEnum[keyof typeof OrganisationDeletionRequestStatusEnum];
+
+
+
 export const OrganisationMemberRoleEnum = {
     Viewer: 'Viewer',
     Editor: 'Editor',
@@ -994,6 +1029,13 @@ export type OrganisationMemberRoleEnum = typeof OrganisationMemberRoleEnum[keyof
 
 export interface OrganisationTeamMembersPatchRequest {
     'new_role': OrganisationMemberRoleEnum;
+}
+
+
+export interface OrganisationsDeleteRequest {
+    'dry_run': boolean;
+    'include_own_account': boolean;
+    'reason': CancelPlanRequestReason;
 }
 
 
@@ -6841,6 +6883,255 @@ export class OrganisationAuthenticationTeamMappingsApi extends BaseAPI {
 
 
 /**
+ * OrganisationDeletionRequestsApi - axios parameter creator
+ */
+export const OrganisationDeletionRequestsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} requestId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        organisationDeletionRequestsCancel: async (orgId: string, requestId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('organisationDeletionRequestsCancel', 'orgId', orgId)
+            // verify required parameter 'requestId' is not null or undefined
+            assertParamExists('organisationDeletionRequestsCancel', 'requestId', requestId)
+            const localVarPath = `/api/org/{org_id}/deletion_requests/{request_id}`
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
+                .replace(`{${"request_id"}}`, encodeURIComponent(String(requestId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication org_role_token required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        organisationDeletionRequestsList: async (orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('organisationDeletionRequestsList', 'orgId', orgId)
+            const localVarPath = `/api/org/{org_id}/deletion_requests`
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication org_role_token required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} requestId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        organisationDeletionRequestsSkip: async (orgId: string, requestId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('organisationDeletionRequestsSkip', 'orgId', orgId)
+            // verify required parameter 'requestId' is not null or undefined
+            assertParamExists('organisationDeletionRequestsSkip', 'requestId', requestId)
+            const localVarPath = `/api/org/{org_id}/deletion_requests/{request_id}/skip`
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
+                .replace(`{${"request_id"}}`, encodeURIComponent(String(requestId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication org_role_token required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * OrganisationDeletionRequestsApi - functional programming interface
+ */
+export const OrganisationDeletionRequestsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = OrganisationDeletionRequestsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} requestId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async organisationDeletionRequestsCancel(orgId: string, requestId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationDeletionRequestsCancel(orgId, requestId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['OrganisationDeletionRequestsApi.organisationDeletionRequestsCancel']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async organisationDeletionRequestsList(orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIOrganisationDeletionRequest>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationDeletionRequestsList(orgId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['OrganisationDeletionRequestsApi.organisationDeletionRequestsList']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} requestId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async organisationDeletionRequestsSkip(orgId: string, requestId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationDeletionRequestsSkip(orgId, requestId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['OrganisationDeletionRequestsApi.organisationDeletionRequestsSkip']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * OrganisationDeletionRequestsApi - factory interface
+ */
+export const OrganisationDeletionRequestsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = OrganisationDeletionRequestsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} requestId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        organisationDeletionRequestsCancel(orgId: string, requestId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.organisationDeletionRequestsCancel(orgId, requestId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        organisationDeletionRequestsList(orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIOrganisationDeletionRequest>> {
+            return localVarFp.organisationDeletionRequestsList(orgId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {string} requestId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        organisationDeletionRequestsSkip(orgId: string, requestId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.organisationDeletionRequestsSkip(orgId, requestId, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * OrganisationDeletionRequestsApi - object-oriented interface
+ */
+export class OrganisationDeletionRequestsApi extends BaseAPI {
+    /**
+     * 
+     * @param {string} orgId 
+     * @param {string} requestId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public organisationDeletionRequestsCancel(orgId: string, requestId: string, options?: RawAxiosRequestConfig) {
+        return OrganisationDeletionRequestsApiFp(this.configuration).organisationDeletionRequestsCancel(orgId, requestId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} orgId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public organisationDeletionRequestsList(orgId: string, options?: RawAxiosRequestConfig) {
+        return OrganisationDeletionRequestsApiFp(this.configuration).organisationDeletionRequestsList(orgId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} orgId 
+     * @param {string} requestId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public organisationDeletionRequestsSkip(orgId: string, requestId: string, options?: RawAxiosRequestConfig) {
+        return OrganisationDeletionRequestsApiFp(this.configuration).organisationDeletionRequestsSkip(orgId, requestId, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
  * OrganisationInvitesApi - axios parameter creator
  */
 export const OrganisationInvitesApiAxiosParamCreator = function (configuration?: Configuration) {
@@ -8583,12 +8874,15 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
         /**
          * 
          * @param {string} orgId 
+         * @param {OrganisationsDeleteRequest} organisationsDeleteRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        orgsDelete: async (orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        orgsDelete: async (orgId: string, organisationsDeleteRequest: OrganisationsDeleteRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'orgId' is not null or undefined
             assertParamExists('orgsDelete', 'orgId', orgId)
+            // verify required parameter 'organisationsDeleteRequest' is not null or undefined
+            assertParamExists('orgsDelete', 'organisationsDeleteRequest', organisationsDeleteRequest)
             const localVarPath = `/api/org/orgs/{org_id}`
                 .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -8606,10 +8900,13 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(organisationsDeleteRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -8801,11 +9098,12 @@ export const OrganisationsApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {string} orgId 
+         * @param {OrganisationsDeleteRequest} organisationsDeleteRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async orgsDelete(orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.orgsDelete(orgId, options);
+        async orgsDelete(orgId: string, organisationsDeleteRequest: OrganisationsDeleteRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOrganisationManifest>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.orgsDelete(orgId, organisationsDeleteRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['OrganisationsApi.orgsDelete']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -8890,11 +9188,12 @@ export const OrganisationsApiFactory = function (configuration?: Configuration, 
         /**
          * 
          * @param {string} orgId 
+         * @param {OrganisationsDeleteRequest} organisationsDeleteRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        orgsDelete(orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.orgsDelete(orgId, options).then((request) => request(axios, basePath));
+        orgsDelete(orgId: string, organisationsDeleteRequest: OrganisationsDeleteRequest, options?: RawAxiosRequestConfig): AxiosPromise<APIOrganisationManifest> {
+            return localVarFp.orgsDelete(orgId, organisationsDeleteRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -8964,11 +9263,12 @@ export class OrganisationsApi extends BaseAPI {
     /**
      * 
      * @param {string} orgId 
+     * @param {OrganisationsDeleteRequest} organisationsDeleteRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public orgsDelete(orgId: string, options?: RawAxiosRequestConfig) {
-        return OrganisationsApiFp(this.configuration).orgsDelete(orgId, options).then((request) => request(this.axios, this.basePath));
+    public orgsDelete(orgId: string, organisationsDeleteRequest: OrganisationsDeleteRequest, options?: RawAxiosRequestConfig) {
+        return OrganisationsApiFp(this.configuration).orgsDelete(orgId, organisationsDeleteRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

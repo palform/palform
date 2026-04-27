@@ -19,6 +19,7 @@ pub use super::form_template_category_assignment::Entity as FormTemplateCategory
 pub use super::organisation::Entity as Organisation;
 pub use super::organisation_auth_config::Entity as OrganisationAuthConfig;
 pub use super::organisation_auth_team_mapping::Entity as OrganisationAuthTeamMapping;
+pub use super::organisation_deletion_request::Entity as OrganisationDeletionRequest;
 pub use super::organisation_feature_entitlement::Entity as OrganisationFeatureEntitlement;
 pub use super::organisation_invite::Entity as OrganisationInvite;
 pub use super::organisation_membership::Entity as OrganisationMembership;

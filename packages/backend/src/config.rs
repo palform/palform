@@ -43,6 +43,8 @@ pub struct Config {
     /// In bytes
     pub file_upload_size_limit: usize,
 
+    pub organisation_deletion_grace_period_hours: u16,
+
     #[cfg(feature = "saas")]
     pub stripe_secret_key: String,
     #[cfg(feature = "saas")]
@@ -93,6 +95,7 @@ impl Default for Config {
             social_auth_providers: Vec::default(),
             auth_token_expiry_hours: 24,
             file_upload_size_limit: 52_428_800,
+            organisation_deletion_grace_period_hours: 24,
             stripe_secret_key: String::default(),
             stripe_webhook_secret: String::default(),
         }

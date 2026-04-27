@@ -28,7 +28,7 @@ pub async fn billing_invoices_preview(
     _token: APITokenOrgAdmin,
     db: Data<DatabaseConnection>,
     stripe: Data<stripe::Client>,
-) -> Result<Json<APIBillingUpcomingInvoice>, APIError> {
+) -> Result<Json<Option<APIBillingUpcomingInvoice>>, APIError> {
     let manager = BillingManager::new(stripe.as_ref());
     let resp = manager
         .preview_invoice(db.as_ref(), path.org_id, query.stripe_subscription_id)

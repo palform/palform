@@ -1,14 +1,18 @@
+use std::io::ErrorKind;
+
 use clap::Command;
 
 use crate::{
     api_server::run_api_server,
+    billing::client::init_stripe_client,
     config::Config,
     database::init_db,
     jobs::{
         delete_abandoned_emails::job_delete_abandoned_emails,
         delete_old_audit_logs::job_delete_old_audit_logs,
         delete_old_auth_tokens::job_delete_old_auth_tokens,
-        delete_old_submissions::job_delete_old_submissions, webhooks::job_run_webhooks,
+        delete_old_submissions::job_delete_old_submissions,
+        run_org_delete_requests::job_run_org_delete_requests, webhooks::job_run_webhooks,
     },
 };
 
@@ -53,6 +57,8 @@ async fn main() -> std::io::Result<()> {
                     Command::new("delete-old-auth-tokens").about("Delete expired auth tokens"),
                     Command::new("delete-old-submissions")
                         .about("Delete submissions in form with auto-delete enabled"),
+                    Command::new("run-org-delete-requests")
+                        .about("Execute org delete requests that have finished their grace period"),
                     Command::new("webhooks").about("Run pending webhook jobs"),
                 ]),
         )
@@ -60,18 +66,33 @@ async fn main() -> std::io::Result<()> {
 
     let config = Config::parse_config();
     let db = init_db(&config).await;
+    let stripe = init_stripe_client(&config);
 
     match matches.subcommand() {
         Some(("job", sub_matches)) => match sub_matches.subcommand() {
-            Some(("delete-abandoned-emails", _)) => job_delete_abandoned_emails(&db).await,
-            Some(("delete-old-audit-logs", _)) => job_delete_old_audit_logs(&db).await,
-            Some(("delete-old-auth-tokens", _)) => job_delete_old_auth_tokens(&db).await,
-            Some(("delete-old-submissions", _)) => job_delete_old_submissions(&db).await,
-            Some(("webhooks", _)) => job_run_webhooks(&db).await,
+            Some(("delete-abandoned-emails", _)) => job_delete_abandoned_emails(&db)
+                .await
+                .map_err(|e| std::io::Error::new(ErrorKind::Other, e.to_string())),
+            Some(("delete-old-audit-logs", _)) => job_delete_old_audit_logs(&db)
+                .await
+                .map_err(|e| std::io::Error::new(ErrorKind::Other, e.to_string())),
+            Some(("delete-old-auth-tokens", _)) => job_delete_old_auth_tokens(&db)
+                .await
+                .map_err(|e| std::io::Error::new(ErrorKind::Other, e.to_string())),
+            Some(("delete-old-submissions", _)) => job_delete_old_submissions(&db)
+                .await
+                .map_err(|e| std::io::Error::new(ErrorKind::Other, e.to_string())),
+            Some(("run-org-delete-requests", _)) => {
+                job_run_org_delete_requests(&db, &stripe, &config)
+                    .await
+                    .map_err(|e| std::io::Error::new(ErrorKind::Other, e.to_string()))
+            }
+            Some(("webhooks", _)) => job_run_webhooks(&db)
+                .await
+                .map_err(|e| std::io::Error::new(ErrorKind::Other, e.to_string())),
             _ => unreachable!("Subcommands are required"),
-        }
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string())),
-        Some(("server", _)) => run_api_server(&config, &db).await,
+        },
+        Some(("server", _)) => run_api_server(&config, &db, &stripe).await,
         _ => unreachable!("Invalid command specified"),
     }
 }

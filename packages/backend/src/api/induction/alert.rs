@@ -14,6 +14,7 @@ use crate::entity_managers::induction::InductionStatusManager;
 #[derive(Serialize, JsonSchema)]
 pub enum AlertType {
     NoActiveKey,
+    PendingDeletion,
 }
 
 #[derive(Serialize, JsonSchema)]
@@ -40,6 +41,14 @@ pub async fn induction_alert(
     db: Data<DatabaseConnection>,
 ) -> Result<Json<Option<AlertResponse>>, APIError> {
     let manager = InductionStatusManager::new(token.get_user_id(), path.org_id, db.as_ref());
+    let has_pending_deletion = manager.has_pending_deletion().await.map_internal_error()?;
+    if has_pending_deletion {
+        return Ok(Json(Some(AlertResponse {
+            alert_type: AlertType::PendingDeletion,
+            hide_on: Vec::default(),
+        })));
+    }
+
     let has_active_key = manager.has_active_key().await.map_internal_error()?;
     if !has_active_key {
         return Ok(Json(Some(AlertResponse {

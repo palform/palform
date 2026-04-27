@@ -130,7 +130,7 @@ void (empty response body)
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **orgsDelete**
-> orgsDelete()
+> APIOrganisationManifest orgsDelete(organisationsDeleteRequest)
 
 
 ### Example
@@ -138,16 +138,19 @@ void (empty response body)
 ```typescript
 import {
     OrganisationsApi,
-    Configuration
+    Configuration,
+    OrganisationsDeleteRequest
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new OrganisationsApi(configuration);
 
 let orgId: string; // (default to undefined)
+let organisationsDeleteRequest: OrganisationsDeleteRequest; //
 
 const { status, data } = await apiInstance.orgsDelete(
-    orgId
+    orgId,
+    organisationsDeleteRequest
 );
 ```
 
@@ -155,12 +158,13 @@ const { status, data } = await apiInstance.orgsDelete(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
+| **organisationsDeleteRequest** | **OrganisationsDeleteRequest**|  | |
 | **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-void (empty response body)
+**APIOrganisationManifest**
 
 ### Authorization
 
@@ -168,8 +172,8 @@ void (empty response body)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: Not defined
+ - **Content-Type**: application/json
+ - **Accept**: application/json
 
 
 ### HTTP response details

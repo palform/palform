@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     import {
         ctxGetCurrentGroup,
         ctxGetCurrentGroupQuestions,
@@ -25,16 +23,17 @@
 
     let animateOut = $state(true);
     const animationDelay = 100;
-    run(() => {
-        $currentGroup?.id,
-            setTimeout(() => {
-                animateOut = false;
-            }, animationDelay);
+    $effect(() => {
+        $currentGroup?.id;
+        const timeout = setTimeout(() => {
+            animateOut = false;
+        }, animationDelay);
+        return () => clearTimeout(timeout);
     });
 
     let showCaptchaModal = $state(false);
-    let onSubmit = $derived(async (e: Event, captchaValue?: string) => {
-        e.preventDefault();
+    let onSubmit = $derived(async (e?: Event, captchaValue?: string) => {
+        e?.preventDefault();
 
         if (!$formFillStore) return;
         if (!validateQuestions()) return;
@@ -165,6 +164,6 @@
 
     <FormFillCaptchaModal
         bind:open={showCaptchaModal}
-        on:complete={(e) => onSubmit(e, e.detail)}
+        oncomplete={(e) => onSubmit(undefined, e)}
     />
 {/if}

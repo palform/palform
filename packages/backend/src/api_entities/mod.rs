@@ -11,6 +11,7 @@ pub mod key;
 pub mod org;
 pub mod organisation_auth_config;
 pub mod organisation_auth_team_mapping;
+pub mod organisation_deletion_request;
 pub mod organisation_invite;
 pub mod organisation_member;
 pub mod organisation_team;

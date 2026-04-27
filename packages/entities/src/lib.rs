@@ -21,6 +21,7 @@ pub mod form_template_category_assignment;
 pub mod organisation;
 pub mod organisation_auth_config;
 pub mod organisation_auth_team_mapping;
+pub mod organisation_deletion_request;
 pub mod organisation_feature_entitlement;
 pub mod organisation_invite;
 pub mod organisation_membership;

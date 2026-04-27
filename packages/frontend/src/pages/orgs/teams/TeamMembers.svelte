@@ -35,11 +35,11 @@
             };
         });
     });
-    let onMemberAdd = $derived((e: CustomEvent<APIOrganisationTeamMember>) => {
+    let onMemberAdd = $derived((e: APIOrganisationTeamMember) => {
         teamCtx.update((ctx) => {
             return {
                 ...ctx,
-                members: [e.detail, ...ctx.members],
+                members: [e, ...ctx.members],
             };
         });
     });
@@ -62,7 +62,7 @@
         class="mb-4"
         teamId={$teamCtx.team.id}
         existingTeamMemberIds={$teamCtx.members.map((e) => e.user_id)}
-        on:add={onMemberAdd}
+        onadd={onMemberAdd}
     />
 {/if}
 
@@ -86,9 +86,8 @@
                     readonly={userId === member.user_id &&
                         ($teamCtx.team.is_default ?? false)}
                     isDefaultTeam={$teamCtx.team.is_default ?? false}
-                    on:update={(e) =>
-                        onMemberRoleChange(member.user_id, e.detail)}
-                    on:delete={() => onMemberDelete(member.user_id)}
+                    onupdate={(e) => onMemberRoleChange(member.user_id, e)}
+                    ondelete={() => onMemberDelete(member.user_id)}
                 />
             {/each}
         </TableBody>

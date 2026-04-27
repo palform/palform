@@ -20,7 +20,8 @@
     const orgCtx = getOrgContext();
 
     let loading = $state(true);
-    let upcomingInvoice: APIBillingUpcomingInvoice | undefined = $state(undefined);
+    let upcomingInvoice: APIBillingUpcomingInvoice | undefined =
+        $state(undefined);
     APIs.billingInvoices()
         .then((a) =>
             a.billingInvoicePreview(
