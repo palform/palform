@@ -3,7 +3,7 @@
     import InfoText from "../../components/type/InfoText.svelte";
     import AuthCard from "../../layouts/AuthCard.svelte";
     import { APIs } from "../../data/common";
-    import { navigate, route, typedNavigate } from "../../router";
+    import { route, typedNavigate } from "../../router";
     import { showFailureToast, showSuccessToast } from "../../data/toast";
 
     let { verificationId } = route.getParams("/auth/verify/:verificationId");
@@ -16,7 +16,6 @@
                 typedNavigate("/auth/login", {
                     search: { create_initial_org: "true" },
                 });
-                navigate("/auth/login?create_initial_org");
                 showSuccessToast("Email verified! Please sign in.");
             })
             .catch((e) => {
