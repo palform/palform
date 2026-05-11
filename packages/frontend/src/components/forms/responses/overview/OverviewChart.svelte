@@ -6,6 +6,7 @@
         qIsDateTime,
         qIsHidden,
         qIsPhoneNumber,
+        qIsRank,
         qIsScale,
         qIsText,
     } from "../../../../data/contexts/formEditor";
@@ -27,6 +28,7 @@
         ctxSubmissionsForQuestion,
     } from "../../../../data/contexts/formAdmin";
     import { sIsNonEmpty } from "../../../../data/contexts/fill";
+    import OverviewChartRank from "./OverviewChartRank.svelte";
 
     interface Props {
         questionId: string;
@@ -70,6 +72,8 @@
             <OverviewChartText {questionId} />
         {:else if qIsChoice($question.configuration)}
             <OverviewChartChoice {questionId} />
+        {:else if qIsRank($question.configuration)}
+            <OverviewChartRank {questionId} />
         {:else if qIsScale($question.configuration)}
             <OverviewChartScale {questionId} />
         {:else if qIsAddress($question.configuration)}

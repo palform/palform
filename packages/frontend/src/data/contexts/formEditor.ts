@@ -11,6 +11,7 @@ import {
     type ConfigHidden,
     type ConfigInfo,
     type ConfigPhoneNumber,
+    type ConfigRank,
     type ConfigScale,
     type ConfigSignature,
     type ConfigText,
@@ -275,6 +276,8 @@ export function humanQuestionTypeLabel(config: APIQuestionConfiguration) {
         return "Choice matrix";
     } else if (qIsDateTime(config)) {
         return "Date/time";
+    } else if (qIsRank(config)) {
+        return "Rank";
     } else if (qIsHidden(config)) {
         return "Hidden";
     }
@@ -296,5 +299,6 @@ export const qIsFileUpload = qIs<ConfigFileUpload>("file_upload");
 export const qIsSignature = qIs<ConfigSignature>("signature");
 export const qIsChoiceMatrix = qIs<ConfigChoiceMatrix>("choice_matrix");
 export const qIsDateTime = qIs<ConfigDateTime>("date_time");
+export const qIsRank = qIs<ConfigRank>("rank");
 export const qIsHidden = qIs<ConfigHidden>("hidden");
 export const qIsMeta = (config?: APIQuestionConfiguration) => qIsInfo(config);

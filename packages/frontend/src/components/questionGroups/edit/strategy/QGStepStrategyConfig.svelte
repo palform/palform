@@ -35,7 +35,6 @@
 
     let group = $derived(ctxGetGroup(props.groupId));
     let currentConfig = $derived($group?.step_strategy);
-    $effect(() => console.log("currentConfig", currentConfig));
 
     let currentActionValue = $derived(
         currentConfig !== undefined && qgsIsJump(currentConfig)

@@ -18,16 +18,18 @@
     const orgCtx = getOrgContext();
     const formAdminCtx = getFormAdminContext();
     const formMetadataCtx = getFormCtx();
-    let groupedQuestions = $derived($formAdminCtx.groups.map((g) => ({
-        group: g,
-        questions: $formAdminCtx.questions
-            .filter((q) => !qIsInfo(q.configuration) && q.group_id === g.id)
-            .map((q) => q.id),
-    })));
+    let groupedQuestions = $derived(
+        $formAdminCtx.groups.map((g) => ({
+            group: g,
+            questions: $formAdminCtx.questions
+                .filter((q) => !qIsInfo(q.configuration) && q.group_id === g.id)
+                .map((q) => q.id),
+        }))
+    );
 
-    let hasSomeFailure = $derived($formAdminCtx.submissions.some((e) =>
-        submissionIsError(e)
-    ));
+    let hasSomeFailure = $derived(
+        $formAdminCtx.submissions.some((e) => submissionIsError(e))
+    );
 </script>
 
 <ol class="space-y-4">
@@ -57,10 +59,8 @@
     {#if hasSomeFailure}
         <Alert border color="yellow">
             {#snippet icon()}
-                    
-                    <FontAwesomeIcon icon={faWarning} />
-                
-                    {/snippet}
+                <FontAwesomeIcon icon={faWarning} />
+            {/snippet}
             <h2 class="text-lg">Failed to decrypt some responses</h2>
             <p>
                 We were unable to decrypt at least one response. Check the

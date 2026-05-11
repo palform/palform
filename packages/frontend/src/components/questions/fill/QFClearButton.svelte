@@ -6,16 +6,25 @@
         disabled?: boolean;
         class?: string;
         onclick?: MouseEventHandler<HTMLButtonElement>;
+        hidden?: boolean;
+        text?: string;
     }
 
-    let { disabled = false, class: className, onclick }: Props = $props();
+    let {
+        disabled = false,
+        class: className,
+        onclick,
+        hidden,
+        text = t("field_clear"),
+    }: Props = $props();
 </script>
 
 <button
-    class={`text-xs text-gray-600 hover:underline cursor-pointer ${className ?? ""}`}
+    class={`text-xs text-gray-600 hover:underline cursor-pointer ${hidden ? "invisible" : ""} ${className}`}
     type="button"
     {onclick}
     {disabled}
+    aria-hidden={hidden}
 >
-    {t("field_clear")}
+    {text}
 </button>

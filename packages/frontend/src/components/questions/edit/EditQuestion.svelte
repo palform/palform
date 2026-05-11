@@ -26,6 +26,7 @@
         qIsText,
         updateQuestion,
         moveQuestion,
+        qIsRank,
     } from "../../../data/contexts/formEditor";
     import CardBox from "../../cardBox/CardBox.svelte";
     import CardBoxTitle from "../../cardBox/CardBoxTitle.svelte";
@@ -52,6 +53,7 @@
     import QeDateTime from "./QEDateTime.svelte";
     import QeHidden from "./QEHidden.svelte";
     import type { ArrayMoveDirection } from "../../../data/util/arraySwap";
+    import QERank from "./QERank.svelte";
 
     interface Props {
         questionId: string;
@@ -294,6 +296,8 @@
                     <QeChoiceMatrix bind:config={questionConfiguration} />
                 {:else if qIsDateTime(questionConfiguration)}
                     <QeDateTime bind:config={questionConfiguration} />
+                {:else if qIsRank(questionConfiguration)}
+                    <QERank bind:config={questionConfiguration} />
                 {:else if qIsHidden(questionConfiguration)}
                     <QeHidden bind:config={questionConfiguration} />
                 {/if}

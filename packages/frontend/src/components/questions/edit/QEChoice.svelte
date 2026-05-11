@@ -4,6 +4,7 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
     import { getFormEditorCtx } from "../../../data/contexts/formEditor";
+    import ButtonInput from "../../input/ButtonInput.svelte";
 
     interface Props {
         config: ConfigChoice;
@@ -41,18 +42,14 @@
 <div class="space-y-2">
     {#each config.choice.options as _, index}
         <div class="flex gap-x-2">
-            <Input
+            <ButtonInput
                 bind:value={config.choice.options[index]}
                 disabled={$ctx.loading}
-            />
-            {#if index !== 0}
-                <Button
-                    disabled={$ctx.loading}
-                    onclick={() => onOptionRemove(config.choice.options[index])}
-                >
-                    <FontAwesomeIcon icon={faTrash} />
-                </Button>
-            {/if}
+                hideButton={index === 0}
+                onclick={() => onOptionRemove(config.choice.options[index])}
+            >
+                <FontAwesomeIcon icon={faTrash} />
+            </ButtonInput>
         </div>
     {/each}
 </div>

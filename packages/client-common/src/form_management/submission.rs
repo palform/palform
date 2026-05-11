@@ -66,6 +66,10 @@ pub enum QuestionSubmissionData {
         #[cfg_attr(feature = "frontend-js", ts(type = "string | null | undefined"))]
         value: Option<DateTime<Local>>,
     },
+    Rank {
+        /// Options listed in rank order
+        value: Vec<String>,
+    },
     Hidden {
         value: String,
     },
@@ -97,6 +101,8 @@ impl QuestionSubmissionData {
                 full_name,
             } => freeform.is_empty() && initial.is_empty() && full_name.is_empty(),
             QuestionSubmissionData::DateTime { value } => value.is_none(),
+            // The options will always be shown in some order to start with, so this cannot be empty.
+            QuestionSubmissionData::Rank { value: _ } => false,
             QuestionSubmissionData::Hidden { value } => value.is_empty(),
         }
     }
@@ -171,6 +177,9 @@ impl Display for QuestionSubmissionData {
                         .unwrap_or("".to_string())
                 )
             }
+            QuestionSubmissionData::Rank { value } => {
+                write!(f, "{}", value.join(","))
+            }
             QuestionSubmissionData::Hidden { value } => {
                 write!(f, "{}", value)
             }
@@ -244,7 +253,7 @@ impl TryFrom<APIQuestion> for QuestionSubmission {
                 allow_initial: _,
                 allow_full_name: _,
             } => QuestionSubmissionData::Signature {
-                freeform: Vec::new(),
+                freeform: Vec::default(),
                 initial: String::default(),
                 full_name: String::default(),
             },
@@ -254,6 +263,26 @@ impl TryFrom<APIQuestion> for QuestionSubmission {
                 min: _,
                 max: _,
             } => QuestionSubmissionData::DateTime { value: None },
+            APIQuestionConfiguration::Rank {
+                options,
+                #[cfg(feature = "frontend-js")]
+                default_random,
+                #[cfg(feature = "backend")]
+                    default_random: _,
+            } => {
+                #[cfg(feature = "frontend-js")]
+                let mut options = options.clone();
+                #[cfg(feature = "backend")]
+                let options = options.clone();
+                #[cfg(feature = "frontend-js")]
+                {
+                    use rand::{rng, seq::SliceRandom};
+                    if default_random {
+                        options.shuffle(&mut rng());
+                    }
+                }
+                QuestionSubmissionData::Rank { value: options }
+            }
             APIQuestionConfiguration::Hidden { parameter_name: _ } => {
                 QuestionSubmissionData::Hidden {
                     value: String::default(),

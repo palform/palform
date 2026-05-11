@@ -16,8 +16,8 @@
         qIsDateTime,
         qIsFileUpload,
         qIsHidden,
-        qIsInfo,
         qIsPhoneNumber,
+        qIsRank,
         qIsScale,
         qIsSignature,
         qIsText,
@@ -34,6 +34,7 @@
     import QfChoiceMatrix from "./QFChoiceMatrix.svelte";
     import QfDateTime from "./QFDateTime.svelte";
     import QfHidden from "./QFHidden.svelte";
+    import QFRank from "./QFRank.svelte";
 
     interface Props {
         question: APIQuestion;
@@ -58,12 +59,7 @@
 </script>
 
 {#if !qIsHidden(config)}
-    <CardBox
-        backgroundColor={qIsInfo(config)
-            ? (config.info.background_color ?? undefined)
-            : undefined}
-        errorState={$validationError !== undefined}
-    >
+    <CardBox errorState={$validationError !== undefined}>
         <fieldset>
             {#if $validationError}
                 <Alert color="red" class="mb-4">
@@ -71,14 +67,18 @@
                 </Alert>
             {/if}
 
-            <label for={id} class="text-primary-800 dark:text-primary-300">
-                <BrandedSpan sizeGroup="h2">
-                    {templateFillQuestionText(question.title)}
-                </BrandedSpan>
-                {#if question.required}
-                    <span class="text-red-500 text-sm align-top ms-1">*</span>
-                {/if}
-            </label>
+            <legend class="text-primary-800 dark:text-primary-300">
+                <label for={id}>
+                    <BrandedSpan sizeGroup="h2">
+                        {templateFillQuestionText(question.title)}
+                    </BrandedSpan>
+                    {#if question.required}
+                        <span class="text-red-500 text-sm align-top ms-1">
+                            *
+                        </span>
+                    {/if}
+                </label>
+            </legend>
             {#if question.description}
                 <CardBoxSubtitle class="mb-2 last:mb-0">
                     <MarkdownView
@@ -149,6 +149,13 @@
                     />
                 {:else if qIsDateTime(config)}
                     <QfDateTime
+                        {id}
+                        {config}
+                        currentValue={$currentValue}
+                        onchange={onUpdate}
+                    />
+                {:else if qIsRank(config)}
+                    <QFRank
                         {id}
                         {config}
                         currentValue={$currentValue}

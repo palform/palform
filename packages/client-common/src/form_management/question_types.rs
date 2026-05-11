@@ -159,6 +159,14 @@ pub enum APIQuestionConfiguration {
         min: Option<DateTime<Local>>,
         max: Option<DateTime<Local>>,
     },
+    #[serde(rename = "rank")]
+    #[cfg_attr(feature = "backend", schemars(title = "config_rank"))]
+    Rank {
+        /// Available options to be ranked by the user. Will be shown in the specified order.
+        options: Vec<String>,
+        /// If true, will show the items ranked randomly instead of the default order.
+        default_random: bool,
+    },
     #[serde(rename = "hidden")]
     #[cfg_attr(feature = "backend", schemars(title = "config_hidden"))]
     Hidden { parameter_name: String },
@@ -273,6 +281,14 @@ impl APIQuestionConfiguration {
                 collect_time: false,
                 min: None,
                 max: None,
+            }),
+            "rank" | "Rank" => Ok(APIQuestionConfiguration::Rank {
+                options: vec![
+                    "Option 1".to_string(),
+                    "Option 2".to_string(),
+                    "Option 3".to_string(),
+                ],
+                default_random: false,
             }),
             "hidden" | "Hidden" => Ok(APIQuestionConfiguration::Hidden {
                 parameter_name: String::default(),

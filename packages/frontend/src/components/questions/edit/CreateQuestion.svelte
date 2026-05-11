@@ -99,6 +99,11 @@
             onclick={() => onAddTypeClick("choice_matrix")}
         />
         <NewQuestionType
+            title="Rank"
+            description="Reorderable ranked list of options"
+            onclick={() => onAddTypeClick("rank")}
+        />
+        <NewQuestionType
             title="Scale"
             description="Numerical scale between any two integers"
             onclick={() => onAddTypeClick("scale")}

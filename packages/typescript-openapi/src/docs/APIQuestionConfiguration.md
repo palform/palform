@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **signature** | [**ConfigSignatureSignature**](ConfigSignatureSignature.md) |  | [default to undefined]
 **choice_matrix** | [**ConfigChoiceMatrixChoiceMatrix**](ConfigChoiceMatrixChoiceMatrix.md) |  | [default to undefined]
 **date_time** | [**ConfigDateTimeDateTime**](ConfigDateTimeDateTime.md) |  | [default to undefined]
+**rank** | [**ConfigRankRank**](ConfigRankRank.md) |  | [default to undefined]
 **hidden** | [**ConfigHiddenHidden**](ConfigHiddenHidden.md) |  | [default to undefined]
 
 ## Example
@@ -33,6 +34,7 @@ const instance: APIQuestionConfiguration = {
     signature,
     choice_matrix,
     date_time,
+    rank,
     hidden,
 };
 ```

@@ -15,37 +15,49 @@
         faSquareCheck as squareEmpty,
         faCircleCheck as circleEmpty,
     } from "@fortawesome/free-regular-svg-icons";
+    import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+    import type { Snippet } from "svelte";
 
     interface Props {
         questionId: string;
         option: string;
         isActive: boolean;
         isMulti: boolean;
+        class?: string;
+        icon?: IconProp;
+        children?: Snippet;
     }
 
-    let { questionId, option, isActive, isMulti }: Props = $props();
+    let {
+        questionId,
+        option,
+        isActive,
+        isMulti,
+        class: className,
+        icon,
+        children,
+    }: Props = $props();
 
     const brandCtx = getBrandCtx();
     const isDark = isDarkMode();
 
-    let backgroundColorOverride: string | undefined = $state(undefined);
-    let borderColorOverride: string | undefined = $state(undefined);
-    $effect(() => {
+    let { backgroundColorOverride, borderColorOverride } = $derived.by(() => {
         if ($brandCtx !== undefined && isActive) {
-            if (isActive) {
-                backgroundColorOverride = colorWithLightness(
+            return {
+                backgroundColorOverride: colorWithLightness(
                     $brandCtx.primary_color,
                     isDark ? 15 : 90
-                );
-                borderColorOverride = colorWithLightness(
+                ),
+                borderColorOverride: colorWithLightness(
                     $brandCtx.primary_color,
                     isDark ? 25 : 80
-                );
-            }
-        } else {
-            backgroundColorOverride = undefined;
-            borderColorOverride = undefined;
+                ),
+            };
         }
+        return {
+            backgroundColorOverride: undefined,
+            borderColorOverride: undefined,
+        };
     });
 
     const iconClass = "text-lg align-text-bottom text-gray-500 me-3";
@@ -53,13 +65,15 @@
 
 <label
     for={`${questionId}-${option}`}
-    class={`border border-slate-200 dark:border-slate-800 text-gray-800 dark:text-gray-300 block p-4 text-sm cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800/80 ${isActive && $brandCtx === undefined ? "bg-primary-200/60! dark:bg-primary-950!" : ""}`}
+    class={`flex items-center border border-slate-200 dark:border-slate-800 text-gray-800 dark:text-gray-300 block p-4 text-sm cursor-pointer transition-colors bg-slate-50/50 dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800/80 ${isActive && $brandCtx === undefined ? "bg-primary-200/60! dark:bg-primary-950!" : ""} ${className}`}
     style:font-size={`${getBaseREMFontSizeForBrand($brandCtx) * 0.85}rem`}
     style:border-radius={getRoundingAmountForBrand($brandCtx, true)}
     style:background-color={backgroundColorOverride}
     style:border-color={borderColorOverride}
 >
-    {#if isMulti}
+    {#if icon}
+        <FontAwesomeIcon {icon} class={iconClass} />
+    {:else if isMulti}
         {#if isActive}
             <FontAwesomeIcon icon={squareChecked} class={iconClass} />
         {:else}
@@ -71,5 +85,9 @@
         <FontAwesomeIcon icon={circleEmpty} class={iconClass} />
     {/if}
 
-    {option}
+    <span class="flex-1">
+        {option}
+    </span>
+
+    {@render children?.()}
 </label>

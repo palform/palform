@@ -368,6 +368,12 @@ export function sGetDateTime(s: QuestionSubmissionData) {
     }
     throw new Error();
 }
+export function sGetRank(s: QuestionSubmissionData) {
+    if ("Rank" in s) {
+        return s.Rank;
+    }
+    throw new Error();
+}
 export function sGetHidden(s: QuestionSubmissionData) {
     if ("Hidden" in s) {
         return s.Hidden;

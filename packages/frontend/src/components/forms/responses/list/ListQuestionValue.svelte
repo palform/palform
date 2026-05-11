@@ -9,6 +9,7 @@
         qIsFileUpload,
         qIsHidden,
         qIsPhoneNumber,
+        qIsRank,
         qIsScale,
         qIsSignature,
         qIsText,
@@ -21,6 +22,7 @@
         sGetFileUpload,
         sGetHidden,
         sGetPhoneNumber,
+        sGetRank,
         sGetScale,
         sGetSignature,
         sGetText,
@@ -62,6 +64,18 @@
         <ul class="list-disc list-inside">
             {#each sGetChoice(questionSubmission.data).option as option}
                 <li class="dark:text-gray-400">{option}</li>
+            {/each}
+        </ul>
+    {/if}
+{:else if qIsRank(question.configuration)}
+    {#if compact}
+        <p class="dark:text-gray-400 text-xs text-ellipsis line-clamp-2">
+            {sGetRank(questionSubmission.data).value.join(", ")}
+        </p>
+    {:else}
+        <ul class="list-disc list-inside">
+            {#each sGetRank(questionSubmission.data).value as value}
+                <li class="dark:text-gray-400">{value}</li>
             {/each}
         </ul>
     {/if}

@@ -430,7 +430,7 @@ export interface APIQuestion {
 /**
  * @type APIQuestionConfiguration
  */
-export type APIQuestionConfiguration = ConfigAddress | ConfigChoice | ConfigChoiceMatrix | ConfigDateTime | ConfigFileUpload | ConfigHidden | ConfigInfo | ConfigPhoneNumber | ConfigScale | ConfigSignature | ConfigText;
+export type APIQuestionConfiguration = ConfigAddress | ConfigChoice | ConfigChoiceMatrix | ConfigDateTime | ConfigFileUpload | ConfigHidden | ConfigInfo | ConfigPhoneNumber | ConfigRank | ConfigScale | ConfigSignature | ConfigText;
 
 
 export const APIQuestionFileUploadType = {
@@ -730,6 +730,19 @@ export interface ConfigPhoneNumberPhoneNumber {
      * Pre-selects this calling code
      */
     'default_calling_code'?: string | null;
+}
+export interface ConfigRank {
+    'rank': ConfigRankRank;
+}
+export interface ConfigRankRank {
+    /**
+     * If true, will show the items ranked randomly instead of the default order.
+     */
+    'default_random': boolean;
+    /**
+     * Available options to be ranked by the user. Will be shown in the specified order.
+     */
+    'options': Array<string>;
 }
 export interface ConfigScale {
     'scale': ConfigScaleScale;

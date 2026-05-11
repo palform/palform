@@ -42,39 +42,44 @@
 
 <ol class="space-y-2">
     {#each config.choice.options as option}
-        {#if config.choice.multi}
-            <input
-                id={`${id}-${option}`}
-                name={id}
-                value={option}
-                type="checkbox"
-                class="hidden"
-                bind:group={value.option}
-                disabled={$fillSendStore?.loading}
-                onchange={onChoiceChange}
-            />
-        {:else}
-            <input
-                id={`${id}-${option}`}
-                name={id}
-                value={option}
-                type="radio"
-                class="hidden"
-                bind:group={value.option[0]}
-                disabled={$fillSendStore?.loading}
-                onchange={onChoiceChange}
-            />
-        {/if}
+        <li>
+            {#if config.choice.multi}
+                <input
+                    id={`${id}-${option}`}
+                    name={id}
+                    value={option}
+                    type="checkbox"
+                    class="hidden"
+                    bind:group={value.option}
+                    disabled={$fillSendStore?.loading}
+                    onchange={onChoiceChange}
+                />
+            {:else}
+                <input
+                    id={`${id}-${option}`}
+                    name={id}
+                    value={option}
+                    type="radio"
+                    class="hidden"
+                    bind:group={value.option[0]}
+                    disabled={$fillSendStore?.loading}
+                    onchange={onChoiceChange}
+                />
+            {/if}
 
-        <QfChoiceLabelButton
-            questionId={id}
-            {option}
-            isActive={value.option.includes(option)}
-            isMulti={config.choice.multi}
-        />
+            <QfChoiceLabelButton
+                questionId={id}
+                {option}
+                isActive={value.option.includes(option)}
+                isMulti={config.choice.multi}
+            />
+        </li>
     {/each}
-
-    {#if value.option.length > 0}
-        <QfClearButton onclick={onClear} disabled={$fillSendStore?.loading} />
-    {/if}
 </ol>
+
+<QfClearButton
+    onclick={onClear}
+    disabled={$fillSendStore?.loading}
+    hidden={value.option.length === 0}
+    class="mt-2"
+/>
