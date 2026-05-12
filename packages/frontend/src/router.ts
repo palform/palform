@@ -3,16 +3,13 @@ import OrganisationSwitcher from "./pages/orgs/OrganisationSwitcher.svelte";
 import NewOrganisation from "./pages/orgs/NewOrganisation.svelte";
 import JoinOrganisation from "./pages/orgs/JoinOrganisation.svelte";
 import FillForm from "./pages/fill/FillForm.svelte";
-import OrganisationLayout from "./layouts/OrganisationLayout.svelte";
-import FormAdmin from "./pages/forms/FormAdmin.svelte";
-import OrganisationTeamManage from "./pages/orgs/teams/OrganisationTeamManage.svelte";
 
 const routerApi = createRouter({
     "/": OrganisationSwitcher,
     "/orgs/new": NewOrganisation,
     "/orgs/join/:orgId/:inviteId": JoinOrganisation,
     "/orgs/:orgId": {
-        layout: OrganisationLayout,
+        layout: () => import("./layouts/OrganisationLayout.svelte"),
         "/": () => import("./pages/orgs/OrganisationHome.svelte"),
         "/induction": () =>
             import("./pages/induction/InductionResources.svelte"),
@@ -26,7 +23,8 @@ const routerApi = createRouter({
         "/settings/teams": () =>
             import("./pages/orgs/teams/OrganisationTeams.svelte"),
         "/settings/teams/:teamId": {
-            layout: OrganisationTeamManage,
+            layout: () =>
+                import("./pages/orgs/teams/OrganisationTeamManage.svelte"),
             "/members": () => import("./pages/orgs/teams/TeamMembers.svelte"),
             "/brandings": () =>
                 import("./pages/orgs/teams/TeamBrandings.svelte"),
@@ -69,7 +67,7 @@ const routerApi = createRouter({
         "/forms/new/:initialTeamId": () =>
             import("./pages/forms/FormNew.svelte"),
         "/forms/:formId": {
-            layout: FormAdmin,
+            layout: () => import("./pages/forms/FormAdmin.svelte"),
             "/overview": () =>
                 import("./components/forms/responses/overview/FormResponseOverview.svelte"),
             "/responses": () =>
