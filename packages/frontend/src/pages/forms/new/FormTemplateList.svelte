@@ -95,10 +95,14 @@
                     >
                         Start from scratch
                     </h5>
-                    <p class="mt-2 leading-tight">
+                    <p
+                        class="mt-2 leading-tight text-gray-600 dark:text-gray-400"
+                    >
                         Build a new form without a template
                     </p>
-                    <p class="mt-2 leading-tight text-gray-500">
+                    <p
+                        class="mt-2 leading-tight text-gray-500 dark:text-gray-300"
+                    >
                         Get started
                         <FontAwesomeIcon icon={faArrowRight} />
                     </p>

@@ -12,7 +12,9 @@
 </script>
 
 <ul class="p-4 bg-slate-100 dark:bg-slate-800 rounded-3xl w-full">
-    <p class="text-sm text-gray-600 uppercase tracking-wider mb-2">
+    <p
+        class="text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2"
+    >
         Template categories
     </p>
 

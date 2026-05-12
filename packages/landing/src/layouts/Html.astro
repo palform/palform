@@ -3,6 +3,7 @@
 import "@fontsource-variable/archivo";
 import Footer from "../components/Footer.astro";
 import "../styles/global.css";
+import DarkModeWatcher from "@palform/palform-frontend-common/src/darkMode/DarkModeWatcher.svelte";
 
 interface Props {
 	title: string;
@@ -33,10 +34,19 @@ const { title, description } = Astro.props;
 			data-domain="palform.app"
 			src="https://plausible.io/js/script.tagged-events.js"
 			is:inline></script>
+
+		<!-- Makes sure we don't have any non-dark-mode moment during page load -->
+		<script is:inline>
+			if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+				window.document.documentElement.classList.add("dark");
+			}
+		</script>
+
 		<title>{title} &mdash; Palform</title>
 	</head>
 	<body class="bg-slate-50/50 dark:bg-slate-900">
 		<slot />
 		<Footer />
+		<DarkModeWatcher client:only="svelte" />
 	</body>
 </html>

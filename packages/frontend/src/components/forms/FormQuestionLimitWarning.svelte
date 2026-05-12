@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, Button, Progressbar } from "flowbite-svelte";
+    import { Alert, Button, P, Progressbar } from "flowbite-svelte";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import { rangeLerp } from "../../data/util/lerp";
     import { getFormAdminContext } from "../../data/contexts/formAdmin";
@@ -27,15 +27,15 @@
     >
         <Progressbar class="mb-2" progress={progressValue} />
         {#if currentCount === countLimit}
-            <p class="text-lg">
+            <P class="text-lg">
                 You have reached your question limit ({countLimit}). Please
                 upgrade your plan to add more.
-            </p>
+            </P>
         {:else}
-            <p>
+            <P>
                 You have used {currentCount} out of {countLimit} questions included
                 in your plan.
-            </p>
+            </P>
         {/if}
         <Button class="mt-2" href={`/orgs/${$orgCtx.org.id}/settings/billing`}
             >Upgrade</Button

@@ -16,7 +16,7 @@
     let { template, includeAuthor = false, class: className }: Props = $props();
 </script>
 
-<p class={`text-xs ${className}`}>
+<p class={`text-xs text-gray-700 dark:text-gray-300 ${className}`}>
     <span class="align-text-bottom">
         <FontAwesomeIcon icon={faEye} class="inline-block h-3" size="sm" />
         {template.views}
