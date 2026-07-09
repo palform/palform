@@ -92,7 +92,7 @@
                 onclick={() => onclick?.(true)}
                 {disabled}
             >
-                Try free for 14 days
+                Try free for 7 days
             </Button>
             {#if !trialOnly}
                 <Button

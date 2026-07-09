@@ -29,7 +29,7 @@
     <CardBoxTitle>
         {subscription.plan_name}
         {#if subscription.is_trial}
-            (14 day trial)
+            (7 day trial)
         {/if}
     </CardBoxTitle>
     <CardBoxSubtitle>

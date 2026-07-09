@@ -426,7 +426,7 @@ impl<'a> BillingManager<'a> {
                     ..Default::default()
                 }),
                 subscription_data: Some(CreateCheckoutSessionSubscriptionData {
-                    trial_period_days: if trial { Some(14) } else { None },
+                    trial_period_days: if trial { Some(7) } else { None },
                     ..Default::default()
                 }),
                 allow_promotion_codes: Some(true),
