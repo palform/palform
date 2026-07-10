@@ -33,6 +33,7 @@
     import { enable_debug_hook_js } from "@palform/palform-client-common";
     import MissingKeyWarning from "../../components/keys/MissingKeyWarning.svelte";
     import FeedbackButton from "../../components/feedback/FeedbackButton.svelte";
+    import FeedbackPrompter from "../../components/feedback/FeedbackPrompter.svelte";
 
     enable_debug_hook_js();
 
@@ -119,6 +120,7 @@
 
 {#if $orgCtx !== undefined && $orgCtx.org !== undefined && $orgCtx.myTeams !== undefined && $orgCtx.forms !== undefined && $orgCtx.induction !== undefined && $orgCtx.amIAdmin !== undefined && $orgCtx.myKeys !== undefined}
     <FeedbackButton />
+    <FeedbackPrompter />
 
     <div
         class="flex overflow-hidden h-screen w-full bg-slate-50/50 dark:bg-slate-900"
