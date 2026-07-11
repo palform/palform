@@ -8,7 +8,7 @@
 
     const orgCtx = getOrgContext();
 
-    let isEligible = $derived(() => {
+    let isEligible = $derived.by(() => {
         const orgCreated = parseServerTime($orgCtx.org.created_at);
         const formCount = $orgCtx.forms.length;
         const feedbackPromptComplete =
