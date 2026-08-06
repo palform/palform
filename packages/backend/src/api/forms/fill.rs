@@ -12,7 +12,7 @@ use serde::Deserialize;
 use crate::{
     api::error::APIError,
     auth::fill_access::APIFillAccessToken,
-    captcha::VerifiedCaptcha,
+    captcha::requests::VerifiedCaptcha,
     crypto::submissions::CryptoSubmissionRepr,
     entity_managers::{forms::FormManager, submission::SubmissionManager},
     i18n::request::I18NManager,

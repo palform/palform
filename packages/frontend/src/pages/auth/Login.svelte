@@ -126,6 +126,7 @@
                 <Captcha
                     oncomplete={(e) => (captcha = e)}
                     onclear={() => (captcha = "")}
+                    class="mb-4"
                 />
             {/if}
 

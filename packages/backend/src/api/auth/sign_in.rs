@@ -8,7 +8,7 @@ use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 
 use crate::auth::tokens::TokenManager;
-use crate::captcha::VerifiedCaptcha;
+use crate::captcha::requests::VerifiedCaptcha;
 use crate::config::Config;
 use crate::entity_managers::admin_user_second_factors::AdminUserSecondFactorManager;
 use crate::entity_managers::admin_users::{AdminUserManagementError, AdminUserManager};

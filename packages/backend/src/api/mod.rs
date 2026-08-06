@@ -1,6 +1,7 @@
 pub mod admin_users;
 pub mod audit;
 pub mod auth;
+pub mod captcha;
 pub mod error;
 pub mod feedback;
 pub mod fill_tokens;

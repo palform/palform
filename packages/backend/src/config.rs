@@ -16,6 +16,7 @@ pub struct Config {
     pub frontend_url: Url,
 
     pub database_url: String,
+    pub redis_url: String,
 
     pub smtp_host: String,
     pub smtp_port: u16,
@@ -36,6 +37,10 @@ pub struct Config {
     pub s3_path_style: bool,
 
     pub captcha_secret_key: String,
+    pub captcha_cost_scaler_bucket_mins: u32,
+    pub captcha_cost_scaler_min_cost: u32,
+    pub captcha_cost_scaler_max_cost: u32,
+    pub captcha_cost_scaler_growth: f64,
     pub skip_captcha: bool,
     pub social_auth_providers: Vec<ConfigSocialAuthProvider>,
     pub auth_token_expiry_hours: u16,
@@ -75,6 +80,7 @@ impl Default for Config {
             cors_origin: "^http:\\/\\/(\\w*\\.)?localhost:\\d{4}$".to_string(),
             frontend_url: Url::from_str("http://localhost:5173").unwrap(),
             database_url: "postgres://postgres:postgres@localhost:5432/palform".to_string(),
+            redis_url: "redis://127.0.0.1/".to_string(),
             smtp_host: "localhost".to_string(),
             smtp_port: 587,
             smtp_username: "user".to_string(),
@@ -91,6 +97,10 @@ impl Default for Config {
             s3_submission_assets_bucket: "submission-assets".to_string(),
             s3_path_style: true,
             captcha_secret_key: String::default(),
+            captcha_cost_scaler_bucket_mins: 60,
+            captcha_cost_scaler_min_cost: 10_000,
+            captcha_cost_scaler_max_cost: 250_000,
+            captcha_cost_scaler_growth: 1.05,
             skip_captcha: false,
             social_auth_providers: Vec::default(),
             auth_token_expiry_hours: 24,

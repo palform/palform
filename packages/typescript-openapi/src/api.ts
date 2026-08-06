@@ -173,6 +173,10 @@ export interface APIBillingUpcomingInvoicePromotion {
     'name': string;
     'percent_off'?: number | null;
 }
+export interface APICaptchaChallenge {
+    'challenge': string;
+    'id': string;
+}
 export interface APICountryWithCallingCode {
     'calling_code': number;
     'flag_emoji': string;
@@ -3287,6 +3291,96 @@ export class BillingWebhooksApi extends BaseAPI {
      */
     public billingWebhookReceive(body: string, options?: RawAxiosRequestConfig) {
         return BillingWebhooksApiFp(this.configuration).billingWebhookReceive(body, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * CaptchaApi - axios parameter creator
+ */
+export const CaptchaApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        captchaCreate: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/captcha`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * CaptchaApi - functional programming interface
+ */
+export const CaptchaApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = CaptchaApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async captchaCreate(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APICaptchaChallenge>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.captchaCreate(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CaptchaApi.captchaCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * CaptchaApi - factory interface
+ */
+export const CaptchaApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = CaptchaApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        captchaCreate(options?: RawAxiosRequestConfig): AxiosPromise<APICaptchaChallenge> {
+            return localVarFp.captchaCreate(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * CaptchaApi - object-oriented interface
+ */
+export class CaptchaApi extends BaseAPI {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public captchaCreate(options?: RawAxiosRequestConfig) {
+        return CaptchaApiFp(this.configuration).captchaCreate(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

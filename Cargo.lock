@@ -346,6 +346,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "683d7910e743518b0e34f1186f92494becacb047c7b6bf616c96772180fef923"
 
 [[package]]
+name = "altcha"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d81f4a0f21c4145fdee4fb09dbb665da446c7af0ca0ec685e1651b0f96a84fab"
+dependencies = [
+ "digest 0.10.7",
+ "hex",
+ "hmac",
+ "pbkdf2",
+ "rand 0.8.6",
+ "serde",
+ "serde_json",
+ "sha2",
+ "subtle",
+ "thiserror 2.0.18",
+]
+
+[[package]]
 name = "android_system_properties"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -524,6 +542,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "arcstr"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "03918c3dbd7701a85c6b9887732e2921175f26c350b4563841d0958c21d57e6d"
+
+[[package]]
 name = "argmin"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -565,6 +589,12 @@ dependencies = [
  "cpufeatures 0.2.17",
  "password-hash",
 ]
+
+[[package]]
+name = "arrayref"
+version = "0.3.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "76a2e8124351fda1ef8aaaa3bbd7ebbcb486bbcd4225aca0aa0d84bb2db8fecb"
 
 [[package]]
 name = "arrayvec"
@@ -1016,6 +1046,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "blake3"
+version = "1.8.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "76ae7bad254120e9e4c63bafc385310756f90c484eac0e36b8317cf09cb92a77"
+dependencies = [
+ "arrayref",
+ "arrayvec",
+ "cc",
+ "cfg-if",
+ "constant_time_eq 0.4.2",
+ "cpufeatures 0.3.0",
+]
+
+[[package]]
 name = "block-buffer"
 version = "0.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1373,6 +1417,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1d07550c9036bf2ae0c684c4297d503f838287c83c53686d05370d0e139ae570"
 
 [[package]]
+name = "combine"
+version = "4.6.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ba5a308b75df32fe02788e748662718f03fde005016435c444eea572398219fd"
+dependencies = [
+ "bytes",
+ "futures-core",
+ "memchr",
+ "pin-project-lite",
+ "tokio",
+ "tokio-util",
+]
+
+[[package]]
 name = "concurrent-queue"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1428,6 +1486,12 @@ name = "constant_time_eq"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
+
+[[package]]
+name = "constant_time_eq"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3d52eff69cd5e647efe296129160853a42795992097e8af39800e1060caeea9b"
 
 [[package]]
 name = "convert_case"
@@ -1758,6 +1822,36 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bd2735a791158376708f9347fe8faba9667589d82427ef3aed6794a8981de3d9"
 dependencies = [
  "generic-array 0.14.9",
+]
+
+[[package]]
+name = "deadpool"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "883466cb8db62725aee5f4a6011e8a5d42912b42632df32aad57fc91127c6e04"
+dependencies = [
+ "deadpool-runtime",
+ "num_cpus",
+ "tokio",
+]
+
+[[package]]
+name = "deadpool-redis"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bafa30c49dafe086d10116074e422ad7fc1c3cf554697e744a3ab112599ebd09"
+dependencies = [
+ "deadpool",
+ "redis",
+]
+
+[[package]]
+name = "deadpool-runtime"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2657f61fb1dd8bf37a8d51093cc7cee4e77125b22f7753f49b289f831bec2bae"
+dependencies = [
+ "tokio",
 ]
 
 [[package]]
@@ -3938,6 +4032,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "num_cpus"
+version = "1.17.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "91df4bbde75afed763b708b7eee1e8e7651e02d97f6d5dd763e89367e957b23b"
+dependencies = [
+ "hermit-abi",
+ "libc",
+]
+
+[[package]]
 name = "oauth2"
 version = "5.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4203,15 +4307,18 @@ dependencies = [
  "actix-cors",
  "actix-multipart",
  "actix-web",
+ "altcha",
  "apistos",
  "apistos-schemars",
  "argon2",
  "async-stripe",
  "base64 0.22.1",
+ "blake3",
  "bytes",
  "chrono",
  "clap",
  "csv",
+ "deadpool-redis",
  "env_logger",
  "faster-hex",
  "figment",
@@ -4227,6 +4334,7 @@ dependencies = [
  "palform-migration",
  "palform-tsid",
  "rand 0.10.2",
+ "redis",
  "regex",
  "reqwest",
  "ring",
@@ -4396,6 +4504,16 @@ name = "pastey"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "35fb2e5f958ec131621fdd531e9fc186ed768cbe395337403ae56c17a74c68ec"
+
+[[package]]
+name = "pbkdf2"
+version = "0.12.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f8ed6a7761f76e3b9f92dfb0a60a6a6477c61024b775147ff0973a02653abaf2"
+dependencies = [
+ "digest 0.10.7",
+ "hmac",
+]
 
 [[package]]
 name = "pear"
@@ -5013,6 +5131,31 @@ name = "rawpointer"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "60a357793950651c4ed0f3f52338f53b2f809f32d83a07f72909fa13e4c6c1e3"
+
+[[package]]
+name = "redis"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3257df217f7eab0044627a268c9cc6cdb60c0c421c88f83ac41c4e31520b6b84"
+dependencies = [
+ "arcstr",
+ "async-lock",
+ "bytes",
+ "cfg-if",
+ "combine",
+ "futures-util",
+ "itoa",
+ "num-bigint",
+ "percent-encoding",
+ "pin-project-lite",
+ "ryu",
+ "sha1_smol",
+ "socket2 0.6.4",
+ "tokio",
+ "tokio-util",
+ "url",
+ "xxhash-rust",
+]
 
 [[package]]
 name = "redox_syscall"
@@ -6045,6 +6188,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "sha1_smol"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbfa15b3dddfee50a0fff136974b3e1bde555604ba463834a7eb7deb6417705d"
+
+[[package]]
 name = "sha1collisiondetection"
 version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6894,7 +7043,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "50e69a15e21b2ff22c415446983978bded3244195f17d59cb113551c1e806f91"
 dependencies = [
  "base32",
- "constant_time_eq",
+ "constant_time_eq 0.3.1",
  "hmac",
  "sha1 0.10.6",
  "sha2",

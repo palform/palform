@@ -22,6 +22,7 @@ docs/APIBillingSubscriptionFrequency.md
 docs/APIBillingUpcomingInvoice.md
 docs/APIBillingUpcomingInvoiceLine.md
 docs/APIBillingUpcomingInvoicePromotion.md
+docs/APICaptchaChallenge.md
 docs/APICountryWithCallingCode.md
 docs/APICountryWithISOCode.md
 docs/APIEntitlementInfo.md
@@ -91,6 +92,7 @@ docs/BillingPlansApi.md
 docs/BillingWebhooksApi.md
 docs/CancelPlanRequest.md
 docs/CancelPlanRequestReason.md
+docs/CaptchaApi.md
 docs/Card.md
 docs/Class2FAMethodsApi.md
 docs/CloneFormTemplateRequest.md

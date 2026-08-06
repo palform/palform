@@ -8,7 +8,7 @@ use serde::Deserialize;
 use validator::Validate;
 
 use crate::actix_util::validated::Validated;
-use crate::captcha::VerifiedCaptcha;
+use crate::captcha::requests::VerifiedCaptcha;
 use crate::entity_managers::admin_users::AdminUserManager;
 use crate::entity_managers::email_verifications::EmailVerificationManager;
 use crate::mail::client::PalformMailClient;

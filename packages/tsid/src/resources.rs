@@ -31,3 +31,4 @@ id_resource_type!(IDTeamAsset, "tas");
 id_resource_type!(IDWebhook, "wh");
 id_resource_type!(IDWebhookJob, "whj");
 id_resource_type!(IDFeedbackItem, "fi");
+id_resource_type!(IDCaptchaChallenge, "cacha");

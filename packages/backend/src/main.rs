@@ -31,6 +31,7 @@ mod entity_managers;
 mod geo;
 mod jobs;
 mod mail;
+mod memory_db;
 mod openapi;
 mod palform_s3;
 mod routes;

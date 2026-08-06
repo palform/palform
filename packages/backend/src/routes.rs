@@ -5,6 +5,7 @@ use crate::api::{
     audit::scope::audit_logs_scope,
     auth::scope::auth_scope,
     billing::scope::{billing_public_scope, billing_scope},
+    captcha::scope::captcha_scope,
     countries::scope::countries_scope,
     feedback::scope::feedback_scope,
     fill_tokens::scope::fill_tokens_scope,
@@ -43,6 +44,7 @@ pub fn main_routes() -> Scope {
         .service(countries_scope())
         .service(form_templates_public_scope())
         .service(billing_public_scope())
+        .service(captcha_scope())
         .service(
             scope("org").service(organisations_scope()).service(
                 scope("{org_id}")

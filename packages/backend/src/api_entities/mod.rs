@@ -1,4 +1,5 @@
 pub mod admin_user_second_factor;
+pub mod captcha;
 pub mod admin_users;
 pub mod audit;
 pub mod billing;

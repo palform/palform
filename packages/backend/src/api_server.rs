@@ -12,10 +12,11 @@ use sea_orm::DatabaseConnection;
 
 use crate::{
     actix_util::not_found::not_found_handler,
-    captcha::CAPTCHA_HEADER,
+    captcha::requests::CAPTCHA_HEADER,
     config::Config,
     geo::IPGeolocator,
     mail::client::PalformMailClient,
+    memory_db::memory_db::MemoryDB,
     openapi::get_openapi_spec,
     palform_s3::{
         buckets::{S3BucketSubmissionAssets, S3BucketTeamAssets},
@@ -41,6 +42,7 @@ pub async fn run_api_server(
     let geo = IPGeolocator::new().await.expect("geolocator init");
     let captcha_header_name = CAPTCHA_HEADER.clone();
     let stripe = stripe.clone();
+    let memory_db = MemoryDB::new(&config).await;
 
     HttpServer::new(move || {
         let cors_regex = Regex::new(&config.cors_origin).expect("parse cors regex");
@@ -68,6 +70,7 @@ pub async fn run_api_server(
             .app_data(web::Data::new(s3_team_assets.clone()))
             .app_data(web::Data::new(stripe.clone()))
             .app_data(web::Data::new(geo.clone()))
+            .app_data(web::Data::new(memory_db.clone()))
             .document(get_openapi_spec())
             .service(main_routes())
             .service(legacy_compat_routes())
