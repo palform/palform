@@ -26,7 +26,7 @@ pub enum Relation {
         from = "Column::ForToken",
         to = "super::fill_access_token::Column::Id",
         on_update = "NoAction",
-        on_delete = "Cascade"
+        on_delete = "SetNull"
     )]
     FillAccessToken,
     #[sea_orm(

@@ -46,7 +46,7 @@ pub enum Relation {
         from = "Column::BackgroundImageAssetId",
         to = "super::team_asset::Column::Id",
         on_update = "NoAction",
-        on_delete = "Cascade"
+        on_delete = "SetNull"
     )]
     TeamAsset2,
     #[sea_orm(
@@ -54,7 +54,7 @@ pub enum Relation {
         from = "Column::LogoAssetId",
         to = "super::team_asset::Column::Id",
         on_update = "NoAction",
-        on_delete = "Cascade"
+        on_delete = "SetNull"
     )]
     TeamAsset1,
 }

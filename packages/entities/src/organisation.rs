@@ -35,7 +35,7 @@ pub enum Relation {
         from = "Column::AuthConfig",
         to = "super::organisation_auth_config::Column::Id",
         on_update = "NoAction",
-        on_delete = "Cascade"
+        on_delete = "SetNull"
     )]
     OrganisationAuthConfig,
     #[sea_orm(has_many = "super::organisation_invite::Entity")]

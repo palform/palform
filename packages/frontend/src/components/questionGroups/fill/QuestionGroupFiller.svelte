@@ -3,6 +3,7 @@
         ctxGetCurrentGroup,
         ctxGetCurrentGroupQuestions,
         ctxGetNextStep,
+        deleteFormFill,
         fillSendStore,
         formFillStore,
         validateQuestions,
@@ -66,6 +67,7 @@
                 !$formFillStore.isShortLink,
                 captchaValue
             );
+            await deleteFormFill();
         } catch (e) {
             $fillSendStore = {
                 loading: false,

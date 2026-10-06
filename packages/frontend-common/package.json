@@ -13,9 +13,9 @@
     "@fortawesome/svelte-fontawesome": "^0.2.4",
     "@palform/palform-typescript-openapi": "workspace:*",
     "@tsconfig/svelte": "^5.0.8",
-    "flowbite": "^4.0.1",
+    "flowbite": "^4.0.2",
     "flowbite-svelte": "^1.33.1",
-    "svelte": "^5.55.5",
+    "svelte": "^5.57.2",
     "typescript": "^6.0.3",
     "typescript-svelte-plugin": "^0.3.52"
   }
