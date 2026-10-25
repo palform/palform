@@ -20,7 +20,10 @@ pub struct OrganisationInvitesDeletePath {
     invite_id: PalformDatabaseID<IDOrganisationInvite>,
 }
 
-#[api_operation(tag = "Organisation Invites", operation_id = "organisation.invites.delete")]
+#[api_operation(
+    tag = "Organisation Invites",
+    operation_id = "organisation.invites.delete"
+)]
 pub async fn organisation_invites_delete(
     path: Path<OrganisationInvitesDeletePath>,
     _token: APITokenOrgAdmin,

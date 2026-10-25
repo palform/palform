@@ -39,7 +39,7 @@
         loading = true;
         try {
             await APIs.forms().then((a) =>
-                a.formsRelocate($orgCtx.org.id, $formMetadataCtx.id, {
+                a.formsRelocate($formMetadataCtx.id, $orgCtx.org.id, {
                     target_team_id: selectedTeam,
                 })
             );

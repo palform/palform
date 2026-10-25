@@ -35,7 +35,7 @@
         let _submissionId = submissionId;
         APIs.submissions()
             .then((a) =>
-                a.submissionsCrypto($orgCtx.org.id, formId, _submissionId)
+                a.submissionsCrypto(formId, $orgCtx.org.id, _submissionId)
             )
             .then((resp) => {
                 details = resp.data;

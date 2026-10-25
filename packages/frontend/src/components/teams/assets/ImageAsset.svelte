@@ -45,7 +45,7 @@
         resolvedAssetUrl = undefined;
         let cancelled = false;
         APIs.teamAssets()
-            .then((a) => a.organisationTeamAssetGet(orgId, teamId, id))
+            .then((a) => a.organisationTeamAssetGet(id, orgId, teamId))
             .then((resp) => {
                 if (!cancelled) {
                     resolvedAssetUrl = resp.data;

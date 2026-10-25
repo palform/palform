@@ -35,9 +35,9 @@
         try {
             const resp = await APIs.formBrandings().then((a) =>
                 a.organisationTeamBrandingAddAccess(
+                    brandingId,
                     $orgCtx.org.id,
                     $teamCtx.team.id,
-                    brandingId,
                     {
                         for_team_id: teamId,
                     }

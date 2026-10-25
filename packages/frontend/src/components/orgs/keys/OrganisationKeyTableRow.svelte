@@ -23,7 +23,7 @@
     let onDelete = $derived(async () => {
         loading = true;
         try {
-            await APIs.keys().then((a) => a.keysDelete($orgCtx.org.id, key.id));
+            await APIs.keys().then((a) => a.keysDelete(key.id, $orgCtx.org.id));
             ondelete();
             await showSuccessToast("Key deleted");
             loading = false;

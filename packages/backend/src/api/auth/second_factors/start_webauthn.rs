@@ -22,7 +22,10 @@ pub struct StartWebauthnResponse {
     pub session: PalformDatabaseID<IDAdminUserSecondAuthenticationFactorSession>,
 }
 
-#[api_operation(tag = "2FA Methods", operation_id = "user.second_factors.start_webauthn")]
+#[api_operation(
+    tag = "2FA Methods",
+    operation_id = "user.second_factors.start_webauthn"
+)]
 pub async fn auth_second_factors_start_webauthn(
     token: APIAuthToken<APIAuthTokenSourcePersonal>,
     db: Data<DatabaseConnection>,

@@ -49,7 +49,7 @@
             } as APIForm;
 
             await APIs.forms().then((a) =>
-                a.formsUpdate($orgCtx.org.id, $formMetadataCtx.id, updatedForm)
+                a.formsUpdate($formMetadataCtx.id, $orgCtx.org.id, updatedForm)
             );
 
             updateFormCtx(orgCtx, $formMetadataCtx.id, updatedForm);

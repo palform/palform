@@ -11,7 +11,11 @@ use crate::{billing::webhook::BillingWebhookManager, config::Config};
 
 use super::StripeSignature;
 
-#[api_operation(skip_args = "data", tag = "Billing Webhooks", operation_id = "billing.webhook.receive")]
+#[api_operation(
+    skip_args = "data",
+    tag = "Billing Webhooks",
+    operation_id = "billing.webhook.receive"
+)]
 pub async fn billing_webhooks_receiver_handler(
     data: Bytes,
     signature: StripeSignature,

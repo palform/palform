@@ -87,14 +87,14 @@ import {
 const configuration = new Configuration();
 const apiInstance = new OrganisationTeamMembersApi(configuration);
 
+let memberUserId: string; // (default to undefined)
 let orgId: string; // (default to undefined)
 let teamId: string; // (default to undefined)
-let memberUserId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.organisationTeamMembersDelete(
+    memberUserId,
     orgId,
-    teamId,
-    memberUserId
+    teamId
 );
 ```
 
@@ -102,9 +102,9 @@ const { status, data } = await apiInstance.organisationTeamMembersDelete(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
+| **memberUserId** | [**string**] |  | defaults to undefined|
 | **orgId** | [**string**] |  | defaults to undefined|
 | **teamId** | [**string**] |  | defaults to undefined|
-| **memberUserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -209,15 +209,15 @@ import {
 const configuration = new Configuration();
 const apiInstance = new OrganisationTeamMembersApi(configuration);
 
+let memberUserId: string; // (default to undefined)
 let orgId: string; // (default to undefined)
 let teamId: string; // (default to undefined)
-let memberUserId: string; // (default to undefined)
 let organisationTeamMembersPatchRequest: OrganisationTeamMembersPatchRequest; //
 
 const { status, data } = await apiInstance.organisationTeamMembersPatch(
+    memberUserId,
     orgId,
     teamId,
-    memberUserId,
     organisationTeamMembersPatchRequest
 );
 ```
@@ -227,9 +227,9 @@ const { status, data } = await apiInstance.organisationTeamMembersPatch(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **organisationTeamMembersPatchRequest** | **OrganisationTeamMembersPatchRequest**|  | |
+| **memberUserId** | [**string**] |  | defaults to undefined|
 | **orgId** | [**string**] |  | defaults to undefined|
 | **teamId** | [**string**] |  | defaults to undefined|
-| **memberUserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type

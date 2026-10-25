@@ -33,7 +33,7 @@
         loading = true;
         try {
             await APIs.webhooks().then((a) =>
-                a.webhooksDelete($orgCtx.org.id, $formCtx.id, webhook.id)
+                a.webhooksDelete($formCtx.id, $orgCtx.org.id, webhook.id)
             );
             await showSuccessToast(
                 "Webhook deleted. That endpoint will no longer receive data."

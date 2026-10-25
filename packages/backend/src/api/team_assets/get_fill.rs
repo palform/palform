@@ -22,7 +22,11 @@ pub struct TeamAssetsGetFillPath {
     asset_id: PalformDatabaseID<IDTeamAsset>,
 }
 
-#[api_operation(skip, tag = "Team Assets", operation_id = "organisation.team.asset.get_for_form_fill")]
+#[api_operation(
+    skip,
+    tag = "Team Assets",
+    operation_id = "organisation.team.asset.get_for_form_fill"
+)]
 pub async fn team_assets_get_fill(
     path: Path<TeamAssetsGetFillPath>,
     _token: APIFillAccessToken,

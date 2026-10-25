@@ -17,7 +17,10 @@ pub struct BillingEntitlementsTestPath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
-#[api_operation(tag = "Billing Entitlements", operation_id = "billing.entitlement.test")]
+#[api_operation(
+    tag = "Billing Entitlements",
+    operation_id = "billing.entitlement.test"
+)]
 pub async fn billing_entitlements_test(
     path: Path<BillingEntitlementsTestPath>,
     data: Json<APIEntitlementRequest>,

@@ -17,7 +17,7 @@
     let previewError: string | undefined = $state(undefined);
     $effect(() => {
         APIs.orgInvites()
-            .then((a) => a.organisationInvitesPreview(orgId, inviteId))
+            .then((a) => a.organisationInvitesPreview(inviteId, orgId))
             .then((resp) => {
                 preview = resp.data;
                 previewError = undefined;

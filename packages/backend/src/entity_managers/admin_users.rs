@@ -1,7 +1,4 @@
-use argon2::{
-    password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
-    Argon2, PasswordHash, PasswordVerifier,
-};
+use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use palform_entities::{admin_user, prelude::*, social_auth_connection};
 use palform_tsid::{
     resources::{IDAdminUser, IDOrganisation},
@@ -21,6 +18,8 @@ pub enum AdminUserManagementError {
     DBError(#[from] DbErr),
     #[error("Hashing: {0}")]
     Password(argon2::password_hash::Error),
+    #[error("Parsing password hash: {0}")]
+    PasswordHashParse(argon2::password_hash::phc::Error),
     #[error("Your account does not have a password.")]
     NoPassword,
     #[error("Your account is connected to an organisation. Please sign in through it instead.")]
@@ -97,8 +96,7 @@ impl AdminUserManager {
     }
 
     fn gen_password(password: String) -> Result<String, argon2::password_hash::Error> {
-        let salt = SaltString::generate(&mut OsRng);
-        let password = Self::get_argon2().hash_password(password.as_bytes(), &salt)?;
+        let password: PasswordHash = Self::get_argon2().hash_password(password.as_bytes())?;
         Ok(password.to_string())
     }
 
@@ -114,7 +112,8 @@ impl AdminUserManager {
             .manual_auth_password_hash
             .clone()
             .ok_or(AdminUserManagementError::NoPassword)?;
-        let parsed_hash = PasswordHash::new(&hash).map_err(AdminUserManagementError::Password)?;
+        let parsed_hash =
+            PasswordHash::new(&hash).map_err(AdminUserManagementError::PasswordHashParse)?;
 
         Ok(Self::get_argon2()
             .verify_password(password.as_bytes(), &parsed_hash)

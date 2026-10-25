@@ -84,12 +84,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new OrganisationInvitesApi(configuration);
 
-let orgId: string; // (default to undefined)
 let inviteId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.organisationInvitesDelete(
-    orgId,
-    inviteId
+    inviteId,
+    orgId
 );
 ```
 
@@ -97,8 +97,8 @@ const { status, data } = await apiInstance.organisationInvitesDelete(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **inviteId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -199,12 +199,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new OrganisationInvitesApi(configuration);
 
-let orgId: string; // (default to undefined)
 let inviteId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.organisationInvitesPreview(
-    orgId,
-    inviteId
+    inviteId,
+    orgId
 );
 ```
 
@@ -212,8 +212,8 @@ const { status, data } = await apiInstance.organisationInvitesPreview(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **inviteId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type

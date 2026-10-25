@@ -19,7 +19,7 @@ use sea_orm::{
 };
 use serde_json::Value;
 use thiserror::Error;
-use totp_rs::{Algorithm, Secret, SecretParseError, TotpUrlError, TOTP};
+use totp_rs::{Algorithm, Builder, Secret, SecretParseError, TotpError};
 use webauthn_rs::{
     prelude::{
         CreationChallengeResponse, Passkey, PasskeyAuthentication, PasskeyRegistration,
@@ -69,7 +69,7 @@ pub enum VerifyTOTPError {
     #[error("Your session was not found, please sign in again.")]
     SessionNotFound,
     #[error("TOTP setup: {0}")]
-    TotpUrl(#[from] TotpUrlError),
+    TotpUrl(#[from] TotpError),
     #[error("TOTP secret: {0}")]
     TotpSecretParse(#[from] SecretParseError),
     #[error("Getting current time: {0}")]
@@ -365,15 +365,16 @@ impl AdminUserSecondFactorManager {
             .await?;
 
         for secret in secrets {
-            let totp = TOTP::new(
-                Algorithm::SHA1,
-                6,
-                1,
-                30,
-                Secret::Encoded(secret.expect("sql-filtered non-null value to be Some"))
-                    .to_bytes()?,
-            )?;
-            if totp.check_current(token.as_str())? {
+            let totp = Builder::new()
+                .with_algorithm(Algorithm::SHA1)
+                .with_digits(6)
+                .with_skew(1)
+                .with_step_duration(30)
+                .with_secret(Secret::try_from_base32(
+                    secret.expect("sql-filtered non-null value to be Some"),
+                )?)
+                .build()?;
+            if totp.check_current(token.as_str()).is_some() {
                 return Ok((true, session.user_id));
             }
         }

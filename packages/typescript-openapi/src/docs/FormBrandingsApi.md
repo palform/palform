@@ -78,15 +78,15 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FormBrandingsApi(configuration);
 
+let brandingId: string; // (default to undefined)
 let orgId: string; // (default to undefined)
 let teamId: string; // (default to undefined)
-let brandingId: string; // (default to undefined)
 let addAccessRequest: AddAccessRequest; //
 
 const { status, data } = await apiInstance.organisationTeamBrandingAddAccess(
+    brandingId,
     orgId,
     teamId,
-    brandingId,
     addAccessRequest
 );
 ```
@@ -96,9 +96,9 @@ const { status, data } = await apiInstance.organisationTeamBrandingAddAccess(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **addAccessRequest** | **AddAccessRequest**|  | |
+| **brandingId** | [**string**] |  | defaults to undefined|
 | **orgId** | [**string**] |  | defaults to undefined|
 | **teamId** | [**string**] |  | defaults to undefined|
-| **brandingId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -206,14 +206,14 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FormBrandingsApi(configuration);
 
+let brandingId: string; // (default to undefined)
 let orgId: string; // (default to undefined)
 let teamId: string; // (default to undefined)
-let brandingId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.organisationTeamBrandingDelete(
+    brandingId,
     orgId,
-    teamId,
-    brandingId
+    teamId
 );
 ```
 
@@ -221,9 +221,9 @@ const { status, data } = await apiInstance.organisationTeamBrandingDelete(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
+| **brandingId** | [**string**] |  | defaults to undefined|
 | **orgId** | [**string**] |  | defaults to undefined|
 | **teamId** | [**string**] |  | defaults to undefined|
-| **brandingId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -269,15 +269,15 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FormBrandingsApi(configuration);
 
+let brandingId: string; // (default to undefined)
 let orgId: string; // (default to undefined)
 let teamId: string; // (default to undefined)
-let brandingId: string; // (default to undefined)
 let deleteAccessRequest: DeleteAccessRequest; //
 
 const { status, data } = await apiInstance.organisationTeamBrandingDeleteAccess(
+    brandingId,
     orgId,
     teamId,
-    brandingId,
     deleteAccessRequest
 );
 ```
@@ -287,9 +287,9 @@ const { status, data } = await apiInstance.organisationTeamBrandingDeleteAccess(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **deleteAccessRequest** | **DeleteAccessRequest**|  | |
+| **brandingId** | [**string**] |  | defaults to undefined|
 | **orgId** | [**string**] |  | defaults to undefined|
 | **teamId** | [**string**] |  | defaults to undefined|
-| **brandingId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -393,14 +393,14 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FormBrandingsApi(configuration);
 
+let brandingId: string; // (default to undefined)
 let orgId: string; // (default to undefined)
 let teamId: string; // (default to undefined)
-let brandingId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.organisationTeamBrandingListAccess(
+    brandingId,
     orgId,
-    teamId,
-    brandingId
+    teamId
 );
 ```
 
@@ -408,9 +408,9 @@ const { status, data } = await apiInstance.organisationTeamBrandingListAccess(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
+| **brandingId** | [**string**] |  | defaults to undefined|
 | **orgId** | [**string**] |  | defaults to undefined|
 | **teamId** | [**string**] |  | defaults to undefined|
-| **brandingId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -456,15 +456,15 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FormBrandingsApi(configuration);
 
+let brandingId: string; // (default to undefined)
 let orgId: string; // (default to undefined)
 let teamId: string; // (default to undefined)
-let brandingId: string; // (default to undefined)
 let aPIFormBrandingRequest: APIFormBrandingRequest; //
 
 const { status, data } = await apiInstance.organisationTeamBrandingPut(
+    brandingId,
     orgId,
     teamId,
-    brandingId,
     aPIFormBrandingRequest
 );
 ```
@@ -474,9 +474,9 @@ const { status, data } = await apiInstance.organisationTeamBrandingPut(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **aPIFormBrandingRequest** | **APIFormBrandingRequest**|  | |
+| **brandingId** | [**string**] |  | defaults to undefined|
 | **orgId** | [**string**] |  | defaults to undefined|
 | **teamId** | [**string**] |  | defaults to undefined|
-| **brandingId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type

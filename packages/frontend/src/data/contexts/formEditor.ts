@@ -53,7 +53,7 @@ export async function syncDirtyForm(
     }
 
     await APIs.questions().then((a) =>
-        a.questionsSave(orgId, get(adminCtx).formId, {
+        a.questionsSave(get(adminCtx).formId, orgId, {
             questions: flattenedQuestions,
             groups: val.groups,
         })

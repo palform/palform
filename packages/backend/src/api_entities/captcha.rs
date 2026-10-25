@@ -4,8 +4,8 @@ use schemars::JsonSchema;
 use serde::Serialize;
 
 #[derive(JsonSchema, Serialize, ApiComponent)]
+#[serde(transparent)]
 pub struct APICaptchaChallenge {
-    #[serde(flatten)]
-    #[schemars(with = "String")]
+    #[schemars(with = "serde_json::Map<String, serde_json::Value>")]
     pub challenge: Challenge,
 }

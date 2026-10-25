@@ -1,6 +1,4 @@
-use actix_web::{
-    web::{Data, Json},
-};
+use actix_web::web::{Data, Json};
 use apistos::api_operation;
 use palform_client_common::errors::error::APIError;
 

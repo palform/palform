@@ -1,6 +1,4 @@
-use linfa::{traits::Fit, Dataset};
-use linfa_linear::{FittedLinearRegression, LinearRegression};
-use ndarray::{Array2, Axis, Order};
+use ndarray::{Array2, Axis};
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 
 use crate::{common::FormAnalysisManager, util::array::array2_to_vec};
@@ -38,18 +36,22 @@ impl FormAnalysisManager {
             .push_row(target_row)
             .map_err(|e| JsValue::from(format!("push target row to features: {}", e)))?;
 
-        let dataset = Dataset::new(
-            from_row
-                .to_shape(((from_row.len(), 1), Order::RowMajor))
-                .map_err(|e| JsValue::from(format!("build dataset: {}", e)))?
-                .to_owned(),
-            target_row.to_owned(),
-        );
-
-        let lin_reg_model: FittedLinearRegression<f64> = LinearRegression::default()
-            .fit(&dataset)
-            .map_err(|e| JsValue::from(format!("run linear regression: {}", e)))?;
-        let gradient = lin_reg_model.params()[0];
+        // Ordinary least squares with a single explanatory variable
+        let n = from_row.len() as f64;
+        if n == 0.0 {
+            return Err(JsValue::from("run linear regression: no data points"));
+        }
+        let x_mean = from_row.sum() / n;
+        let y_mean = target_row.sum() / n;
+        let x_dev = from_row.mapv(|x| x - x_mean);
+        let x_variance = x_dev.mapv(|x| x * x).sum();
+        if x_variance == 0.0 {
+            return Err(JsValue::from(
+                "run linear regression: all values of the explanatory variable are identical",
+            ));
+        }
+        let gradient = (&x_dev * &target_row.mapv(|y| y - y_mean)).sum() / x_variance;
+        let intercept = y_mean - gradient * x_mean;
 
         let points = array2_to_vec(mini_feature_mat);
         let points = serde_wasm_bindgen::to_value(&points)
@@ -57,7 +59,7 @@ impl FormAnalysisManager {
 
         Ok(LinearRegressionResult {
             points,
-            intercept: lin_reg_model.intercept(),
+            intercept,
             gradient,
         })
     }

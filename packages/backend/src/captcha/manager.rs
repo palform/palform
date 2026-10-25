@@ -1,8 +1,8 @@
 use std::{collections::BTreeMap, net::IpAddr, str::FromStr};
 
 use altcha::{
-    create_challenge, verify_solution, Challenge, CreateChallengeOptions, HmacAlgorithm,
-    VerifySolutionOptions,
+    create_challenge, verify_solution, Challenge, CounterMode, CreateChallengeOptions,
+    HmacAlgorithm, VerifySolutionOptions,
 };
 use chrono::{Duration, Utc};
 use palform_tsid::{resources::IDCaptchaChallenge, tsid::PalformDatabaseID};
@@ -50,7 +50,7 @@ impl CaptchaManager {
         let cost = CaptchaCostScaler::log(ip_addr, memory_db, config).await?;
 
         let challenge = create_challenge(CreateChallengeOptions {
-            expires_at: Some(expiry.timestamp().unsigned_abs()),
+            expires_at: Some(expiry.timestamp()),
             data: Some(data_map),
             cost,
             hmac_signature_secret: Some(config.captcha_secret_key.clone()),
@@ -108,6 +108,7 @@ impl CaptchaManager {
             hmac_algorithm: HmacAlgorithm::Sha256,
             hmac_key_signature_secret: None,
             hmac_signature_secret: config.captcha_secret_key.clone(),
+            counter_mode: CounterMode::Uint32,
         })?;
         if result.verified {
             // Prevent replays

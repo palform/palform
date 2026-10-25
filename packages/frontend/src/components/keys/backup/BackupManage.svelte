@@ -25,7 +25,7 @@
     let onDeleteClick = $derived(async () => {
         deleteLoading = true;
         await APIs.keys().then((a) =>
-            a.keysRegisterBackup($orgCtx.org.id, key.id, { key_data: null })
+            a.keysRegisterBackup(key.id, $orgCtx.org.id, { key_data: null })
         );
         deleteLoading = false;
         await showSuccessToast("Key backup deleted");

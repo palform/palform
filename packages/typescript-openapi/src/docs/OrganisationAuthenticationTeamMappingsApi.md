@@ -83,12 +83,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new OrganisationAuthenticationTeamMappingsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let mappingId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.organisationAuthConfigMappingsDelete(
-    orgId,
-    mappingId
+    mappingId,
+    orgId
 );
 ```
 
@@ -96,8 +96,8 @@ const { status, data } = await apiInstance.organisationAuthConfigMappingsDelete(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **mappingId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type

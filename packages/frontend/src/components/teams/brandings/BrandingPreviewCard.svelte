@@ -32,9 +32,9 @@
         try {
             await APIs.formBrandings().then((a) =>
                 a.organisationTeamBrandingDelete(
+                    branding.id,
                     $orgCtx.org.id,
-                    $teamCtx.team.id,
-                    branding.id
+                    $teamCtx.team.id
                 )
             );
             await showSuccessToast(

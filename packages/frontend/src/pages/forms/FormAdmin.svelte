@@ -78,7 +78,7 @@
     $effect(() => {
         let _formId = formId;
         APIs.questions()
-            .then((a) => a.questionsList($orgCtx.org.id, _formId))
+            .then((a) => a.questionsList(_formId, $orgCtx.org.id))
             .then((resp) => {
                 $formAdminStore.formId = formId;
                 $formAdminStore.questions = resp.data;
@@ -101,7 +101,7 @@
     $effect(() => {
         let _formId = formId;
         APIs.questionGroups()
-            .then((a) => a.questionGroupsList($orgCtx.org.id, _formId))
+            .then((a) => a.questionGroupsList(_formId, $orgCtx.org.id))
             .then((resp) => {
                 $formAdminStore.groups = resp.data;
                 groupsLoading = false;
@@ -112,7 +112,7 @@
     $effect(() => {
         let _formId = formId;
         APIs.fillTokens()
-            .then((a) => a.fillAccessTokensList($orgCtx.org.id, _formId))
+            .then((a) => a.fillAccessTokensList(_formId, $orgCtx.org.id))
             .then((resp) => {
                 $formAdminStore.tokens = resp.data;
                 tokensLoading = false;

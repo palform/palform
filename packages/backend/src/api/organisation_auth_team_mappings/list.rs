@@ -19,7 +19,10 @@ pub struct OrganisationAuthTeamMappingsListPath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
-#[api_operation(tag = "Organisation Authentication Team Mappings", operation_id = "organisation.auth_config.mappings.list")]
+#[api_operation(
+    tag = "Organisation Authentication Team Mappings",
+    operation_id = "organisation.auth_config.mappings.list"
+)]
 pub async fn organisation_auth_team_mappings_list(
     _path: Path<OrganisationAuthTeamMappingsListPath>,
     _token: APITokenOrgAdmin,

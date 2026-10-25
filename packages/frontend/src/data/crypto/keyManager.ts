@@ -98,7 +98,7 @@ export async function backupKey(
 
     const result = encrypt_key_for_backup_js(keyRecord.privateKey, passphrase);
     await APIs.keys().then((a) =>
-        a.keysRegisterBackup(orgId, serverId, {
+        a.keysRegisterBackup(serverId, orgId, {
             key_data: result,
         })
     );
@@ -113,7 +113,7 @@ export async function restoreKeyFromBackup(
     if (!userId) return;
 
     const encryptedBackupResp = await APIs.keys().then((a) =>
-        a.keysGetBackup(orgId, serverId)
+        a.keysGetBackup(serverId, orgId)
     );
     if (!encryptedBackupResp.data)
         throw new Error("No backed up private key found");

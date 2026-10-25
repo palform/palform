@@ -24,7 +24,7 @@
     let showDeleteModal = $state(false);
     let onDeleteClick = $derived(async () => {
         await APIs.forms().then((a) =>
-            a.formsDelete($orgCtx.org.id, $formAdminCtx.formId)
+            a.formsDelete($formAdminCtx.formId, $orgCtx.org.id)
         );
         orgCtx.update((ctx) => {
             return {

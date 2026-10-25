@@ -117,9 +117,9 @@
         try {
             if (existingBranding) {
                 await api.organisationTeamBrandingPut(
+                    existingBranding.id,
                     $orgCtx.org.id,
                     $teamCtx.team.id,
-                    existingBranding.id,
                     branding
                 );
                 teamCtx.update((ctx) => {

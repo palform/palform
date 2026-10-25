@@ -23,14 +23,14 @@ import {
 const configuration = new Configuration();
 const apiInstance = new TeamAssetsApi(configuration);
 
+let assetId: string; // (default to undefined)
 let orgId: string; // (default to undefined)
 let teamId: string; // (default to undefined)
-let assetId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.organisationTeamAssetGet(
+    assetId,
     orgId,
-    teamId,
-    assetId
+    teamId
 );
 ```
 
@@ -38,9 +38,9 @@ const { status, data } = await apiInstance.organisationTeamAssetGet(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
+| **assetId** | [**string**] |  | defaults to undefined|
 | **orgId** | [**string**] |  | defaults to undefined|
 | **teamId** | [**string**] |  | defaults to undefined|
-| **assetId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type

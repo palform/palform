@@ -26,7 +26,10 @@ pub struct EnrollWebauthnRequest {
     nickname: String,
 }
 
-#[api_operation(tag = "2FA Methods", operation_id = "user.second_factors.enroll_webauthn")]
+#[api_operation(
+    tag = "2FA Methods",
+    operation_id = "user.second_factors.enroll_webauthn"
+)]
 pub async fn auth_second_factors_enroll_webauthn(
     data: Json<EnrollWebauthnRequest>,
     token: APIAuthToken<APIAuthTokenSourcePersonal>,

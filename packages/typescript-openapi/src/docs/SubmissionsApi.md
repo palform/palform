@@ -24,13 +24,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new SubmissionsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let submissionId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.submissionsCrypto(
-    orgId,
     formId,
+    orgId,
     submissionId
 );
 ```
@@ -39,8 +39,8 @@ const { status, data } = await apiInstance.submissionsCrypto(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 | **submissionId** | [**string**] |  | defaults to undefined|
 
 
@@ -86,13 +86,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new SubmissionsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let submissionId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.submissionsDelete(
-    orgId,
     formId,
+    orgId,
     submissionId
 );
 ```
@@ -101,8 +101,8 @@ const { status, data } = await apiInstance.submissionsDelete(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 | **submissionId** | [**string**] |  | defaults to undefined|
 
 
@@ -148,13 +148,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new SubmissionsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let since: string; // (optional) (default to undefined)
 
 const { status, data } = await apiInstance.submissionsList(
-    orgId,
     formId,
+    orgId,
     since
 );
 ```
@@ -163,8 +163,8 @@ const { status, data } = await apiInstance.submissionsList(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 | **since** | **string** |  | (optional) defaults to undefined|
 
 

@@ -27,7 +27,7 @@
         loading = true;
         try {
             const resp = await APIs.webhooks().then((a) =>
-                a.webhooksCreate($orgCtx.org.id, $formCtx.id, {
+                a.webhooksCreate($formCtx.id, $orgCtx.org.id, {
                     endpoint,
                 })
             );

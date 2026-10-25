@@ -19,7 +19,10 @@ pub struct OrganisationAuthConfigGetPath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
-#[api_operation(tag = "Organisation Authentication Configuration", operation_id = "organisation.auth_config.get")]
+#[api_operation(
+    tag = "Organisation Authentication Configuration",
+    operation_id = "organisation.auth_config.get"
+)]
 pub async fn organisation_auth_config_get(
     _path: Path<OrganisationAuthConfigGetPath>,
     _token: APITokenOrgAdmin,

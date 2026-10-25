@@ -173,10 +173,6 @@ export interface APIBillingUpcomingInvoicePromotion {
     'name': string;
     'percent_off'?: number | null;
 }
-export interface APICaptchaChallenge {
-    'challenge': string;
-    'id': string;
-}
 export interface APICountryWithCallingCode {
     'calling_code': number;
     'flag_emoji': string;
@@ -3315,7 +3311,7 @@ export const CaptchaApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3344,7 +3340,7 @@ export const CaptchaApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async captchaCreate(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APICaptchaChallenge>> {
+        async captchaCreate(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<{ [key: string]: any; }>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.captchaCreate(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['CaptchaApi.captchaCreate']?.[localVarOperationServerIndex]?.url;
@@ -3364,7 +3360,7 @@ export const CaptchaApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        captchaCreate(options?: RawAxiosRequestConfig): AxiosPromise<APICaptchaChallenge> {
+        captchaCreate(options?: RawAxiosRequestConfig): AxiosPromise<{ [key: string]: any; }> {
             return localVarFp.captchaCreate(options).then((request) => request(axios, basePath));
         },
     };
@@ -3997,22 +3993,22 @@ export const FillAccessTokensApiAxiosParamCreator = function (configuration?: Co
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {NewTokenRequest} newTokenRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fillAccessTokensCreate: async (orgId: string, formId: string, newTokenRequest: NewTokenRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('fillAccessTokensCreate', 'orgId', orgId)
+        fillAccessTokensCreate: async (formId: string, orgId: string, newTokenRequest: NewTokenRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('fillAccessTokensCreate', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('fillAccessTokensCreate', 'orgId', orgId)
             // verify required parameter 'newTokenRequest' is not null or undefined
             assertParamExists('fillAccessTokensCreate', 'newTokenRequest', newTokenRequest)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/fill_access_tokens`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4043,22 +4039,22 @@ export const FillAccessTokensApiAxiosParamCreator = function (configuration?: Co
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} tokenId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fillAccessTokensDelete: async (orgId: string, formId: string, tokenId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('fillAccessTokensDelete', 'orgId', orgId)
+        fillAccessTokensDelete: async (formId: string, orgId: string, tokenId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('fillAccessTokensDelete', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('fillAccessTokensDelete', 'orgId', orgId)
             // verify required parameter 'tokenId' is not null or undefined
             assertParamExists('fillAccessTokensDelete', 'tokenId', tokenId)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/fill_access_tokens/{token_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
                 .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
                 .replace(`{${"token_id"}}`, encodeURIComponent(String(tokenId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4087,19 +4083,19 @@ export const FillAccessTokensApiAxiosParamCreator = function (configuration?: Co
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fillAccessTokensList: async (orgId: string, formId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('fillAccessTokensList', 'orgId', orgId)
+        fillAccessTokensList: async (formId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('fillAccessTokensList', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('fillAccessTokensList', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/fill_access_tokens`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4137,41 +4133,41 @@ export const FillAccessTokensApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {NewTokenRequest} newTokenRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fillAccessTokensCreate(orgId: string, formId: string, newTokenRequest: NewTokenRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIFillToken>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.fillAccessTokensCreate(orgId, formId, newTokenRequest, options);
+        async fillAccessTokensCreate(formId: string, orgId: string, newTokenRequest: NewTokenRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIFillToken>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.fillAccessTokensCreate(formId, orgId, newTokenRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FillAccessTokensApi.fillAccessTokensCreate']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} tokenId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fillAccessTokensDelete(orgId: string, formId: string, tokenId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.fillAccessTokensDelete(orgId, formId, tokenId, options);
+        async fillAccessTokensDelete(formId: string, orgId: string, tokenId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.fillAccessTokensDelete(formId, orgId, tokenId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FillAccessTokensApi.fillAccessTokensDelete']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fillAccessTokensList(orgId: string, formId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIFillToken>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.fillAccessTokensList(orgId, formId, options);
+        async fillAccessTokensList(formId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIFillToken>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.fillAccessTokensList(formId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FillAccessTokensApi.fillAccessTokensList']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -4187,35 +4183,35 @@ export const FillAccessTokensApiFactory = function (configuration?: Configuratio
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {NewTokenRequest} newTokenRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fillAccessTokensCreate(orgId: string, formId: string, newTokenRequest: NewTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<APIFillToken> {
-            return localVarFp.fillAccessTokensCreate(orgId, formId, newTokenRequest, options).then((request) => request(axios, basePath));
+        fillAccessTokensCreate(formId: string, orgId: string, newTokenRequest: NewTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<APIFillToken> {
+            return localVarFp.fillAccessTokensCreate(formId, orgId, newTokenRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} tokenId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fillAccessTokensDelete(orgId: string, formId: string, tokenId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.fillAccessTokensDelete(orgId, formId, tokenId, options).then((request) => request(axios, basePath));
+        fillAccessTokensDelete(formId: string, orgId: string, tokenId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.fillAccessTokensDelete(formId, orgId, tokenId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fillAccessTokensList(orgId: string, formId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIFillToken>> {
-            return localVarFp.fillAccessTokensList(orgId, formId, options).then((request) => request(axios, basePath));
+        fillAccessTokensList(formId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIFillToken>> {
+            return localVarFp.fillAccessTokensList(formId, orgId, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -4226,37 +4222,37 @@ export const FillAccessTokensApiFactory = function (configuration?: Configuratio
 export class FillAccessTokensApi extends BaseAPI {
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {NewTokenRequest} newTokenRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public fillAccessTokensCreate(orgId: string, formId: string, newTokenRequest: NewTokenRequest, options?: RawAxiosRequestConfig) {
-        return FillAccessTokensApiFp(this.configuration).fillAccessTokensCreate(orgId, formId, newTokenRequest, options).then((request) => request(this.axios, this.basePath));
+    public fillAccessTokensCreate(formId: string, orgId: string, newTokenRequest: NewTokenRequest, options?: RawAxiosRequestConfig) {
+        return FillAccessTokensApiFp(this.configuration).fillAccessTokensCreate(formId, orgId, newTokenRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {string} tokenId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public fillAccessTokensDelete(orgId: string, formId: string, tokenId: string, options?: RawAxiosRequestConfig) {
-        return FillAccessTokensApiFp(this.configuration).fillAccessTokensDelete(orgId, formId, tokenId, options).then((request) => request(this.axios, this.basePath));
+    public fillAccessTokensDelete(formId: string, orgId: string, tokenId: string, options?: RawAxiosRequestConfig) {
+        return FillAccessTokensApiFp(this.configuration).fillAccessTokensDelete(formId, orgId, tokenId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public fillAccessTokensList(orgId: string, formId: string, options?: RawAxiosRequestConfig) {
-        return FillAccessTokensApiFp(this.configuration).fillAccessTokensList(orgId, formId, options).then((request) => request(this.axios, this.basePath));
+    public fillAccessTokensList(formId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return FillAccessTokensApiFp(this.configuration).fillAccessTokensList(formId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -4302,26 +4298,26 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {AddAccessRequest} addAccessRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamBrandingAddAccess: async (orgId: string, teamId: string, brandingId: string, addAccessRequest: AddAccessRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        organisationTeamBrandingAddAccess: async (brandingId: string, orgId: string, teamId: string, addAccessRequest: AddAccessRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'brandingId' is not null or undefined
+            assertParamExists('organisationTeamBrandingAddAccess', 'brandingId', brandingId)
             // verify required parameter 'orgId' is not null or undefined
             assertParamExists('organisationTeamBrandingAddAccess', 'orgId', orgId)
             // verify required parameter 'teamId' is not null or undefined
             assertParamExists('organisationTeamBrandingAddAccess', 'teamId', teamId)
-            // verify required parameter 'brandingId' is not null or undefined
-            assertParamExists('organisationTeamBrandingAddAccess', 'brandingId', brandingId)
             // verify required parameter 'addAccessRequest' is not null or undefined
             assertParamExists('organisationTeamBrandingAddAccess', 'addAccessRequest', addAccessRequest)
             const localVarPath = `/api/org/{org_id}/team/{team_id}/brandings/{branding_id}/access`
+                .replace(`{${"branding_id"}}`, encodeURIComponent(String(brandingId)))
                 .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)))
-                .replace(`{${"branding_id"}}`, encodeURIComponent(String(brandingId)));
+                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4398,23 +4394,23 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamBrandingDelete: async (orgId: string, teamId: string, brandingId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        organisationTeamBrandingDelete: async (brandingId: string, orgId: string, teamId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'brandingId' is not null or undefined
+            assertParamExists('organisationTeamBrandingDelete', 'brandingId', brandingId)
             // verify required parameter 'orgId' is not null or undefined
             assertParamExists('organisationTeamBrandingDelete', 'orgId', orgId)
             // verify required parameter 'teamId' is not null or undefined
             assertParamExists('organisationTeamBrandingDelete', 'teamId', teamId)
-            // verify required parameter 'brandingId' is not null or undefined
-            assertParamExists('organisationTeamBrandingDelete', 'brandingId', brandingId)
             const localVarPath = `/api/org/{org_id}/team/{team_id}/brandings/{branding_id}`
+                .replace(`{${"branding_id"}}`, encodeURIComponent(String(brandingId)))
                 .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)))
-                .replace(`{${"branding_id"}}`, encodeURIComponent(String(brandingId)));
+                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4442,26 +4438,26 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {DeleteAccessRequest} deleteAccessRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamBrandingDeleteAccess: async (orgId: string, teamId: string, brandingId: string, deleteAccessRequest: DeleteAccessRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        organisationTeamBrandingDeleteAccess: async (brandingId: string, orgId: string, teamId: string, deleteAccessRequest: DeleteAccessRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'brandingId' is not null or undefined
+            assertParamExists('organisationTeamBrandingDeleteAccess', 'brandingId', brandingId)
             // verify required parameter 'orgId' is not null or undefined
             assertParamExists('organisationTeamBrandingDeleteAccess', 'orgId', orgId)
             // verify required parameter 'teamId' is not null or undefined
             assertParamExists('organisationTeamBrandingDeleteAccess', 'teamId', teamId)
-            // verify required parameter 'brandingId' is not null or undefined
-            assertParamExists('organisationTeamBrandingDeleteAccess', 'brandingId', brandingId)
             // verify required parameter 'deleteAccessRequest' is not null or undefined
             assertParamExists('organisationTeamBrandingDeleteAccess', 'deleteAccessRequest', deleteAccessRequest)
             const localVarPath = `/api/org/{org_id}/team/{team_id}/brandings/{branding_id}/access`
+                .replace(`{${"branding_id"}}`, encodeURIComponent(String(brandingId)))
                 .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)))
-                .replace(`{${"branding_id"}}`, encodeURIComponent(String(brandingId)));
+                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4532,23 +4528,23 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamBrandingListAccess: async (orgId: string, teamId: string, brandingId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        organisationTeamBrandingListAccess: async (brandingId: string, orgId: string, teamId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'brandingId' is not null or undefined
+            assertParamExists('organisationTeamBrandingListAccess', 'brandingId', brandingId)
             // verify required parameter 'orgId' is not null or undefined
             assertParamExists('organisationTeamBrandingListAccess', 'orgId', orgId)
             // verify required parameter 'teamId' is not null or undefined
             assertParamExists('organisationTeamBrandingListAccess', 'teamId', teamId)
-            // verify required parameter 'brandingId' is not null or undefined
-            assertParamExists('organisationTeamBrandingListAccess', 'brandingId', brandingId)
             const localVarPath = `/api/org/{org_id}/team/{team_id}/brandings/{branding_id}/access`
+                .replace(`{${"branding_id"}}`, encodeURIComponent(String(brandingId)))
                 .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)))
-                .replace(`{${"branding_id"}}`, encodeURIComponent(String(brandingId)));
+                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4577,26 +4573,26 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {APIFormBrandingRequest} aPIFormBrandingRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamBrandingPut: async (orgId: string, teamId: string, brandingId: string, aPIFormBrandingRequest: APIFormBrandingRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        organisationTeamBrandingPut: async (brandingId: string, orgId: string, teamId: string, aPIFormBrandingRequest: APIFormBrandingRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'brandingId' is not null or undefined
+            assertParamExists('organisationTeamBrandingPut', 'brandingId', brandingId)
             // verify required parameter 'orgId' is not null or undefined
             assertParamExists('organisationTeamBrandingPut', 'orgId', orgId)
             // verify required parameter 'teamId' is not null or undefined
             assertParamExists('organisationTeamBrandingPut', 'teamId', teamId)
-            // verify required parameter 'brandingId' is not null or undefined
-            assertParamExists('organisationTeamBrandingPut', 'brandingId', brandingId)
             // verify required parameter 'aPIFormBrandingRequest' is not null or undefined
             assertParamExists('organisationTeamBrandingPut', 'aPIFormBrandingRequest', aPIFormBrandingRequest)
             const localVarPath = `/api/org/{org_id}/team/{team_id}/brandings/{branding_id}`
+                .replace(`{${"branding_id"}}`, encodeURIComponent(String(brandingId)))
                 .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)))
-                .replace(`{${"branding_id"}}`, encodeURIComponent(String(brandingId)));
+                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4646,15 +4642,15 @@ export const FormBrandingsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {AddAccessRequest} addAccessRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async organisationTeamBrandingAddAccess(orgId: string, teamId: string, brandingId: string, addAccessRequest: AddAccessRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIFormBrandingAccess>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamBrandingAddAccess(orgId, teamId, brandingId, addAccessRequest, options);
+        async organisationTeamBrandingAddAccess(brandingId: string, orgId: string, teamId: string, addAccessRequest: AddAccessRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIFormBrandingAccess>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamBrandingAddAccess(brandingId, orgId, teamId, addAccessRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormBrandingsApi.organisationTeamBrandingAddAccess']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -4675,29 +4671,29 @@ export const FormBrandingsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async organisationTeamBrandingDelete(orgId: string, teamId: string, brandingId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamBrandingDelete(orgId, teamId, brandingId, options);
+        async organisationTeamBrandingDelete(brandingId: string, orgId: string, teamId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamBrandingDelete(brandingId, orgId, teamId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormBrandingsApi.organisationTeamBrandingDelete']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {DeleteAccessRequest} deleteAccessRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async organisationTeamBrandingDeleteAccess(orgId: string, teamId: string, brandingId: string, deleteAccessRequest: DeleteAccessRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamBrandingDeleteAccess(orgId, teamId, brandingId, deleteAccessRequest, options);
+        async organisationTeamBrandingDeleteAccess(brandingId: string, orgId: string, teamId: string, deleteAccessRequest: DeleteAccessRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamBrandingDeleteAccess(brandingId, orgId, teamId, deleteAccessRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormBrandingsApi.organisationTeamBrandingDeleteAccess']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -4717,29 +4713,29 @@ export const FormBrandingsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async organisationTeamBrandingListAccess(orgId: string, teamId: string, brandingId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIFormBrandingAccess>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamBrandingListAccess(orgId, teamId, brandingId, options);
+        async organisationTeamBrandingListAccess(brandingId: string, orgId: string, teamId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIFormBrandingAccess>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamBrandingListAccess(brandingId, orgId, teamId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormBrandingsApi.organisationTeamBrandingListAccess']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {APIFormBrandingRequest} aPIFormBrandingRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async organisationTeamBrandingPut(orgId: string, teamId: string, brandingId: string, aPIFormBrandingRequest: APIFormBrandingRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamBrandingPut(orgId, teamId, brandingId, aPIFormBrandingRequest, options);
+        async organisationTeamBrandingPut(brandingId: string, orgId: string, teamId: string, aPIFormBrandingRequest: APIFormBrandingRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamBrandingPut(brandingId, orgId, teamId, aPIFormBrandingRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormBrandingsApi.organisationTeamBrandingPut']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -4763,15 +4759,15 @@ export const FormBrandingsApiFactory = function (configuration?: Configuration, 
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {AddAccessRequest} addAccessRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamBrandingAddAccess(orgId: string, teamId: string, brandingId: string, addAccessRequest: AddAccessRequest, options?: RawAxiosRequestConfig): AxiosPromise<APIFormBrandingAccess> {
-            return localVarFp.organisationTeamBrandingAddAccess(orgId, teamId, brandingId, addAccessRequest, options).then((request) => request(axios, basePath));
+        organisationTeamBrandingAddAccess(brandingId: string, orgId: string, teamId: string, addAccessRequest: AddAccessRequest, options?: RawAxiosRequestConfig): AxiosPromise<APIFormBrandingAccess> {
+            return localVarFp.organisationTeamBrandingAddAccess(brandingId, orgId, teamId, addAccessRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4786,26 +4782,26 @@ export const FormBrandingsApiFactory = function (configuration?: Configuration, 
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamBrandingDelete(orgId: string, teamId: string, brandingId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.organisationTeamBrandingDelete(orgId, teamId, brandingId, options).then((request) => request(axios, basePath));
+        organisationTeamBrandingDelete(brandingId: string, orgId: string, teamId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.organisationTeamBrandingDelete(brandingId, orgId, teamId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {DeleteAccessRequest} deleteAccessRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamBrandingDeleteAccess(orgId: string, teamId: string, brandingId: string, deleteAccessRequest: DeleteAccessRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.organisationTeamBrandingDeleteAccess(orgId, teamId, brandingId, deleteAccessRequest, options).then((request) => request(axios, basePath));
+        organisationTeamBrandingDeleteAccess(brandingId: string, orgId: string, teamId: string, deleteAccessRequest: DeleteAccessRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.organisationTeamBrandingDeleteAccess(brandingId, orgId, teamId, deleteAccessRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4819,26 +4815,26 @@ export const FormBrandingsApiFactory = function (configuration?: Configuration, 
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamBrandingListAccess(orgId: string, teamId: string, brandingId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIFormBrandingAccess>> {
-            return localVarFp.organisationTeamBrandingListAccess(orgId, teamId, brandingId, options).then((request) => request(axios, basePath));
+        organisationTeamBrandingListAccess(brandingId: string, orgId: string, teamId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIFormBrandingAccess>> {
+            return localVarFp.organisationTeamBrandingListAccess(brandingId, orgId, teamId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
+         * @param {string} brandingId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} brandingId 
          * @param {APIFormBrandingRequest} aPIFormBrandingRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamBrandingPut(orgId: string, teamId: string, brandingId: string, aPIFormBrandingRequest: APIFormBrandingRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.organisationTeamBrandingPut(orgId, teamId, brandingId, aPIFormBrandingRequest, options).then((request) => request(axios, basePath));
+        organisationTeamBrandingPut(brandingId: string, orgId: string, teamId: string, aPIFormBrandingRequest: APIFormBrandingRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.organisationTeamBrandingPut(brandingId, orgId, teamId, aPIFormBrandingRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -4858,15 +4854,15 @@ export class FormBrandingsApi extends BaseAPI {
 
     /**
      * 
+     * @param {string} brandingId 
      * @param {string} orgId 
      * @param {string} teamId 
-     * @param {string} brandingId 
      * @param {AddAccessRequest} addAccessRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public organisationTeamBrandingAddAccess(orgId: string, teamId: string, brandingId: string, addAccessRequest: AddAccessRequest, options?: RawAxiosRequestConfig) {
-        return FormBrandingsApiFp(this.configuration).organisationTeamBrandingAddAccess(orgId, teamId, brandingId, addAccessRequest, options).then((request) => request(this.axios, this.basePath));
+    public organisationTeamBrandingAddAccess(brandingId: string, orgId: string, teamId: string, addAccessRequest: AddAccessRequest, options?: RawAxiosRequestConfig) {
+        return FormBrandingsApiFp(this.configuration).organisationTeamBrandingAddAccess(brandingId, orgId, teamId, addAccessRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4883,27 +4879,27 @@ export class FormBrandingsApi extends BaseAPI {
 
     /**
      * 
+     * @param {string} brandingId 
      * @param {string} orgId 
      * @param {string} teamId 
-     * @param {string} brandingId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public organisationTeamBrandingDelete(orgId: string, teamId: string, brandingId: string, options?: RawAxiosRequestConfig) {
-        return FormBrandingsApiFp(this.configuration).organisationTeamBrandingDelete(orgId, teamId, brandingId, options).then((request) => request(this.axios, this.basePath));
+    public organisationTeamBrandingDelete(brandingId: string, orgId: string, teamId: string, options?: RawAxiosRequestConfig) {
+        return FormBrandingsApiFp(this.configuration).organisationTeamBrandingDelete(brandingId, orgId, teamId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @param {string} brandingId 
      * @param {string} orgId 
      * @param {string} teamId 
-     * @param {string} brandingId 
      * @param {DeleteAccessRequest} deleteAccessRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public organisationTeamBrandingDeleteAccess(orgId: string, teamId: string, brandingId: string, deleteAccessRequest: DeleteAccessRequest, options?: RawAxiosRequestConfig) {
-        return FormBrandingsApiFp(this.configuration).organisationTeamBrandingDeleteAccess(orgId, teamId, brandingId, deleteAccessRequest, options).then((request) => request(this.axios, this.basePath));
+    public organisationTeamBrandingDeleteAccess(brandingId: string, orgId: string, teamId: string, deleteAccessRequest: DeleteAccessRequest, options?: RawAxiosRequestConfig) {
+        return FormBrandingsApiFp(this.configuration).organisationTeamBrandingDeleteAccess(brandingId, orgId, teamId, deleteAccessRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4919,27 +4915,27 @@ export class FormBrandingsApi extends BaseAPI {
 
     /**
      * 
+     * @param {string} brandingId 
      * @param {string} orgId 
      * @param {string} teamId 
-     * @param {string} brandingId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public organisationTeamBrandingListAccess(orgId: string, teamId: string, brandingId: string, options?: RawAxiosRequestConfig) {
-        return FormBrandingsApiFp(this.configuration).organisationTeamBrandingListAccess(orgId, teamId, brandingId, options).then((request) => request(this.axios, this.basePath));
+    public organisationTeamBrandingListAccess(brandingId: string, orgId: string, teamId: string, options?: RawAxiosRequestConfig) {
+        return FormBrandingsApiFp(this.configuration).organisationTeamBrandingListAccess(brandingId, orgId, teamId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @param {string} brandingId 
      * @param {string} orgId 
      * @param {string} teamId 
-     * @param {string} brandingId 
      * @param {APIFormBrandingRequest} aPIFormBrandingRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public organisationTeamBrandingPut(orgId: string, teamId: string, brandingId: string, aPIFormBrandingRequest: APIFormBrandingRequest, options?: RawAxiosRequestConfig) {
-        return FormBrandingsApiFp(this.configuration).organisationTeamBrandingPut(orgId, teamId, brandingId, aPIFormBrandingRequest, options).then((request) => request(this.axios, this.basePath));
+    public organisationTeamBrandingPut(brandingId: string, orgId: string, teamId: string, aPIFormBrandingRequest: APIFormBrandingRequest, options?: RawAxiosRequestConfig) {
+        return FormBrandingsApiFp(this.configuration).organisationTeamBrandingPut(brandingId, orgId, teamId, aPIFormBrandingRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -5479,19 +5475,19 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsDelete: async (orgId: string, formId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('formsDelete', 'orgId', orgId)
+        formsDelete: async (formId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('formsDelete', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('formsDelete', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/form/forms/{form_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5519,19 +5515,19 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @param {string} subdomain 
          * @param {string} shortLink 
+         * @param {string} subdomain 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsExchangeShortLink: async (subdomain: string, shortLink: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'subdomain' is not null or undefined
-            assertParamExists('formsExchangeShortLink', 'subdomain', subdomain)
+        formsExchangeShortLink: async (shortLink: string, subdomain: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'shortLink' is not null or undefined
             assertParamExists('formsExchangeShortLink', 'shortLink', shortLink)
+            // verify required parameter 'subdomain' is not null or undefined
+            assertParamExists('formsExchangeShortLink', 'subdomain', subdomain)
             const localVarPath = `/api/fill/form/forms/short_link/{subdomain}/{short_link}`
-                .replace(`{${"subdomain"}}`, encodeURIComponent(String(subdomain)))
-                .replace(`{${"short_link"}}`, encodeURIComponent(String(shortLink)));
+                .replace(`{${"short_link"}}`, encodeURIComponent(String(shortLink)))
+                .replace(`{${"subdomain"}}`, encodeURIComponent(String(subdomain)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5603,19 +5599,19 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsGet: async (orgId: string, formId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('formsGet', 'orgId', orgId)
+        formsGet: async (formId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('formsGet', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('formsGet', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/form/forms/{form_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5721,22 +5717,22 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {FormsRelocateRequest} formsRelocateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsRelocate: async (orgId: string, formId: string, formsRelocateRequest: FormsRelocateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('formsRelocate', 'orgId', orgId)
+        formsRelocate: async (formId: string, orgId: string, formsRelocateRequest: FormsRelocateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('formsRelocate', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('formsRelocate', 'orgId', orgId)
             // verify required parameter 'formsRelocateRequest' is not null or undefined
             assertParamExists('formsRelocate', 'formsRelocateRequest', formsRelocateRequest)
             const localVarPath = `/api/org/{org_id}/form/forms/{form_id}/location`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5766,22 +5762,22 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {SetSubmissionAutoDeleteRequest} setSubmissionAutoDeleteRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsSetAutoDelete: async (orgId: string, formId: string, setSubmissionAutoDeleteRequest: SetSubmissionAutoDeleteRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('formsSetAutoDelete', 'orgId', orgId)
+        formsSetAutoDelete: async (formId: string, orgId: string, setSubmissionAutoDeleteRequest: SetSubmissionAutoDeleteRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('formsSetAutoDelete', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('formsSetAutoDelete', 'orgId', orgId)
             // verify required parameter 'setSubmissionAutoDeleteRequest' is not null or undefined
             assertParamExists('formsSetAutoDelete', 'setSubmissionAutoDeleteRequest', setSubmissionAutoDeleteRequest)
             const localVarPath = `/api/org/{org_id}/form/forms/{form_id}/auto-delete`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5811,22 +5807,22 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {UpdateFormRequest} updateFormRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsUpdate: async (orgId: string, formId: string, updateFormRequest: UpdateFormRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('formsUpdate', 'orgId', orgId)
+        formsUpdate: async (formId: string, orgId: string, updateFormRequest: UpdateFormRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('formsUpdate', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('formsUpdate', 'orgId', orgId)
             // verify required parameter 'updateFormRequest' is not null or undefined
             assertParamExists('formsUpdate', 'updateFormRequest', updateFormRequest)
             const localVarPath = `/api/org/{org_id}/form/forms/{form_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5918,26 +5914,26 @@ export const FormsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async formsDelete(orgId: string, formId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.formsDelete(orgId, formId, options);
+        async formsDelete(formId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.formsDelete(formId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormsApi.formsDelete']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} subdomain 
          * @param {string} shortLink 
+         * @param {string} subdomain 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async formsExchangeShortLink(subdomain: string, shortLink: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIExchangedShortLink>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.formsExchangeShortLink(subdomain, shortLink, options);
+        async formsExchangeShortLink(shortLink: string, subdomain: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIExchangedShortLink>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.formsExchangeShortLink(shortLink, subdomain, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormsApi.formsExchangeShortLink']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -5958,13 +5954,13 @@ export const FormsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async formsGet(orgId: string, formId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIForm>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.formsGet(orgId, formId, options);
+        async formsGet(formId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIForm>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.formsGet(formId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormsApi.formsGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -5996,42 +5992,42 @@ export const FormsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {FormsRelocateRequest} formsRelocateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async formsRelocate(orgId: string, formId: string, formsRelocateRequest: FormsRelocateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.formsRelocate(orgId, formId, formsRelocateRequest, options);
+        async formsRelocate(formId: string, orgId: string, formsRelocateRequest: FormsRelocateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.formsRelocate(formId, orgId, formsRelocateRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormsApi.formsRelocate']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {SetSubmissionAutoDeleteRequest} setSubmissionAutoDeleteRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async formsSetAutoDelete(orgId: string, formId: string, setSubmissionAutoDeleteRequest: SetSubmissionAutoDeleteRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.formsSetAutoDelete(orgId, formId, setSubmissionAutoDeleteRequest, options);
+        async formsSetAutoDelete(formId: string, orgId: string, setSubmissionAutoDeleteRequest: SetSubmissionAutoDeleteRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.formsSetAutoDelete(formId, orgId, setSubmissionAutoDeleteRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormsApi.formsSetAutoDelete']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {UpdateFormRequest} updateFormRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async formsUpdate(orgId: string, formId: string, updateFormRequest: UpdateFormRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.formsUpdate(orgId, formId, updateFormRequest, options);
+        async formsUpdate(formId: string, orgId: string, updateFormRequest: UpdateFormRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.formsUpdate(formId, orgId, updateFormRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FormsApi.formsUpdate']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -6070,23 +6066,23 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsDelete(orgId: string, formId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.formsDelete(orgId, formId, options).then((request) => request(axios, basePath));
+        formsDelete(formId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.formsDelete(formId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} subdomain 
          * @param {string} shortLink 
+         * @param {string} subdomain 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsExchangeShortLink(subdomain: string, shortLink: string, options?: RawAxiosRequestConfig): AxiosPromise<APIExchangedShortLink> {
-            return localVarFp.formsExchangeShortLink(subdomain, shortLink, options).then((request) => request(axios, basePath));
+        formsExchangeShortLink(shortLink: string, subdomain: string, options?: RawAxiosRequestConfig): AxiosPromise<APIExchangedShortLink> {
+            return localVarFp.formsExchangeShortLink(shortLink, subdomain, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -6101,13 +6097,13 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsGet(orgId: string, formId: string, options?: RawAxiosRequestConfig): AxiosPromise<APIForm> {
-            return localVarFp.formsGet(orgId, formId, options).then((request) => request(axios, basePath));
+        formsGet(formId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<APIForm> {
+            return localVarFp.formsGet(formId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -6130,36 +6126,36 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {FormsRelocateRequest} formsRelocateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsRelocate(orgId: string, formId: string, formsRelocateRequest: FormsRelocateRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.formsRelocate(orgId, formId, formsRelocateRequest, options).then((request) => request(axios, basePath));
+        formsRelocate(formId: string, orgId: string, formsRelocateRequest: FormsRelocateRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.formsRelocate(formId, orgId, formsRelocateRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {SetSubmissionAutoDeleteRequest} setSubmissionAutoDeleteRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsSetAutoDelete(orgId: string, formId: string, setSubmissionAutoDeleteRequest: SetSubmissionAutoDeleteRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.formsSetAutoDelete(orgId, formId, setSubmissionAutoDeleteRequest, options).then((request) => request(axios, basePath));
+        formsSetAutoDelete(formId: string, orgId: string, setSubmissionAutoDeleteRequest: SetSubmissionAutoDeleteRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.formsSetAutoDelete(formId, orgId, setSubmissionAutoDeleteRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {UpdateFormRequest} updateFormRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        formsUpdate(orgId: string, formId: string, updateFormRequest: UpdateFormRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.formsUpdate(orgId, formId, updateFormRequest, options).then((request) => request(axios, basePath));
+        formsUpdate(formId: string, orgId: string, updateFormRequest: UpdateFormRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.formsUpdate(formId, orgId, updateFormRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -6191,24 +6187,24 @@ export class FormsApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public formsDelete(orgId: string, formId: string, options?: RawAxiosRequestConfig) {
-        return FormsApiFp(this.configuration).formsDelete(orgId, formId, options).then((request) => request(this.axios, this.basePath));
+    public formsDelete(formId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return FormsApiFp(this.configuration).formsDelete(formId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} subdomain 
      * @param {string} shortLink 
+     * @param {string} subdomain 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public formsExchangeShortLink(subdomain: string, shortLink: string, options?: RawAxiosRequestConfig) {
-        return FormsApiFp(this.configuration).formsExchangeShortLink(subdomain, shortLink, options).then((request) => request(this.axios, this.basePath));
+    public formsExchangeShortLink(shortLink: string, subdomain: string, options?: RawAxiosRequestConfig) {
+        return FormsApiFp(this.configuration).formsExchangeShortLink(shortLink, subdomain, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -6225,13 +6221,13 @@ export class FormsApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public formsGet(orgId: string, formId: string, options?: RawAxiosRequestConfig) {
-        return FormsApiFp(this.configuration).formsGet(orgId, formId, options).then((request) => request(this.axios, this.basePath));
+    public formsGet(formId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return FormsApiFp(this.configuration).formsGet(formId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -6257,38 +6253,38 @@ export class FormsApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {FormsRelocateRequest} formsRelocateRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public formsRelocate(orgId: string, formId: string, formsRelocateRequest: FormsRelocateRequest, options?: RawAxiosRequestConfig) {
-        return FormsApiFp(this.configuration).formsRelocate(orgId, formId, formsRelocateRequest, options).then((request) => request(this.axios, this.basePath));
+    public formsRelocate(formId: string, orgId: string, formsRelocateRequest: FormsRelocateRequest, options?: RawAxiosRequestConfig) {
+        return FormsApiFp(this.configuration).formsRelocate(formId, orgId, formsRelocateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {SetSubmissionAutoDeleteRequest} setSubmissionAutoDeleteRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public formsSetAutoDelete(orgId: string, formId: string, setSubmissionAutoDeleteRequest: SetSubmissionAutoDeleteRequest, options?: RawAxiosRequestConfig) {
-        return FormsApiFp(this.configuration).formsSetAutoDelete(orgId, formId, setSubmissionAutoDeleteRequest, options).then((request) => request(this.axios, this.basePath));
+    public formsSetAutoDelete(formId: string, orgId: string, setSubmissionAutoDeleteRequest: SetSubmissionAutoDeleteRequest, options?: RawAxiosRequestConfig) {
+        return FormsApiFp(this.configuration).formsSetAutoDelete(formId, orgId, setSubmissionAutoDeleteRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {UpdateFormRequest} updateFormRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public formsUpdate(orgId: string, formId: string, updateFormRequest: UpdateFormRequest, options?: RawAxiosRequestConfig) {
-        return FormsApiFp(this.configuration).formsUpdate(orgId, formId, updateFormRequest, options).then((request) => request(this.axios, this.basePath));
+    public formsUpdate(formId: string, orgId: string, updateFormRequest: UpdateFormRequest, options?: RawAxiosRequestConfig) {
+        return FormsApiFp(this.configuration).formsUpdate(formId, orgId, updateFormRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -6787,19 +6783,19 @@ export const OrganisationAuthenticationTeamMappingsApiAxiosParamCreator = functi
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} mappingId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationAuthConfigMappingsDelete: async (orgId: string, mappingId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('organisationAuthConfigMappingsDelete', 'orgId', orgId)
+        organisationAuthConfigMappingsDelete: async (mappingId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'mappingId' is not null or undefined
             assertParamExists('organisationAuthConfigMappingsDelete', 'mappingId', mappingId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('organisationAuthConfigMappingsDelete', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/mappings/{mapping_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"mapping_id"}}`, encodeURIComponent(String(mappingId)));
+                .replace(`{${"mapping_id"}}`, encodeURIComponent(String(mappingId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6886,13 +6882,13 @@ export const OrganisationAuthenticationTeamMappingsApiFp = function(configuratio
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} mappingId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async organisationAuthConfigMappingsDelete(orgId: string, mappingId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationAuthConfigMappingsDelete(orgId, mappingId, options);
+        async organisationAuthConfigMappingsDelete(mappingId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationAuthConfigMappingsDelete(mappingId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['OrganisationAuthenticationTeamMappingsApi.organisationAuthConfigMappingsDelete']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -6930,13 +6926,13 @@ export const OrganisationAuthenticationTeamMappingsApiFactory = function (config
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} mappingId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationAuthConfigMappingsDelete(orgId: string, mappingId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.organisationAuthConfigMappingsDelete(orgId, mappingId, options).then((request) => request(axios, basePath));
+        organisationAuthConfigMappingsDelete(mappingId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.organisationAuthConfigMappingsDelete(mappingId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -6967,13 +6963,13 @@ export class OrganisationAuthenticationTeamMappingsApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} mappingId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public organisationAuthConfigMappingsDelete(orgId: string, mappingId: string, options?: RawAxiosRequestConfig) {
-        return OrganisationAuthenticationTeamMappingsApiFp(this.configuration).organisationAuthConfigMappingsDelete(orgId, mappingId, options).then((request) => request(this.axios, this.basePath));
+    public organisationAuthConfigMappingsDelete(mappingId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return OrganisationAuthenticationTeamMappingsApiFp(this.configuration).organisationAuthConfigMappingsDelete(mappingId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -7287,19 +7283,19 @@ export const OrganisationInvitesApiAxiosParamCreator = function (configuration?:
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} inviteId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationInvitesDelete: async (orgId: string, inviteId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('organisationInvitesDelete', 'orgId', orgId)
+        organisationInvitesDelete: async (inviteId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'inviteId' is not null or undefined
             assertParamExists('organisationInvitesDelete', 'inviteId', inviteId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('organisationInvitesDelete', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/invites/{invite_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"invite_id"}}`, encodeURIComponent(String(inviteId)));
+                .replace(`{${"invite_id"}}`, encodeURIComponent(String(inviteId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7364,19 +7360,19 @@ export const OrganisationInvitesApiAxiosParamCreator = function (configuration?:
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} inviteId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationInvitesPreview: async (orgId: string, inviteId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('organisationInvitesPreview', 'orgId', orgId)
+        organisationInvitesPreview: async (inviteId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'inviteId' is not null or undefined
             assertParamExists('organisationInvitesPreview', 'inviteId', inviteId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('organisationInvitesPreview', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/invites/{invite_id}/preview`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"invite_id"}}`, encodeURIComponent(String(inviteId)));
+                .replace(`{${"invite_id"}}`, encodeURIComponent(String(inviteId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7427,13 +7423,13 @@ export const OrganisationInvitesApiFp = function(configuration?: Configuration) 
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} inviteId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async organisationInvitesDelete(orgId: string, inviteId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationInvitesDelete(orgId, inviteId, options);
+        async organisationInvitesDelete(inviteId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationInvitesDelete(inviteId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['OrganisationInvitesApi.organisationInvitesDelete']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -7452,13 +7448,13 @@ export const OrganisationInvitesApiFp = function(configuration?: Configuration) 
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} inviteId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async organisationInvitesPreview(orgId: string, inviteId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOrganisationInvitePreview>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationInvitesPreview(orgId, inviteId, options);
+        async organisationInvitesPreview(inviteId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOrganisationInvitePreview>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationInvitesPreview(inviteId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['OrganisationInvitesApi.organisationInvitesPreview']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -7484,13 +7480,13 @@ export const OrganisationInvitesApiFactory = function (configuration?: Configura
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} inviteId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationInvitesDelete(orgId: string, inviteId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.organisationInvitesDelete(orgId, inviteId, options).then((request) => request(axios, basePath));
+        organisationInvitesDelete(inviteId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.organisationInvitesDelete(inviteId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -7503,13 +7499,13 @@ export const OrganisationInvitesApiFactory = function (configuration?: Configura
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} inviteId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationInvitesPreview(orgId: string, inviteId: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOrganisationInvitePreview> {
-            return localVarFp.organisationInvitesPreview(orgId, inviteId, options).then((request) => request(axios, basePath));
+        organisationInvitesPreview(inviteId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOrganisationInvitePreview> {
+            return localVarFp.organisationInvitesPreview(inviteId, orgId, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -7531,13 +7527,13 @@ export class OrganisationInvitesApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} inviteId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public organisationInvitesDelete(orgId: string, inviteId: string, options?: RawAxiosRequestConfig) {
-        return OrganisationInvitesApiFp(this.configuration).organisationInvitesDelete(orgId, inviteId, options).then((request) => request(this.axios, this.basePath));
+    public organisationInvitesDelete(inviteId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return OrganisationInvitesApiFp(this.configuration).organisationInvitesDelete(inviteId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -7552,13 +7548,13 @@ export class OrganisationInvitesApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} inviteId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public organisationInvitesPreview(orgId: string, inviteId: string, options?: RawAxiosRequestConfig) {
-        return OrganisationInvitesApiFp(this.configuration).organisationInvitesPreview(orgId, inviteId, options).then((request) => request(this.axios, this.basePath));
+    public organisationInvitesPreview(inviteId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return OrganisationInvitesApiFp(this.configuration).organisationInvitesPreview(inviteId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -8192,23 +8188,23 @@ export const OrganisationTeamMembersApiAxiosParamCreator = function (configurati
         },
         /**
          * 
+         * @param {string} memberUserId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} memberUserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamMembersDelete: async (orgId: string, teamId: string, memberUserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        organisationTeamMembersDelete: async (memberUserId: string, orgId: string, teamId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'memberUserId' is not null or undefined
+            assertParamExists('organisationTeamMembersDelete', 'memberUserId', memberUserId)
             // verify required parameter 'orgId' is not null or undefined
             assertParamExists('organisationTeamMembersDelete', 'orgId', orgId)
             // verify required parameter 'teamId' is not null or undefined
             assertParamExists('organisationTeamMembersDelete', 'teamId', teamId)
-            // verify required parameter 'memberUserId' is not null or undefined
-            assertParamExists('organisationTeamMembersDelete', 'memberUserId', memberUserId)
             const localVarPath = `/api/org/{org_id}/team/{team_id}/members/{member_user_id}`
+                .replace(`{${"member_user_id"}}`, encodeURIComponent(String(memberUserId)))
                 .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)))
-                .replace(`{${"member_user_id"}}`, encodeURIComponent(String(memberUserId)));
+                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8277,26 +8273,26 @@ export const OrganisationTeamMembersApiAxiosParamCreator = function (configurati
         },
         /**
          * 
+         * @param {string} memberUserId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} memberUserId 
          * @param {OrganisationTeamMembersPatchRequest} organisationTeamMembersPatchRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamMembersPatch: async (orgId: string, teamId: string, memberUserId: string, organisationTeamMembersPatchRequest: OrganisationTeamMembersPatchRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        organisationTeamMembersPatch: async (memberUserId: string, orgId: string, teamId: string, organisationTeamMembersPatchRequest: OrganisationTeamMembersPatchRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'memberUserId' is not null or undefined
+            assertParamExists('organisationTeamMembersPatch', 'memberUserId', memberUserId)
             // verify required parameter 'orgId' is not null or undefined
             assertParamExists('organisationTeamMembersPatch', 'orgId', orgId)
             // verify required parameter 'teamId' is not null or undefined
             assertParamExists('organisationTeamMembersPatch', 'teamId', teamId)
-            // verify required parameter 'memberUserId' is not null or undefined
-            assertParamExists('organisationTeamMembersPatch', 'memberUserId', memberUserId)
             // verify required parameter 'organisationTeamMembersPatchRequest' is not null or undefined
             assertParamExists('organisationTeamMembersPatch', 'organisationTeamMembersPatchRequest', organisationTeamMembersPatchRequest)
             const localVarPath = `/api/org/{org_id}/team/{team_id}/members/{member_user_id}`
+                .replace(`{${"member_user_id"}}`, encodeURIComponent(String(memberUserId)))
                 .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)))
-                .replace(`{${"member_user_id"}}`, encodeURIComponent(String(memberUserId)));
+                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8349,14 +8345,14 @@ export const OrganisationTeamMembersApiFp = function(configuration?: Configurati
         },
         /**
          * 
+         * @param {string} memberUserId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} memberUserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async organisationTeamMembersDelete(orgId: string, teamId: string, memberUserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamMembersDelete(orgId, teamId, memberUserId, options);
+        async organisationTeamMembersDelete(memberUserId: string, orgId: string, teamId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamMembersDelete(memberUserId, orgId, teamId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['OrganisationTeamMembersApi.organisationTeamMembersDelete']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -8376,15 +8372,15 @@ export const OrganisationTeamMembersApiFp = function(configuration?: Configurati
         },
         /**
          * 
+         * @param {string} memberUserId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} memberUserId 
          * @param {OrganisationTeamMembersPatchRequest} organisationTeamMembersPatchRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async organisationTeamMembersPatch(orgId: string, teamId: string, memberUserId: string, organisationTeamMembersPatchRequest: OrganisationTeamMembersPatchRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamMembersPatch(orgId, teamId, memberUserId, organisationTeamMembersPatchRequest, options);
+        async organisationTeamMembersPatch(memberUserId: string, orgId: string, teamId: string, organisationTeamMembersPatchRequest: OrganisationTeamMembersPatchRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamMembersPatch(memberUserId, orgId, teamId, organisationTeamMembersPatchRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['OrganisationTeamMembersApi.organisationTeamMembersPatch']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -8411,14 +8407,14 @@ export const OrganisationTeamMembersApiFactory = function (configuration?: Confi
         },
         /**
          * 
+         * @param {string} memberUserId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} memberUserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamMembersDelete(orgId: string, teamId: string, memberUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.organisationTeamMembersDelete(orgId, teamId, memberUserId, options).then((request) => request(axios, basePath));
+        organisationTeamMembersDelete(memberUserId: string, orgId: string, teamId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.organisationTeamMembersDelete(memberUserId, orgId, teamId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -8432,15 +8428,15 @@ export const OrganisationTeamMembersApiFactory = function (configuration?: Confi
         },
         /**
          * 
+         * @param {string} memberUserId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} memberUserId 
          * @param {OrganisationTeamMembersPatchRequest} organisationTeamMembersPatchRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamMembersPatch(orgId: string, teamId: string, memberUserId: string, organisationTeamMembersPatchRequest: OrganisationTeamMembersPatchRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.organisationTeamMembersPatch(orgId, teamId, memberUserId, organisationTeamMembersPatchRequest, options).then((request) => request(axios, basePath));
+        organisationTeamMembersPatch(memberUserId: string, orgId: string, teamId: string, organisationTeamMembersPatchRequest: OrganisationTeamMembersPatchRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.organisationTeamMembersPatch(memberUserId, orgId, teamId, organisationTeamMembersPatchRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -8463,14 +8459,14 @@ export class OrganisationTeamMembersApi extends BaseAPI {
 
     /**
      * 
+     * @param {string} memberUserId 
      * @param {string} orgId 
      * @param {string} teamId 
-     * @param {string} memberUserId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public organisationTeamMembersDelete(orgId: string, teamId: string, memberUserId: string, options?: RawAxiosRequestConfig) {
-        return OrganisationTeamMembersApiFp(this.configuration).organisationTeamMembersDelete(orgId, teamId, memberUserId, options).then((request) => request(this.axios, this.basePath));
+    public organisationTeamMembersDelete(memberUserId: string, orgId: string, teamId: string, options?: RawAxiosRequestConfig) {
+        return OrganisationTeamMembersApiFp(this.configuration).organisationTeamMembersDelete(memberUserId, orgId, teamId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -8486,15 +8482,15 @@ export class OrganisationTeamMembersApi extends BaseAPI {
 
     /**
      * 
+     * @param {string} memberUserId 
      * @param {string} orgId 
      * @param {string} teamId 
-     * @param {string} memberUserId 
      * @param {OrganisationTeamMembersPatchRequest} organisationTeamMembersPatchRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public organisationTeamMembersPatch(orgId: string, teamId: string, memberUserId: string, organisationTeamMembersPatchRequest: OrganisationTeamMembersPatchRequest, options?: RawAxiosRequestConfig) {
-        return OrganisationTeamMembersApiFp(this.configuration).organisationTeamMembersPatch(orgId, teamId, memberUserId, organisationTeamMembersPatchRequest, options).then((request) => request(this.axios, this.basePath));
+    public organisationTeamMembersPatch(memberUserId: string, orgId: string, teamId: string, organisationTeamMembersPatchRequest: OrganisationTeamMembersPatchRequest, options?: RawAxiosRequestConfig) {
+        return OrganisationTeamMembersApiFp(this.configuration).organisationTeamMembersPatch(memberUserId, orgId, teamId, organisationTeamMembersPatchRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -9590,19 +9586,19 @@ export const QuestionGroupsApiAxiosParamCreator = function (configuration?: Conf
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        questionGroupsList: async (orgId: string, formId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('questionGroupsList', 'orgId', orgId)
+        questionGroupsList: async (formId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('questionGroupsList', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('questionGroupsList', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/groups`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9640,13 +9636,13 @@ export const QuestionGroupsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async questionGroupsList(orgId: string, formId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIQuestionGroup>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.questionGroupsList(orgId, formId, options);
+        async questionGroupsList(formId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIQuestionGroup>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.questionGroupsList(formId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QuestionGroupsApi.questionGroupsList']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -9662,13 +9658,13 @@ export const QuestionGroupsApiFactory = function (configuration?: Configuration,
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        questionGroupsList(orgId: string, formId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIQuestionGroup>> {
-            return localVarFp.questionGroupsList(orgId, formId, options).then((request) => request(axios, basePath));
+        questionGroupsList(formId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIQuestionGroup>> {
+            return localVarFp.questionGroupsList(formId, orgId, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -9679,13 +9675,13 @@ export const QuestionGroupsApiFactory = function (configuration?: Configuration,
 export class QuestionGroupsApi extends BaseAPI {
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public questionGroupsList(orgId: string, formId: string, options?: RawAxiosRequestConfig) {
-        return QuestionGroupsApiFp(this.configuration).questionGroupsList(orgId, formId, options).then((request) => request(this.axios, this.basePath));
+    public questionGroupsList(formId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return QuestionGroupsApiFp(this.configuration).questionGroupsList(formId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -9698,25 +9694,25 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} questionGroupId 
          * @param {string} questionId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        questionsGet: async (orgId: string, formId: string, questionGroupId: string, questionId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('questionsGet', 'orgId', orgId)
+        questionsGet: async (formId: string, orgId: string, questionGroupId: string, questionId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('questionsGet', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('questionsGet', 'orgId', orgId)
             // verify required parameter 'questionGroupId' is not null or undefined
             assertParamExists('questionsGet', 'questionGroupId', questionGroupId)
             // verify required parameter 'questionId' is not null or undefined
             assertParamExists('questionsGet', 'questionId', questionId)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/content/groups/{question_group_id}/questions/{question_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
                 .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
                 .replace(`{${"question_group_id"}}`, encodeURIComponent(String(questionGroupId)))
                 .replace(`{${"question_id"}}`, encodeURIComponent(String(questionId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -9747,19 +9743,19 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        questionsList: async (orgId: string, formId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('questionsList', 'orgId', orgId)
+        questionsList: async (formId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('questionsList', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('questionsList', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/content/groups/all/questions`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9788,22 +9784,22 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {APISaveQuestionsRequest} aPISaveQuestionsRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        questionsSave: async (orgId: string, formId: string, aPISaveQuestionsRequest: APISaveQuestionsRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('questionsSave', 'orgId', orgId)
+        questionsSave: async (formId: string, orgId: string, aPISaveQuestionsRequest: APISaveQuestionsRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('questionsSave', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('questionsSave', 'orgId', orgId)
             // verify required parameter 'aPISaveQuestionsRequest' is not null or undefined
             assertParamExists('questionsSave', 'aPISaveQuestionsRequest', aPISaveQuestionsRequest)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/content/save`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9842,42 +9838,42 @@ export const QuestionsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} questionGroupId 
          * @param {string} questionId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async questionsGet(orgId: string, formId: string, questionGroupId: string, questionId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIQuestion>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.questionsGet(orgId, formId, questionGroupId, questionId, options);
+        async questionsGet(formId: string, orgId: string, questionGroupId: string, questionId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIQuestion>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.questionsGet(formId, orgId, questionGroupId, questionId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QuestionsApi.questionsGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async questionsList(orgId: string, formId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIQuestion>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.questionsList(orgId, formId, options);
+        async questionsList(formId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIQuestion>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.questionsList(formId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QuestionsApi.questionsList']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {APISaveQuestionsRequest} aPISaveQuestionsRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async questionsSave(orgId: string, formId: string, aPISaveQuestionsRequest: APISaveQuestionsRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.questionsSave(orgId, formId, aPISaveQuestionsRequest, options);
+        async questionsSave(formId: string, orgId: string, aPISaveQuestionsRequest: APISaveQuestionsRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.questionsSave(formId, orgId, aPISaveQuestionsRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QuestionsApi.questionsSave']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -9893,36 +9889,36 @@ export const QuestionsApiFactory = function (configuration?: Configuration, base
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} questionGroupId 
          * @param {string} questionId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        questionsGet(orgId: string, formId: string, questionGroupId: string, questionId: string, options?: RawAxiosRequestConfig): AxiosPromise<APIQuestion> {
-            return localVarFp.questionsGet(orgId, formId, questionGroupId, questionId, options).then((request) => request(axios, basePath));
+        questionsGet(formId: string, orgId: string, questionGroupId: string, questionId: string, options?: RawAxiosRequestConfig): AxiosPromise<APIQuestion> {
+            return localVarFp.questionsGet(formId, orgId, questionGroupId, questionId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        questionsList(orgId: string, formId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIQuestion>> {
-            return localVarFp.questionsList(orgId, formId, options).then((request) => request(axios, basePath));
+        questionsList(formId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIQuestion>> {
+            return localVarFp.questionsList(formId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {APISaveQuestionsRequest} aPISaveQuestionsRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        questionsSave(orgId: string, formId: string, aPISaveQuestionsRequest: APISaveQuestionsRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.questionsSave(orgId, formId, aPISaveQuestionsRequest, options).then((request) => request(axios, basePath));
+        questionsSave(formId: string, orgId: string, aPISaveQuestionsRequest: APISaveQuestionsRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.questionsSave(formId, orgId, aPISaveQuestionsRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -9933,38 +9929,38 @@ export const QuestionsApiFactory = function (configuration?: Configuration, base
 export class QuestionsApi extends BaseAPI {
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {string} questionGroupId 
      * @param {string} questionId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public questionsGet(orgId: string, formId: string, questionGroupId: string, questionId: string, options?: RawAxiosRequestConfig) {
-        return QuestionsApiFp(this.configuration).questionsGet(orgId, formId, questionGroupId, questionId, options).then((request) => request(this.axios, this.basePath));
+    public questionsGet(formId: string, orgId: string, questionGroupId: string, questionId: string, options?: RawAxiosRequestConfig) {
+        return QuestionsApiFp(this.configuration).questionsGet(formId, orgId, questionGroupId, questionId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public questionsList(orgId: string, formId: string, options?: RawAxiosRequestConfig) {
-        return QuestionsApiFp(this.configuration).questionsList(orgId, formId, options).then((request) => request(this.axios, this.basePath));
+    public questionsList(formId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return QuestionsApiFp(this.configuration).questionsList(formId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {APISaveQuestionsRequest} aPISaveQuestionsRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public questionsSave(orgId: string, formId: string, aPISaveQuestionsRequest: APISaveQuestionsRequest, options?: RawAxiosRequestConfig) {
-        return QuestionsApiFp(this.configuration).questionsSave(orgId, formId, aPISaveQuestionsRequest, options).then((request) => request(this.axios, this.basePath));
+    public questionsSave(formId: string, orgId: string, aPISaveQuestionsRequest: APISaveQuestionsRequest, options?: RawAxiosRequestConfig) {
+        return QuestionsApiFp(this.configuration).questionsSave(formId, orgId, aPISaveQuestionsRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -9977,23 +9973,23 @@ export const SubmissionAssetApiAxiosParamCreator = function (configuration?: Con
     return {
         /**
          * 
-         * @param {string} orgId 
-         * @param {string} formId 
          * @param {string} fileId 
+         * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        submissionAssetsGetLink: async (orgId: string, formId: string, fileId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('submissionAssetsGetLink', 'orgId', orgId)
-            // verify required parameter 'formId' is not null or undefined
-            assertParamExists('submissionAssetsGetLink', 'formId', formId)
+        submissionAssetsGetLink: async (fileId: string, formId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'fileId' is not null or undefined
             assertParamExists('submissionAssetsGetLink', 'fileId', fileId)
+            // verify required parameter 'formId' is not null or undefined
+            assertParamExists('submissionAssetsGetLink', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('submissionAssetsGetLink', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/submissions/assets/{file_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
+                .replace(`{${"file_id"}}`, encodeURIComponent(String(fileId)))
                 .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
-                .replace(`{${"file_id"}}`, encodeURIComponent(String(fileId)));
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -10071,14 +10067,14 @@ export const SubmissionAssetApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {string} orgId 
-         * @param {string} formId 
          * @param {string} fileId 
+         * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async submissionAssetsGetLink(orgId: string, formId: string, fileId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<number>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.submissionAssetsGetLink(orgId, formId, fileId, options);
+        async submissionAssetsGetLink(fileId: string, formId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<number>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.submissionAssetsGetLink(fileId, formId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['SubmissionAssetApi.submissionAssetsGetLink']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -10107,14 +10103,14 @@ export const SubmissionAssetApiFactory = function (configuration?: Configuration
     return {
         /**
          * 
-         * @param {string} orgId 
-         * @param {string} formId 
          * @param {string} fileId 
+         * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        submissionAssetsGetLink(orgId: string, formId: string, fileId: string, options?: RawAxiosRequestConfig): AxiosPromise<number> {
-            return localVarFp.submissionAssetsGetLink(orgId, formId, fileId, options).then((request) => request(axios, basePath));
+        submissionAssetsGetLink(fileId: string, formId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<number> {
+            return localVarFp.submissionAssetsGetLink(fileId, formId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -10135,14 +10131,14 @@ export const SubmissionAssetApiFactory = function (configuration?: Configuration
 export class SubmissionAssetApi extends BaseAPI {
     /**
      * 
-     * @param {string} orgId 
-     * @param {string} formId 
      * @param {string} fileId 
+     * @param {string} formId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public submissionAssetsGetLink(orgId: string, formId: string, fileId: string, options?: RawAxiosRequestConfig) {
-        return SubmissionAssetApiFp(this.configuration).submissionAssetsGetLink(orgId, formId, fileId, options).then((request) => request(this.axios, this.basePath));
+    public submissionAssetsGetLink(fileId: string, formId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return SubmissionAssetApiFp(this.configuration).submissionAssetsGetLink(fileId, formId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -10166,22 +10162,22 @@ export const SubmissionsApiAxiosParamCreator = function (configuration?: Configu
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} submissionId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        submissionsCrypto: async (orgId: string, formId: string, submissionId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('submissionsCrypto', 'orgId', orgId)
+        submissionsCrypto: async (formId: string, orgId: string, submissionId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('submissionsCrypto', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('submissionsCrypto', 'orgId', orgId)
             // verify required parameter 'submissionId' is not null or undefined
             assertParamExists('submissionsCrypto', 'submissionId', submissionId)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/submissions/{submission_id}/crypto`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
                 .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
                 .replace(`{${"submission_id"}}`, encodeURIComponent(String(submissionId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -10211,22 +10207,22 @@ export const SubmissionsApiAxiosParamCreator = function (configuration?: Configu
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} submissionId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        submissionsDelete: async (orgId: string, formId: string, submissionId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('submissionsDelete', 'orgId', orgId)
+        submissionsDelete: async (formId: string, orgId: string, submissionId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('submissionsDelete', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('submissionsDelete', 'orgId', orgId)
             // verify required parameter 'submissionId' is not null or undefined
             assertParamExists('submissionsDelete', 'submissionId', submissionId)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/submissions/{submission_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
                 .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
                 .replace(`{${"submission_id"}}`, encodeURIComponent(String(submissionId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -10255,20 +10251,20 @@ export const SubmissionsApiAxiosParamCreator = function (configuration?: Configu
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string | null} [since] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        submissionsList: async (orgId: string, formId: string, since?: string | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('submissionsList', 'orgId', orgId)
+        submissionsList: async (formId: string, orgId: string, since?: string | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('submissionsList', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('submissionsList', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/submissions`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -10354,42 +10350,42 @@ export const SubmissionsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} submissionId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async submissionsCrypto(orgId: string, formId: string, submissionId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SubmissionCryptoDetailsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.submissionsCrypto(orgId, formId, submissionId, options);
+        async submissionsCrypto(formId: string, orgId: string, submissionId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SubmissionCryptoDetailsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.submissionsCrypto(formId, orgId, submissionId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['SubmissionsApi.submissionsCrypto']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} submissionId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async submissionsDelete(orgId: string, formId: string, submissionId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.submissionsDelete(orgId, formId, submissionId, options);
+        async submissionsDelete(formId: string, orgId: string, submissionId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.submissionsDelete(formId, orgId, submissionId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['SubmissionsApi.submissionsDelete']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string | null} [since] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async submissionsList(orgId: string, formId: string, since?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APISubmissionStream>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.submissionsList(orgId, formId, since, options);
+        async submissionsList(formId: string, orgId: string, since?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APISubmissionStream>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.submissionsList(formId, orgId, since, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['SubmissionsApi.submissionsList']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -10418,36 +10414,36 @@ export const SubmissionsApiFactory = function (configuration?: Configuration, ba
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} submissionId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        submissionsCrypto(orgId: string, formId: string, submissionId: string, options?: RawAxiosRequestConfig): AxiosPromise<SubmissionCryptoDetailsResponse> {
-            return localVarFp.submissionsCrypto(orgId, formId, submissionId, options).then((request) => request(axios, basePath));
+        submissionsCrypto(formId: string, orgId: string, submissionId: string, options?: RawAxiosRequestConfig): AxiosPromise<SubmissionCryptoDetailsResponse> {
+            return localVarFp.submissionsCrypto(formId, orgId, submissionId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} submissionId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        submissionsDelete(orgId: string, formId: string, submissionId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.submissionsDelete(orgId, formId, submissionId, options).then((request) => request(axios, basePath));
+        submissionsDelete(formId: string, orgId: string, submissionId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.submissionsDelete(formId, orgId, submissionId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string | null} [since] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        submissionsList(orgId: string, formId: string, since?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<APISubmissionStream> {
-            return localVarFp.submissionsList(orgId, formId, since, options).then((request) => request(axios, basePath));
+        submissionsList(formId: string, orgId: string, since?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<APISubmissionStream> {
+            return localVarFp.submissionsList(formId, orgId, since, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -10468,38 +10464,38 @@ export const SubmissionsApiFactory = function (configuration?: Configuration, ba
 export class SubmissionsApi extends BaseAPI {
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {string} submissionId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public submissionsCrypto(orgId: string, formId: string, submissionId: string, options?: RawAxiosRequestConfig) {
-        return SubmissionsApiFp(this.configuration).submissionsCrypto(orgId, formId, submissionId, options).then((request) => request(this.axios, this.basePath));
+    public submissionsCrypto(formId: string, orgId: string, submissionId: string, options?: RawAxiosRequestConfig) {
+        return SubmissionsApiFp(this.configuration).submissionsCrypto(formId, orgId, submissionId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {string} submissionId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public submissionsDelete(orgId: string, formId: string, submissionId: string, options?: RawAxiosRequestConfig) {
-        return SubmissionsApiFp(this.configuration).submissionsDelete(orgId, formId, submissionId, options).then((request) => request(this.axios, this.basePath));
+    public submissionsDelete(formId: string, orgId: string, submissionId: string, options?: RawAxiosRequestConfig) {
+        return SubmissionsApiFp(this.configuration).submissionsDelete(formId, orgId, submissionId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {string | null} [since] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public submissionsList(orgId: string, formId: string, since?: string | null, options?: RawAxiosRequestConfig) {
-        return SubmissionsApiFp(this.configuration).submissionsList(orgId, formId, since, options).then((request) => request(this.axios, this.basePath));
+    public submissionsList(formId: string, orgId: string, since?: string | null, options?: RawAxiosRequestConfig) {
+        return SubmissionsApiFp(this.configuration).submissionsList(formId, orgId, since, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -10523,23 +10519,23 @@ export const TeamAssetsApiAxiosParamCreator = function (configuration?: Configur
     return {
         /**
          * 
+         * @param {string} assetId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} assetId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamAssetGet: async (orgId: string, teamId: string, assetId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        organisationTeamAssetGet: async (assetId: string, orgId: string, teamId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'assetId' is not null or undefined
+            assertParamExists('organisationTeamAssetGet', 'assetId', assetId)
             // verify required parameter 'orgId' is not null or undefined
             assertParamExists('organisationTeamAssetGet', 'orgId', orgId)
             // verify required parameter 'teamId' is not null or undefined
             assertParamExists('organisationTeamAssetGet', 'teamId', teamId)
-            // verify required parameter 'assetId' is not null or undefined
-            assertParamExists('organisationTeamAssetGet', 'assetId', assetId)
             const localVarPath = `/api/org/{org_id}/team/{team_id}/assets/{asset_id}`
+                .replace(`{${"asset_id"}}`, encodeURIComponent(String(assetId)))
                 .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)))
-                .replace(`{${"asset_id"}}`, encodeURIComponent(String(assetId)));
+                .replace(`{${"team_id"}}`, encodeURIComponent(String(teamId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -10659,14 +10655,14 @@ export const TeamAssetsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {string} assetId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} assetId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async organisationTeamAssetGet(orgId: string, teamId: string, assetId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamAssetGet(orgId, teamId, assetId, options);
+        async organisationTeamAssetGet(assetId: string, orgId: string, teamId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationTeamAssetGet(assetId, orgId, teamId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['TeamAssetsApi.organisationTeamAssetGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -10708,14 +10704,14 @@ export const TeamAssetsApiFactory = function (configuration?: Configuration, bas
     return {
         /**
          * 
+         * @param {string} assetId 
          * @param {string} orgId 
          * @param {string} teamId 
-         * @param {string} assetId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationTeamAssetGet(orgId: string, teamId: string, assetId: string, options?: RawAxiosRequestConfig): AxiosPromise<string> {
-            return localVarFp.organisationTeamAssetGet(orgId, teamId, assetId, options).then((request) => request(axios, basePath));
+        organisationTeamAssetGet(assetId: string, orgId: string, teamId: string, options?: RawAxiosRequestConfig): AxiosPromise<string> {
+            return localVarFp.organisationTeamAssetGet(assetId, orgId, teamId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -10746,14 +10742,14 @@ export const TeamAssetsApiFactory = function (configuration?: Configuration, bas
 export class TeamAssetsApi extends BaseAPI {
     /**
      * 
+     * @param {string} assetId 
      * @param {string} orgId 
      * @param {string} teamId 
-     * @param {string} assetId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public organisationTeamAssetGet(orgId: string, teamId: string, assetId: string, options?: RawAxiosRequestConfig) {
-        return TeamAssetsApiFp(this.configuration).organisationTeamAssetGet(orgId, teamId, assetId, options).then((request) => request(this.axios, this.basePath));
+    public organisationTeamAssetGet(assetId: string, orgId: string, teamId: string, options?: RawAxiosRequestConfig) {
+        return TeamAssetsApiFp(this.configuration).organisationTeamAssetGet(assetId, orgId, teamId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -10788,19 +10784,19 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} keyId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        keysDelete: async (orgId: string, keyId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('keysDelete', 'orgId', orgId)
+        keysDelete: async (keyId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'keyId' is not null or undefined
             assertParamExists('keysDelete', 'keyId', keyId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('keysDelete', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/keys/{key_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"key_id"}}`, encodeURIComponent(String(keyId)));
+                .replace(`{${"key_id"}}`, encodeURIComponent(String(keyId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -10828,19 +10824,19 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} keyId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        keysGet: async (orgId: string, keyId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('keysGet', 'orgId', orgId)
+        keysGet: async (keyId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'keyId' is not null or undefined
             assertParamExists('keysGet', 'keyId', keyId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('keysGet', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/keys/{key_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"key_id"}}`, encodeURIComponent(String(keyId)));
+                .replace(`{${"key_id"}}`, encodeURIComponent(String(keyId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -10869,19 +10865,19 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} keyId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        keysGetBackup: async (orgId: string, keyId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('keysGetBackup', 'orgId', orgId)
+        keysGetBackup: async (keyId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'keyId' is not null or undefined
             assertParamExists('keysGetBackup', 'keyId', keyId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('keysGetBackup', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/keys/{key_id}/backup`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"key_id"}}`, encodeURIComponent(String(keyId)));
+                .replace(`{${"key_id"}}`, encodeURIComponent(String(keyId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -10991,22 +10987,22 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} keyId 
+         * @param {string} orgId 
          * @param {RegisterBackupKeyRequest} registerBackupKeyRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        keysRegisterBackup: async (orgId: string, keyId: string, registerBackupKeyRequest: RegisterBackupKeyRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('keysRegisterBackup', 'orgId', orgId)
+        keysRegisterBackup: async (keyId: string, orgId: string, registerBackupKeyRequest: RegisterBackupKeyRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'keyId' is not null or undefined
             assertParamExists('keysRegisterBackup', 'keyId', keyId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('keysRegisterBackup', 'orgId', orgId)
             // verify required parameter 'registerBackupKeyRequest' is not null or undefined
             assertParamExists('keysRegisterBackup', 'registerBackupKeyRequest', registerBackupKeyRequest)
             const localVarPath = `/api/org/{org_id}/keys/{key_id}/backup`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"key_id"}}`, encodeURIComponent(String(keyId)));
+                .replace(`{${"key_id"}}`, encodeURIComponent(String(keyId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -11045,39 +11041,39 @@ export const UserKeysApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} keyId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async keysDelete(orgId: string, keyId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.keysDelete(orgId, keyId, options);
+        async keysDelete(keyId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.keysDelete(keyId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserKeysApi.keysDelete']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} keyId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async keysGet(orgId: string, keyId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIUserKey>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.keysGet(orgId, keyId, options);
+        async keysGet(keyId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIUserKey>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.keysGet(keyId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserKeysApi.keysGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} keyId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async keysGetBackup(orgId: string, keyId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.keysGetBackup(orgId, keyId, options);
+        async keysGetBackup(keyId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.keysGetBackup(keyId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserKeysApi.keysGetBackup']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -11111,14 +11107,14 @@ export const UserKeysApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} keyId 
+         * @param {string} orgId 
          * @param {RegisterBackupKeyRequest} registerBackupKeyRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async keysRegisterBackup(orgId: string, keyId: string, registerBackupKeyRequest: RegisterBackupKeyRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.keysRegisterBackup(orgId, keyId, registerBackupKeyRequest, options);
+        async keysRegisterBackup(keyId: string, orgId: string, registerBackupKeyRequest: RegisterBackupKeyRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.keysRegisterBackup(keyId, orgId, registerBackupKeyRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserKeysApi.keysRegisterBackup']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -11134,33 +11130,33 @@ export const UserKeysApiFactory = function (configuration?: Configuration, baseP
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} keyId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        keysDelete(orgId: string, keyId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.keysDelete(orgId, keyId, options).then((request) => request(axios, basePath));
+        keysDelete(keyId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.keysDelete(keyId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} keyId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        keysGet(orgId: string, keyId: string, options?: RawAxiosRequestConfig): AxiosPromise<APIUserKey> {
-            return localVarFp.keysGet(orgId, keyId, options).then((request) => request(axios, basePath));
+        keysGet(keyId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<APIUserKey> {
+            return localVarFp.keysGet(keyId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} keyId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        keysGetBackup(orgId: string, keyId: string, options?: RawAxiosRequestConfig): AxiosPromise<string> {
-            return localVarFp.keysGetBackup(orgId, keyId, options).then((request) => request(axios, basePath));
+        keysGetBackup(keyId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<string> {
+            return localVarFp.keysGetBackup(keyId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
          * \\ Lists the public keys associated with the currently authenticated user\'s account in PEM-encoded\\ format.
@@ -11185,14 +11181,14 @@ export const UserKeysApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} keyId 
+         * @param {string} orgId 
          * @param {RegisterBackupKeyRequest} registerBackupKeyRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        keysRegisterBackup(orgId: string, keyId: string, registerBackupKeyRequest: RegisterBackupKeyRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.keysRegisterBackup(orgId, keyId, registerBackupKeyRequest, options).then((request) => request(axios, basePath));
+        keysRegisterBackup(keyId: string, orgId: string, registerBackupKeyRequest: RegisterBackupKeyRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.keysRegisterBackup(keyId, orgId, registerBackupKeyRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -11203,35 +11199,35 @@ export const UserKeysApiFactory = function (configuration?: Configuration, baseP
 export class UserKeysApi extends BaseAPI {
     /**
      * 
-     * @param {string} orgId 
      * @param {string} keyId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public keysDelete(orgId: string, keyId: string, options?: RawAxiosRequestConfig) {
-        return UserKeysApiFp(this.configuration).keysDelete(orgId, keyId, options).then((request) => request(this.axios, this.basePath));
+    public keysDelete(keyId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return UserKeysApiFp(this.configuration).keysDelete(keyId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} keyId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public keysGet(orgId: string, keyId: string, options?: RawAxiosRequestConfig) {
-        return UserKeysApiFp(this.configuration).keysGet(orgId, keyId, options).then((request) => request(this.axios, this.basePath));
+    public keysGet(keyId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return UserKeysApiFp(this.configuration).keysGet(keyId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} keyId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public keysGetBackup(orgId: string, keyId: string, options?: RawAxiosRequestConfig) {
-        return UserKeysApiFp(this.configuration).keysGetBackup(orgId, keyId, options).then((request) => request(this.axios, this.basePath));
+    public keysGetBackup(keyId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return UserKeysApiFp(this.configuration).keysGetBackup(keyId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -11259,14 +11255,14 @@ export class UserKeysApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} keyId 
+     * @param {string} orgId 
      * @param {RegisterBackupKeyRequest} registerBackupKeyRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public keysRegisterBackup(orgId: string, keyId: string, registerBackupKeyRequest: RegisterBackupKeyRequest, options?: RawAxiosRequestConfig) {
-        return UserKeysApiFp(this.configuration).keysRegisterBackup(orgId, keyId, registerBackupKeyRequest, options).then((request) => request(this.axios, this.basePath));
+    public keysRegisterBackup(keyId: string, orgId: string, registerBackupKeyRequest: RegisterBackupKeyRequest, options?: RawAxiosRequestConfig) {
+        return UserKeysApiFp(this.configuration).keysRegisterBackup(keyId, orgId, registerBackupKeyRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -11279,22 +11275,22 @@ export const WebhooksApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {CreateWebhookRequest} createWebhookRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        webhooksCreate: async (orgId: string, formId: string, createWebhookRequest: CreateWebhookRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('webhooksCreate', 'orgId', orgId)
+        webhooksCreate: async (formId: string, orgId: string, createWebhookRequest: CreateWebhookRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('webhooksCreate', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('webhooksCreate', 'orgId', orgId)
             // verify required parameter 'createWebhookRequest' is not null or undefined
             assertParamExists('webhooksCreate', 'createWebhookRequest', createWebhookRequest)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/webhooks`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -11325,22 +11321,22 @@ export const WebhooksApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} webhookId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        webhooksDelete: async (orgId: string, formId: string, webhookId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('webhooksDelete', 'orgId', orgId)
+        webhooksDelete: async (formId: string, orgId: string, webhookId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('webhooksDelete', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('webhooksDelete', 'orgId', orgId)
             // verify required parameter 'webhookId' is not null or undefined
             assertParamExists('webhooksDelete', 'webhookId', webhookId)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/webhooks/{webhook_id}`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
                 .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
                 .replace(`{${"webhook_id"}}`, encodeURIComponent(String(webhookId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -11369,19 +11365,19 @@ export const WebhooksApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        webhooksList: async (orgId: string, formId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('webhooksList', 'orgId', orgId)
+        webhooksList: async (formId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('webhooksList', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('webhooksList', 'orgId', orgId)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/webhooks`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
-                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)));
+                .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -11410,22 +11406,22 @@ export const WebhooksApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} webhookId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        webhooksListJobs: async (orgId: string, formId: string, webhookId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'orgId' is not null or undefined
-            assertParamExists('webhooksListJobs', 'orgId', orgId)
+        webhooksListJobs: async (formId: string, orgId: string, webhookId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'formId' is not null or undefined
             assertParamExists('webhooksListJobs', 'formId', formId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('webhooksListJobs', 'orgId', orgId)
             // verify required parameter 'webhookId' is not null or undefined
             assertParamExists('webhooksListJobs', 'webhookId', webhookId)
             const localVarPath = `/api/org/{org_id}/form/{form_id}/webhooks/{webhook_id}/jobs`
-                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
                 .replace(`{${"form_id"}}`, encodeURIComponent(String(formId)))
+                .replace(`{${"org_id"}}`, encodeURIComponent(String(orgId)))
                 .replace(`{${"webhook_id"}}`, encodeURIComponent(String(webhookId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -11464,55 +11460,55 @@ export const WebhooksApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {CreateWebhookRequest} createWebhookRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async webhooksCreate(orgId: string, formId: string, createWebhookRequest: CreateWebhookRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateWebhookResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.webhooksCreate(orgId, formId, createWebhookRequest, options);
+        async webhooksCreate(formId: string, orgId: string, createWebhookRequest: CreateWebhookRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateWebhookResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.webhooksCreate(formId, orgId, createWebhookRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['WebhooksApi.webhooksCreate']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} webhookId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async webhooksDelete(orgId: string, formId: string, webhookId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.webhooksDelete(orgId, formId, webhookId, options);
+        async webhooksDelete(formId: string, orgId: string, webhookId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.webhooksDelete(formId, orgId, webhookId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['WebhooksApi.webhooksDelete']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async webhooksList(orgId: string, formId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIWebhook>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.webhooksList(orgId, formId, options);
+        async webhooksList(formId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIWebhook>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.webhooksList(formId, orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['WebhooksApi.webhooksList']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} webhookId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async webhooksListJobs(orgId: string, formId: string, webhookId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIWebhookJob>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.webhooksListJobs(orgId, formId, webhookId, options);
+        async webhooksListJobs(formId: string, orgId: string, webhookId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIWebhookJob>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.webhooksListJobs(formId, orgId, webhookId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['WebhooksApi.webhooksListJobs']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -11528,46 +11524,46 @@ export const WebhooksApiFactory = function (configuration?: Configuration, baseP
     return {
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {CreateWebhookRequest} createWebhookRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        webhooksCreate(orgId: string, formId: string, createWebhookRequest: CreateWebhookRequest, options?: RawAxiosRequestConfig): AxiosPromise<CreateWebhookResponse> {
-            return localVarFp.webhooksCreate(orgId, formId, createWebhookRequest, options).then((request) => request(axios, basePath));
+        webhooksCreate(formId: string, orgId: string, createWebhookRequest: CreateWebhookRequest, options?: RawAxiosRequestConfig): AxiosPromise<CreateWebhookResponse> {
+            return localVarFp.webhooksCreate(formId, orgId, createWebhookRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} webhookId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        webhooksDelete(orgId: string, formId: string, webhookId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.webhooksDelete(orgId, formId, webhookId, options).then((request) => request(axios, basePath));
+        webhooksDelete(formId: string, orgId: string, webhookId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.webhooksDelete(formId, orgId, webhookId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        webhooksList(orgId: string, formId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIWebhook>> {
-            return localVarFp.webhooksList(orgId, formId, options).then((request) => request(axios, basePath));
+        webhooksList(formId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIWebhook>> {
+            return localVarFp.webhooksList(formId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} orgId 
          * @param {string} formId 
+         * @param {string} orgId 
          * @param {string} webhookId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        webhooksListJobs(orgId: string, formId: string, webhookId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIWebhookJob>> {
-            return localVarFp.webhooksListJobs(orgId, formId, webhookId, options).then((request) => request(axios, basePath));
+        webhooksListJobs(formId: string, orgId: string, webhookId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIWebhookJob>> {
+            return localVarFp.webhooksListJobs(formId, orgId, webhookId, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -11578,49 +11574,49 @@ export const WebhooksApiFactory = function (configuration?: Configuration, baseP
 export class WebhooksApi extends BaseAPI {
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {CreateWebhookRequest} createWebhookRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public webhooksCreate(orgId: string, formId: string, createWebhookRequest: CreateWebhookRequest, options?: RawAxiosRequestConfig) {
-        return WebhooksApiFp(this.configuration).webhooksCreate(orgId, formId, createWebhookRequest, options).then((request) => request(this.axios, this.basePath));
+    public webhooksCreate(formId: string, orgId: string, createWebhookRequest: CreateWebhookRequest, options?: RawAxiosRequestConfig) {
+        return WebhooksApiFp(this.configuration).webhooksCreate(formId, orgId, createWebhookRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {string} webhookId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public webhooksDelete(orgId: string, formId: string, webhookId: string, options?: RawAxiosRequestConfig) {
-        return WebhooksApiFp(this.configuration).webhooksDelete(orgId, formId, webhookId, options).then((request) => request(this.axios, this.basePath));
+    public webhooksDelete(formId: string, orgId: string, webhookId: string, options?: RawAxiosRequestConfig) {
+        return WebhooksApiFp(this.configuration).webhooksDelete(formId, orgId, webhookId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public webhooksList(orgId: string, formId: string, options?: RawAxiosRequestConfig) {
-        return WebhooksApiFp(this.configuration).webhooksList(orgId, formId, options).then((request) => request(this.axios, this.basePath));
+    public webhooksList(formId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return WebhooksApiFp(this.configuration).webhooksList(formId, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} orgId 
      * @param {string} formId 
+     * @param {string} orgId 
      * @param {string} webhookId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public webhooksListJobs(orgId: string, formId: string, webhookId: string, options?: RawAxiosRequestConfig) {
-        return WebhooksApiFp(this.configuration).webhooksListJobs(orgId, formId, webhookId, options).then((request) => request(this.axios, this.basePath));
+    public webhooksListJobs(formId: string, orgId: string, webhookId: string, options?: RawAxiosRequestConfig) {
+        return WebhooksApiFp(this.configuration).webhooksListJobs(formId, orgId, webhookId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

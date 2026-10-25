@@ -23,14 +23,14 @@ import {
 const configuration = new Configuration();
 const apiInstance = new QuestionsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let questionGroupId: string; // (default to undefined)
 let questionId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.questionsGet(
-    orgId,
     formId,
+    orgId,
     questionGroupId,
     questionId
 );
@@ -40,8 +40,8 @@ const { status, data } = await apiInstance.questionsGet(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 | **questionGroupId** | [**string**] |  | defaults to undefined|
 | **questionId** | [**string**] |  | defaults to undefined|
 
@@ -88,12 +88,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new QuestionsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.questionsList(
-    orgId,
-    formId
+    formId,
+    orgId
 );
 ```
 
@@ -101,8 +101,8 @@ const { status, data } = await apiInstance.questionsList(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -148,13 +148,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new QuestionsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let aPISaveQuestionsRequest: APISaveQuestionsRequest; //
 
 const { status, data } = await apiInstance.questionsSave(
-    orgId,
     formId,
+    orgId,
     aPISaveQuestionsRequest
 );
 ```
@@ -164,8 +164,8 @@ const { status, data } = await apiInstance.questionsSave(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **aPISaveQuestionsRequest** | **APISaveQuestionsRequest**|  | |
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type

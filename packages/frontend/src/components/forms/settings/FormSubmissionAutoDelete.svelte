@@ -44,8 +44,8 @@
         try {
             await APIs.forms().then((a) =>
                 a.formsSetAutoDelete(
-                    $orgCtx.org.id,
                     $formMetadataCtx.id,
+                    $orgCtx.org.id,
                     newValue
                 )
             );
@@ -63,7 +63,7 @@
         loading = true;
         try {
             await APIs.forms().then((a) =>
-                a.formsSetAutoDelete($orgCtx.org.id, $formMetadataCtx.id, {
+                a.formsSetAutoDelete($formMetadataCtx.id, $orgCtx.org.id, {
                     days: newDayCount,
                 })
             );

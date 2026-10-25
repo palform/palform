@@ -91,12 +91,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FormsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.formsDelete(
-    orgId,
-    formId
+    formId,
+    orgId
 );
 ```
 
@@ -104,8 +104,8 @@ const { status, data } = await apiInstance.formsDelete(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -150,12 +150,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FormsApi(configuration);
 
-let subdomain: string; // (default to undefined)
 let shortLink: string; // (default to undefined)
+let subdomain: string; // (default to undefined)
 
 const { status, data } = await apiInstance.formsExchangeShortLink(
-    subdomain,
-    shortLink
+    shortLink,
+    subdomain
 );
 ```
 
@@ -163,8 +163,8 @@ const { status, data } = await apiInstance.formsExchangeShortLink(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **subdomain** | [**string**] |  | defaults to undefined|
 | **shortLink** | [**string**] |  | defaults to undefined|
+| **subdomain** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -272,12 +272,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FormsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.formsGet(
-    orgId,
-    formId
+    formId,
+    orgId
 );
 ```
 
@@ -285,8 +285,8 @@ const { status, data } = await apiInstance.formsGet(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -447,13 +447,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FormsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let formsRelocateRequest: FormsRelocateRequest; //
 
 const { status, data } = await apiInstance.formsRelocate(
-    orgId,
     formId,
+    orgId,
     formsRelocateRequest
 );
 ```
@@ -463,8 +463,8 @@ const { status, data } = await apiInstance.formsRelocate(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **formsRelocateRequest** | **FormsRelocateRequest**|  | |
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -510,13 +510,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FormsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let setSubmissionAutoDeleteRequest: SetSubmissionAutoDeleteRequest; //
 
 const { status, data } = await apiInstance.formsSetAutoDelete(
-    orgId,
     formId,
+    orgId,
     setSubmissionAutoDeleteRequest
 );
 ```
@@ -526,8 +526,8 @@ const { status, data } = await apiInstance.formsSetAutoDelete(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **setSubmissionAutoDeleteRequest** | **SetSubmissionAutoDeleteRequest**|  | |
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -573,13 +573,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FormsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let updateFormRequest: UpdateFormRequest; //
 
 const { status, data } = await apiInstance.formsUpdate(
-    orgId,
     formId,
+    orgId,
     updateFormRequest
 );
 ```
@@ -589,8 +589,8 @@ const { status, data } = await apiInstance.formsUpdate(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **updateFormRequest** | **UpdateFormRequest**|  | |
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type

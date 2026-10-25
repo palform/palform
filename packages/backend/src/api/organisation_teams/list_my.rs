@@ -17,7 +17,10 @@ pub struct OrganisationTeamsListMyPath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
-#[api_operation(tag = "Organisation Teams", operation_id = "organisation.teams.list_my")]
+#[api_operation(
+    tag = "Organisation Teams",
+    operation_id = "organisation.teams.list_my"
+)]
 pub async fn organisation_teams_list_my(
     path: Path<OrganisationTeamsListMyPath>,
     token: APITokenOrgViewer,

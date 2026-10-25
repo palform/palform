@@ -25,13 +25,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new WebhooksApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let createWebhookRequest: CreateWebhookRequest; //
 
 const { status, data } = await apiInstance.webhooksCreate(
-    orgId,
     formId,
+    orgId,
     createWebhookRequest
 );
 ```
@@ -41,8 +41,8 @@ const { status, data } = await apiInstance.webhooksCreate(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **createWebhookRequest** | **CreateWebhookRequest**|  | |
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -87,13 +87,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new WebhooksApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let webhookId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.webhooksDelete(
-    orgId,
     formId,
+    orgId,
     webhookId
 );
 ```
@@ -102,8 +102,8 @@ const { status, data } = await apiInstance.webhooksDelete(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 | **webhookId** | [**string**] |  | defaults to undefined|
 
 
@@ -149,12 +149,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new WebhooksApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.webhooksList(
-    orgId,
-    formId
+    formId,
+    orgId
 );
 ```
 
@@ -162,8 +162,8 @@ const { status, data } = await apiInstance.webhooksList(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -208,13 +208,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new WebhooksApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let webhookId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.webhooksListJobs(
-    orgId,
     formId,
+    orgId,
     webhookId
 );
 ```
@@ -223,8 +223,8 @@ const { status, data } = await apiInstance.webhooksListJobs(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 | **webhookId** | [**string**] |  | defaults to undefined|
 
 

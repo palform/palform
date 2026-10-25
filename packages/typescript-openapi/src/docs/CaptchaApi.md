@@ -4,10 +4,10 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**captchaCreate**](#captchacreate) | **POST** /api/captcha | |
+|[**captchaCreate**](#captchacreate) | **GET** /api/captcha | |
 
 # **captchaCreate**
-> APICaptchaChallenge captchaCreate()
+> { [key: string]: any; } captchaCreate()
 
 
 ### Example
@@ -30,7 +30,7 @@ This endpoint does not have any parameters.
 
 ### Return type
 
-**APICaptchaChallenge**
+**{ [key: string]: any; }**
 
 ### Authorization
 

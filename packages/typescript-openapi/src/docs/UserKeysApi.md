@@ -26,12 +26,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new UserKeysApi(configuration);
 
-let orgId: string; // (default to undefined)
 let keyId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.keysDelete(
-    orgId,
-    keyId
+    keyId,
+    orgId
 );
 ```
 
@@ -39,8 +39,8 @@ const { status, data } = await apiInstance.keysDelete(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **keyId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -85,12 +85,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new UserKeysApi(configuration);
 
-let orgId: string; // (default to undefined)
 let keyId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.keysGet(
-    orgId,
-    keyId
+    keyId,
+    orgId
 );
 ```
 
@@ -98,8 +98,8 @@ const { status, data } = await apiInstance.keysGet(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **keyId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -144,12 +144,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new UserKeysApi(configuration);
 
-let orgId: string; // (default to undefined)
 let keyId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.keysGetBackup(
-    orgId,
-    keyId
+    keyId,
+    orgId
 );
 ```
 
@@ -157,8 +157,8 @@ const { status, data } = await apiInstance.keysGetBackup(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **keyId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -322,13 +322,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new UserKeysApi(configuration);
 
-let orgId: string; // (default to undefined)
 let keyId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let registerBackupKeyRequest: RegisterBackupKeyRequest; //
 
 const { status, data } = await apiInstance.keysRegisterBackup(
-    orgId,
     keyId,
+    orgId,
     registerBackupKeyRequest
 );
 ```
@@ -338,8 +338,8 @@ const { status, data } = await apiInstance.keysRegisterBackup(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **registerBackupKeyRequest** | **RegisterBackupKeyRequest**|  | |
-| **orgId** | [**string**] |  | defaults to undefined|
 | **keyId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type

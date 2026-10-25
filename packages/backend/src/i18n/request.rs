@@ -36,7 +36,9 @@ impl FromRequest for I18NManager {
                     APIError::ValidationError("Invalid language header value".to_string())
                 })?;
 
-            let supported_locales = available_locales!();
+            let available_locales = available_locales!();
+            let supported_locales: Vec<&str> =
+                available_locales.iter().map(|l| l.as_ref()).collect();
             let accepted_locales = accept_language::intersection(raw_header, &supported_locales);
 
             let chosen_locale = accepted_locales.first().cloned().unwrap_or("en".to_owned());

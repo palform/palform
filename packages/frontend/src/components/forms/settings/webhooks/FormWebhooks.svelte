@@ -32,7 +32,7 @@
 
     let loading = $state(true);
     APIs.webhooks()
-        .then((a) => a.webhooksList($orgCtx.org.id, $formCtx.id))
+        .then((a) => a.webhooksList($formCtx.id, $orgCtx.org.id))
         .then((resp) => {
             webhooks = resp.data;
         })

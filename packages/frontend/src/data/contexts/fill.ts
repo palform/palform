@@ -83,8 +83,8 @@ export async function loadFormFillFromShortLink(
     shortLink: string
 ) {
     const resp = await APIs.formsNoAuth.formsExchangeShortLink(
-        subdomain,
-        shortLink
+        shortLink,
+        subdomain
     );
     return loadFormFill(
         resp.data.org_id,

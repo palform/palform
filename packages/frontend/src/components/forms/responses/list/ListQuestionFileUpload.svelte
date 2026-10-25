@@ -26,9 +26,9 @@
         try {
             const resp = await APIs.submissionAssets().then((a) =>
                 a.submissionAssetsGetLink(
-                    $orgCtx.org.id,
+                    props.fileId,
                     $formAdminCtx.formId,
-                    props.fileId
+                    $orgCtx.org.id
                 )
             );
 

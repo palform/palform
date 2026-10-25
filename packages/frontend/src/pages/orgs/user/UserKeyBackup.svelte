@@ -24,7 +24,7 @@
     let loading = $state(true);
     $effect(() => {
         APIs.keys()
-            .then((a) => a.keysGet($orgCtx.org.id, keyIdResolved))
+            .then((a) => a.keysGet(keyIdResolved, $orgCtx.org.id))
             .then((resp) => {
                 loading = false;
                 key = resp.data;

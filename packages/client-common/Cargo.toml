@@ -17,10 +17,10 @@ thiserror = "2.0"
 validator = "0.20"
 geo = { version = "0.32", default-features = false }
 chrono = { version = "0.4.38", features = ["serde"] }
-rand = { version = "0.9", default-features = false, features = [
+rand = { version = "0.10", default-features = false, features = [
     "thread_rng",
 ], optional = true }
-getrandom = { version = "0.3", features = ["wasm_js"], optional = true }
+getrandom = { version = "0.4", features = ["wasm_js"], optional = true }
 
 serde-wasm-bindgen = { version = "0.6.5", optional = true }
 wasm-bindgen = { version = "0.2.92", features = ["serde"], optional = true }
@@ -32,7 +32,7 @@ sea-orm = { version = "1.0", default-features = false, optional = true }
 schemars = { package = "apistos-schemars", version = "0.8", optional = true, features = [
     "chrono",
 ] }
-apistos = { version = "0.6", optional = true, default-features = false }
+apistos = { version = "0.9", optional = true, default-features = false }
 
 console_error_panic_hook = { version = "0.1", optional = true }
 

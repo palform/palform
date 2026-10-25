@@ -42,8 +42,8 @@
         try {
             await APIs.submissions().then((a) =>
                 a.submissionsDelete(
-                    $orgCtx.org.id,
                     $formAdminCtx.formId,
+                    $orgCtx.org.id,
                     submissionId
                 )
             );

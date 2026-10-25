@@ -28,7 +28,7 @@
     let onDelete = $derived(async () => {
         deleteLoading = true;
         await APIs.orgInvites().then((a) =>
-            a.organisationInvitesDelete($orgCtx.org.id, invite.id)
+            a.organisationInvitesDelete(invite.id, $orgCtx.org.id)
         );
         deleteLoading = false;
         ondelete();

@@ -36,9 +36,9 @@
         try {
             await APIs.orgTeamMembers().then((a) =>
                 a.organisationTeamMembersPatch(
+                    member.user_id,
                     $orgCtx.org.id,
                     teamId,
-                    member.user_id,
                     {
                         new_role: roleValue,
                     }
@@ -58,9 +58,9 @@
         try {
             await APIs.orgTeamMembers().then((a) =>
                 a.organisationTeamMembersDelete(
+                    member.user_id,
                     $orgCtx.org.id,
-                    teamId,
-                    member.user_id
+                    teamId
                 )
             );
             await showSuccessToast("Removed user from team");

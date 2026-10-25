@@ -32,7 +32,7 @@
     let onDeleteClick = $derived(async (id: string) => {
         deleteLoading = true;
         await APIs.fillTokens().then((a) =>
-            a.fillAccessTokensDelete($orgCtx.org.id, $formAdminCtx.formId, id)
+            a.fillAccessTokensDelete($formAdminCtx.formId, $orgCtx.org.id, id)
         );
         ondelete();
         deleteLoading = false;

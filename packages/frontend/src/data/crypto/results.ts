@@ -74,7 +74,7 @@ export async function downloadSubmissionsForForm(
     const submissionsResp = await APIs.submissions().then((a) =>
         // The OpenAPI query param generated for `since` is temporarily not working,
         // so we will do it manually.
-        a.submissionsList(orgId, formId, undefined, {
+        a.submissionsList(formId, orgId, undefined, {
             params: {
                 since: latestCachedSubmission?._id,
             },

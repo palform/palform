@@ -23,7 +23,10 @@ pub struct FormBrandingsListAccessPath {
     branding_id: PalformDatabaseID<IDFormBranding>,
 }
 
-#[api_operation(tag = "Form Brandings", operation_id = "organisation.team.branding.list_access")]
+#[api_operation(
+    tag = "Form Brandings",
+    operation_id = "organisation.team.branding.list_access"
+)]
 pub async fn form_brandings_list_access(
     path: Path<FormBrandingsListAccessPath>,
     _token: APITokenTeamViewerFromTeam,

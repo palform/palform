@@ -21,12 +21,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new QuestionGroupsApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.questionGroupsList(
-    orgId,
-    formId
+    formId,
+    orgId
 );
 ```
 
@@ -34,8 +34,8 @@ const { status, data } = await apiInstance.questionGroupsList(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type

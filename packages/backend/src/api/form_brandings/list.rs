@@ -22,7 +22,10 @@ pub struct FormBrandingsListPath {
     team_id: PalformDatabaseID<IDTeam>,
 }
 
-#[api_operation(tag = "Form Brandings", operation_id = "organisation.team.branding.list")]
+#[api_operation(
+    tag = "Form Brandings",
+    operation_id = "organisation.team.branding.list"
+)]
 pub async fn form_brandings_list(
     path: Path<FormBrandingsListPath>,
     org_admin_token: Option<APITokenOrgAdmin>,

@@ -1,6 +1,4 @@
-use actix_web::{
-    web::{Data, Json, Path},
-};
+use actix_web::web::{Data, Json, Path};
 use apistos::{api_operation, ApiComponent};
 use palform_client_common::errors::error::APIError;
 use palform_tsid::{resources::IDOrganisation, tsid::PalformDatabaseID};

@@ -19,7 +19,7 @@
         saveLoading = true;
         try {
             await APIs.forms().then((a) =>
-                a.formsUpdate($orgCtx.org.id, $formMetadataCtx.id, {
+                a.formsUpdate($formMetadataCtx.id, $orgCtx.org.id, {
                     editor_name: $formMetadataCtx.editor_name,
                     title: $formMetadataCtx.title,
                     branding_id: $formMetadataCtx.branding_id,

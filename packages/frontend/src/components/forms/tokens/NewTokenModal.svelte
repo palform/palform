@@ -42,7 +42,7 @@
         loading = true;
         try {
             const resp = await APIs.fillTokens().then((a) =>
-                a.fillAccessTokensCreate($orgCtx.org.id, $formAdminCtx.formId, {
+                a.fillAccessTokensCreate($formAdminCtx.formId, $orgCtx.org.id, {
                     expires_in_seconds:
                         expiryValue === null ? null : expiryValue * 60,
                     nickname: nicknameValue,

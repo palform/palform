@@ -48,7 +48,7 @@
 
     let onDelete = $derived(async () => {
         try {
-            await APIs.keys().then((a) => a.keysDelete($orgCtx.org.id, key.id));
+            await APIs.keys().then((a) => a.keysDelete(key.id, $orgCtx.org.id));
             if (matchedLocalKey) {
                 await deleteLocalKey(matchedLocalKey);
                 await reloadGlobalAlert(orgCtx);

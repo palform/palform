@@ -94,8 +94,8 @@
                     enable_captcha: captcha,
                 } as APIForm;
                 await formsAPI.formsUpdate(
-                    $ctx.org.id,
                     initialValue.id,
+                    $ctx.org.id,
                     updatedForm
                 );
                 updateFormCtx(ctx, initialValue.id, updatedForm);

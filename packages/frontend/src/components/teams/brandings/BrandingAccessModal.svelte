@@ -33,9 +33,9 @@
     APIs.formBrandings()
         .then((a) =>
             a.organisationTeamBrandingListAccess(
+                branding.id,
                 $orgCtx.org.id,
-                $teamCtx.team.id,
-                branding.id
+                $teamCtx.team.id
             )
         )
         .then((resp) => {
@@ -57,9 +57,9 @@
         try {
             await APIs.formBrandings().then((a) =>
                 a.organisationTeamBrandingDeleteAccess(
+                    branding.id,
                     $orgCtx.org.id,
                     $teamCtx.team.id,
-                    branding.id,
                     { for_team_id: teamId }
                 )
             );

@@ -20,8 +20,8 @@
         try {
             await APIs.orgAuthTeamMappings().then((a) =>
                 a.organisationAuthConfigMappingsDelete(
-                    $orgCtx.org.id,
-                    mapping.id
+                    mapping.id,
+                    $orgCtx.org.id
                 )
             );
             await showSuccessToast("Mapping deleted");

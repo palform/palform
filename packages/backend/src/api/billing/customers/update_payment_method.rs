@@ -18,7 +18,10 @@ pub struct BillingCustomersUpdatePaymentMethodPath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
-#[api_operation(tag = "Billing Customers", operation_id = "billing.customer.update_payment_method")]
+#[api_operation(
+    tag = "Billing Customers",
+    operation_id = "billing.customer.update_payment_method"
+)]
 pub async fn billing_customers_update_payment_method(
     path: Path<BillingCustomersUpdatePaymentMethodPath>,
     data: Json<UpdatePaymentMethodRequest>,

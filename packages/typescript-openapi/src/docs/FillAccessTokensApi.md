@@ -24,13 +24,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FillAccessTokensApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let newTokenRequest: NewTokenRequest; //
 
 const { status, data } = await apiInstance.fillAccessTokensCreate(
-    orgId,
     formId,
+    orgId,
     newTokenRequest
 );
 ```
@@ -40,8 +40,8 @@ const { status, data } = await apiInstance.fillAccessTokensCreate(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **newTokenRequest** | **NewTokenRequest**|  | |
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -86,13 +86,13 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FillAccessTokensApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 let tokenId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.fillAccessTokensDelete(
-    orgId,
     formId,
+    orgId,
     tokenId
 );
 ```
@@ -101,8 +101,8 @@ const { status, data } = await apiInstance.fillAccessTokensDelete(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 | **tokenId** | [**string**] |  | defaults to undefined|
 
 
@@ -148,12 +148,12 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FillAccessTokensApi(configuration);
 
-let orgId: string; // (default to undefined)
 let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.fillAccessTokensList(
-    orgId,
-    formId
+    formId,
+    orgId
 );
 ```
 
@@ -161,8 +161,8 @@ const { status, data } = await apiInstance.fillAccessTokensList(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | [**string**] |  | defaults to undefined|
 | **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
