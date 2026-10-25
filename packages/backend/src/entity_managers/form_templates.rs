@@ -8,14 +8,14 @@ use palform_entities::{
     form, form_template, form_template_category, form_template_category_assignment, prelude::*,
     question, question_group, team,
 };
-use palform_migration::{Expr, SimpleExpr};
+use palform_migration::Expr;
 use palform_tsid::{
     resources::{IDForm, IDFormTemplateCategory, IDQuestion, IDQuestionGroup, IDTeam},
     tsid::PalformDatabaseID,
 };
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, ConnectionTrait, DbErr, EntityTrait, JoinType, PaginatorTrait,
-    QueryFilter, QueryOrder, QuerySelect, RelationTrait, Set,
+    ActiveModelTrait, ColumnTrait, ConnectionTrait, DbErr, EntityTrait, ExprTrait, JoinType,
+    PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, RelationTrait, Set,
 };
 
 use crate::api_entities::{
@@ -42,7 +42,7 @@ impl FormTemplatesManager {
                 "template_count",
             )
             .group_by(form_template_category::Column::Id)
-            .order_by_desc(SimpleExpr::Custom("template_count".to_string()))
+            .order_by_desc(Expr::Custom("template_count".into()))
             .into_model()
             .all(conn)
             .await

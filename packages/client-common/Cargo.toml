@@ -28,7 +28,7 @@ ts-rs = { version = "12", features = ["uuid-impl"], optional = true }
 # rocket = { version = "0.5.0", optional = true }
 actix-web = { version = "4", optional = true }
 log = { version = "0.4.21", optional = true }
-sea-orm = { version = "1.0", default-features = false, optional = true }
+sea-orm = { version = "2.0", default-features = false, optional = true }
 schemars = { package = "apistos-schemars", version = "0.8", optional = true, features = [
     "chrono",
 ] }

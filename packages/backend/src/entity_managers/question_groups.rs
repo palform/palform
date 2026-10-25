@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use palform_client_common::form_management::question_group::APIQuestionGroup;
 use palform_entities::{prelude::*, question_group};
 use palform_tsid::{
@@ -44,7 +46,7 @@ impl QuestionGroupManager {
         let resp = resp.map_err(|e| DbErr::TryIntoErr {
             from: "QuestionGroupWithEncodedStrategy",
             into: "APIQuestionGroup",
-            source: e.into(),
+            source: Arc::new(e),
         })?;
 
         Ok(resp)
