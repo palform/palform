@@ -69,7 +69,7 @@
             bind:value={teamId}
             disabled={addLoading}
             hideTeams={[$teamCtx.team.id, ...existingTeams]}
-            withRoleOnly={"Admin"}
+            allowedRoles={["Admin"]}
         />
     </Label>
 

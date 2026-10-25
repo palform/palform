@@ -1,8 +1,9 @@
 use apistos::web::{delete, get, patch, post, put, resource, scope, Scope};
 
 use crate::api::forms::{
-    create::forms_create, delete::forms_delete, exchange_short_link::forms_exchange_short_link,
-    fill::forms_fill, get::forms_get, keys::forms_keys, list::forms_list, relocate::forms_relocate,
+    clone::forms_clone, create::forms_create, delete::forms_delete,
+    exchange_short_link::forms_exchange_short_link, fill::forms_fill, get::forms_get,
+    keys::forms_keys, list::forms_list, relocate::forms_relocate,
     set_auto_delete::forms_set_auto_delete, update::forms_update, view::forms_view,
 };
 
@@ -22,7 +23,8 @@ pub fn forms_org_scope() -> Scope {
                         .route(delete().to(forms_delete)),
                 )
                 .service(resource("location").route(patch().to(forms_relocate)))
-                .service(resource("auto-delete").route(put().to(forms_set_auto_delete))),
+                .service(resource("auto-delete").route(put().to(forms_set_auto_delete)))
+                .service(resource("clone").route(post().to(forms_clone))),
         )
 }
 

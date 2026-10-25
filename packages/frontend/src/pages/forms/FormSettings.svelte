@@ -10,6 +10,7 @@
     import DangerZone from "../../components/type/DangerZone.svelte";
     import SectionSeparator from "../../components/type/SectionSeparator.svelte";
     import { getFormCtx } from "../../data/contexts/orgLayout";
+    import FormClone from "../../components/forms/settings/FormClone.svelte";
 
     const formCtx = getFormCtx();
 
@@ -19,7 +20,7 @@
             route.state !== null &&
             "selectField" in route.state
             ? (route.state as { selectField?: string }).selectField
-            : undefined,
+            : undefined
     );
 </script>
 
@@ -49,6 +50,9 @@
 
 <SectionSeparator />
 <FormLanguage />
+
+<SectionSeparator />
+<FormClone />
 
 <SectionSeparator />
 <DangerZone />

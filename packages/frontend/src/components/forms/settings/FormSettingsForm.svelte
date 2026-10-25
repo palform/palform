@@ -13,6 +13,7 @@
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
     import LoadingButton from "../../LoadingButton.svelte";
     import {
+        addFormToCtx,
         getOrgContext,
         reloadInduction,
         updateFormCtx,
@@ -109,12 +110,7 @@
                     one_question_per_page: oqpp,
                 });
                 await reloadInduction(ctx);
-                ctx.update((ctx) => {
-                    return {
-                        ...ctx,
-                        forms: [resp.data, ...ctx.forms],
-                    };
-                });
+                addFormToCtx(ctx, resp.data);
                 navigate(`/orgs/${$ctx.org.id}/forms/${resp.data.id}/overview`);
             }
             await showSuccessToast(isNew ? "Form created" : "Form saved");

@@ -78,6 +78,15 @@ export function updateFormCtx(
     });
 }
 
+export function addFormToCtx(ctx: Writable<OrgContext>, form: APIForm) {
+    ctx.update((ctx) => {
+        return {
+            ...ctx,
+            forms: [form, ...ctx.forms],
+        };
+    });
+}
+
 export async function markOrgViewNow(orgId: string) {
     let currentRev: string | undefined;
     try {

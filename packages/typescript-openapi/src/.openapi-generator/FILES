@@ -142,6 +142,7 @@ docs/FormBrandingSpacingEnum.md
 docs/FormBrandingsApi.md
 docs/FormTemplatesApi.md
 docs/FormsApi.md
+docs/FormsCloneRequest.md
 docs/FormsFillRequest.md
 docs/FormsKeysResponse.md
 docs/FormsRelocateRequest.md

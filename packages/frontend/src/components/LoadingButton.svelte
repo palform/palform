@@ -9,7 +9,7 @@
     interface Props {
         loading?: boolean;
         disabled?: boolean;
-        color?: "primary" | "red" | "light";
+        color?: "primary" | "red" | "orange" | "light";
         type?: HTMLButtonAttributes["type"];
         size?: ButtonProps["size"];
         buttonClass?: string;

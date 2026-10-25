@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, Button, Label, Modal, Select } from "flowbite-svelte";
+    import { Alert, Button, Label, Modal } from "flowbite-svelte";
     import {
         getFormCtx,
         getOrgContext,
@@ -9,29 +9,19 @@
     import LoadingButton from "../../LoadingButton.svelte";
     import { APIs } from "../../../data/common";
     import { showFailureToast, showSuccessToast } from "../../../data/toast";
+    import TeamDropdown from "../../teams/TeamDropdown.svelte";
+
     interface Props {
-        [key: string]: any;
+        class?: string;
     }
 
-    let { ...props }: Props = $props();
+    let { class: className }: Props = $props();
 
     const orgCtx = getOrgContext();
     const formMetadataCtx = getFormCtx();
 
     let showModal = $state(false);
     let selectedTeam = $state("");
-    let selectItems = $derived(
-        $orgCtx.myTeams
-            .filter(
-                (e) =>
-                    e.team_id !== $formMetadataCtx.team_id &&
-                    (e.my_role === "Editor" || e.my_role === "Admin")
-            )
-            .map((t) => ({
-                name: t.name,
-                value: t.team_id,
-            }))
-    );
 
     let loading = $state(false);
     let onMoveClick = $derived(async () => {
@@ -56,7 +46,7 @@
     });
 </script>
 
-<Alert color="orange" class={props.class}>
+<Alert color="orange" class={className}>
     <h3 class="text-lg">Move form to other team</h3>
 
     <p>
@@ -86,35 +76,29 @@
 </Alert>
 
 <Modal bind:open={showModal} outsideclose title="Move form to other team">
-    {#if selectItems.length === 0}
-        <InfoText>There are no eligible teams to move this form to.</InfoText>
-        <InfoText>
-            You must have at least <strong>Editor</strong> permission in the target
-            team.
-        </InfoText>
-    {:else}
-        <Label>
-            Team to move to
-            <Select
-                class="mt-1"
-                items={selectItems}
-                bind:value={selectedTeam}
-                disabled={loading}
-            />
-        </Label>
-    {/if}
+    <InfoText>
+        You must have at least <strong>Editor</strong> permission in the target team.
+    </InfoText>
+    <Label>
+        Team to move to
+        <TeamDropdown
+            bind:value={selectedTeam}
+            required
+            hideTeams={[$formMetadataCtx.team_id]}
+            allowedRoles={["Editor", "Admin"]}
+        />
+    </Label>
 
     {#snippet footer()}
-        {#if selectItems.length === 0}
-            <Button onclick={() => (showModal = false)}>Close</Button>
-        {:else}
-            <LoadingButton
-                disabled={selectedTeam === "" || loading}
-                {loading}
-                onclick={onMoveClick}
-            >
-                Move
-            </LoadingButton>
-        {/if}
+        <LoadingButton
+            disabled={selectedTeam === "" || loading}
+            {loading}
+            onclick={onMoveClick}
+            color="orange"
+        >
+            Move
+        </LoadingButton>
+        <Button onclick={() => (showModal = false)} color="light">Cancel</Button
+        >
     {/snippet}
 </Modal>

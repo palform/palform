@@ -4,6 +4,7 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
+|[**formsClone**](#formsclone) | **POST** /api/org/{org_id}/form/forms/{form_id}/clone | |
 |[**formsCreate**](#formscreate) | **POST** /api/org/{org_id}/form/forms | |
 |[**formsDelete**](#formsdelete) | **DELETE** /api/org/{org_id}/form/forms/{form_id} | |
 |[**formsExchangeShortLink**](#formsexchangeshortlink) | **GET** /api/fill/form/forms/short_link/{subdomain}/{short_link} | |
@@ -15,6 +16,69 @@ All URIs are relative to *http://localhost*
 |[**formsSetAutoDelete**](#formssetautodelete) | **PUT** /api/org/{org_id}/form/forms/{form_id}/auto-delete | |
 |[**formsUpdate**](#formsupdate) | **PUT** /api/org/{org_id}/form/forms/{form_id} | |
 |[**formsView**](#formsview) | **GET** /api/fill/form/forms/{form_id}/org/{org_id} | |
+
+# **formsClone**
+> APIForm formsClone(formsCloneRequest)
+
+
+### Example
+
+```typescript
+import {
+    FormsApi,
+    Configuration,
+    FormsCloneRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new FormsApi(configuration);
+
+let formId: string; // (default to undefined)
+let orgId: string; // (default to undefined)
+let formsCloneRequest: FormsCloneRequest; //
+
+const { status, data } = await apiInstance.formsClone(
+    formId,
+    orgId,
+    formsCloneRequest
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **formsCloneRequest** | **FormsCloneRequest**|  | |
+| **formId** | [**string**] |  | defaults to undefined|
+| **orgId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**APIForm**
+
+### Authorization
+
+[org_role_token](../README.md#org_role_token)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** |  |  -  |
+|**400** | Bad Request |  -  |
+|**402** | Payment Required |  -  |
+|**403** | Forbidden |  -  |
+|**404** | Not Found |  -  |
+|**422** | Unprocessable Entity |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **formsCreate**
 > APIForm formsCreate(createFormRequest)

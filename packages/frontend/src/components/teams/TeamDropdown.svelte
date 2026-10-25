@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { get } from "svelte/store";
     import { Select } from "flowbite-svelte";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import { APIs } from "../../data/common";
@@ -12,7 +11,7 @@
         allTeams?: boolean;
         selectDefaultIfOnly?: boolean;
         hideTeams?: string[];
-        withRoleOnly?: OrganisationMemberRoleEnum | undefined;
+        allowedRoles?: OrganisationMemberRoleEnum[] | undefined;
         class?: string;
     }
 
@@ -23,25 +22,14 @@
         allTeams = false,
         selectDefaultIfOnly = false,
         hideTeams = [],
-        withRoleOnly = undefined,
+        allowedRoles = undefined,
         class: className = "",
     }: Props = $props();
 
     const orgCtx = getOrgContext();
 
-    let loading = $state(false);
-    let items = $state<{ name: string; value: string }[]>(
-        get(orgCtx).myTeams
-            .filter(
-                (e) =>
-                    !hideTeams.includes(e.team_id) &&
-                    (withRoleOnly === undefined || e.my_role === withRoleOnly),
-            )
-            .map((t) => ({
-                name: t.name,
-                value: t.team_id,
-            })),
-    );
+    let loading = $state(true);
+    let items = $state<{ name: string; value: string }[]>([]);
 
     $effect(() => {
         if (!allTeams) {
@@ -49,7 +37,8 @@
                 .filter(
                     (e) =>
                         !hideTeams.includes(e.team_id) &&
-                        (withRoleOnly === undefined || e.my_role === withRoleOnly),
+                        (allowedRoles === undefined ||
+                            allowedRoles.includes(e.my_role))
                 )
                 .map((t) => ({
                     name: t.name,

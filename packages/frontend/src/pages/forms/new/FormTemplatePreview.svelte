@@ -7,6 +7,7 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
     import {
+        addFormToCtx,
         getOrgContext,
         reloadInduction,
     } from "../../../data/contexts/orgLayout";
@@ -70,12 +71,7 @@
             );
 
             await reloadInduction(orgCtx);
-            orgCtx.update((ctx) => {
-                return {
-                    ...ctx,
-                    forms: [newFormResp.data, ...ctx.forms],
-                };
-            });
+            addFormToCtx(orgCtx, newFormResp.data);
 
             navigate(
                 `/orgs/${$orgCtx.org.id}/forms/${newFormResp.data.id}/overview`
