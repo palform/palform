@@ -62,7 +62,12 @@
 <p>When you're ready, enter the code shown in your app.</p>
 <Label>
     Code shown in app
-    <Input class="mt-1" bind:value={sampleCode} disabled={loading} />
+    <Input
+        class="mt-1"
+        bind:value={sampleCode}
+        disabled={loading}
+        autocomplete="one-time-code"
+    />
 </Label>
 
 <LoadingButton {loading} disabled={loading} onclick={onEnrollClick}>

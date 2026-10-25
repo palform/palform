@@ -97,6 +97,7 @@
                     bind:value={totpToken}
                     class="mt-1"
                     disabled={loading}
+                    autocomplete="one-time-code"
                     required
                 />
             </Label>
