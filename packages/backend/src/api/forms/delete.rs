@@ -24,6 +24,7 @@ pub struct FormsDeletePath {
     form_id: PalformDatabaseID<IDForm>,
 }
 
+/// Deletes a form and all of its questions, question groups, submissions, settings, etc.
 #[api_operation(tag = "Forms", operation_id = "forms.delete")]
 pub async fn forms_delete(
     path: Path<FormsDeletePath>,

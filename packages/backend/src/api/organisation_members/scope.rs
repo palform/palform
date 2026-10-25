@@ -3,6 +3,7 @@ use apistos::web::{delete, get, patch, post, resource, scope, Scope};
 use crate::api::organisation_members::{
     am_i_admin::organisation_members_am_i_admin, delete::organisation_members_delete,
     join::organisation_members_join, list::organisation_members_list,
+    list_service_account::organisation_members_list_service_account,
     patch::organisation_members_patch,
 };
 
@@ -13,6 +14,9 @@ pub fn organisation_members_scope() -> Scope {
             resource("")
                 .route(get().to(organisation_members_list))
                 .route(post().to(organisation_members_join)),
+        )
+        .service(
+            resource("service-accounts").route(get().to(organisation_members_list_service_account)),
         )
         .service(
             resource("{user_id}")

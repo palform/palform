@@ -8,6 +8,7 @@ All URIs are relative to *http://localhost*
 |[**organisationMembersDelete**](#organisationmembersdelete) | **DELETE** /api/org/{org_id}/members/{user_id} | |
 |[**organisationMembersJoin**](#organisationmembersjoin) | **POST** /api/org/{org_id}/members | |
 |[**organisationMembersList**](#organisationmemberslist) | **GET** /api/org/{org_id}/members | |
+|[**organisationMembersListServiceAccount**](#organisationmemberslistserviceaccount) | **GET** /api/org/{org_id}/members/service-accounts | |
 |[**organisationMembersPatch**](#organisationmemberspatch) | **PATCH** /api/org/{org_id}/members/{user_id} | |
 
 # **organisationMembersAmIAdmin**
@@ -45,7 +46,7 @@ const { status, data } = await apiInstance.organisationMembersAmIAdmin(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -104,7 +105,7 @@ void (empty response body)
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -164,7 +165,7 @@ void (empty response body)
 
 ### Authorization
 
-[api_auth_token](../README.md#api_auth_token)
+[personal_token](../README.md#personal_token)
 
 ### HTTP request headers
 
@@ -186,7 +187,7 @@ void (empty response body)
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **organisationMembersList**
-> Array<APIOrgMember> organisationMembersList()
+> Array<APIOrgMemberHuman> organisationMembersList()
 
 
 ### Example
@@ -216,11 +217,67 @@ const { status, data } = await apiInstance.organisationMembersList(
 
 ### Return type
 
-**Array<APIOrgMember>**
+**Array<APIOrgMemberHuman>**
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** |  |  -  |
+|**400** | Bad Request |  -  |
+|**402** | Payment Required |  -  |
+|**403** | Forbidden |  -  |
+|**404** | Not Found |  -  |
+|**422** | Unprocessable Entity |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **organisationMembersListServiceAccount**
+> Array<APIOrgMemberServiceAccount> organisationMembersListServiceAccount()
+
+
+### Example
+
+```typescript
+import {
+    OrganisationMembersApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new OrganisationMembersApi(configuration);
+
+let orgId: string; // (default to undefined)
+
+const { status, data } = await apiInstance.organisationMembersListServiceAccount(
+    orgId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **orgId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**Array<APIOrgMemberServiceAccount>**
+
+### Authorization
+
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -283,7 +340,7 @@ void (empty response body)
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 

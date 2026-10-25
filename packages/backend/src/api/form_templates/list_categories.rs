@@ -10,7 +10,8 @@ use crate::{
 
 #[api_operation(
     tag = "Form Templates",
-    operation_id = "form_templates.categories.list"
+    operation_id = "form_templates.categories.list",
+    no_security
 )]
 pub async fn form_templates_list_categories(
     db: Data<DatabaseConnection>,

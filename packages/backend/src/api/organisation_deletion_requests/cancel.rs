@@ -15,7 +15,10 @@ use serde::Deserialize;
 use crate::{
     actix_util::from_org_id::FromOrgId,
     audit::{id_chains::IDChainEmpty, manager::AuditManager},
-    auth::{rbac::requests::APITokenOrgAdmin, tokens::APIAuthTokenSource},
+    auth::{
+        rbac::requests::{OrgRoleToken, TeamRoleNone, TokenTargetOrgAdmin},
+        tokens::{APIAuthTokenSource, APIAuthTokenSourcePersonal},
+    },
     entity_managers::organisation_deletion_request::OrganisationDeletionRequestManager,
 };
 
@@ -31,7 +34,7 @@ pub struct OrganisationsDeletionRequestsCancelPath {
 )]
 pub async fn organisation_deletion_requests_cancel(
     path: Path<OrganisationsDeletionRequestsCancelPath>,
-    token: APITokenOrgAdmin,
+    token: OrgRoleToken<TeamRoleNone, TokenTargetOrgAdmin, APIAuthTokenSourcePersonal>,
     db: Data<DatabaseConnection>,
     org_deletion_request_manager: FromOrgId<OrganisationDeletionRequestManager>,
     audit: FromOrgId<AuditManager<IDChainEmpty>>,

@@ -16,7 +16,11 @@ pub struct FormTemplatesList {
     category_id: PalformDatabaseID<IDFormTemplateCategory>,
 }
 
-#[api_operation(tag = "Form Templates", operation_id = "form_templates.list")]
+#[api_operation(
+    tag = "Form Templates",
+    operation_id = "form_templates.list",
+    no_security
+)]
 pub async fn form_templates_list(
     path: Path<FormTemplatesList>,
     db: Data<DatabaseConnection>,

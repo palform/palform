@@ -16,7 +16,7 @@ pub struct VerifyEmailPath {
     verification_id: PalformDatabaseID<IDAdminUserEmailVerification>,
 }
 
-#[api_operation(tag = "Authentication", operation_id = "auth.verify")]
+#[api_operation(tag = "Authentication", operation_id = "auth.verify", no_security)]
 pub async fn auth_verify_email(
     path: Path<VerifyEmailPath>,
     db: Data<DatabaseConnection>,

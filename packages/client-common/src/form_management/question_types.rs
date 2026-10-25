@@ -18,8 +18,12 @@ use super::question_group::APIQuestionGroup;
 pub struct APIQuestion {
     pub id: PalformDatabaseID<IDQuestion>,
     pub title: String,
+    /// The name of the field as used in bulk submission exports and recall tags.
     pub internal_name: Option<String>,
+    /// A Markdown-enabled description shown below the title.
     pub description: Option<String>,
+    /// Whether to prevent the question group being finished if this question has not been answered.
+    /// Each question type has a different definition of what it means to be answered.
     pub required: bool,
     pub configuration: APIQuestionConfiguration,
     pub group_id: PalformDatabaseID<IDQuestionGroup>,

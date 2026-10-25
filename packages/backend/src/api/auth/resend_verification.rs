@@ -18,7 +18,11 @@ pub struct ResendVerificationRequest {
     email: String,
 }
 
-#[api_operation(tag = "Authentication", operation_id = "auth.resend_ verification")]
+#[api_operation(
+    tag = "Authentication",
+    operation_id = "auth.resend_ verification",
+    no_security
+)]
 pub async fn auth_resend_verification(
     request: Json<ResendVerificationRequest>,
     db: Data<DatabaseConnection>,

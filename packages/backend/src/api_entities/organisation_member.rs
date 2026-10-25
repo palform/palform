@@ -1,4 +1,5 @@
 use apistos::ApiComponent;
+use chrono::{DateTime, Utc};
 use palform_tsid::resources::{IDAdminUser, IDOrganisation};
 use palform_tsid::tsid::PalformDatabaseID;
 use schemars::JsonSchema;
@@ -6,10 +7,19 @@ use sea_orm::FromQueryResult;
 use serde::Serialize;
 
 #[derive(JsonSchema, Serialize, Clone, FromQueryResult, ApiComponent)]
-pub struct APIOrgMember {
+pub struct APIOrgMemberHuman {
     user_id: PalformDatabaseID<IDAdminUser>,
     user_display_name: Option<String>,
     user_email: String,
+    organisation_id: PalformDatabaseID<IDOrganisation>,
+    is_admin: bool,
+}
+
+#[derive(JsonSchema, Serialize, Clone, FromQueryResult, ApiComponent)]
+pub struct APIOrgMemberServiceAccount {
+    user_id: PalformDatabaseID<IDAdminUser>,
+    user_email: String,
+    user_created_at: DateTime<Utc>,
     organisation_id: PalformDatabaseID<IDOrganisation>,
     is_admin: bool,
 }

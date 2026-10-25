@@ -16,7 +16,11 @@ pub struct FormTemplatesGetPath {
     template_id: PalformDatabaseID<IDForm>,
 }
 
-#[api_operation(tag = "Form Templates", operation_id = "form_templates.get")]
+#[api_operation(
+    tag = "Form Templates",
+    operation_id = "form_templates.get",
+    no_security
+)]
 pub async fn form_templates_get(
     path: Path<FormTemplatesGetPath>,
     db: Data<DatabaseConnection>,

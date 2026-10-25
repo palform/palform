@@ -24,10 +24,12 @@ pub struct SubmissionsListPath {
 }
 
 #[derive(Deserialize, JsonSchema, ApiComponent)]
-pub(crate) struct SubmissionsListQuery {
+pub struct SubmissionsListQuery {
+    /// If specified, only list new changes made since this date.
     since: Option<PalformDatabaseID<IDSubmission>>,
 }
 
+/// List all changes to responses to a form.
 #[api_operation(tag = "Submissions", operation_id = "submissions.list")]
 pub async fn submissions_list(
     path: Path<SubmissionsListPath>,

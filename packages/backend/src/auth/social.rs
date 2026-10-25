@@ -158,7 +158,7 @@ impl SocialAuthManager {
                         conn,
                         email_matched_user.id,
                         self.service.clone(),
-                        result.sub,
+                        result.sub.clone(),
                     )
                     .await?;
 
@@ -172,6 +172,14 @@ impl SocialAuthManager {
             let new_user_id =
                 AdminUserManager::create_user_without_auth(conn, result.email).await?;
             token_user_id = Some(new_user_id);
+
+            SocialAuthConnectionsManager::add_connection(
+                conn,
+                new_user_id,
+                self.service.clone(),
+                result.sub,
+            )
+            .await?;
 
             let new_org_id =
                 OrganisationManager::create(conn, "Unnamed organisation".to_string()).await?;

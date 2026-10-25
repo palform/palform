@@ -18,7 +18,11 @@ pub struct SendPasswordResetRequest {
     email: String,
 }
 
-#[api_operation(tag = "Password Resets", operation_id = "user.password_reset.send")]
+#[api_operation(
+    tag = "Password Resets",
+    operation_id = "user.password_reset.send",
+    no_security
+)]
 pub async fn auth_password_reset_send(
     data: Json<SendPasswordResetRequest>,
     db: Data<DatabaseConnection>,

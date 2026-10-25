@@ -1,7 +1,11 @@
-use std::{future::Future, ops::Deref, pin::Pin};
+use std::{collections::BTreeMap, future::Future, ops::Deref, pin::Pin};
 
 use actix_web::{dev::Payload, web::Data, FromRequest, HttpRequest};
-use apistos::ApiSecurity;
+use apistos::{
+    reference_or::ReferenceOr,
+    security::{Http, SecurityScheme, SecurityType},
+    ApiComponent, Schema,
+};
 use base64::prelude::*;
 use chrono::{DateTime, Duration, Utc};
 use palform_client_common::errors::error::{APIError, APIInternalErrorResult};
@@ -19,7 +23,10 @@ use sea_orm::{
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{config::Config, entity_managers::admin_users::AdminUserManager};
+use crate::{
+    config::Config,
+    entity_managers::admin_users::{AdminUserManagementError, AdminUserManager},
+};
 
 #[derive(Deserialize, Serialize, JsonSchema)]
 pub struct NewAPIAuthToken {
@@ -59,7 +66,6 @@ impl APIAuthTokenSource for APIAuthTokenSourcePersonal {
     }
 }
 
-/*
 #[derive(Clone)]
 pub struct APIAuthTokenSourceServiceAccount {
     pub model: admin_user::Model,
@@ -80,7 +86,7 @@ impl APIAuthTokenSource for APIAuthTokenSourceServiceAccount {
     fn get_user_id(&self) -> PalformDatabaseID<IDAdminUser> {
         self.model.id
     }
-}*/
+}
 
 #[derive(Clone)]
 pub enum APIAuthTokenSourceAny {
@@ -108,10 +114,48 @@ impl APIAuthTokenSource for APIAuthTokenSourceAny {
     }
 }
 
-#[derive(Clone, ApiSecurity)]
-#[openapi_security(scheme(security_type(http(scheme = "basic"))))]
+pub const SECURITY_PERSONAL: &str = "personal_token";
+pub const SECURITY_SERVICE_ACCOUNT: &str = "service_account_token";
+
+pub fn http_security(
+    name: &str,
+    scheme: &str,
+    description: &str,
+) -> BTreeMap<String, SecurityScheme> {
+    BTreeMap::from([(
+        name.to_owned(),
+        SecurityScheme {
+            _type: SecurityType::Http(Http {
+                scheme: scheme.to_owned(),
+                bearer_format: None,
+            }),
+            description: Some(description.to_owned()),
+            extensions: Default::default(),
+        },
+    )])
+}
+
+#[derive(Clone)]
 pub struct APIAuthToken<Source: APIAuthTokenSource> {
     pub source: Source,
+}
+
+impl<Source: APIAuthTokenSource> ApiComponent for APIAuthToken<Source> {
+    fn child_schemas() -> Vec<(String, ReferenceOr<Schema>)> {
+        vec![]
+    }
+    fn schema() -> Option<(String, ReferenceOr<Schema>)> {
+        None
+    }
+    // None inherits the global security from the OpenAPI spec, which accepts either scheme.
+    // apistos only allows one requirement per extractor, so this is the only way to express OR.
+    fn security_requirement_name() -> Option<String> {
+        match (Source::allow_personal(), Source::allow_service_account()) {
+            (true, false) => Some(SECURITY_PERSONAL.to_owned()),
+            (false, true) => Some(SECURITY_SERVICE_ACCOUNT.to_owned()),
+            _ => None,
+        }
+    }
 }
 
 impl<Source: APIAuthTokenSource> Deref for APIAuthToken<Source> {
@@ -147,82 +191,86 @@ impl<Source: APIAuthTokenSource> FromRequest for APIAuthToken<Source> {
             let basic_header = authorization_header.strip_prefix("Basic ");
             let bearer_header = authorization_header.strip_prefix("Bearer ");
 
-            if Source::allow_personal() {
-                if let Some(basic_header) = basic_header {
-                    let (token_id, token_secret) = BASE64_STANDARD
-                        .decode(basic_header)
-                        .map_err(|e| {
+            // If the source allows personal auth AND there is personal credentials
+            if let (true, Some(basic_header)) = (Source::allow_personal(), basic_header) {
+                let (token_id, token_secret) = BASE64_STANDARD
+                    .decode(basic_header)
+                    .map_err(|e| {
+                        APIError::BadRequest(format!(
+                            "Failed to parse Basic Authorization header: {}",
+                            e
+                        ))
+                    })
+                    .and_then(|v| {
+                        String::from_utf8(v).map_err(|e| {
                             APIError::BadRequest(format!(
-                                "Failed to parse Basic Authorization header: {}",
+                                "Failed to decode Basic Authorization data: {}",
                                 e
                             ))
                         })
-                        .and_then(|v| {
-                            String::from_utf8(v).map_err(|e| {
-                                APIError::BadRequest(format!(
-                                    "Failed to decode Basic Authorization data: {}",
-                                    e
-                                ))
-                            })
-                        })
-                        .and_then(|basic_auth_string| {
-                            let mut split = basic_auth_string.split(':');
-                            split
-                                .next()
-                                .ok_or(APIError::BadRequest(
-                                    "Token ID not in Authorization header".to_string(),
-                                ))
-                                .and_then(|token_id| {
-                                    split
-                                        .next()
-                                        .ok_or(APIError::BadRequest(
-                                            "Token secret not in Authorization header".to_string(),
-                                        ))
-                                        .map(|token_secret| {
-                                            (token_id.to_owned(), token_secret.to_owned())
-                                        })
-                                })
-                        })?;
-
-                    let parsed_token_id: PalformDatabaseID<IDAuthToken> = token_id
-                        .parse::<PalformDatabaseID<IDAuthToken>>()
-                        .map_err(|e| APIError::BadRequest(e.to_string()))?;
-
-                    let token = TokenManager::lookup_by_id(db.as_ref(), parsed_token_id)
-                        .await
-                        .map_internal_error()?
-                        .ok_or(APIError::NotAllowed)?;
-
-                    if token.hash != token_secret {
-                        return Err(APIError::NotAllowed);
-                    }
-
-                    if token.expires_at < Utc::now() {
-                        return Err(APIError::NotAllowed);
-                    }
-
-                    Ok(Self {
-                        source: Source::from_personal(token),
                     })
-                } else {
-                    Err(APIError::NotAllowed)
-                }
-            } else if Source::allow_service_account() {
-                if let Some(bearer_header) = bearer_header {
-                    let matching_user = AdminUserManager::get_user_by_service_account_token(
-                        db.as_ref(),
-                        bearer_header.to_string(),
-                    )
+                    .and_then(|basic_auth_string| {
+                        let mut split = basic_auth_string.split(':');
+                        split
+                            .next()
+                            .ok_or(APIError::BadRequest(
+                                "Token ID not in Authorization header".to_string(),
+                            ))
+                            .and_then(|token_id| {
+                                split
+                                    .next()
+                                    .ok_or(APIError::BadRequest(
+                                        "Token secret not in Authorization header".to_string(),
+                                    ))
+                                    .map(|token_secret| {
+                                        (token_id.to_owned(), token_secret.to_owned())
+                                    })
+                            })
+                    })?;
+
+                let parsed_token_id: PalformDatabaseID<IDAuthToken> = token_id
+                    .parse::<PalformDatabaseID<IDAuthToken>>()
+                    .map_err(|e| APIError::BadRequest(e.to_string()))?;
+
+                let token = TokenManager::lookup_by_id(db.as_ref(), parsed_token_id)
                     .await
                     .map_internal_error()?
                     .ok_or(APIError::NotAllowed)?;
 
-                    Ok(Self {
-                        source: Source::from_service_account(matching_user),
-                    })
-                } else {
-                    Err(APIError::NotAllowed)
+                if token.hash != token_secret {
+                    return Err(APIError::NotAllowed);
                 }
+
+                if token.expires_at < Utc::now() {
+                    return Err(APIError::NotAllowed);
+                }
+
+                Ok(Self {
+                    source: Source::from_personal(token),
+                })
+            // If the source allows service accounts AND there is a service account credential
+            } else if let (true, Some(bearer_header)) =
+                (Source::allow_service_account(), bearer_header)
+            {
+                let matching_user = AdminUserManager::get_user_by_service_account_token(
+                    db.as_ref(),
+                    bearer_header.to_string(),
+                )
+                .await
+                .map_err(|e| match e {
+                    AdminUserManagementError::ServiceAccountTokenParse => {
+                        APIError::BadRequest(e.to_string())
+                    }
+                    _ => APIError::report_internal_error(
+                        "Find user by service account token for auth",
+                        e,
+                    ),
+                })?
+                .ok_or(APIError::NotAllowed)?;
+
+                Ok(Self {
+                    source: Source::from_service_account(matching_user),
+                })
             } else {
                 Err(APIError::NotAllowed)
             }

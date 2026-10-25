@@ -21,6 +21,9 @@ pub struct KeysListOrgPath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
+/// List all keys for all users within an organisation.
+///
+/// Expired keys will be included in the list.
 #[api_operation(tag = "Organisation Keys", operation_id = "org.keys.list")]
 pub async fn keys_list_org(
     path: Path<KeysListOrgPath>,

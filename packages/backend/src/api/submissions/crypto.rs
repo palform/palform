@@ -25,7 +25,9 @@ use crate::{
 
 #[derive(Serialize, JsonSchema)]
 pub enum DecrpytingKey {
+    /// The key was matched to a Palform user
     Known(APIUserKeyWithIdentity),
+    /// The key was not matched to a Palform user, so only its fingerprint is known
     Unknown(String),
 }
 
@@ -35,7 +37,9 @@ pub struct SubmissionCryptoDetailsResponse {
 }
 
 fn filter_certs_containing_key_handles(
+    // A list of recipient keys of the submission message
     required_key_ids: Vec<KeyHandle>,
+    // All keys of all users in the organisation
     keys: Vec<UserKeyWithIdentity>,
 ) -> Result<Vec<DecrpytingKey>, KeyConversionError> {
     let mut matched_certs = Vec::<APIUserKeyWithIdentity>::new();
@@ -73,7 +77,6 @@ fn filter_certs_containing_key_handles(
     for required_key in required_key_ids {
         let mut seen = false;
         for seen_key_fingerprint in &seen_key_fingerprints {
-            println!("{}, {}", required_key, seen_key_fingerprint);
             if required_key.aliases(KeyHandle::from(seen_key_fingerprint)) {
                 seen = true;
                 break;
@@ -97,6 +100,11 @@ pub struct SubmissionsCryptoPath {
     submission_id: PalformDatabaseID<IDSubmission>,
 }
 
+/// List all the keys that are able to decrypt a given form response.
+///
+/// This extracts the recipient keys of the submission's PGP message and tries to match each one to
+/// a key of a known Palform user. If it succeeds, it returns the full details of the matched key.
+/// Otherwise, it just returns the key's fingerprint.
 #[api_operation(tag = "Submissions", operation_id = "submissions.crypto")]
 pub async fn submissions_crypto(
     path: Path<SubmissionsCryptoPath>,

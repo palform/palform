@@ -24,8 +24,14 @@ use crate::entity_managers::orgs::OrganisationManager;
 
 #[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct NewTokenRequest {
+    /// An internal nickname to allow segmenting submissions by fill access token
     nickname: String,
+    /// Optionally, an expiry time after which the token will no longer work
     expires_in_seconds: Option<u32>,
+    /// Optionally, a shortened path through which the form can be filled. This requires the
+    /// organisation to have a subdomain configured. The form will be available at
+    /// `https://<subdomain>.palform.app/<short_link>`. Fill access tokens with short links can
+    /// still be accessed at the long path, too.
     short_link: Option<String>,
 }
 
@@ -35,6 +41,10 @@ pub struct FillTokensCreatePath {
     form_id: PalformDatabaseID<IDForm>,
 }
 
+/// Create a new fill access token.
+///
+/// These tokens are included in fill URLs, which allows end-users to fill in forms. Each form can
+/// have multiple fill access tokens, which allows segmenting submissions based on their source.
 #[api_operation(tag = "Fill Access Tokens", operation_id = "fill_access_tokens.create")]
 pub async fn fill_tokens_create(
     path: Path<FillTokensCreatePath>,

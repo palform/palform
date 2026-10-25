@@ -24,9 +24,15 @@ pub struct FormsKeysPath {
 
 #[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct FormsKeysResponse {
+    /// A list of PGP public keys in armored ASCII form
     keys: Vec<String>,
 }
 
+/// Get a list of PGP keys that responses to a form should be encrypted with.
+///
+/// This will return all of the non-expired public keys of all of the users who are members of the form's team. In
+/// general, responses to the form should be encrypted for all of these keys, such that any one of
+/// them can decrypt the response.
 #[api_operation(tag = "Forms", operation_id = "forms.keys")]
 pub async fn forms_keys(
     path: Path<FormsKeysPath>,

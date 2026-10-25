@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use palform_entities::{admin_user, prelude::*, social_auth_connection};
 use palform_tsid::{
@@ -10,7 +12,11 @@ use sea_orm::{
 };
 use thiserror::Error;
 
-use crate::{api_entities::admin_users::APIAdminUser, auth::social::SocialAuthService};
+use crate::{
+    api_entities::admin_users::{APIAdminUser, APIServiceAccountAdminUser},
+    auth::social::SocialAuthService,
+    crypto::util::create_hex_secret,
+};
 
 #[derive(Debug, Error)]
 pub enum AdminUserManagementError {
@@ -18,12 +24,12 @@ pub enum AdminUserManagementError {
     DBError(#[from] DbErr),
     #[error("Hashing: {0}")]
     Password(argon2::password_hash::Error),
-    #[error("Parsing password hash: {0}")]
-    PasswordHashParse(argon2::password_hash::phc::Error),
     #[error("Your account does not have a password.")]
     NoPassword,
     #[error("Your account is connected to an organisation. Please sign in through it instead.")]
     OrgOnly,
+    #[error("The provided service account token was invalid or incomplete.")]
+    ServiceAccountTokenParse,
 }
 
 pub struct AdminUserManager;
@@ -81,23 +87,26 @@ impl AdminUserManager {
             .await
     }
 
-    pub async fn get_user_by_service_account_token<T: ConnectionTrait>(
-        conn: &T,
-        token: String,
-    ) -> Result<Option<admin_user::Model>, DbErr> {
-        AdminUser::find()
-            .filter(admin_user::Column::ServiceAccountAuthToken.eq(Some(token)))
-            .one(conn)
-            .await
-    }
-
     fn get_argon2<'k>() -> Argon2<'k> {
         Argon2::default()
     }
 
-    fn gen_password(password: String) -> Result<String, argon2::password_hash::Error> {
+    fn hash_password(password: String) -> Result<String, argon2::password_hash::Error> {
         let password: PasswordHash = Self::get_argon2().hash_password(password.as_bytes())?;
         Ok(password.to_string())
+    }
+
+    fn verify_password_hash(raw: &str, hashed: &str) -> bool {
+        let parsed_hash = PasswordHash::new(&hashed);
+
+        if parsed_hash.is_err() {
+            return false;
+        }
+
+        let parsed_hash = parsed_hash.unwrap();
+        Self::get_argon2()
+            .verify_password(raw.as_bytes(), &parsed_hash)
+            .is_ok()
     }
 
     pub fn verify_user_password(
@@ -112,12 +121,8 @@ impl AdminUserManager {
             .manual_auth_password_hash
             .clone()
             .ok_or(AdminUserManagementError::NoPassword)?;
-        let parsed_hash =
-            PasswordHash::new(&hash).map_err(AdminUserManagementError::PasswordHashParse)?;
 
-        Ok(Self::get_argon2()
-            .verify_password(password.as_bytes(), &parsed_hash)
-            .is_ok())
+        Ok(Self::verify_password_hash(&password, &hash))
     }
 
     pub async fn set_user_password<T: ConnectionTrait>(
@@ -125,7 +130,7 @@ impl AdminUserManager {
         user_id: PalformDatabaseID<IDAdminUser>,
         password: String,
     ) -> Result<(), AdminUserManagementError> {
-        let password = Self::gen_password(password).map_err(AdminUserManagementError::Password)?;
+        let password = Self::hash_password(password).map_err(AdminUserManagementError::Password)?;
         let updated_user = admin_user::ActiveModel {
             id: Set(user_id),
             manual_auth_password_hash: Set(Some(password)),
@@ -141,7 +146,7 @@ impl AdminUserManager {
         password: String,
     ) -> Result<PalformDatabaseID<IDAdminUser>, AdminUserManagementError> {
         let password_hash =
-            Self::gen_password(password).map_err(AdminUserManagementError::Password)?;
+            Self::hash_password(password).map_err(AdminUserManagementError::Password)?;
 
         let id = PalformDatabaseID::<IDAdminUser>::random();
         let new_user = admin_user::ActiveModel {
@@ -233,5 +238,103 @@ impl AdminUserManager {
             ..Default::default()
         };
         updated_user.update(conn).await.map(|_| ())
+    }
+
+    pub async fn get_user_by_service_account_token<T: ConnectionTrait>(
+        conn: &T,
+        frontend_facing_token: String,
+    ) -> Result<Option<admin_user::Model>, AdminUserManagementError> {
+        let (user_id, unhashed_secret) = Self::parse_service_account_token(&frontend_facing_token)?;
+        let user = AdminUser::find_by_id(user_id)
+            .filter(admin_user::Column::ServiceAccountAuthToken.is_not_null())
+            .one(conn)
+            .await?;
+
+        if user.is_none() {
+            return Ok(None);
+        }
+
+        let user = user.unwrap();
+
+        let hashed_secret = user
+            .service_account_auth_token
+            .as_ref()
+            .expect("DB-validated non-null token to be Some");
+
+        if !Self::verify_password_hash(&unhashed_secret, &hashed_secret) {
+            return Ok(None);
+        }
+
+        Ok(Some(user))
+    }
+
+    pub async fn get_service_account_user_by_id<T: ConnectionTrait>(
+        conn: &T,
+        user_id: PalformDatabaseID<IDAdminUser>,
+    ) -> Result<Option<APIServiceAccountAdminUser>, DbErr> {
+        AdminUser::find_by_id(user_id)
+            .filter(admin_user::Column::ServiceAccountAuthToken.is_not_null())
+            .into_model()
+            .one(conn)
+            .await
+    }
+
+    fn format_service_account_token(
+        user_id: PalformDatabaseID<IDAdminUser>,
+        unhashed_secret: &str,
+    ) -> String {
+        format!("{}:{}", user_id, unhashed_secret)
+    }
+
+    fn parse_service_account_token(
+        frontend_facing_token: &str,
+    ) -> Result<(PalformDatabaseID<IDAdminUser>, String), AdminUserManagementError> {
+        let mut split_token = frontend_facing_token.split(":");
+        let user_id = split_token
+            .next()
+            .ok_or(AdminUserManagementError::ServiceAccountTokenParse)?;
+        let user_id = PalformDatabaseID::<IDAdminUser>::from_str(user_id)
+            .map_err(|_| AdminUserManagementError::ServiceAccountTokenParse)?;
+
+        let unhashed_secret = split_token
+            .next()
+            .ok_or(AdminUserManagementError::ServiceAccountTokenParse)?;
+
+        Ok((user_id, unhashed_secret.to_owned()))
+    }
+
+    pub async fn create_service_account_user<T: ConnectionTrait>(
+        conn: &T,
+    ) -> Result<APIServiceAccountAdminUser, AdminUserManagementError> {
+        let id = PalformDatabaseID::<IDAdminUser>::random();
+        let email = format!("{}@serviceaccount.palform.app", id);
+        let token = create_hex_secret();
+        let hashed_token =
+            Self::hash_password(token.clone()).map_err(AdminUserManagementError::Password)?;
+
+        let new_user = admin_user::ActiveModel {
+            id: Set(id),
+            email: Set(email.clone()),
+            service_account_auth_token: Set(Some(hashed_token.clone())),
+            ..Default::default()
+        };
+        let new_user = new_user.insert(conn).await?;
+
+        let frontend_facing_token = Self::format_service_account_token(id, &token);
+
+        Ok(APIServiceAccountAdminUser {
+            id,
+            email,
+            service_account_auth_token: Some(frontend_facing_token),
+            created_at: new_user.created_at.to_utc(),
+        })
+    }
+
+    pub async fn delete_user<T: ConnectionTrait>(
+        conn: &T,
+        user_id: PalformDatabaseID<IDAdminUser>,
+    ) -> Result<(), DbErr> {
+        AdminUser::delete_by_id(user_id).exec(conn).await?;
+        Ok(())
     }
 }

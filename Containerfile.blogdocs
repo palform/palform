@@ -11,6 +11,7 @@ RUN mkdir packages/crypto-js && echo "{ \"name\": \"@palform/palform-crypto\" }"
 RUN bun install --frozen-lockfile
 
 COPY packages/blog-docs packages/blog-docs
+ARG BACKEND_URL
 RUN bun run --cwd packages/blog-docs build
 
 CMD ["bun", "run", "--cwd", "packages/blog-docs", "serve", "--port", "80", "--host", "0.0.0.0"]

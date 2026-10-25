@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { APIOrgMember } from "@palform/palform-typescript-openapi";
+    import type { APIOrgMemberHuman } from "@palform/palform-typescript-openapi";
     import { getOrgContext } from "../../data/contexts/orgLayout";
     import { APIs } from "../../data/common";
     import {
@@ -28,7 +28,7 @@
         getUserId().then((u) => (currentUserId = u));
     });
 
-    let members: APIOrgMember[] = $state([]);
+    let members: APIOrgMemberHuman[] = $state([]);
     let membersLoading = $state(true);
     $effect(() => {
         APIs.orgMembers()
@@ -42,7 +42,7 @@
     let onMemberDelete = $derived((id: string) => {
         members = members.filter((e) => e.user_id !== id);
     });
-    let onMemberUpdate = $derived((id: string, data: APIOrgMember) => {
+    let onMemberUpdate = $derived((id: string, data: APIOrgMemberHuman) => {
         const i = members.findIndex((e) => e.user_id === id);
         members[i] = data;
     });
@@ -53,7 +53,6 @@
         params: { orgId: $orgCtx.org.id },
     })}
     disabled={!$entitled || $orgCtx.org.uses_oidc}
-    outline
 >
     <FontAwesomeIcon icon={faShareAlt} class="me-2" />
     Invite members

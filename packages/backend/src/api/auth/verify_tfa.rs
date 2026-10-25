@@ -31,7 +31,7 @@ pub struct VerifyTFARequest {
     factor: VerifyTFASecondFactorRequest,
 }
 
-#[api_operation(tag = "Authentication", operation_id = "auth.verify_tfa")]
+#[api_operation(tag = "Authentication", operation_id = "auth.verify_tfa", no_security)]
 pub async fn auth_verify_tfa(
     request: Json<VerifyTFARequest>,
     db: Data<DatabaseConnection>,

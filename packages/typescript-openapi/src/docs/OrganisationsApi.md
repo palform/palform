@@ -48,7 +48,7 @@ const { status, data } = await apiInstance.orgsCreate(
 
 ### Authorization
 
-[api_auth_token](../README.md#api_auth_token)
+[personal_token](../README.md#personal_token)
 
 ### HTTP request headers
 
@@ -108,7 +108,7 @@ void (empty response body)
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -168,7 +168,7 @@ const { status, data } = await apiInstance.orgsDelete(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -224,7 +224,7 @@ const { status, data } = await apiInstance.orgsGet(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -274,7 +274,7 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-[api_auth_token](../README.md#api_auth_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -334,7 +334,7 @@ void (empty response body)
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 

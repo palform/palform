@@ -60,6 +60,7 @@ mod m20260409_120000_timestamp_without_tz_to_timestamptz;
 mod m20260412_140006_audit_parent_id;
 mod m20260426_175512_org_deletion;
 mod m20261006_191509_form_branding_cascade;
+mod m20261029_210315_entitlement_service_account;
 
 pub struct Migrator;
 
@@ -127,6 +128,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260412_140006_audit_parent_id::Migration),
             Box::new(m20260426_175512_org_deletion::Migration),
             Box::new(m20261006_191509_form_branding_cascade::Migration),
+            Box::new(m20261029_210315_entitlement_service_account::Migration),
         ]
     }
 }

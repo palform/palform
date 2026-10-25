@@ -24,6 +24,7 @@ pub struct Model {
     pub form_captcha: bool,
     #[sea_orm(primary_key, auto_increment = false)]
     pub organisation_id: PalformDatabaseID<IDOrganisation>,
+    pub service_account: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

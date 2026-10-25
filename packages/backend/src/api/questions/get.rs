@@ -25,6 +25,7 @@ pub struct QuestionsGetPath {
     question_id: PalformDatabaseID<IDQuestion>,
 }
 
+/// Get a specific question.
 #[api_operation(tag = "Questions", operation_id = "questions.get")]
 pub async fn questions_get(
     path: Path<QuestionsGetPath>,

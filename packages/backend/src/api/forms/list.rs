@@ -18,6 +18,7 @@ pub struct FormsListPath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
+/// List all forms that the user has access to within an organisation.
 #[api_operation(tag = "Forms", operation_id = "forms.list")]
 pub async fn forms_list(
     path: Path<FormsListPath>,

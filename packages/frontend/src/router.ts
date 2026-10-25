@@ -48,6 +48,8 @@ const routerApi = createRouter({
             import("./pages/orgs/billing/OrganisationBillingEntry.svelte"),
         "/settings/org": () =>
             import("./pages/orgs/OrganisationMetadata.svelte"),
+        "/settings/service-accounts": () =>
+            import("./pages/orgs/OrganisationServiceAccounts.svelte"),
         "/user/keys": () => import("./pages/orgs/user/UserKeys.svelte"),
         "/user/keys/register": () =>
             import("./pages/orgs/user/UserKeyRegister.svelte"),

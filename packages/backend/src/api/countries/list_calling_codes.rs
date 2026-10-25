@@ -13,7 +13,8 @@ pub struct APICountryWithCallingCode {
 
 #[api_operation(
     tag = "Country Metadata",
-    operation_id = "countries.list_calling_codes"
+    operation_id = "countries.list_calling_codes",
+    no_security
 )]
 pub async fn countries_list_calling_codes() -> Json<Vec<APICountryWithCallingCode>> {
     let mut list = Vec::<APICountryWithCallingCode>::new();

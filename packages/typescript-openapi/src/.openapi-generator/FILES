@@ -39,7 +39,8 @@ docs/APIFormTemplateCategory.md
 docs/APIFormWithQuestions.md
 docs/APIFrontendForm.md
 docs/APIGenericLocation.md
-docs/APIOrgMember.md
+docs/APIOrgMemberHuman.md
+docs/APIOrgMemberServiceAccount.md
 docs/APIOrganisation.md
 docs/APIOrganisationAuthConfig.md
 docs/APIOrganisationAuthTeamMapping.md
@@ -63,6 +64,7 @@ docs/APIQuestionGroupStepStrategyJumpCaseConditionMatcher.md
 docs/APIQuestionScaleIcon.md
 docs/APIQuestionTextValidator.md
 docs/APISaveQuestionsRequest.md
+docs/APIServiceAccountAdminUser.md
 docs/APISubmission.md
 docs/APISubmissionCountPerForm.md
 docs/APISubmissionStream.md

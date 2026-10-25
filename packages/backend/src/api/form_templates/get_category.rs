@@ -16,7 +16,11 @@ pub struct FormTemplatesGetCategoryPath {
     category_id: PalformDatabaseID<IDFormTemplateCategory>,
 }
 
-#[api_operation(tag = "Form Templates", operation_id = "form_templates.categories.get")]
+#[api_operation(
+    tag = "Form Templates",
+    operation_id = "form_templates.categories.get",
+    no_security
+)]
 pub async fn form_templates_get_category(
     path: Path<FormTemplatesGetCategoryPath>,
     db: Data<DatabaseConnection>,

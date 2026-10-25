@@ -10,7 +10,11 @@ pub struct APICountryWithISOCode {
     iso_code: String,
 }
 
-#[api_operation(tag = "Country Metadata", operation_id = "countries.list_names")]
+#[api_operation(
+    tag = "Country Metadata",
+    operation_id = "countries.list_names",
+    no_security
+)]
 pub async fn countries_list_names() -> Json<Vec<APICountryWithISOCode>> {
     let mut list = Vec::<APICountryWithISOCode>::new();
     for country in CountryIterator::new() {

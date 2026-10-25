@@ -11,7 +11,11 @@ use sea_orm::{AccessMode, DatabaseConnection, IsolationLevel, TransactionTrait};
 use serde::Deserialize;
 
 use crate::{
-    actix_util::from_org_id::FromOrgId, auth::rbac::requests::APITokenOrgAdmin,
+    actix_util::from_org_id::FromOrgId,
+    auth::{
+        rbac::requests::{OrgRoleToken, TeamRoleNone, TokenTargetOrgAdmin},
+        tokens::APIAuthTokenSourcePersonal,
+    },
     entity_managers::organisation_deletion_request::OrganisationDeletionRequestManager,
 };
 
@@ -28,7 +32,7 @@ pub struct OrganisationsDeletionRequestsSkipPath {
 )]
 pub async fn organisation_deletion_requests_skip(
     path: Path<OrganisationsDeletionRequestsSkipPath>,
-    _token: APITokenOrgAdmin,
+    _token: OrgRoleToken<TeamRoleNone, TokenTargetOrgAdmin, APIAuthTokenSourcePersonal>,
     db: Data<DatabaseConnection>,
     org_deletion_request_manager: FromOrgId<OrganisationDeletionRequestManager>,
     stripe: Data<stripe::Client>,

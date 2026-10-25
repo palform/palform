@@ -16,6 +16,7 @@ pub struct OrganisationsGetPath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
+/// Get metadata about an organisation.
 #[api_operation(tag = "Organisations", operation_id = "orgs.get")]
 pub async fn organisations_get(
     path: Path<OrganisationsGetPath>,

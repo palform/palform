@@ -8,7 +8,11 @@ use crate::{
     entity_managers::form_templates::FormTemplatesManager,
 };
 
-#[api_operation(tag = "Form Templates", operation_id = "form_templates.list_top")]
+#[api_operation(
+    tag = "Form Templates",
+    operation_id = "form_templates.list_top",
+    no_security
+)]
 pub async fn form_templates_list_top(
     db: Data<DatabaseConnection>,
 ) -> Result<Json<Vec<APIFormTemplate>>, APIError> {

@@ -1,7 +1,7 @@
 use std::{fmt::Display, future::Future, marker::PhantomData, ops::Deref, pin::Pin};
 
 use actix_web::{dev::Payload, web::Data, FromRequest, HttpRequest};
-use apistos::ApiSecurity;
+use apistos::{reference_or::ReferenceOr, ApiComponent, Schema};
 use palform_client_common::errors::error::APIError;
 use palform_entities::sea_orm_active_enums::OrganisationMemberRoleEnum;
 use palform_tsid::{
@@ -117,12 +117,24 @@ pub type APITokenTeamAdminFromTeam =
 pub type APITokenOrgViewer = OrgRoleToken<TeamRoleNone, TokenTargetOrgView, APIAuthTokenSourceAny>;
 pub type APITokenOrgAdmin = OrgRoleToken<TeamRoleNone, TokenTargetOrgAdmin, APIAuthTokenSourceAny>;
 
-#[derive(ApiSecurity)]
-#[openapi_security(scheme(security_type(http(scheme = "basic"))))]
 pub struct OrgRoleToken<Role: TeamRoleType, Target: OrgRoleTargetType, Source: APIAuthTokenSource> {
     pub token: APIAuthToken<Source>,
     role: PhantomData<Role>,
     target: PhantomData<Target>,
+}
+
+impl<Role: TeamRoleType, Target: OrgRoleTargetType, Source: APIAuthTokenSource> ApiComponent
+    for OrgRoleToken<Role, Target, Source>
+{
+    fn child_schemas() -> Vec<(String, ReferenceOr<Schema>)> {
+        vec![]
+    }
+    fn schema() -> Option<(String, ReferenceOr<Schema>)> {
+        None
+    }
+    fn security_requirement_name() -> Option<String> {
+        APIAuthToken::<Source>::security_requirement_name()
+    }
 }
 
 impl<Role: TeamRoleType, Target: OrgRoleTargetType, Source: APIAuthTokenSource> Deref

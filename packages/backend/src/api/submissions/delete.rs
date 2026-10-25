@@ -24,6 +24,10 @@ pub struct SubmissionsDeletePath {
     submission_id: PalformDatabaseID<IDSubmission>,
 }
 
+/// Delete a form response.
+///
+/// The response will be fully deleted, but its ID and deletion time will be retained to allow
+/// tracking the fact that a submission was deleted.
 #[api_operation(tag = "Submissions", operation_id = "submissions.delete")]
 pub async fn submissions_delete(
     path: Path<SubmissionsDeletePath>,

@@ -28,6 +28,10 @@ PGP-encrypted emails to **secure@palform.app**.
 
 If you're emailing us from Proton Mail, your message will be encrypted automatically. Otherwise, please use [our public PGP key](/support_pubkey.asc) to encrypt your message.
 
+### Anonymous feedback
+
+If you'd just like to give us anonymous feedback (good or bad!) but don't need a response, feel free to [fill out our feedback form](https://pf.palform.app/feedback).
+
 ### Subject Access Requests
 
 Please send all Subject Access Requests under UK and EU law to **dpo@palform.app**. Please note, as per our privacy policy, we _cannot_ provide access to or rectify data you submitted in a Palform, as this is encrypted in a way that means we don't have access to it. For data pertaining to a Palform you submitted, please contact the organisation operating the form.

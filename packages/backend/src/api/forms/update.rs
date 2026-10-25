@@ -38,6 +38,7 @@ pub struct FormsUpdatePath {
     form_id: PalformDatabaseID<IDForm>,
 }
 
+/// Update the metadata of a form.
 #[api_operation(tag = "Forms", operation_id = "forms.update")]
 pub async fn forms_update(
     path: Path<FormsUpdatePath>,

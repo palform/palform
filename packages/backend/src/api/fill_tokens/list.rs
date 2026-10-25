@@ -21,6 +21,7 @@ pub struct FillTokensListPath {
     form_id: PalformDatabaseID<IDForm>,
 }
 
+/// List all fill access tokens of a form.
 #[api_operation(tag = "Fill Access Tokens", operation_id = "fill_access_tokens.list")]
 pub async fn fill_tokens_list(
     path: Path<FillTokensListPath>,

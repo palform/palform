@@ -28,7 +28,11 @@ pub struct SocialAuthCallbackResponse {
     new_org_id: Option<PalformDatabaseID<IDOrganisation>>,
 }
 
-#[api_operation(tag = "Authentication", operation_id = "auth.social.callback")]
+#[api_operation(
+    tag = "Authentication",
+    operation_id = "auth.social.callback",
+    no_security
+)]
 pub async fn auth_social_callback(
     data: Json<SocialAuthCallbackRequest>,
     db: Data<DatabaseConnection>,

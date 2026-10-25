@@ -24,6 +24,7 @@ pub struct KeysTeamFingerprintsResponse {
     fingerprints: Vec<String>,
 }
 
+/// List the fingerprints of all keys owned by all members of a team.
 #[api_operation(tag = "Organisation Keys", operation_id = "org.keys.team_fingerprints")]
 pub async fn keys_team_fingerprints(
     path: Path<KeysTeamFingerprints>,

@@ -42,7 +42,7 @@ const { status, data } = await apiInstance.billingEntitlementList(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -102,7 +102,7 @@ const { status, data } = await apiInstance.billingEntitlementTest(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 

@@ -50,7 +50,7 @@ const { status, data } = await apiInstance.submissionsCrypto(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -112,7 +112,7 @@ void (empty response body)
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -174,7 +174,7 @@ const { status, data } = await apiInstance.submissionsList(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -234,7 +234,7 @@ const { status, data } = await apiInstance.submissionsNumSince(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 

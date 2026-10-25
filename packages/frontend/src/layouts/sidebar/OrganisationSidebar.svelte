@@ -167,11 +167,11 @@
                 dropdownTitle="My account"
                 icon={faPerson}
             >
-                <SidebarLink orgPath="/user/keys" onclick={closeSidebar}
-                    >Keys</SidebarLink
+                <SidebarLink orgPath="/user/keys" onclick={closeSidebar}>
+                    Keys</SidebarLink
                 >
-                <SidebarLink orgPath="/user/settings" onclick={closeSidebar}
-                    >Settings</SidebarLink
+                <SidebarLink orgPath="/user/settings" onclick={closeSidebar}>
+                    Settings</SidebarLink
                 >
             </SidebarLink>
             <SidebarLink
@@ -180,8 +180,8 @@
                 dropdownTitle="Organisation"
                 icon={faCog}
             >
-                <SidebarLink orgPath="/settings/teams" onclick={closeSidebar}
-                    >Teams</SidebarLink
+                <SidebarLink orgPath="/settings/teams" onclick={closeSidebar}>
+                    Teams</SidebarLink
                 >
                 {#if $orgCtx.amIAdmin}
                     <SidebarLink
@@ -194,7 +194,7 @@
                         orgPath="/settings/keys"
                         onclick={closeSidebar}
                     >
-                        Manage keys
+                        Member keys
                     </SidebarLink>
                     <SidebarLink
                         orgPath="/settings/audit"
@@ -212,6 +212,12 @@
                     >
                         Authentication
                     </SidebarLink>
+                    <SidebarLink
+                        orgPath="/settings/service-accounts"
+                        onclick={closeSidebar}
+                    >
+                        Service accounts
+                    </SidebarLink>
                     {#if billingEnabled}
                         <SidebarLink
                             orgPath="/settings/billing"
@@ -220,9 +226,9 @@
                             Billing
                         </SidebarLink>
                     {/if}
-                    <SidebarLink orgPath="/settings/org" onclick={closeSidebar}
-                        >Settings</SidebarLink
-                    >
+                    <SidebarLink orgPath="/settings/org" onclick={closeSidebar}>
+                        Settings
+                    </SidebarLink>
                 {/if}
             </SidebarLink>
 

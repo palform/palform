@@ -54,6 +54,10 @@ pub struct OrganisationsCreateSubdomainPath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
+/// Configure a subdomain for an organisation.
+///
+/// This operation is currently irreversible. Once configured, the organisation's subdomain cannot
+/// be changed or removed.
 #[api_operation(tag = "Organisations", operation_id = "orgs.create_subdomain")]
 pub async fn organisations_create_subdomain(
     path: Path<OrganisationsCreateSubdomainPath>,

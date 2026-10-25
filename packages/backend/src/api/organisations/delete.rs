@@ -11,7 +11,10 @@ use crate::{
     actix_util::from_org_id::FromOrgId,
     api_entities::org::APIOrganisationManifest,
     audit::{id_chains::IDChainEmpty, manager::AuditManager},
-    auth::{rbac::requests::APITokenOrgAdmin, tokens::APIAuthTokenSource},
+    auth::{
+        rbac::requests::{OrgRoleToken, TeamRoleNone, TokenTargetOrgAdmin},
+        tokens::{APIAuthTokenSource, APIAuthTokenSourcePersonal},
+    },
     billing::manager::CancelPlanRequestReason,
     config::Config,
     entity_managers::{
@@ -36,7 +39,8 @@ pub struct OrganisationsDeleteRequest {
 pub async fn organisations_delete(
     path: Path<OrganisationsDeletePath>,
     data: Json<OrganisationsDeleteRequest>,
-    token: APITokenOrgAdmin,
+    // Only allow humans to request org deletion
+    token: OrgRoleToken<TeamRoleNone, TokenTargetOrgAdmin, APIAuthTokenSourcePersonal>,
     audit: FromOrgId<AuditManager<IDChainEmpty>>,
     db: Data<DatabaseConnection>,
     org_deletion_request_manager: FromOrgId<OrganisationDeletionRequestManager>,

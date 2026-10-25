@@ -25,6 +25,7 @@ pub enum APIEntitlementRequest {
     OIDC,
     SubmissionAutoDelete,
     FormCaptcha,
+    ServiceAccount,
 }
 
 impl Display for APIEntitlementRequest {
@@ -45,6 +46,7 @@ impl Display for APIEntitlementRequest {
             Self::OIDC => write!(f, "OpenID Connect is not available"),
             Self::SubmissionAutoDelete => write!(f, "Auto-deleting submissions is not available"),
             Self::FormCaptcha => write!(f, "Captcha-protected forms are not available"),
+            Self::ServiceAccount => write!(f, "Service accounts are not available"),
         }
     }
 }
@@ -66,6 +68,7 @@ pub struct APIEntitlementInfo {
     pub oidc: bool,
     pub submission_auto_delete: bool,
     pub form_captcha: bool,
+    pub service_account: bool,
 }
 
 impl Default for APIEntitlementInfo {
@@ -86,6 +89,7 @@ impl Default for APIEntitlementInfo {
             oidc: false,
             submission_auto_delete: false,
             form_captcha: false,
+            service_account: false,
         }
     }
 }
@@ -108,6 +112,7 @@ impl APIEntitlementInfo {
             oidc: Set(self.oidc),
             submission_auto_delete: Set(self.submission_auto_delete),
             form_captcha: Set(self.form_captcha),
+            service_account: Set(self.service_account),
             ..Default::default()
         }
     }

@@ -13,11 +13,15 @@ use crate::{
 
 #[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct FormsExchangeShortLinkPath {
+    /// The organisation's subdomain
     subdomain: String,
+    /// The form's short link path
     short_link: String,
 }
 
-#[api_operation(tag = "Forms", operation_id = "forms.exchange_short_link")]
+/// Resolve a short link on an organisational subdomain to an organisation ID, a form ID, and a fill
+/// token.
+#[api_operation(tag = "Forms", operation_id = "forms.exchange_short_link", no_security)]
 pub async fn forms_exchange_short_link(
     path: Path<FormsExchangeShortLinkPath>,
     db: Data<DatabaseConnection>,

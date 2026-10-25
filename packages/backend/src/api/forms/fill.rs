@@ -28,9 +28,18 @@ pub struct FormsFillPath {
 
 #[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct FormsFillRequest {
+    /// The submission data as an encrypted PGP message in armored ASCII form. The message itself
+    /// must be a JSON object of the form `[palform_client_common::form_management::submission::InProgressSubmission]`.
     data: String,
 }
 
+/// Submit a response to a form.
+///
+/// The submission will be associated with the fill access token.
+///
+/// The message is validated on the backend to ensure it is parseable before it gets saved to
+/// the database, but of course it is not decrypted, so no validation on the underlying data is
+/// performed.
 #[api_operation(tag = "Forms", operation_id = "forms.fill")]
 pub async fn forms_fill(
     path: Path<FormsFillPath>,

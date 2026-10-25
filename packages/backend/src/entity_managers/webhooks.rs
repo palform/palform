@@ -5,7 +5,6 @@ use palform_tsid::{
     resources::{IDForm, IDWebhook},
     tsid::PalformDatabaseID,
 };
-use rand::RngExt;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, ConnectionTrait, DbErr, EntityTrait, PaginatorTrait,
     QueryFilter, Set,
@@ -14,7 +13,7 @@ use std::time::Duration;
 use thiserror::Error;
 use url::{Host, Url};
 
-use crate::api_entities::webhook::APIWebhook;
+use crate::{api_entities::webhook::APIWebhook, crypto::util::create_hex_secret};
 
 pub struct WebhookManager;
 
@@ -77,12 +76,6 @@ impl WebhookManager {
             .collect())
     }
 
-    fn create_signing_secret() -> String {
-        let mut arr = [0u8; 64];
-        rand::rng().fill(&mut arr);
-        faster_hex::hex_string(&arr)
-    }
-
     pub fn validate_url(endpoint: Url) -> Result<(), URLValidationError> {
         if endpoint.scheme() != "https" {
             return Err(URLValidationError::WrongScheme);
@@ -138,7 +131,7 @@ impl WebhookManager {
             id: Set(PalformDatabaseID::<IDWebhook>::random()),
             form_id: Set(form_id),
             endpoint: Set(endpoint.to_string()),
-            signing_secret: Set(Self::create_signing_secret()),
+            signing_secret: Set(create_hex_secret()),
             ..Default::default()
         };
 

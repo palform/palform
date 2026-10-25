@@ -8,7 +8,7 @@ use sea_orm::{
     QueryFilter, QuerySelect, RelationTrait, Set,
 };
 
-use crate::api_entities::organisation_member::APIOrgMember;
+use crate::api_entities::organisation_member::{APIOrgMemberHuman, APIOrgMemberServiceAccount};
 
 use super::billing_entitlement_proxy::BillingEntitlementCountTrait;
 
@@ -27,17 +27,36 @@ impl BillingEntitlementCountTrait for OrganisationMembersManager {
 pub struct OrganisationMembersManager;
 
 impl OrganisationMembersManager {
-    pub async fn list_all<T: ConnectionTrait>(
+    pub async fn list_human<T: ConnectionTrait>(
         conn: &T,
         org_id: PalformDatabaseID<IDOrganisation>,
-    ) -> Result<Vec<APIOrgMember>, DbErr> {
+    ) -> Result<Vec<APIOrgMemberHuman>, DbErr> {
         OrganisationMembership::find()
             .filter(organisation_membership::Column::OrganisationId.eq(org_id))
+            .filter(admin_user::Column::ServiceAccountAuthToken.is_null())
             .join(
                 JoinType::LeftJoin,
                 organisation_membership::Relation::AdminUser.def(),
             )
             .column_as(admin_user::Column::DisplayName, "user_display_name")
+            .column_as(admin_user::Column::Email, "user_email")
+            .into_model()
+            .all(conn)
+            .await
+    }
+
+    pub async fn list_service_account<T: ConnectionTrait>(
+        conn: &T,
+        org_id: PalformDatabaseID<IDOrganisation>,
+    ) -> Result<Vec<APIOrgMemberServiceAccount>, DbErr> {
+        OrganisationMembership::find()
+            .filter(organisation_membership::Column::OrganisationId.eq(org_id))
+            .filter(admin_user::Column::ServiceAccountAuthToken.is_not_null())
+            .join(
+                JoinType::LeftJoin,
+                organisation_membership::Relation::AdminUser.def(),
+            )
+            .column_as(admin_user::Column::CreatedAt, "user_created_at")
             .column_as(admin_user::Column::Email, "user_email")
             .into_model()
             .all(conn)

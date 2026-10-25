@@ -7,13 +7,21 @@ use schemars::JsonSchema;
 use sea_orm::FromQueryResult;
 use serde::Serialize;
 
+/// A token with which end-users can access form filling related API endpoints for a specific form
+/// only.
 #[derive(Serialize, JsonSchema, FromQueryResult, ApiComponent)]
 pub struct APIFillToken {
     pub id: PalformDatabaseID<IDFillAccessToken>,
     form_id: PalformDatabaseID<IDForm>,
     created_at: DateTime<Utc>,
+    /// Optionally, an expiry time after which the token will no longer work
     expires_at: Option<DateTime<Utc>>,
+    /// An internal nickname to allow segmenting submissions by fill access token
     nickname: String,
+    /// Optionally, a shortened path through which the form can be filled. This requires the
+    /// organisation to have a subdomain configured. The form will be available at
+    /// `https://<subdomain>.palform.app/<short_link>`. Fill access tokens with short links can
+    /// still be accessed at the long path, too.
     short_link: Option<String>,
 }
 

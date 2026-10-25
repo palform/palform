@@ -1,7 +1,7 @@
 use apistos::web::{scope, Scope};
 
 use crate::api::{
-    admin_users::scope::admin_users_scope,
+    admin_users::scope::{admin_users_global_scope, admin_users_org_scope},
     audit::scope::audit_logs_scope,
     auth::scope::auth_scope,
     billing::scope::{billing_public_scope, billing_scope},
@@ -38,7 +38,7 @@ pub fn main_routes() -> Scope {
     scope("api")
         .service(health_scope())
         .service(auth_scope())
-        .service(admin_users_scope())
+        .service(admin_users_global_scope())
         .service(feedback_scope())
         .service(form_brandings_google_fonts_scope())
         .service(countries_scope())
@@ -59,6 +59,7 @@ pub fn main_routes() -> Scope {
                     .service(submissions_org_scope())
                     .service(billing_scope())
                     .service(form_templates_clone_scope())
+                    .service(admin_users_org_scope())
                     .service(
                         scope("team").service(organisation_teams_scope()).service(
                             scope("{team_id}")

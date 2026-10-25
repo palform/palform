@@ -8,9 +8,9 @@ use crate::api_entities::org::APIOrganisation;
 use crate::auth::tokens::{APIAuthToken, APIAuthTokenSource, APIAuthTokenSourceAny};
 use crate::entity_managers::orgs::OrganisationManager;
 
-/// List organisation
+/// List organisations
 ///
-/// List all the organisations that the authenticated user is a member of
+/// List all the organisations that the authenticated user is a member of.
 #[api_operation(tag = "Organisations", operation_id = "orgs.list")]
 pub async fn organisations_list(
     token: APIAuthToken<APIAuthTokenSourceAny>,

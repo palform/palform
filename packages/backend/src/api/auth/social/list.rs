@@ -13,7 +13,7 @@ pub struct ListSocialAuthProvidersResponse {
     available_providers: Vec<SocialAuthService>,
 }
 
-#[api_operation(tag = "Authentication", operation_id = "auth.social.list")]
+#[api_operation(tag = "Authentication", operation_id = "auth.social.list", no_security)]
 pub async fn auth_social_list_providers(
     config: Data<Config>,
 ) -> Json<ListSocialAuthProvidersResponse> {

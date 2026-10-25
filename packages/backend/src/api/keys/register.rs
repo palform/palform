@@ -31,8 +31,8 @@ pub struct KeysRegisterPath {
 
 /// Register new public key
 ///
-/// Registers a new public to the authenticated user's account. The key is stored in DER-encoded
-/// binary in the database and can be retrieved using the GET /users/me/key endpoint.
+/// Registers a new public key to the authenticated user's account. New responses to forms that are
+/// in teams that the user is a member of will start being encrypted with the new key immediately.
 #[api_operation(tag = "User keys", operation_id = "keys.register")]
 pub async fn keys_register(
     path: Path<KeysRegisterPath>,

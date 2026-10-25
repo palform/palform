@@ -20,6 +20,7 @@ use crate::{
 
 #[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct SetSubmissionAutoDeleteRequest {
+    /// The number of days, or `null` to disable this feature for this form.
     days: Option<i32>,
 }
 
@@ -30,6 +31,14 @@ pub struct FormsSetAutoDeletePath {
     form_id: PalformDatabaseID<IDForm>,
 }
 
+/// Configure the auto-deletion policy of a form.
+///
+/// Forms with this feature enabled will have all responses created a certain number of days ago get
+/// automatically deleted. This is done by a scheduled job on the backend, so the time of deletion
+/// won't be exactly `days * 24` hours after the submission is created.
+///
+/// If there are responses older than the configured number of days when this feature is enabled,
+/// they will be deleted whenever the scheduled job next runs.
 #[api_operation(tag = "Forms", operation_id = "forms.set_auto_delete")]
 pub async fn forms_set_auto_delete(
     path: Path<FormsSetAutoDeletePath>,

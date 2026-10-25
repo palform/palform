@@ -28,6 +28,7 @@ pub struct AuditLogListPath {
     pub org_id: PalformDatabaseID<IDOrganisation>,
 }
 
+/// List all audit logs for an organisation.
 #[api_operation(tag = "Audit Logs", operation_id = "audit.list")]
 pub async fn audit_logs_list(
     path: Path<AuditLogListPath>,

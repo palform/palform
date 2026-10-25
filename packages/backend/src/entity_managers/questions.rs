@@ -221,6 +221,14 @@ impl QuestionManager {
 
         let mut seen_question_ids = HashSet::<PalformDatabaseID<IDQuestion>>::new();
         for (question_id, question) in encoded_questions {
+            let question_group_id = question.group_id.clone().unwrap();
+            if !seen_group_ids.contains(&question_group_id) {
+                return Err(SetQuestionError::Validation(format!(
+                    "Question {} had group {} which was not given in the request",
+                    question_id, question_group_id
+                )));
+            }
+
             seen_question_ids.insert(question_id);
             if current_question_ids.contains(&question_id) {
                 question.update(conn).await?;

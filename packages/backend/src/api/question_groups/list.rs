@@ -21,6 +21,7 @@ pub struct QuestionGroupsListPath {
     form_id: PalformDatabaseID<IDForm>,
 }
 
+/// List all question groups in a form.
 #[api_operation(tag = "Question Groups", operation_id = "question_groups.list")]
 pub async fn question_groups_list(
     path: Path<QuestionGroupsListPath>,

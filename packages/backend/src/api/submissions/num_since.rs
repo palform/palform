@@ -23,6 +23,7 @@ pub struct SubmissionsNumSincePath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
+/// List the number of new responses to all forms in an organisation since a given date.
 #[api_operation(tag = "Submissions", operation_id = "submissions.num_since")]
 pub async fn submissions_num_since(
     path: Path<SubmissionsNumSincePath>,

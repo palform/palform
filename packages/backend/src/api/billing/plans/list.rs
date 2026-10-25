@@ -7,7 +7,7 @@ use crate::{
     billing::{client_currency::ClientCurrency, manager::BillingManager},
 };
 
-#[api_operation(tag = "Billing Plans", operation_id = "billing.plan.list")]
+#[api_operation(tag = "Billing Plans", operation_id = "billing.plan.list", no_security)]
 pub async fn billing_plans_list(
     currency: ClientCurrency,
     stripe: Data<stripe::Client>,

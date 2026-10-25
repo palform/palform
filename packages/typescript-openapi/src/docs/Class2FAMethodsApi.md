@@ -45,7 +45,7 @@ void (empty response body)
 
 ### Authorization
 
-[api_auth_token](../README.md#api_auth_token)
+[personal_token](../README.md#personal_token)
 
 ### HTTP request headers
 
@@ -102,7 +102,7 @@ const { status, data } = await apiInstance.userSecondFactorsEnroll(
 
 ### Authorization
 
-[api_auth_token](../README.md#api_auth_token)
+[personal_token](../README.md#personal_token)
 
 ### HTTP request headers
 
@@ -159,7 +159,7 @@ const { status, data } = await apiInstance.userSecondFactorsEnrollWebauthn(
 
 ### Authorization
 
-[api_auth_token](../README.md#api_auth_token)
+[personal_token](../README.md#personal_token)
 
 ### HTTP request headers
 
@@ -208,7 +208,7 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-[api_auth_token](../README.md#api_auth_token)
+[personal_token](../README.md#personal_token)
 
 ### HTTP request headers
 
@@ -257,7 +257,7 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-[api_auth_token](../README.md#api_auth_token)
+[personal_token](../README.md#personal_token)
 
 ### HTTP request headers
 

@@ -16,7 +16,8 @@ use crate::{
     audit::{id_chains::IDChainEmpty, manager::AuditManager},
     auth::{rbac::requests::APITokenOrgAdmin, tokens::APIAuthTokenSource},
     entity_managers::{
-        keys::UserKeyManager, organisation_members::OrganisationMembersManager,
+        admin_users::AdminUserManager, keys::UserKeyManager,
+        organisation_members::OrganisationMembersManager,
         organisation_teams::OrganisationTeamsManager,
     },
 };
@@ -44,6 +45,14 @@ pub async fn organisation_members_delete(
         )
         .await
         .map_internal_error()?;
+
+    // Make sure the user is not a service account
+    let user = AdminUserManager::get_service_account_user_by_id(&txn, path.user_id)
+        .await
+        .map_internal_error()?;
+    if user.is_some() {
+        return Err(APIError::BadRequest("Cannot remove service account member from your organisation. Please delete the service account instead.".to_string()));
+    }
 
     OrganisationMembersManager::delete(&txn, path.org_id, path.user_id)
         .await

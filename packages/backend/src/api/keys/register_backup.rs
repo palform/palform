@@ -20,7 +20,7 @@ use crate::entity_managers::keys::UserKeyManager;
 
 #[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct RegisterBackupKeyRequest {
-    /// PEM-encoded encrypted secret key
+    /// PEM-encoded encrypted secret key (`null` to delete the existing backup)
     key_data: Option<String>,
 }
 
@@ -30,6 +30,13 @@ pub struct KeysRegisterBackup {
     key_id: PalformDatabaseID<IDAdminPublicKey>,
 }
 
+/// Register or delete an encrypted backup of an existing public key.
+///
+/// The provided secret key should be encrypted with a passphrase. The unencrypted secret key should
+/// never under any circumstances be uploaded to the server.
+///
+/// Using key backups is completely optional; all other Palform features will work as normal if your
+/// key is not backed up. However, it is highly recommended for most users to avoid data loss.
 #[api_operation(tag = "User keys", operation_id = "keys.register_backup")]
 pub async fn keys_register_backup(
     path: Path<KeysRegisterBackup>,

@@ -4,161 +4,168 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 /** Webpack 5.106+ validates ProgressPlugin options; webpackbar stores extra fields on the same object and breaks the build. */
 function removeWebpackBarPlugin(): Plugin {
-  return {
-    name: "remove-webpackbar-webpack-106-workaround",
-    configureWebpack(config) {
-      return {
-        mergeStrategy: {
-          plugins: "replace",
+    return {
+        name: "remove-webpackbar-webpack-106-workaround",
+        configureWebpack(config) {
+            return {
+                mergeStrategy: {
+                    plugins: "replace",
+                },
+                plugins:
+                    config.plugins?.filter(
+                        (plugin) =>
+                            plugin?.constructor?.name !== "WebpackBarPlugin"
+                    ) ?? [],
+            };
         },
-        plugins:
-          config.plugins?.filter(
-            (plugin) => plugin?.constructor?.name !== "WebpackBarPlugin",
-          ) ?? [],
-      };
-    },
-  };
+    };
 }
 
 const config: Config = {
-  title: "Palform",
-  tagline: "Build beautiful end-to-end encrypted forms for free",
-  favicon: "/favicon.ico",
+    title: "Palform",
+    tagline: "Build beautiful end-to-end encrypted forms for free",
+    favicon: "/favicon.ico",
 
-  // Set the production url of your site here
-  url: "https://docs.palform.app",
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: "/",
+    // Set the production url of your site here
+    url: "https://docs.palform.app",
+    // Set the /<baseUrl>/ pathname under which your site is served
+    // For GitHub pages deployment, it is often '/<projectName>/'
+    baseUrl: "/",
 
-  onBrokenLinks: "throw",
+    onBrokenLinks: "throw",
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
-  i18n: {
-    defaultLocale: "en",
-    locales: ["en"],
-  },
-
-  scripts: [
-    {
-      src: "https://plausible.io/js/script.js",
-      defer: true,
-      "data-domain": "palform.app",
+    customFields: {
+        backendUrl: process.env.BACKEND_URL ?? "http://localhost:8000",
     },
-  ],
 
-  plugins: [
-    async function tailwind() {
-      return {
-        name: "docusaurus-tailwindcss",
-        configurePostCss(postcssOptions) {
-          postcssOptions.plugins.push(require("@tailwindcss/postcss"));
-          return postcssOptions;
-        },
-      };
+    // Even if you don't use internationalization, you can use this field to set
+    // useful metadata like html lang. For example, if your site is Chinese, you
+    // may want to replace "en" with "zh-Hans".
+    i18n: {
+        defaultLocale: "en",
+        locales: ["en"],
     },
-    removeWebpackBarPlugin,
-  ],
 
-  markdown: {
-    hooks: {
-      onBrokenMarkdownLinks: "warn",
-    },
-  },
-
-  presets: [
-    [
-      "classic",
-      {
-        docs: {
-          sidebarPath: "./sidebars.ts",
-          routeBasePath: "/",
+    scripts: [
+        {
+            src: "https://plausible.io/js/script.js",
+            defer: true,
+            "data-domain": "palform.app",
         },
-        blog: {
-          showReadingTime: true,
-          feedOptions: {
-            type: ["rss", "atom"],
-            xslt: true,
-          },
-        },
-        sitemap: {
-          lastmod: "datetime",
-          changefreq: "daily",
-          filename: "sitemap.xml",
-        },
-      } satisfies Preset.Options,
     ],
-  ],
 
-  themeConfig: {
-    navbar: {
-      title: "Palform",
-      logo: {
-        alt: "Palform Logo",
-        src: "/img/logo.svg",
-        href: "https://palform.app/?ref=blog",
-      },
-      items: [
-        {
-          type: "docSidebar",
-          sidebarId: "docsSidebar",
-          position: "left",
-          label: "Support",
+    plugins: [
+        async function tailwind() {
+            return {
+                name: "docusaurus-tailwindcss",
+                configurePostCss(postcssOptions) {
+                    postcssOptions.plugins.push(
+                        require("@tailwindcss/postcss")
+                    );
+                    return postcssOptions;
+                },
+            };
         },
-        { to: "/blog", label: "Blog", position: "left" },
-      ],
+        removeWebpackBarPlugin,
+    ],
+
+    markdown: {
+        hooks: {
+            onBrokenMarkdownLinks: "warn",
+        },
     },
-    footer: {
-      style: "dark",
-      links: [
-        {
-          items: [
+
+    presets: [
+        [
+            "classic",
             {
-              label: "Palform",
-              to: "https://palform.app/",
+                docs: {
+                    sidebarPath: "./sidebars.ts",
+                    routeBasePath: "/",
+                },
+                blog: {
+                    showReadingTime: true,
+                    feedOptions: {
+                        type: ["rss", "atom"],
+                        xslt: true,
+                    },
+                },
+                sitemap: {
+                    lastmod: "datetime",
+                    changefreq: "daily",
+                    filename: "sitemap.xml",
+                },
+            } satisfies Preset.Options,
+        ],
+    ],
+
+    themeConfig: {
+        navbar: {
+            title: "Palform",
+            logo: {
+                alt: "Palform Logo",
+                src: "/img/logo.svg",
+                href: "https://palform.app/?ref=blog",
             },
-            {
-              label: "Log in",
-              to: "https://dash.palform.app/auth/login",
-            },
-          ],
+            items: [
+                {
+                    type: "docSidebar",
+                    sidebarId: "docsSidebar",
+                    position: "left",
+                    label: "Support",
+                },
+                { to: "/blog", label: "Blog", position: "left" },
+            ],
         },
-        {
-          title: "Legal",
-          items: [
-            {
-              label: "Terms of Use",
-              href: "https://palform.app/legal/terms",
-            },
-            {
-              label: "Privacy Policy",
-              href: "https://palform.app/legal/privacy",
-            },
-          ],
+        footer: {
+            style: "dark",
+            links: [
+                {
+                    items: [
+                        {
+                            label: "Palform",
+                            to: "https://palform.app/",
+                        },
+                        {
+                            label: "Log in",
+                            to: "https://dash.palform.app/auth/login",
+                        },
+                    ],
+                },
+                {
+                    title: "Legal",
+                    items: [
+                        {
+                            label: "Terms of Use",
+                            href: "https://palform.app/legal/terms",
+                        },
+                        {
+                            label: "Privacy Policy",
+                            href: "https://palform.app/legal/privacy",
+                        },
+                    ],
+                },
+                {
+                    title: "Support",
+                    items: [
+                        {
+                            label: "Contact us",
+                            to: "/",
+                        },
+                        {
+                            label: "Our roadmap",
+                            href: "https://palform.app/support/roadmap",
+                        },
+                    ],
+                },
+            ],
+            copyright: `Copyright © ${new Date().getFullYear()} Palform Ltd. Registered company 15796859.`,
         },
-        {
-          title: "Support",
-          items: [
-            {
-              label: "Contact us",
-              to: "/",
-            },
-            {
-              label: "Our roadmap",
-              href: "https://palform.app/support/roadmap",
-            },
-          ],
+        prism: {
+            theme: prismThemes.github,
+            darkTheme: prismThemes.dracula,
         },
-      ],
-      copyright: `Copyright © ${new Date().getFullYear()} Palform Ltd. Registered company 15796859.`,
-    },
-    prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
-    },
-  } satisfies Preset.ThemeConfig,
+    } satisfies Preset.ThemeConfig,
 };
 
 export default config;

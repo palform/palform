@@ -28,6 +28,10 @@ pub struct FillTokensDeletePath {
     token_id: PalformDatabaseID<IDFillAccessToken>,
 }
 
+/// Delete a fill access token.
+///
+/// The responses created with this token will not be deleted, but the token will be disassociated
+/// from them. URLs containing this token will stop working immediately.
 #[api_operation(tag = "Fill Access Tokens", operation_id = "fill_access_tokens.delete")]
 pub async fn fill_tokens_delete(
     path: Path<FillTokensDeletePath>,

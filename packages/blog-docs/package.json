@@ -18,18 +18,22 @@
     "@docusaurus/core": "^3.10.2",
     "@docusaurus/preset-classic": "^3.10.2",
     "@mdx-js/react": "^3.1.1",
-    "@tailwindcss/postcss": "^4.3.2",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/swagger-ui-react": "^5.18.0",
     "clsx": "^2.1.1",
-    "postcss": "^8.5.16",
+    "postcss": "^8.5.32",
     "prism-react-renderer": "^2.4.1",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "tailwindcss": "^4.3.2"
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "swagger-ui-react": "^5.34.1",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.10.2",
     "@docusaurus/tsconfig": "^3.10.2",
     "@docusaurus/types": "^3.10.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "typescript": "~6.0.3"
   },
   "browserslist": {

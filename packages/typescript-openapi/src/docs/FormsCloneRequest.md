@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**new_team_id** | **string** |  | [default to undefined]
+**new_team_id** | **string** | The team to place the new form into. | [default to undefined]
 
 ## Example
 

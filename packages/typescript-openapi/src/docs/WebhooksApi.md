@@ -51,7 +51,7 @@ const { status, data } = await apiInstance.webhooksCreate(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -113,7 +113,7 @@ void (empty response body)
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -172,7 +172,7 @@ const { status, data } = await apiInstance.webhooksList(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -234,7 +234,7 @@ const { status, data } = await apiInstance.webhooksListJobs(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 

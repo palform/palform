@@ -194,6 +194,7 @@ export interface APIEntitlementInfo {
     'priority_support': boolean;
     'question_per_form_count'?: number | null;
     'response_count'?: number | null;
+    'service_account': boolean;
     'subdomain': boolean;
     'submission_auto_delete': boolean;
     'team_count'?: number | null;
@@ -324,10 +325,17 @@ export interface APIGenericLocation {
     'lat': number;
     'lng': number;
 }
-export interface APIOrgMember {
+export interface APIOrgMemberHuman {
     'is_admin': boolean;
     'organisation_id': string;
     'user_display_name'?: string | null;
+    'user_email': string;
+    'user_id': string;
+}
+export interface APIOrgMemberServiceAccount {
+    'is_admin': boolean;
+    'organisation_id': string;
+    'user_created_at': string;
     'user_email': string;
     'user_id': string;
 }
@@ -501,6 +509,12 @@ export type APIQuestionTextValidator = typeof APIQuestionTextValidator[keyof typ
 export interface APISaveQuestionsRequest {
     'groups': Array<APIQuestionGroup>;
     'questions': Array<APIQuestion>;
+}
+export interface APIServiceAccountAdminUser {
+    'created_at': string;
+    'email': string;
+    'id': string;
+    'service_account_auth_token'?: string | null;
 }
 export interface APISubmission {
     'created_at': string;
@@ -780,10 +794,25 @@ export interface ConfigTextText {
 
 
 export interface CreateFormRequest {
+    /**
+     * The branding to use. Will use Palform\'s default look if no branding is provided.
+     */
     'branding_id'?: string | null;
+    /**
+     * A name shown only to the admins and editors of the form
+     */
     'editor_name': string;
+    /**
+     * The team to create the form in
+     */
     'in_team': string;
+    /**
+     * Whether to use the One Question Per Page (OQPP) flow, where each question is on a different page and the user has to click \"Next\" to continue. Otherwise, multiple questions are allowed per page, and the form editor can decide which pages contain which questions.
+     */
     'one_question_per_page': boolean;
+    /**
+     * A public-facing name, shown only on non-OQPP forms
+     */
     'title': string;
 }
 export interface CreateSubdomainRequest {
@@ -884,6 +913,9 @@ export type FormBrandingSpacingEnum = typeof FormBrandingSpacingEnum[keyof typeo
 
 
 export interface FormsCloneRequest {
+    /**
+     * The team to place the new form into.
+     */
     'new_team_id': string;
 }
 export interface FormsFillRequest {
@@ -1206,6 +1238,91 @@ export const AdminUsersApiAxiosParamCreator = function (configuration?: Configur
     return {
         /**
          * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminUsersServiceAccountsCreate: async (orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('adminUsersServiceAccountsCreate', 'orgId', orgId)
+            const localVarPath = `/api/org/{org_id}/users/service-accounts`
+                .replace('{org_id}', encodeURIComponent(String(orgId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication personal_token required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} adminUserId 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminUsersServiceAccountsDelete: async (adminUserId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminUserId' is not null or undefined
+            assertParamExists('adminUsersServiceAccountsDelete', 'adminUserId', adminUserId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('adminUsersServiceAccountsDelete', 'orgId', orgId)
+            const localVarPath = `/api/org/{org_id}/users/service-accounts/{admin_user_id}`
+                .replace('{admin_user_id}', encodeURIComponent(String(adminUserId)))
+                .replace('{org_id}', encodeURIComponent(String(orgId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication personal_token required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {UpdateAdminUserRequest} updateAdminUserRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1225,7 +1342,7 @@ export const AdminUsersApiAxiosParamCreator = function (configuration?: Configur
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
@@ -1252,6 +1369,31 @@ export const AdminUsersApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminUsersServiceAccountsCreate(orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIServiceAccountAdminUser>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminUsersServiceAccountsCreate(orgId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminUsersApi.adminUsersServiceAccountsCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} adminUserId 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminUsersServiceAccountsDelete(adminUserId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminUsersServiceAccountsDelete(adminUserId, orgId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminUsersApi.adminUsersServiceAccountsDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {UpdateAdminUserRequest} updateAdminUserRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1273,6 +1415,25 @@ export const AdminUsersApiFactory = function (configuration?: Configuration, bas
     return {
         /**
          * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminUsersServiceAccountsCreate(orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<APIServiceAccountAdminUser> {
+            return localVarFp.adminUsersServiceAccountsCreate(orgId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} adminUserId 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminUsersServiceAccountsDelete(adminUserId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.adminUsersServiceAccountsDelete(adminUserId, orgId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {UpdateAdminUserRequest} updateAdminUserRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1287,6 +1448,27 @@ export const AdminUsersApiFactory = function (configuration?: Configuration, bas
  * AdminUsersApi - object-oriented interface
  */
 export class AdminUsersApi extends BaseAPI {
+    /**
+     * 
+     * @param {string} orgId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminUsersServiceAccountsCreate(orgId: string, options?: RawAxiosRequestConfig) {
+        return AdminUsersApiFp(this.configuration).adminUsersServiceAccountsCreate(orgId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} adminUserId 
+     * @param {string} orgId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminUsersServiceAccountsDelete(adminUserId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return AdminUsersApiFp(this.configuration).adminUsersServiceAccountsDelete(adminUserId, orgId, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @param {UpdateAdminUserRequest} updateAdminUserRequest 
@@ -1330,9 +1512,13 @@ export const AuditLogsApiAxiosParamCreator = function (configuration?: Configura
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             if (from !== undefined) {
                 localVarQueryParameter['from'] = (from as any instanceof Date) ?
@@ -1491,7 +1677,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
@@ -1768,7 +1954,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
@@ -2282,9 +2468,13 @@ export const BillingCustomersApiAxiosParamCreator = function (configuration?: Co
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -2322,9 +2512,13 @@ export const BillingCustomersApiAxiosParamCreator = function (configuration?: Co
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -2459,9 +2653,13 @@ export const BillingEntitlementsApiAxiosParamCreator = function (configuration?:
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -2499,9 +2697,13 @@ export const BillingEntitlementsApiAxiosParamCreator = function (configuration?:
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -2636,9 +2838,13 @@ export const BillingInvoicesApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -2676,9 +2882,13 @@ export const BillingInvoicesApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             if (stripeSubscriptionId !== undefined) {
                 localVarQueryParameter['stripe_subscription_id'] = stripeSubscriptionId;
@@ -2822,9 +3032,13 @@ export const BillingPlansApiAxiosParamCreator = function (configuration?: Config
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -2860,9 +3074,13 @@ export const BillingPlansApiAxiosParamCreator = function (configuration?: Config
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -2900,9 +3118,13 @@ export const BillingPlansApiAxiosParamCreator = function (configuration?: Config
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -2979,9 +3201,13 @@ export const BillingPlansApiAxiosParamCreator = function (configuration?: Config
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             if (dryRun !== undefined) {
                 localVarQueryParameter['dry_run'] = dryRun;
@@ -3412,7 +3638,7 @@ export const Class2FAMethodsApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
@@ -3447,7 +3673,7 @@ export const Class2FAMethodsApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
@@ -3485,7 +3711,7 @@ export const Class2FAMethodsApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
@@ -3520,7 +3746,7 @@ export const Class2FAMethodsApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
@@ -3553,7 +3779,7 @@ export const Class2FAMethodsApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
@@ -4023,9 +4249,13 @@ export const FillAccessTokensApiAxiosParamCreator = function (configuration?: Co
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -4070,9 +4300,13 @@ export const FillAccessTokensApiAxiosParamCreator = function (configuration?: Co
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4110,9 +4344,13 @@ export const FillAccessTokensApiAxiosParamCreator = function (configuration?: Co
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -4284,7 +4522,7 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
@@ -4332,9 +4570,13 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -4378,9 +4620,13 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -4425,9 +4671,13 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4472,9 +4722,13 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4514,9 +4768,13 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -4559,9 +4817,13 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -4607,9 +4869,13 @@ export const FormBrandingsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -5040,9 +5306,13 @@ export const FormTemplatesApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -5435,7 +5705,8 @@ export class FormTemplatesApi extends BaseAPI {
 export const FormsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
+         * \\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.
+         * @summary Creates a copy of a form and its question groups and questions.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {FormsCloneRequest} formsCloneRequest 
@@ -5463,9 +5734,13 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -5481,7 +5756,8 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
-         * 
+         * \\ The form will be created in the specified team. It will not be initialised with\\ any questions.
+         * @summary Create a new form.
          * @param {string} orgId 
          * @param {CreateFormRequest} createFormRequest 
          * @param {*} [options] Override http request option.
@@ -5505,9 +5781,13 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -5524,6 +5804,7 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Deletes a form and all of its questions, question groups, submissions, settings, etc.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -5548,9 +5829,13 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -5563,7 +5848,8 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
-         * 
+         * token.
+         * @summary Resolve a short link on an organisational subdomain to an organisation ID, a form ID, and a fill
          * @param {string} shortLink 
          * @param {string} subdomain 
          * @param {*} [options] Override http request option.
@@ -5601,6 +5887,7 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Submit a response to a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {FormsFillRequest} formsFillRequest 
@@ -5672,9 +5959,13 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -5749,9 +6040,13 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -5793,9 +6088,13 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -5838,9 +6137,13 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -5883,9 +6186,13 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -5949,7 +6256,8 @@ export const FormsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = FormsApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
+         * \\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.
+         * @summary Creates a copy of a form and its question groups and questions.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {FormsCloneRequest} formsCloneRequest 
@@ -5963,7 +6271,8 @@ export const FormsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * \\ The form will be created in the specified team. It will not be initialised with\\ any questions.
+         * @summary Create a new form.
          * @param {string} orgId 
          * @param {CreateFormRequest} createFormRequest 
          * @param {*} [options] Override http request option.
@@ -5977,6 +6286,7 @@ export const FormsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Deletes a form and all of its questions, question groups, submissions, settings, etc.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -5989,7 +6299,8 @@ export const FormsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * token.
+         * @summary Resolve a short link on an organisational subdomain to an organisation ID, a form ID, and a fill
          * @param {string} shortLink 
          * @param {string} subdomain 
          * @param {*} [options] Override http request option.
@@ -6003,6 +6314,7 @@ export const FormsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Submit a response to a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {FormsFillRequest} formsFillRequest 
@@ -6118,7 +6430,8 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
     const localVarFp = FormsApiFp(configuration)
     return {
         /**
-         * 
+         * \\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.
+         * @summary Creates a copy of a form and its question groups and questions.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {FormsCloneRequest} formsCloneRequest 
@@ -6129,7 +6442,8 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
             return localVarFp.formsClone(formId, orgId, formsCloneRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * \\ The form will be created in the specified team. It will not be initialised with\\ any questions.
+         * @summary Create a new form.
          * @param {string} orgId 
          * @param {CreateFormRequest} createFormRequest 
          * @param {*} [options] Override http request option.
@@ -6140,6 +6454,7 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary Deletes a form and all of its questions, question groups, submissions, settings, etc.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -6149,7 +6464,8 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
             return localVarFp.formsDelete(formId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * token.
+         * @summary Resolve a short link on an organisational subdomain to an organisation ID, a form ID, and a fill
          * @param {string} shortLink 
          * @param {string} subdomain 
          * @param {*} [options] Override http request option.
@@ -6160,6 +6476,7 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary Submit a response to a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {FormsFillRequest} formsFillRequest 
@@ -6249,7 +6566,8 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
  */
 export class FormsApi extends BaseAPI {
     /**
-     * 
+     * \\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.
+     * @summary Creates a copy of a form and its question groups and questions.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {FormsCloneRequest} formsCloneRequest 
@@ -6261,7 +6579,8 @@ export class FormsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * \\ The form will be created in the specified team. It will not be initialised with\\ any questions.
+     * @summary Create a new form.
      * @param {string} orgId 
      * @param {CreateFormRequest} createFormRequest 
      * @param {*} [options] Override http request option.
@@ -6273,6 +6592,7 @@ export class FormsApi extends BaseAPI {
 
     /**
      * 
+     * @summary Deletes a form and all of its questions, question groups, submissions, settings, etc.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {*} [options] Override http request option.
@@ -6283,7 +6603,8 @@ export class FormsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * token.
+     * @summary Resolve a short link on an organisational subdomain to an organisation ID, a form ID, and a fill
      * @param {string} shortLink 
      * @param {string} subdomain 
      * @param {*} [options] Override http request option.
@@ -6295,6 +6616,7 @@ export class FormsApi extends BaseAPI {
 
     /**
      * 
+     * @summary Submit a response to a form.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {FormsFillRequest} formsFillRequest 
@@ -6504,9 +6826,13 @@ export const InductionApiAxiosParamCreator = function (configuration?: Configura
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -6541,9 +6867,13 @@ export const InductionApiAxiosParamCreator = function (configuration?: Configura
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -6673,9 +7003,13 @@ export const OrganisationAuthenticationConfigurationApiAxiosParamCreator = funct
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -6711,9 +7045,13 @@ export const OrganisationAuthenticationConfigurationApiAxiosParamCreator = funct
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -6850,9 +7188,13 @@ export const OrganisationAuthenticationTeamMappingsApiAxiosParamCreator = functi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -6893,9 +7235,13 @@ export const OrganisationAuthenticationTeamMappingsApiAxiosParamCreator = functi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -6929,9 +7275,13 @@ export const OrganisationAuthenticationTeamMappingsApiAxiosParamCreator = functi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -7102,9 +7452,13 @@ export const OrganisationDeletionRequestsApiAxiosParamCreator = function (config
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -7138,9 +7492,13 @@ export const OrganisationDeletionRequestsApiAxiosParamCreator = function (config
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -7179,9 +7537,13 @@ export const OrganisationDeletionRequestsApiAxiosParamCreator = function (config
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -7350,9 +7712,13 @@ export const OrganisationInvitesApiAxiosParamCreator = function (configuration?:
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -7393,9 +7759,13 @@ export const OrganisationInvitesApiAxiosParamCreator = function (configuration?:
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -7429,9 +7799,13 @@ export const OrganisationInvitesApiAxiosParamCreator = function (configuration?:
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -7470,7 +7844,7 @@ export const OrganisationInvitesApiAxiosParamCreator = function (configuration?:
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
@@ -7673,9 +8047,13 @@ export const OrganisationKeysApiAxiosParamCreator = function (configuration?: Co
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -7714,9 +8092,13 @@ export const OrganisationKeysApiAxiosParamCreator = function (configuration?: Co
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -7849,9 +8231,13 @@ export const OrganisationMembersApiAxiosParamCreator = function (configuration?:
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -7890,9 +8276,13 @@ export const OrganisationMembersApiAxiosParamCreator = function (configuration?:
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -7929,7 +8319,7 @@ export const OrganisationMembersApiAxiosParamCreator = function (configuration?:
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
@@ -7967,9 +8357,54 @@ export const OrganisationMembersApiAxiosParamCreator = function (configuration?:
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        organisationMembersListServiceAccount: async (orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('organisationMembersListServiceAccount', 'orgId', orgId)
+            const localVarPath = `/api/org/{org_id}/members/service-accounts`
+                .replace('{org_id}', encodeURIComponent(String(orgId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication personal_token required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -8011,9 +8446,13 @@ export const OrganisationMembersApiAxiosParamCreator = function (configuration?:
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -8080,10 +8519,22 @@ export const OrganisationMembersApiFp = function(configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async organisationMembersList(orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIOrgMember>>> {
+        async organisationMembersList(orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIOrgMemberHuman>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.organisationMembersList(orgId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['OrganisationMembersApi.organisationMembersList']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async organisationMembersListServiceAccount(orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APIOrgMemberServiceAccount>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.organisationMembersListServiceAccount(orgId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['OrganisationMembersApi.organisationMembersListServiceAccount']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -8144,8 +8595,17 @@ export const OrganisationMembersApiFactory = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        organisationMembersList(orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIOrgMember>> {
+        organisationMembersList(orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIOrgMemberHuman>> {
             return localVarFp.organisationMembersList(orgId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        organisationMembersListServiceAccount(orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APIOrgMemberServiceAccount>> {
+            return localVarFp.organisationMembersListServiceAccount(orgId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -8210,6 +8670,16 @@ export class OrganisationMembersApi extends BaseAPI {
     /**
      * 
      * @param {string} orgId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public organisationMembersListServiceAccount(orgId: string, options?: RawAxiosRequestConfig) {
+        return OrganisationMembersApiFp(this.configuration).organisationMembersListServiceAccount(orgId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} orgId 
      * @param {string} userId 
      * @param {PatchOrgMemberRequest} patchOrgMemberRequest 
      * @param {*} [options] Override http request option.
@@ -8256,9 +8726,13 @@ export const OrganisationTeamMembersApiAxiosParamCreator = function (configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -8302,9 +8776,13 @@ export const OrganisationTeamMembersApiAxiosParamCreator = function (configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -8342,9 +8820,13 @@ export const OrganisationTeamMembersApiAxiosParamCreator = function (configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -8390,9 +8872,13 @@ export const OrganisationTeamMembersApiAxiosParamCreator = function (configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -8612,9 +9098,13 @@ export const OrganisationTeamsApiAxiosParamCreator = function (configuration?: C
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -8655,9 +9145,13 @@ export const OrganisationTeamsApiAxiosParamCreator = function (configuration?: C
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -8695,9 +9189,13 @@ export const OrganisationTeamsApiAxiosParamCreator = function (configuration?: C
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -8732,9 +9230,13 @@ export const OrganisationTeamsApiAxiosParamCreator = function (configuration?: C
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -8769,9 +9271,13 @@ export const OrganisationTeamsApiAxiosParamCreator = function (configuration?: C
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -9002,7 +9508,7 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
@@ -9044,9 +9550,13 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -9085,9 +9595,13 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -9124,9 +9638,13 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -9158,9 +9676,13 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication api_auth_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -9198,9 +9720,13 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -9696,9 +10222,13 @@ export const QuestionGroupsApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -9812,9 +10342,13 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -9853,9 +10387,13 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -9897,9 +10435,13 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -10087,9 +10629,13 @@ export const SubmissionAssetApiAxiosParamCreator = function (configuration?: Con
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -10276,9 +10822,13 @@ export const SubmissionsApiAxiosParamCreator = function (configuration?: Configu
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -10321,9 +10871,13 @@ export const SubmissionsApiAxiosParamCreator = function (configuration?: Configu
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -10362,9 +10916,13 @@ export const SubmissionsApiAxiosParamCreator = function (configuration?: Configu
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             if (since !== undefined) {
                 for (const [key, value] of Object.entries(since)) {
@@ -10408,9 +10966,13 @@ export const SubmissionsApiAxiosParamCreator = function (configuration?: Configu
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -10633,9 +11195,13 @@ export const TeamAssetsApiAxiosParamCreator = function (configuration?: Configur
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -10674,9 +11240,13 @@ export const TeamAssetsApiAxiosParamCreator = function (configuration?: Configur
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -10715,9 +11285,13 @@ export const TeamAssetsApiAxiosParamCreator = function (configuration?: Configur
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -10894,9 +11468,13 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -10934,9 +11512,13 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -10975,9 +11557,13 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -11013,9 +11599,13 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -11054,9 +11644,13 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -11100,9 +11694,13 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -11388,9 +11986,13 @@ export const WebhooksApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -11435,9 +12037,13 @@ export const WebhooksApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -11475,9 +12081,13 @@ export const WebhooksApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -11520,9 +12130,13 @@ export const WebhooksApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication org_role_token required
+            // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 

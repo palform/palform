@@ -24,10 +24,18 @@ use crate::{
 
 #[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct CreateFormRequest {
+    /// A name shown only to the admins and editors of the form
     editor_name: String,
+    /// A public-facing name, shown only on non-OQPP forms
     title: String,
+    /// The team to create the form in
     in_team: PalformDatabaseID<IDTeam>,
+    /// The branding to use. Will use Palform's default look if no branding is provided.
     branding_id: Option<PalformDatabaseID<IDFormBranding>>,
+    /// Whether to use the One Question Per Page (OQPP) flow, where each question is on a different
+    /// page and the user has to click "Next" to continue. Otherwise, multiple questions are allowed
+    /// per page, and the form editor can decide which pages contain which questions. This cannot be
+    /// changed after the form is created.
     one_question_per_page: bool,
 }
 
@@ -36,6 +44,10 @@ pub struct FormCreatePath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
+/// Create a new form.
+///
+/// The form will be created in the specified team. It will not be initialised with any questions.
+/// Some settings can be updated after creation.
 #[api_operation(tag = "Forms", operation_id = "forms.create")]
 pub async fn forms_create(
     path: Path<FormCreatePath>,

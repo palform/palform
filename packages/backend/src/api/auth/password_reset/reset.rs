@@ -22,7 +22,11 @@ pub struct ResetPasswordRequest {
     new_password: String,
 }
 
-#[api_operation(tag = "Password Resets", operation_id = "user.password_reset.reset")]
+#[api_operation(
+    tag = "Password Resets",
+    operation_id = "user.password_reset.reset",
+    no_security
+)]
 pub async fn auth_password_reset_reset(
     data: Validated<Json<ResetPasswordRequest>>,
     db: Data<DatabaseConnection>,

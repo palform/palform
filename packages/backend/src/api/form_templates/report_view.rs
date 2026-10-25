@@ -13,7 +13,11 @@ pub struct FormTemplatesReportViewPath {
     template_id: PalformDatabaseID<IDForm>,
 }
 
-#[api_operation(tag = "Form Templates", operation_id = "form_templates.report_view")]
+#[api_operation(
+    tag = "Form Templates",
+    operation_id = "form_templates.report_view",
+    no_security
+)]
 pub async fn form_templates_report_view(
     path: Path<FormTemplatesReportViewPath>,
     db: Data<DatabaseConnection>,

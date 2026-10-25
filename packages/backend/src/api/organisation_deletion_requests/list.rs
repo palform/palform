@@ -10,7 +10,11 @@ use serde::Deserialize;
 use crate::{
     actix_util::from_org_id::FromOrgId,
     api_entities::organisation_deletion_request::APIOrganisationDeletionRequest,
-    auth::rbac::requests::APITokenOrgAdmin, config::Config,
+    auth::{
+        rbac::requests::{OrgRoleToken, TeamRoleNone, TokenTargetOrgAdmin},
+        tokens::APIAuthTokenSourcePersonal,
+    },
+    config::Config,
     entity_managers::organisation_deletion_request::OrganisationDeletionRequestManager,
 };
 
@@ -26,7 +30,7 @@ pub struct OrganisationsDeletionRequestsListPath {
 )]
 pub async fn organisation_deletion_requests_list(
     _path: Path<OrganisationsDeletionRequestsListPath>,
-    _token: APITokenOrgAdmin,
+    _token: OrgRoleToken<TeamRoleNone, TokenTargetOrgAdmin, APIAuthTokenSourcePersonal>,
     db: Data<DatabaseConnection>,
     org_deletion_request_manager: FromOrgId<OrganisationDeletionRequestManager>,
     config: Data<Config>,

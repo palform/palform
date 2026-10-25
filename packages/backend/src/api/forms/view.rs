@@ -20,6 +20,10 @@ pub struct FormsViewPath {
     form_id: PalformDatabaseID<IDForm>,
 }
 
+// Get all data needed to fully display a form.
+//
+// This returns a dump of the form's metadata, questions, question groups, branding, and the name of
+// its organisation.
 #[api_operation(tag = "Forms", operation_id = "forms.view")]
 pub async fn forms_view(
     path: Path<FormsViewPath>,

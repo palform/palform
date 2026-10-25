@@ -38,7 +38,7 @@ pub struct AuthCallbackPath {
 /// Process authentication callback
 ///
 /// Handle the callback from the OIDC server and generate an API key to be used for future requests
-#[api_operation(tag = "Authentication", operation_id = "auth.callback")]
+#[api_operation(tag = "Authentication", operation_id = "auth.callback", no_security)]
 pub async fn auth_callback(
     path: Path<AuthCallbackPath>,
     request: Json<AuthCallbackRequest>,

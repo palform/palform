@@ -36,7 +36,8 @@
     {@render children?.()}
 
     <Label>
-        Type <span>{confirmationWord}</span> to confirm
+        Type <span class="font-mono font-bold">{confirmationWord}</span> to
+        confirm
         <Input
             class="mt-2"
             bind:value={confirmationValue}

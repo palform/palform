@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, Label, Modal } from "flowbite-svelte";
+    import { Button, Label, Modal, P } from "flowbite-svelte";
     import InfoText from "../../type/InfoText.svelte";
     import SectionHeading from "../../type/SectionHeading.svelte";
     import TeamDropdown from "../../teams/TeamDropdown.svelte";
@@ -54,9 +54,9 @@
 <Button outline onclick={() => (showModal = true)}>Clone</Button>
 
 <Modal bind:open={showModal} title="Clone form">
-    <InfoText>
+    <P>
         You must have at least <strong>Editor</strong> permission in the target team.
-    </InfoText>
+    </P>
     <Label>
         Team to clone into
         <TeamDropdown

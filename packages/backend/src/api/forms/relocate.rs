@@ -30,9 +30,15 @@ pub struct FormsRelocatePath {
 
 #[derive(Deserialize, JsonSchema, ApiComponent)]
 pub struct FormsRelocateRequest {
+    /// The team to move the form to.
     target_team_id: PalformDatabaseID<IDTeam>,
 }
 
+/// Move a form to another team.
+///
+/// The user performing this operation must have at least Editor access to both the form's current
+/// and target teams. The form's branding will be reset to the default, since branding
+/// configurations are team-specific.
 #[api_operation(tag = "Forms", operation_id = "forms.relocate")]
 pub async fn forms_relocate(
     path: Path<FormsRelocatePath>,

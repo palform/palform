@@ -22,6 +22,7 @@ pub struct FormsGetPath {
     form_id: PalformDatabaseID<IDForm>,
 }
 
+/// Get the metadata of a form.
 #[api_operation(tag = "Forms", operation_id = "forms.get")]
 pub async fn forms_get(
     path: Path<FormsGetPath>,

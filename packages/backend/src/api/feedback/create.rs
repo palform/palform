@@ -7,7 +7,7 @@ use crate::{
     api_entities::feedback_items::APIFeedbackItem, entity_managers::feedback::FeedbackManager,
 };
 
-#[api_operation(tag = "Feedback", operation_id = "feedback.create")]
+#[api_operation(tag = "Feedback", operation_id = "feedback.create", no_security)]
 pub async fn feedback_create(
     data: Json<APIFeedbackItem>,
     db: Data<DatabaseConnection>,

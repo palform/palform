@@ -12,11 +12,14 @@ use serde::Serialize;
 
 use crate::crypto::keys::{CryptoKeyRepr, KeyConversionError};
 
+/// A backend representation of a user's encryption key.
 #[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct APIUserKey {
     pub id: String,
     pub user_id: String,
+    /// PGP public key in ASCII-armored form
     pub key_pem: String,
+    /// Whether the key is backed up to the DB in encrypted form
     pub has_backup: bool,
     pub created_at: DateTime<Utc>,
     pub expires_at: DateTime<Utc>,

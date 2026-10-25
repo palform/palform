@@ -1,14 +1,12 @@
 <script lang="ts">
     interface Props {
-        children?: import('svelte').Snippet;
-        [key: string]: any
+        children?: import("svelte").Snippet;
+        class?: string;
     }
 
-    let { ...props }: Props = $props();
+    let { children, class: className }: Props = $props();
 </script>
 
-<div
-    class={`lg:gap-8 gap-4 grid xl:grid-cols-3 lg:grid-cols-2 ${props.class}`}
->
-    {@render props.children?.()}
+<div class={`lg:gap-8 gap-4 grid xl:grid-cols-3 lg:grid-cols-2 ${className}`}>
+    {@render children?.()}
 </div>

@@ -135,6 +135,7 @@ impl INTERNALBillingEntitlementManager {
             APIEntitlementRequest::OIDC => oe.oidc,
             APIEntitlementRequest::SubmissionAutoDelete => oe.submission_auto_delete,
             APIEntitlementRequest::FormCaptcha => oe.form_captcha,
+            APIEntitlementRequest::ServiceAccount => oe.service_account,
         })
     }
 

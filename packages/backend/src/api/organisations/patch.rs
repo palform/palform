@@ -19,6 +19,8 @@ use crate::entity_managers::orgs::OrganisationManager;
 
 #[derive(Deserialize, JsonSchema, Validate, ApiComponent)]
 pub struct PatchOrgRequest {
+    /// The name of the organisation, visible to admins and anyone filling any of the organisation's
+    /// forms.
     #[validate(length(min = 1, max = 40, message = "must be between 1 and 20 characters"))]
     display_name: String,
 }
@@ -28,6 +30,7 @@ pub struct OrganisationsPatchPath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
+/// Update the metadata of an organisation.
 #[api_operation(tag = "Organisations", operation_id = "orgs.rename")]
 pub async fn organisations_patch(
     path: Path<OrganisationsPatchPath>,

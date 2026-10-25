@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type APIOrgMember } from "@palform/palform-typescript-openapi";
+    import { type APIOrgMemberHuman } from "@palform/palform-typescript-openapi";
     import { DropdownItem, TableBodyCell, TableBodyRow } from "flowbite-svelte";
     import TableActions from "../../tables/TableActions.svelte";
     import { APIs } from "../../../data/common";
@@ -17,10 +17,10 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
 
     interface Props {
-        member: APIOrgMember;
+        member: APIOrgMemberHuman;
         isSelf?: boolean;
         ondelete: () => void;
-        onupdate: (member: APIOrgMember) => void;
+        onupdate: (member: APIOrgMemberHuman) => void;
     }
 
     let { member, isSelf = false, ondelete, onupdate }: Props = $props();

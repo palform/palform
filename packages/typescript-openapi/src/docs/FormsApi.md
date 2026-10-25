@@ -4,11 +4,11 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**formsClone**](#formsclone) | **POST** /api/org/{org_id}/form/forms/{form_id}/clone | |
-|[**formsCreate**](#formscreate) | **POST** /api/org/{org_id}/form/forms | |
-|[**formsDelete**](#formsdelete) | **DELETE** /api/org/{org_id}/form/forms/{form_id} | |
-|[**formsExchangeShortLink**](#formsexchangeshortlink) | **GET** /api/fill/form/forms/short_link/{subdomain}/{short_link} | |
-|[**formsFill**](#formsfill) | **POST** /api/fill/form/forms/{form_id}/org/{org_id} | |
+|[**formsClone**](#formsclone) | **POST** /api/org/{org_id}/form/forms/{form_id}/clone | Creates a copy of a form and its question groups and questions.|
+|[**formsCreate**](#formscreate) | **POST** /api/org/{org_id}/form/forms | Create a new form.|
+|[**formsDelete**](#formsdelete) | **DELETE** /api/org/{org_id}/form/forms/{form_id} | Deletes a form and all of its questions, question groups, submissions, settings, etc.|
+|[**formsExchangeShortLink**](#formsexchangeshortlink) | **GET** /api/fill/form/forms/short_link/{subdomain}/{short_link} | Resolve a short link on an organisational subdomain to an organisation ID, a form ID, and a fill|
+|[**formsFill**](#formsfill) | **POST** /api/fill/form/forms/{form_id}/org/{org_id} | Submit a response to a form.|
 |[**formsGet**](#formsget) | **GET** /api/org/{org_id}/form/forms/{form_id} | |
 |[**formsKeys**](#formskeys) | **GET** /api/fill/form/forms/{form_id}/org/{org_id}/keys | |
 |[**formsList**](#formslist) | **GET** /api/org/{org_id}/form/forms | |
@@ -20,6 +20,7 @@ All URIs are relative to *http://localhost*
 # **formsClone**
 > APIForm formsClone(formsCloneRequest)
 
+\\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.
 
 ### Example
 
@@ -59,7 +60,7 @@ const { status, data } = await apiInstance.formsClone(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -83,6 +84,7 @@ const { status, data } = await apiInstance.formsClone(
 # **formsCreate**
 > APIForm formsCreate(createFormRequest)
 
+\\ The form will be created in the specified team. It will not be initialised with\\ any questions.
 
 ### Example
 
@@ -119,7 +121,7 @@ const { status, data } = await apiInstance.formsCreate(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -178,7 +180,7 @@ void (empty response body)
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -202,6 +204,7 @@ void (empty response body)
 # **formsExchangeShortLink**
 > APIExchangedShortLink formsExchangeShortLink()
 
+token.
 
 ### Example
 
@@ -359,7 +362,7 @@ const { status, data } = await apiInstance.formsGet(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -474,7 +477,7 @@ const { status, data } = await apiInstance.formsList(
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -537,7 +540,7 @@ void (empty response body)
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -600,7 +603,7 @@ void (empty response body)
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 
@@ -663,7 +666,7 @@ void (empty response body)
 
 ### Authorization
 
-[org_role_token](../README.md#org_role_token)
+[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
 
 ### HTTP request headers
 

@@ -30,7 +30,7 @@ pub struct StartAuthPath {
 /// Start authentication flow
 ///
 /// Generate an OIDC URL with the configured provider to start authentication
-#[api_operation(tag = "Authentication", operation_id = "auth.start")]
+#[api_operation(tag = "Authentication", operation_id = "auth.start", no_security)]
 pub async fn auth_start_auth(
     path: Path<StartAuthPath>,
     Query(query): Query<StartAuthQuery>,

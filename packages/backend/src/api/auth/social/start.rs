@@ -22,7 +22,11 @@ pub struct StartSocialAuthResponse {
     nonce: String,
 }
 
-#[api_operation(tag = "Authentication", operation_id = "auth.social.start")]
+#[api_operation(
+    tag = "Authentication",
+    operation_id = "auth.social.start",
+    no_security
+)]
 pub async fn auth_social_start(
     data: Json<StartSocialAuthRequest>,
     config: Data<Config>,

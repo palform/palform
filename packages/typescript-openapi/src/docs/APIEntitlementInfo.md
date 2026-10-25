@@ -16,6 +16,7 @@ Name | Type | Description | Notes
 **priority_support** | **boolean** |  | [default to undefined]
 **question_per_form_count** | **number** |  | [optional] [default to undefined]
 **response_count** | **number** |  | [optional] [default to undefined]
+**service_account** | **boolean** |  | [default to undefined]
 **subdomain** | **boolean** |  | [default to undefined]
 **submission_auto_delete** | **boolean** |  | [default to undefined]
 **team_count** | **number** |  | [optional] [default to undefined]
@@ -38,6 +39,7 @@ const instance: APIEntitlementInfo = {
     priority_support,
     question_per_form_count,
     response_count,
+    service_account,
     subdomain,
     submission_auto_delete,
     team_count,

@@ -13,6 +13,11 @@ use crate::{address::APIGenericLocation, datetime::normalise_date_time};
 
 use super::submission::{QuestionSubmission, QuestionSubmissionData};
 
+/// A question group corresponds to a page.
+///
+/// On a one-question-per-page form, each group contains exactly one question, since each question
+/// is on its own page. On non-OQPP forms, each group can contain any number of questions. When
+/// filling the form, the user will have to click "Next" to continue to the next question group.
 #[cfg_attr(
     feature = "backend",
     derive(schemars::JsonSchema, apistos::ApiComponent)
@@ -20,7 +25,9 @@ use super::submission::{QuestionSubmission, QuestionSubmissionData};
 #[derive(Clone, Serialize, Deserialize)]
 pub struct APIQuestionGroup {
     pub id: PalformDatabaseID<IDQuestionGroup>,
+    /// A user-facing title. Only shown on non-OQPP forms.
     pub title: Option<String>,
+    /// A user-facing description. Only shown on non-OQPP forms.
     pub description: Option<String>,
     pub step_strategy: APIQuestionGroupStepStrategy,
 }
@@ -110,12 +117,17 @@ pub fn next_question_group_step_js(
     Ok(next_step.map(|e| e.to_string()))
 }
 
+/// A strategy to determine what to do after the user has filled a question group.
 #[cfg_attr(feature = "backend", derive(schemars::JsonSchema))]
 #[derive(Clone, Deserialize, Serialize)]
 pub enum APIQuestionGroupStepStrategy {
     /// Continue to the group with the next `position`. This is the default option.
     NextPosition,
-    /// Jump to one of a list of sections, based on which one's condition is the first to match
+    /// Jump to one of a list of sections.
+    /// Each jump case is evaluated one-by-one in order, and the first one to match will be selected
+    /// as the next question group to take the user to. If none of them match, the action will be to
+    /// submit the form. Specifying an empty list here will mean that the action is always to submit
+    /// the form.
     JumpToSection(Vec<APIQuestionGroupStepStrategyJumpCase>),
 }
 
@@ -168,7 +180,9 @@ impl APIQuestionGroupStepStrategyJumpCase {
 #[cfg_attr(feature = "backend", derive(schemars::JsonSchema))]
 #[derive(Clone, Deserialize, Serialize)]
 pub enum APIQuestionGroupStepStrategyJumpCaseConditionList {
+    /// The case matches if any of these conditions match
     Or(Vec<APIQuestionGroupStepStrategyJumpCaseCondition>),
+    /// The case matches if all of these conditions match
     And(Vec<APIQuestionGroupStepStrategyJumpCaseCondition>),
 }
 

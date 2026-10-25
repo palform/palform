@@ -1,10 +1,15 @@
 use serde::{Deserialize, Serialize};
 
+/// A configuration for what the page shown to the user after successfully submitting the form
+/// should look like
 #[cfg_attr(feature = "backend", derive(schemars::JsonSchema))]
 #[derive(Clone, Serialize, Deserialize)]
 pub struct APIFormEndConfiguration {
+    /// A Markdown-enabled message to show to the user
     pub message: Option<String>,
+    /// If specified, a button is shown with the text "Continue" that links to this URL
     pub redirect_to: Option<String>,
+    /// Whether to show a button to start a new submission from scratch
     pub show_restart: bool,
 }
 

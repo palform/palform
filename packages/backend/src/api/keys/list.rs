@@ -19,8 +19,8 @@ pub struct KeysListPath {
 
 /// List user keys
 ///
-/// Lists the public keys associated with the currently authenticated user's account in PEM-encoded
-/// format.
+/// Lists the public keys associated with the currently user's account within the
+/// specified organisation, in PEM-encoded format. Expired keys will also be included in the list.
 #[api_operation(tag = "User keys", operation_id = "keys.list")]
 pub async fn keys_list(
     path: Path<KeysListPath>,

@@ -13,7 +13,12 @@ pub(crate) struct OrganisationsResolveSubdomainQuery {
     subdomain: String,
 }
 
-#[api_operation(tag = "Organisations", operation_id = "orgs.resolve_subdomain")]
+/// Return an organisation's metadata by its subdomain.
+#[api_operation(
+    tag = "Organisations",
+    operation_id = "orgs.resolve_subdomain",
+    no_security
+)]
 pub async fn organisations_resolve_subdomain(
     Query(query): Query<OrganisationsResolveSubdomainQuery>,
     db: Data<DatabaseConnection>,

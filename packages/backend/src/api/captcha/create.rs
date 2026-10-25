@@ -12,7 +12,7 @@ use crate::{
     memory_db::memory_db::MemoryDB,
 };
 
-#[api_operation(tag = "Captcha", operation_id = "captcha.create")]
+#[api_operation(tag = "Captcha", operation_id = "captcha.create", no_security)]
 pub async fn captcha_create(
     memory_db: Data<MemoryDB>,
     config: Data<Config>,
