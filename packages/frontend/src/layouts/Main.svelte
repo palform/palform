@@ -13,7 +13,7 @@
         extraTight?: boolean;
         fullHeight?: boolean;
         verticalCenter?: boolean;
-        children?: import('svelte').Snippet;
+        children?: import("svelte").Snippet;
     }
 
     let {
@@ -22,7 +22,7 @@
         extraTight = false,
         fullHeight = false,
         verticalCenter = false,
-        children
+        children,
     }: Props = $props();
 
     const brandCtx = getBrandCtx();
@@ -31,7 +31,17 @@
 </script>
 
 <main
-    class={`py-8 px-4 overflow-auto h-screen ${fluid ? "" : extraTight ? "md:px-20 lg:px-[15%] xl:px-[25%] 2xl:px-[30%]" : "md:px-20 lg:px-[15%]"} ${fullHeight ? "min-h-full relative" : ""} ${verticalCenter ? "h-screen flex" : ""} ${isFrame || isNonNeutralBg ? "" : "bg-slate-50/50 dark:bg-slate-900"}`}
+    class={[
+        `py-8 px-4 overflow-auto h-screen`,
+        fluid
+            ? ""
+            : extraTight
+              ? "md:px-20 lg:px-[15%] xl:px-[25%] 2xl:px-[30%]"
+              : "md:px-20 lg:px-[15%]",
+        fullHeight ? "min-h-full relative" : "",
+        verticalCenter ? "h-screen flex" : "",
+        isFrame || isNonNeutralBg ? "" : "bg-slate-50/50 dark:bg-slate-900",
+    ]}
     style:align-items={verticalCenter ? "safe center" : undefined}
 >
     <div

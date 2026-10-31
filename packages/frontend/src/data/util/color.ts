@@ -1,11 +1,11 @@
 import Color from "colorjs.io";
 
 export function colorWithLightness(
-    color: string,
+    color: string | Color,
     lightness: number,
     alpha?: number
 ) {
-    const col = new Color(color);
+    const col = color instanceof Color ? color : new Color(color);
     col.hsl.l = lightness;
     if (alpha !== undefined) {
         col.alpha = alpha;

@@ -8,6 +8,7 @@
     import QfClearButton from "./QFClearButton.svelte";
     import QfChoiceLabelButton from "./QFChoiceLabelButton.svelte";
     import type { ConfigChoice } from "@palform/palform-typescript-openapi";
+    import { generateFormListItemId } from "../../../data/util/elementIdGen";
 
     interface Props extends QuestionFillProps<ConfigChoice> {}
 
@@ -40,42 +41,42 @@
     };
 </script>
 
-<ol class="space-y-2">
+<div class="space-y-2" role="radiogroup">
     {#each config.choice.options as option}
-        <li>
+        <QfChoiceLabelButton
+            questionId={id}
+            {option}
+            isActive={value.option.includes(option)}
+            isMulti={config.choice.multi}
+        >
             {#if config.choice.multi}
                 <input
-                    id={`${id}-${option}`}
+                    id={generateFormListItemId(id, option)}
                     name={id}
                     value={option}
                     type="checkbox"
-                    class="hidden"
+                    class="sr-only peer"
                     bind:group={value.option}
                     disabled={$fillSendStore?.loading}
                     onchange={onChoiceChange}
+                    tabindex={0}
                 />
             {:else}
                 <input
-                    id={`${id}-${option}`}
+                    id={generateFormListItemId(id, option)}
                     name={id}
                     value={option}
                     type="radio"
-                    class="hidden"
+                    class="sr-only peer"
                     bind:group={value.option[0]}
                     disabled={$fillSendStore?.loading}
                     onchange={onChoiceChange}
+                    tabindex={0}
                 />
             {/if}
-
-            <QfChoiceLabelButton
-                questionId={id}
-                {option}
-                isActive={value.option.includes(option)}
-                isMulti={config.choice.multi}
-            />
-        </li>
+        </QfChoiceLabelButton>
     {/each}
-</ol>
+</div>
 
 <QfClearButton
     onclick={onClear}

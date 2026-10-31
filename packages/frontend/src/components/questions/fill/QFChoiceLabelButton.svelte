@@ -17,6 +17,7 @@
     } from "@fortawesome/free-regular-svg-icons";
     import type { IconProp } from "@fortawesome/fontawesome-svg-core";
     import type { Snippet } from "svelte";
+    import { generateFormListItemId } from "../../../data/util/elementIdGen";
 
     interface Props {
         questionId: string;
@@ -64,8 +65,14 @@
 </script>
 
 <label
-    for={`${questionId}-${option}`}
-    class={`flex items-center border border-slate-200 dark:border-slate-800 text-gray-800 dark:text-gray-300 block p-4 text-sm cursor-pointer transition-colors bg-slate-50/50 dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800/80 ${isActive && $brandCtx === undefined ? "bg-primary-200/60! dark:bg-primary-950!" : ""} ${className}`}
+    for={generateFormListItemId(questionId, option)}
+    class={[
+        "flex items-center border border-slate-200 dark:border-slate-800 text-gray-800 dark:text-gray-300 block p-4 text-sm cursor-pointer transition-colors bg-slate-50/50 dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800/80",
+        isActive && $brandCtx === undefined
+            ? "bg-primary-200/60! dark:bg-primary-950!"
+            : null,
+        className,
+    ]}
     style:font-size={`${getBaseREMFontSizeForBrand($brandCtx) * 0.85}rem`}
     style:border-radius={getRoundingAmountForBrand($brandCtx, true)}
     style:background-color={backgroundColorOverride}

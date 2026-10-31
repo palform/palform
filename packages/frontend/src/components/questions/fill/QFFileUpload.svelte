@@ -171,6 +171,7 @@
                 <QfClearButton
                     disabled={$fillSendStore?.loading}
                     onclick={onClear}
+                    lighterInDarkMode
                 />
             </p>
         {:else}

@@ -1,6 +1,9 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
-    import type { HTMLButtonAttributes, MouseEventHandler } from "svelte/elements";
+    import type {
+        HTMLButtonAttributes,
+        MouseEventHandler,
+    } from "svelte/elements";
     import {
         getBrandCtx,
         getRoundingAmountForBrand,
@@ -8,6 +11,7 @@
     import Color from "colorjs.io";
     import { isDarkMode } from "../../../data/util/darkMode";
     import { Spinner } from "flowbite-svelte";
+    import { colorWithLightness } from "../../../data/util/color";
 
     interface Props {
         type?: HTMLButtonAttributes["type"];
@@ -31,37 +35,43 @@
 
     const ctx = getBrandCtx();
     const isDark = isDarkMode();
-    let backgroundColorOverride = $state<string | undefined>(undefined);
-    let hoverBackgroundColorOverride = $state<string | undefined>(undefined);
-    let ringColorOverride = $state<string | undefined>(undefined);
 
-    $effect(() => {
-        backgroundColorOverride = undefined;
-        hoverBackgroundColorOverride = undefined;
-        ringColorOverride = undefined;
-        if (!$ctx) return;
+    let {
+        backgroundColorOverride,
+        hoverBackgroundColorOverride,
+        ringColorOverride,
+        textColorOverride,
+    } = $derived.by(() => {
+        if (!$ctx) {
+            return {
+                backgroundColorOverride: null,
+                hoverBackgroundColorOverride: null,
+                ringColorOverride: null,
+                textColorOverride: null,
+            };
+        }
 
         const primaryColor = new Color($ctx.primary_color);
         if (isDark) {
-            const bg = primaryColor.clone();
-            bg.hsl.l = 30;
-            backgroundColorOverride = bg.toString({ format: "hex" });
-            const hv = primaryColor.clone();
-            hv.hsl.l = 25;
-            hoverBackgroundColorOverride = hv.toString({ format: "hex" });
-            const rg = primaryColor.clone();
-            rg.hsl.l = 20;
-            ringColorOverride = rg.toString({ format: "hex" });
+            return {
+                backgroundColorOverride: colorWithLightness(primaryColor, 30),
+                hoverBackgroundColorOverride: colorWithLightness(
+                    primaryColor,
+                    25
+                ),
+                ringColorOverride: colorWithLightness(primaryColor, 20),
+                textColorOverride: colorWithLightness(primaryColor, 80),
+            };
         } else {
-            const bg = primaryColor.clone();
-            bg.hsl.l = 40;
-            backgroundColorOverride = bg.toString({ format: "hex" });
-            const hv = primaryColor.clone();
-            hv.hsl.l = 35;
-            hoverBackgroundColorOverride = hv.toString({ format: "hex" });
-            const rg = primaryColor.clone();
-            rg.hsl.l = 80;
-            ringColorOverride = rg.toString({ format: "hex" });
+            return {
+                backgroundColorOverride: colorWithLightness(primaryColor, 40),
+                hoverBackgroundColorOverride: colorWithLightness(
+                    primaryColor,
+                    30
+                ),
+                ringColorOverride: colorWithLightness(primaryColor, 80),
+                textColorOverride: colorWithLightness(primaryColor, 20),
+            };
         }
     });
 
@@ -69,10 +79,30 @@
 </script>
 
 <button
-    class={`brandedButton text-center font-medium focus-within:ring-4 focus-within:outline-none inline-flex items-center justify-center px-5 py-2.5 text-sm ${backgroundColorOverride ? (outline ? "bg-transparent border border-(--branded-background-color) text-(--branded-background-color)" : "bg-(--branded-background-color) text-white") : outline ? "border border-primary-700 dark:border-primary-400 text-primary-700 dark:text-primary-400" : "bg-primary-700 dark:bg-primary-600 text-white"} ${hoverBackgroundColorOverride ? (outline ? "hover:bg-(--branded-background-color) hover:text-white" : "hover:bg-(--branded-hover-color)") : outline ? "hover:bg-primary-700 hover:text-white" : "hover:bg-primary-800 dark:hover:bg-primary-700"} ${ringColorOverride ? "focus-within:ring-(--branded-ring-color)" : "focus-within:ring-primary-300 dark:focus-within:ring-primary-800"}  ${className ?? ""}`}
+    class={[
+        `brandedButton text-center font-medium focus-within:ring-4 focus-within:outline-none inline-flex items-center justify-center px-5 py-2.5 text-sm`,
+        $ctx && outline
+            ? "bg-transparent border border-(--branded-background-color) text-(--branded-text-color) hover:bg-(--branded-background-color) hover:text-white"
+            : null,
+        $ctx && !outline
+            ? "bg-(--branded-background-color) text-white hover:bg-(--branded-hover-color)"
+            : null,
+        !$ctx && outline
+            ? "border border-primary-700 dark:border-primary-400 text-primary-700 dark:text-primary-400 hover:bg-primary-700 hover:text-white"
+            : null,
+        !$ctx && !outline
+            ? "bg-primary-700 dark:bg-primary-600 text-white hover:bg-primary-800 dark:hover:bg-primary-700"
+            : null,
+        $ctx ? "focus-within:ring-(--branded-ring-color)" : null,
+        !$ctx
+            ? "focus-within:ring-primary-300 dark:focus-within:ring-primary-800"
+            : null,
+        className ?? "",
+    ]}
     style:--branded-background-color={backgroundColorOverride}
     style:--branded-hover-color={hoverBackgroundColorOverride}
     style:--branded-ring-color={ringColorOverride}
+    style:--branded-text-color={textColorOverride}
     style:border-radius={rounding}
     {type}
     {disabled}

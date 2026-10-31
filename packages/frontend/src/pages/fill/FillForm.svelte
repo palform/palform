@@ -23,6 +23,7 @@
     import FormFillLoading from "../../components/forms/fill/FormFillLoading.svelte";
     import BrandingBackgroundColor from "../../components/teams/brandings/BrandingBackgroundColor.svelte";
     import { isActive, route } from "../../router";
+    import { showFailureToast } from "../../data/toast";
 
     let pathVars = $derived.by(() => {
         if (isActive("/fill/:orgId/:formId")) {
@@ -74,7 +75,6 @@
 
     const newSubmission = async () => {
         $fillSendStore = undefined;
-        await deleteFormFill();
         await loadInit();
     };
 
@@ -150,7 +150,7 @@
 
         <FormFillFooter
             class={$formFillStore?.form.f.one_question_per_page
-                ? "fixed bottom-4 left-4 md:w-full w-40"
+                ? "mt-6 lg:fixed lg:mt-0 bottom-4 left-4 md:w-full w-40"
                 : "mt-6"}
         />
     </Main>

@@ -85,7 +85,7 @@
         <div class="grid grid-cols-3 gap-8">
             {#if source === "top"}
                 <Card
-                    class="p-4 w-full bg-primary-50 hover:bg-primary-100 border-primary-200"
+                    class="p-4 w-full bg-primary-50 hover:bg-primary-100 dark:bg-primary-950 dark:hover:bg-primary-900 border-primary-200"
                     href={p("/orgs/:orgId/forms/new", {
                         params: { orgId: $orgCtx.org.id },
                     })}

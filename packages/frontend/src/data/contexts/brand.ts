@@ -102,6 +102,7 @@ export function getShadowAlphaForBrandBorder(brand?: BrandContext): number {
 export function getBrandIsNonNeutralBackground(brand?: BrandContext) {
     return (
         brand !== undefined &&
-        (brand.background_image_asset_id != null || brand.background_color != null)
+        (brand.background_image_asset_id != null ||
+            brand.background_color != null)
     );
 }
