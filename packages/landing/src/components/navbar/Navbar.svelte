@@ -6,7 +6,7 @@
 <nav class="fixed w-full flex justify-center pt-2 z-10">
     <div class="px-6 md:px-12 xl:px-20 max-w-7xl w-full">
         <div
-            class="h-12 px-8 flex justify-between items-center bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-full border border-slate-400/40"
+            class="h-12 px-8 flex justify-between items-center bg-slate-100/80 dark:bg-slate-800/90 backdrop-blur-lg rounded-full border border-slate-400/40"
         >
             <p class="transition-transform hover:scale-105 active:scale-95">
                 <a href="/#">

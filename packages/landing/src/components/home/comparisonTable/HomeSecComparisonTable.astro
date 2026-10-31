@@ -18,7 +18,9 @@ const { class: className } = Astro.props;
         <ComparisonTableRow>
             <ComparisonTableCol />
             <ComparisonTableCol center large><LogoType /></ComparisonTableCol>
-            <ComparisonTableCol center large>Competitors</ComparisonTableCol>
+            <ComparisonTableCol center large>Typeform</ComparisonTableCol>
+            <ComparisonTableCol center large>Jotform</ComparisonTableCol>
+            <ComparisonTableCol center large>Google Forms</ComparisonTableCol>
         </ComparisonTableRow>
         <ComparisonTableRow>
             <ComparisonTableCol>
@@ -27,6 +29,10 @@ const { class: className } = Astro.props;
             <ComparisonTableCol center large>
                 <ComparisonTableMark check={true} />
             </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={false} />
+            </ComparisonTableCol>
+            <ComparisonTableCol center> Optional </ComparisonTableCol>
             <ComparisonTableCol center large>
                 <ComparisonTableMark check={false} />
             </ComparisonTableCol>
@@ -41,15 +47,27 @@ const { class: className } = Astro.props;
             <ComparisonTableCol center large>
                 <ComparisonTableMark check={false} />
             </ComparisonTableCol>
-        </ComparisonTableRow>
-        <ComparisonTableRow>
-            <ComparisonTableCol>
-                Friendly real-human support
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={false} />
             </ComparisonTableCol>
             <ComparisonTableCol center large>
                 <ComparisonTableMark check={true} />
             </ComparisonTableCol>
-            <ComparisonTableCol center>If you're lucky</ComparisonTableCol>
+        </ComparisonTableRow>
+        <ComparisonTableRow>
+            <ComparisonTableCol> Friendly human support </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={true} />
+            </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={true} />
+            </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={true} />
+            </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={false} />
+            </ComparisonTableCol>
         </ComparisonTableRow>
         <ComparisonTableRow>
             <ComparisonTableCol>Generous free plan</ComparisonTableCol>
@@ -59,24 +77,39 @@ const { class: className } = Astro.props;
             <ComparisonTableCol center large>
                 <ComparisonTableMark check={false} />
             </ComparisonTableCol>
-        </ComparisonTableRow>
-        <ComparisonTableRow>
-            <ComparisonTableCol>Modern mobile-friendly UI</ComparisonTableCol>
             <ComparisonTableCol center large>
-                <ComparisonTableMark check={true} />
+                <ComparisonTableMark check={false} />
             </ComparisonTableCol>
             <ComparisonTableCol center large>
                 <ComparisonTableMark check={true} />
             </ComparisonTableCol>
         </ComparisonTableRow>
         <ComparisonTableRow>
-            <ComparisonTableCol
-                >Sophisticated enterprise-grade user management</ComparisonTableCol
+            <ComparisonTableCol>Hosted exclusively in the EU</ComparisonTableCol
             >
             <ComparisonTableCol center large>
                 <ComparisonTableMark check={true} />
             </ComparisonTableCol>
-            <ComparisonTableCol center>Sometimes</ComparisonTableCol>
+            <ComparisonTableCol center>Enterprise only</ComparisonTableCol>
+            <ComparisonTableCol center>Optional</ComparisonTableCol>
+            <ComparisonTableCol center> Enterprise only </ComparisonTableCol>
+        </ComparisonTableRow>
+        <ComparisonTableRow>
+            <ComparisonTableCol>
+                Affordable enterprise-grade user management
+            </ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <ComparisonTableMark check={true} />
+            </ComparisonTableCol>
+            <ComparisonTableCol center>
+                Enterprise plan only
+            </ComparisonTableCol>
+            <ComparisonTableCol center>
+                Enterprise plan only
+            </ComparisonTableCol>
+            <ComparisonTableCol center>
+                Google Workspace only
+            </ComparisonTableCol>
         </ComparisonTableRow>
     </div>
 </div>

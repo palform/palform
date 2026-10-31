@@ -80,7 +80,7 @@
             annualBilling={annualPricing}
         />
 
-        {#each plans as plan (plan.stripe_product_id)}
+        {#each plans as plan, index (plan.stripe_product_id)}
             <PricingPlan
                 {plan}
                 annualBilling={annualPricing}
@@ -89,6 +89,8 @@
                 trialOnly
                 showButton
                 onclick={onTrialClick}
+                everythingIn={index === 0 ? "Free" : plans[index-1].name}
+
             />
         {/each}
     </div>

@@ -40,14 +40,14 @@ export function freePlan(currency: string): APIBillingPlan {
         currency: currency,
         highlight: false,
         features: [
+            "End-to-end encryption",
+            "Unlimited responses",
+            "20 questions per form",
             "10 forms",
             "1 user",
-            "Unlimited submissions",
-            "20 questions",
             "All question types",
             "Unlimited file uploads",
             "Conditional branching",
-            "End-to-end encryption",
         ],
     };
 }

@@ -136,6 +136,18 @@
     </AccordionItem>
     <AccordionItem>
         {#snippet header()}
+            <span>What happens if I lose my encryption key?</span>
+        {/snippet}
+        <PricingFAQText>
+            We offer you the option of backing up a copy of your key to our
+            server when you create it. The copy gets encrypted with a secret
+            passphrase, so we still don't have access to the key ourselves. If
+            you lose your device or accidentally erase the key from it, simply
+            enter the backup passphrase and we'll restore it.
+        </PricingFAQText>
+    </AccordionItem>
+    <AccordionItem>
+        {#snippet header()}
             <span>Do your forms support mobile devices?</span>
         {/snippet}
         <PricingFAQText>

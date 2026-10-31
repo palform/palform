@@ -30,4 +30,12 @@
         <FontAwesomeIcon icon={faCircleCheck} class="inline-block ms-2 h-3" />
         No card required
     </li>
+    <li class="block align-baseline">
+        <FontAwesomeIcon icon={faCircleCheck} class="inline-block ms-2 h-3" />
+        Open source
+    </li>
+    <li class="block align-baseline">
+        <FontAwesomeIcon icon={faCircleCheck} class="inline-block ms-2 h-3" />
+        Hosted in the EU
+    </li>
 </ul>
