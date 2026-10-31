@@ -1,6 +1,6 @@
 use core::time;
 
-use sequoia_openpgp::{cert::CertBuilder, serialize::SerializeInto};
+use sequoia_openpgp::{cert::CertBuilder, serialize::SerializeInto, Profile};
 use serde::{Deserialize, Serialize};
 
 use crate::policy::NEW_KEY_SUITE;
@@ -22,6 +22,7 @@ pub fn generate_certificate(
     validity_period: time::Duration,
 ) -> Result<NewKeypair, anyhow::Error> {
     let (cert, _) = CertBuilder::new()
+        .set_profile(Profile::RFC9580)?
         .set_cipher_suite(NEW_KEY_SUITE)
         .set_validity_period(if validity_period.is_zero() {
             time::Duration::from_secs(u64::from(u32::MAX))

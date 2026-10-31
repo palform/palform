@@ -1,7 +1,4 @@
-use sequoia_openpgp::{
-    cert::CipherSuite,
-    policy::StandardPolicy,
-};
+use sequoia_openpgp::{cert::CipherSuite, policy::StandardPolicy};
 
 pub const NEW_KEY_SUITE: CipherSuite = CipherSuite::Cv25519;
 

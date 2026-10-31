@@ -87,11 +87,9 @@
         <span class={expired ? "line-through text-red-600" : "text-green-600"}>
             {keyMetadata?.fingerprint}
         </span>
-        {#if keyMetadata?.algo !== "ECDH"}
-            <span class="block text-xs">
-                {keyMetadata?.algo}
-            </span>
-        {/if}
+        <span class="block text-xs">
+            {keyMetadata?.algo}
+        </span>
     </TableBodyCell>
     <TableBodyCell>
         {#if matchedLocalKey !== undefined}

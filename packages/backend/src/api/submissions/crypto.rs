@@ -48,7 +48,10 @@ fn filter_certs_containing_key_handles(
     for key in keys {
         let repr = CryptoKeyRepr::<PublicParts>::from_database_bytes(&key.public_key)?;
         let enc_key = repr.enc_key(&policy)?;
-        let matches = required_key_ids.contains(&KeyHandle::KeyID(enc_key.key().keyid()));
+        // Old keys (created pre Nov 2026) use KeyID and new ones use Fingerprint. By comparing to
+        // the handle we make sure to compare the correct one always.
+        let enc_key_handle = enc_key.key().key_handle();
+        let matches = required_key_ids.iter().any(|h| h.aliases(&enc_key_handle));
         if matches {
             // add ALL subkeys of the matched cert to the list of read keys, otherwise it would show
             // seemingly unidentified keys in the list which were really just part of the matched

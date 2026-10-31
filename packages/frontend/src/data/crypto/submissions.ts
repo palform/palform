@@ -1,7 +1,7 @@
 import type { InProgressSubmissionRecord } from "../pouch";
 import type { InProgressSubmission } from "@palform/palform-client-js-extra-types/InProgressSubmission";
 import { APIs } from "../common";
-import { createMessage, type Key, readKey } from "openpgp";
+import { createMessage, type Key, readKey, encrypt, armor } from "openpgp";
 import {
     filterKeysByFingerprint,
     getFingerprintsFromURL,
@@ -47,7 +47,11 @@ async function getFormKeys(
 
 async function encryptAnything(data: Uint8Array, keys: Key[]) {
     const message = await createMessage({ binary: data });
-    const encrypted = await message.encrypt(keys);
+    const encrypted = await encrypt({
+        message,
+        format: "armored",
+        encryptionKeys: keys,
+    });
 
     return encrypted;
 }
@@ -68,7 +72,7 @@ export async function encryptSubmissionAsset(
 
     const fileData = new Uint8Array(await file.arrayBuffer());
     const encryptedData = await encryptAnything(fileData, formKeys);
-    return new TextEncoder().encode(encryptedData.armor());
+    return new TextEncoder().encode(encryptedData);
 }
 
 export async function sendSubmission(
@@ -105,7 +109,7 @@ export async function sendSubmission(
         formId,
         orgId,
         {
-            data: encryptedSubmission.armor(),
+            data: encryptedSubmission,
         }
     );
 }
