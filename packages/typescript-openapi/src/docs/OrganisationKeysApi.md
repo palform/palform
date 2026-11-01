@@ -4,12 +4,13 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**orgKeysList**](#orgkeyslist) | **GET** /api/org/{org_id}/keys/all | |
-|[**orgKeysTeamFingerprints**](#orgkeysteamfingerprints) | **GET** /api/org/{org_id}/team/{team_id}/keys/all | |
+|[**orgKeysList**](#orgkeyslist) | **GET** /api/org/{org_id}/keys/all | List all keys for all users within an organisation.|
+|[**orgKeysTeamFingerprints**](#orgkeysteamfingerprints) | **GET** /api/org/{org_id}/team/{team_id}/keys/all | List the fingerprints of all keys owned by all members of a team.|
 
 # **orgKeysList**
 > Array<APIUserKeyWithIdentity> orgKeysList()
 
+\\ Expired keys will be included in the list.
 
 ### Example
 

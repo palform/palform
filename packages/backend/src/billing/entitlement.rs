@@ -102,10 +102,6 @@ impl INTERNALBillingEntitlementManager {
                 self.numeric_check::<_, OrganisationMembersManager>(conn, oe.user_count)
                     .await?
             }
-            APIEntitlementRequest::ResponseCount => {
-                // this is checked separately, see the API handler for new submission
-                true
-            }
             APIEntitlementRequest::QuestionPerFormCount(form_id) => {
                 self.contextual_numeric_check::<_, QuestionManager>(
                     conn,

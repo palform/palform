@@ -2,6 +2,7 @@
     import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
     import { getBrandCtx } from "../../../data/contexts/brand";
     import { faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+    import { t } from "../../../data/contexts/i18n";
 
     interface Props {
         dummyLinks?: boolean;
@@ -28,7 +29,7 @@
                         target="_blank"
                         class="underline"
                     >
-                        Terms
+                        {t("legal_terms")}
                         <FontAwesomeIcon icon={faUpRightFromSquare} />
                     </a>
                 </p>
@@ -41,7 +42,7 @@
                         target="_blank"
                         class="underline"
                     >
-                        Privacy Policy
+                        {t("legal_privacy")}
                         <FontAwesomeIcon icon={faUpRightFromSquare} />
                     </a>
                 </p>

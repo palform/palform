@@ -1,5 +1,6 @@
 # Known
 
+The key was matched to a Palform user
 
 ## Properties
 

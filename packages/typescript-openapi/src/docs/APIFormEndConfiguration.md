@@ -1,13 +1,14 @@
 # APIFormEndConfiguration
 
+A configuration for what the page shown to the user after successfully submitting the form should look like
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**message** | **string** |  | [optional] [default to undefined]
-**redirect_to** | **string** |  | [optional] [default to undefined]
-**show_restart** | **boolean** |  | [default to undefined]
+**message** | **string** | A Markdown-enabled message to show to the user | [optional] [default to undefined]
+**redirect_to** | **string** | If specified, a button is shown with the text \&quot;Continue\&quot; that links to this URL | [optional] [default to undefined]
+**show_restart** | **boolean** | Whether to show a button to start a new submission from scratch | [default to undefined]
 
 ## Example
 

@@ -1,5 +1,6 @@
 # APIQuestionGroupStepStrategy
 
+A strategy to determine what to do after the user has filled a question group.
 
 ## Properties
 

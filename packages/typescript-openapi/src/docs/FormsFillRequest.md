@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**data** | **string** |  | [default to undefined]
+**data** | **string** | The submission data as an encrypted PGP message in armored ASCII form. The message itself must be a JSON object of the form &#x60;[palform_client_common::form_management::submission::InProgressSubmission]&#x60;. | [default to undefined]
 
 ## Example
 

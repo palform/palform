@@ -215,26 +215,62 @@ export interface APIFeedbackItem {
     'comment'?: string | null;
     'score': number;
 }
+/**
+ * A token with which end-users can access form filling related API endpoints for a specific form only.
+ */
 export interface APIFillToken {
     'created_at': string;
+    /**
+     * Optionally, an expiry time after which the token will no longer work
+     */
     'expires_at'?: string | null;
     'form_id': string;
     'id': string;
+    /**
+     * An internal nickname to allow segmenting submissions by fill access token
+     */
     'nickname': string;
+    /**
+     * Optionally, a shortened path through which the form can be filled. This requires the organisation to have a subdomain configured. The form will be available at `https://<subdomain>.palform.app/<short_link>`. Fill access tokens with short links can still be accessed at the long path, too.
+     */
     'short_link'?: string | null;
 }
 export interface APIForm {
+    /**
+     * Submissions are automatically deleted this number of days after submission
+     */
     'auto_delete_submission_after_days'?: number | null;
     'branding_id'?: string | null;
+    /**
+     * A name shown only to the admins and editors of the form
+     */
     'editor_name': string;
+    /**
+     * Whether to require a captcha to submit the form
+     */
     'enable_captcha': boolean;
     'end_configuration': APIFormEndConfiguration;
     'id': string;
+    /**
+     * The email address to which new response notifications are sent
+     */
     'notification_email': boolean;
+    /**
+     * The URL of the webhook to which new response notifications are sent
+     */
     'notification_webhook_url'?: string | null;
+    /**
+     * Whether to use the One Question Per Page (OQPP) flow, where each question is on a different page and the user has to click \"Next\" to continue. Otherwise, multiple questions are allowed per page, and the form editor can decide which pages contain which questions.
+     */
     'one_question_per_page': boolean;
+    /**
+     * An up-to-date count of all non-deleted responses across all fill access tokens
+     */
     'response_count': number;
     'team_id': string;
+    /**
+     * A public-facing name, shown only on non-OQPP forms
+     */
     'title'?: string | null;
 }
 export interface APIFormBranding {
@@ -286,9 +322,21 @@ export interface APIFormBrandingRequest {
 }
 
 
+/**
+ * A configuration for what the page shown to the user after successfully submitting the form should look like
+ */
 export interface APIFormEndConfiguration {
+    /**
+     * A Markdown-enabled message to show to the user
+     */
     'message'?: string | null;
+    /**
+     * If specified, a button is shown with the text \"Continue\" that links to this URL
+     */
     'redirect_to'?: string | null;
+    /**
+     * Whether to show a button to start a new submission from scratch
+     */
     'show_restart': boolean;
 }
 export interface APIFormTemplate {
@@ -306,6 +354,9 @@ export interface APIFormTemplateCategory {
     'name': string;
     'template_count': number;
 }
+/**
+ * A full dump of all the information needed to fully display a form, in a compressed format with shortened keys.
+ */
 export interface APIFormWithQuestions {
     'b'?: APIFormBranding | null;
     'f': APIFrontendForm;
@@ -313,6 +364,9 @@ export interface APIFormWithQuestions {
     'o': string;
     'q': Array<APIQuestion>;
 }
+/**
+ * A stripped-down version of the form\'s metadata shown to non-admin users filling the form
+ */
 export interface APIFrontendForm {
     'editor_name': string;
     'enable_captcha': boolean;
@@ -340,11 +394,24 @@ export interface APIOrgMemberServiceAccount {
     'user_id': string;
 }
 export interface APIOrganisation {
+    /**
+     * Whether to allow the organisation to go over its response limit and therefore be charged for additional responses.
+     * @deprecated
+     */
     'billing_allow_overage': boolean;
     'created_at': string;
+    /**
+     * The name of the organisation, visible to admins and anyone filling any of the organisation\'s forms.
+     */
     'display_name': string;
     'id': string;
+    /**
+     * Optionally, a subdomain used by the organisation for short form links and possibly for authentication via OIDC (if configured).
+     */
     'subdomain'?: string | null;
+    /**
+     * Whether the organisation uses OIDC authentication.
+     */
     'uses_oidc': boolean;
 }
 export interface APIOrganisationAuthConfig {
@@ -428,10 +495,19 @@ export interface APIOrganisationTeamMembership {
 
 export interface APIQuestion {
     'configuration': APIQuestionConfiguration;
+    /**
+     * A Markdown-enabled description shown below the title.
+     */
     'description'?: string | null;
     'group_id': string;
     'id': string;
+    /**
+     * The name of the field as used in bulk submission exports and recall tags.
+     */
     'internal_name'?: string | null;
+    /**
+     * Whether to prevent the question group being finished if this question has not been answered. Each question type has a different definition of what it means to be answered.
+     */
     'required': boolean;
     'title': string;
 }
@@ -453,14 +529,24 @@ export const APIQuestionFileUploadType = {
 export type APIQuestionFileUploadType = typeof APIQuestionFileUploadType[keyof typeof APIQuestionFileUploadType];
 
 
+/**
+ * A question group corresponds to a page.  On a one-question-per-page form, each group contains exactly one question, since each question is on its own page. On non-OQPP forms, each group can contain any number of questions. When filling the form, the user will have to click \"Next\" to continue to the next question group.
+ */
 export interface APIQuestionGroup {
+    /**
+     * A user-facing description. Only shown on non-OQPP forms.
+     */
     'description'?: string | null;
     'id': string;
     'step_strategy': APIQuestionGroupStepStrategy;
+    /**
+     * A user-facing title. Only shown on non-OQPP forms.
+     */
     'title'?: string | null;
 }
 /**
  * @type APIQuestionGroupStepStrategy
+ * A strategy to determine what to do after the user has filled a question group.
  */
 export type APIQuestionGroupStepStrategy = JumpToSection | string;
 
@@ -507,18 +593,33 @@ export type APIQuestionTextValidator = typeof APIQuestionTextValidator[keyof typ
 
 
 export interface APISaveQuestionsRequest {
+    /**
+     * The full list of question groups.
+     */
     'groups': Array<APIQuestionGroup>;
+    /**
+     * The full list of questions. Their group ID must be one of the specified groups.
+     */
     'questions': Array<APIQuestion>;
 }
 export interface APIServiceAccountAdminUser {
     'created_at': string;
     'email': string;
     'id': string;
+    /**
+     * The service account\'s token, to be used as a bearer credential when making API requests. Only returned once when the service account is created.
+     */
     'service_account_auth_token'?: string | null;
 }
 export interface APISubmission {
     'created_at': string;
+    /**
+     * The submission data as an encrypted PGP message in armored ASCII form. The message itself is a JSON object of the form `[palform_client_common::form_management::submission::InProgressSubmission]`.
+     */
     'data': string;
+    /**
+     * The fill access token that the user used to fill out the form
+     */
     'for_token'?: string | null;
     'id': string;
 }
@@ -528,9 +629,21 @@ export interface APISubmissionCountPerForm {
     'team_id': string;
 }
 export interface APISubmissionStream {
+    /**
+     * IDs of submissions that were deleted
+     */
     'deleted': Array<string>;
+    /**
+     * New submissions
+     */
     'new': Array<APISubmission>;
+    /**
+     * If requested, the date since which the changes cover
+     */
     'since'?: string | null;
+    /**
+     * The total number of non-deleted submissions to the form (over all time, regardless of `since`)
+     */
     'total': number;
 }
 export interface APITeamAsset {
@@ -538,11 +651,20 @@ export interface APITeamAsset {
     'id': string;
     'url': string;
 }
+/**
+ * A backend representation of a user\'s encryption key.
+ */
 export interface APIUserKey {
     'created_at': string;
     'expires_at': string;
+    /**
+     * Whether the key is backed up to the DB in encrypted form
+     */
     'has_backup': boolean;
     'id': string;
+    /**
+     * PGP public key in ASCII-armored form
+     */
     'key_pem': string;
     'user_id': string;
 }
@@ -592,6 +714,9 @@ export const AlertType = {
 export type AlertType = typeof AlertType[keyof typeof AlertType];
 
 
+/**
+ * The case matches if all of these conditions match
+ */
 export interface And {
     'And': Array<APIQuestionGroupStepStrategyJumpCaseCondition>;
 }
@@ -690,6 +815,10 @@ export interface ConfigChoiceChoice {
      */
     'multi': boolean;
     'options': Array<string>;
+    /**
+     * Show an \"Other\" option at the end, which allows the user to enter a custom value when selected
+     */
+    'show_other'?: boolean;
 }
 export interface ConfigChoiceMatrix {
     'choice_matrix': ConfigChoiceMatrixChoiceMatrix;
@@ -807,7 +936,7 @@ export interface CreateFormRequest {
      */
     'in_team': string;
     /**
-     * Whether to use the One Question Per Page (OQPP) flow, where each question is on a different page and the user has to click \"Next\" to continue. Otherwise, multiple questions are allowed per page, and the form editor can decide which pages contain which questions.
+     * Whether to use the One Question Per Page (OQPP) flow, where each question is on a different page and the user has to click \"Next\" to continue. Otherwise, multiple questions are allowed per page, and the form editor can decide which pages contain which questions. This cannot be changed after the form is created.
      */
     'one_question_per_page': boolean;
     /**
@@ -919,12 +1048,21 @@ export interface FormsCloneRequest {
     'new_team_id': string;
 }
 export interface FormsFillRequest {
+    /**
+     * The submission data as an encrypted PGP message in armored ASCII form. The message itself must be a JSON object of the form `[palform_client_common::form_management::submission::InProgressSubmission]`.
+     */
     'data': string;
 }
 export interface FormsKeysResponse {
+    /**
+     * A list of PGP public keys in armored ASCII form
+     */
     'keys': Array<string>;
 }
 export interface FormsRelocateRequest {
+    /**
+     * The team to move the form to.
+     */
     'target_team_id': string;
 }
 
@@ -952,7 +1090,7 @@ export interface JoinOrganisationRequest {
     'invite_id': string;
 }
 /**
- * Jump to one of a list of sections, based on which one\'s condition is the first to match
+ * Jump to one of a list of sections. Each jump case is evaluated one-by-one in order, and the first one to match will be selected as the next question group to take the user to. If none of them match, the action will be to submit the form. Specifying an empty list here will mean that the action is always to submit the form.
  */
 export interface JumpToSection {
     'JumpToSection': Array<APIQuestionGroupStepStrategyJumpCase>;
@@ -960,6 +1098,9 @@ export interface JumpToSection {
 export interface KeysTeamFingerprintsResponse {
     'fingerprints': Array<string>;
 }
+/**
+ * The key was matched to a Palform user
+ */
 export interface Known {
     'Known': APIUserKeyWithIdentity;
 }
@@ -1047,10 +1188,22 @@ export interface NewOrganisationRequest {
     'display_name': string;
 }
 export interface NewTokenRequest {
+    /**
+     * Optionally, an expiry time after which the token will no longer work
+     */
     'expires_in_seconds'?: number | null;
+    /**
+     * An internal nickname to allow segmenting submissions by fill access token
+     */
     'nickname': string;
+    /**
+     * Optionally, a shortened path through which the form can be filled. This requires the organisation to have a subdomain configured. The form will be available at `https://<subdomain>.palform.app/<short_link>`. Fill access tokens with short links can still be accessed at the long path, too.
+     */
     'short_link'?: string | null;
 }
+/**
+ * The case matches if any of these conditions match
+ */
 export interface Or {
     'Or': Array<APIQuestionGroupStepStrategyJumpCaseCondition>;
 }
@@ -1094,6 +1247,9 @@ export interface PatchOrgMemberRequest {
     'is_admin': boolean;
 }
 export interface PatchOrgRequest {
+    /**
+     * The name of the organisation, visible to admins and anyone filling any of the organisation\'s forms.
+     */
     'display_name': string;
 }
 export interface QuestionPerFormCount {
@@ -1101,7 +1257,7 @@ export interface QuestionPerFormCount {
 }
 export interface RegisterBackupKeyRequest {
     /**
-     * PEM-encoded encrypted secret key
+     * PEM-encoded encrypted secret key (`null` to delete the existing backup)
      */
     'key_data'?: string | null;
 }
@@ -1131,6 +1287,9 @@ export interface SendPasswordResetRequest {
     'email': string;
 }
 export interface SetSubmissionAutoDeleteRequest {
+    /**
+     * The number of days, or `null` to disable this feature for this form.
+     */
     'days'?: number | null;
 }
 export interface SignInRequest {
@@ -1201,6 +1360,9 @@ export interface SwitchPlanRequest {
 export interface Totp {
     'Totp': string;
 }
+/**
+ * The key was not matched to a Palform user, so only its fingerprint is known
+ */
 export interface Unknown {
     'Unknown': string;
 }
@@ -1237,7 +1399,8 @@ export interface Webauthn {
 export const AdminUsersApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
+         * \\ The service account will be added as a non-admin member of the organisation and a Viewer member\\ of its default team. This can be changed after creation.
+         * @summary Create a service account.
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1279,6 +1442,7 @@ export const AdminUsersApiAxiosParamCreator = function (configuration?: Configur
         },
         /**
          * 
+         * @summary Delete a service account.
          * @param {string} adminUserId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -1368,7 +1532,8 @@ export const AdminUsersApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AdminUsersApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
+         * \\ The service account will be added as a non-admin member of the organisation and a Viewer member\\ of its default team. This can be changed after creation.
+         * @summary Create a service account.
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1381,6 +1546,7 @@ export const AdminUsersApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Delete a service account.
          * @param {string} adminUserId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -1414,7 +1580,8 @@ export const AdminUsersApiFactory = function (configuration?: Configuration, bas
     const localVarFp = AdminUsersApiFp(configuration)
     return {
         /**
-         * 
+         * \\ The service account will be added as a non-admin member of the organisation and a Viewer member\\ of its default team. This can be changed after creation.
+         * @summary Create a service account.
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1424,6 +1591,7 @@ export const AdminUsersApiFactory = function (configuration?: Configuration, bas
         },
         /**
          * 
+         * @summary Delete a service account.
          * @param {string} adminUserId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -1449,7 +1617,8 @@ export const AdminUsersApiFactory = function (configuration?: Configuration, bas
  */
 export class AdminUsersApi extends BaseAPI {
     /**
-     * 
+     * \\ The service account will be added as a non-admin member of the organisation and a Viewer member\\ of its default team. This can be changed after creation.
+     * @summary Create a service account.
      * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1460,6 +1629,7 @@ export class AdminUsersApi extends BaseAPI {
 
     /**
      * 
+     * @summary Delete a service account.
      * @param {string} adminUserId 
      * @param {string} orgId 
      * @param {*} [options] Override http request option.
@@ -1489,6 +1659,7 @@ export const AuditLogsApiAxiosParamCreator = function (configuration?: Configura
     return {
         /**
          * 
+         * @summary List all audit logs for an organisation.
          * @param {string} orgId 
          * @param {string | null} [from] 
          * @param {AuditLogTargetResourceEnum | null} [resource] 
@@ -1558,6 +1729,7 @@ export const AuditLogsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary List all audit logs for an organisation.
          * @param {string} orgId 
          * @param {string | null} [from] 
          * @param {AuditLogTargetResourceEnum | null} [resource] 
@@ -1582,6 +1754,7 @@ export const AuditLogsApiFactory = function (configuration?: Configuration, base
     return {
         /**
          * 
+         * @summary List all audit logs for an organisation.
          * @param {string} orgId 
          * @param {string | null} [from] 
          * @param {AuditLogTargetResourceEnum | null} [resource] 
@@ -1601,6 +1774,7 @@ export const AuditLogsApiFactory = function (configuration?: Configuration, base
 export class AuditLogsApi extends BaseAPI {
     /**
      * 
+     * @summary List all audit logs for an organisation.
      * @param {string} orgId 
      * @param {string | null} [from] 
      * @param {AuditLogTargetResourceEnum | null} [resource] 
@@ -4221,7 +4395,8 @@ export class FeedbackApi extends BaseAPI {
 export const FillAccessTokensApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
+         * \\ These tokens are included in fill URLs, which allows end-users to fill in forms. Each form can\\ have multiple fill access tokens, which allows segmenting submissions based on their source.
+         * @summary Create a new fill access token.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {NewTokenRequest} newTokenRequest 
@@ -4271,7 +4446,8 @@ export const FillAccessTokensApiAxiosParamCreator = function (configuration?: Co
             };
         },
         /**
-         * 
+         * \\ The responses created with this token will not be deleted, but the token will be disassociated\\ from them. URLs containing this token will stop working immediately.
+         * @summary Delete a fill access token.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {string} tokenId 
@@ -4320,6 +4496,7 @@ export const FillAccessTokensApiAxiosParamCreator = function (configuration?: Co
         },
         /**
          * 
+         * @summary List all fill access tokens of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -4373,7 +4550,8 @@ export const FillAccessTokensApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = FillAccessTokensApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
+         * \\ These tokens are included in fill URLs, which allows end-users to fill in forms. Each form can\\ have multiple fill access tokens, which allows segmenting submissions based on their source.
+         * @summary Create a new fill access token.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {NewTokenRequest} newTokenRequest 
@@ -4387,7 +4565,8 @@ export const FillAccessTokensApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * \\ The responses created with this token will not be deleted, but the token will be disassociated\\ from them. URLs containing this token will stop working immediately.
+         * @summary Delete a fill access token.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {string} tokenId 
@@ -4402,6 +4581,7 @@ export const FillAccessTokensApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary List all fill access tokens of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -4423,7 +4603,8 @@ export const FillAccessTokensApiFactory = function (configuration?: Configuratio
     const localVarFp = FillAccessTokensApiFp(configuration)
     return {
         /**
-         * 
+         * \\ These tokens are included in fill URLs, which allows end-users to fill in forms. Each form can\\ have multiple fill access tokens, which allows segmenting submissions based on their source.
+         * @summary Create a new fill access token.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {NewTokenRequest} newTokenRequest 
@@ -4434,7 +4615,8 @@ export const FillAccessTokensApiFactory = function (configuration?: Configuratio
             return localVarFp.fillAccessTokensCreate(formId, orgId, newTokenRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * \\ The responses created with this token will not be deleted, but the token will be disassociated\\ from them. URLs containing this token will stop working immediately.
+         * @summary Delete a fill access token.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {string} tokenId 
@@ -4446,6 +4628,7 @@ export const FillAccessTokensApiFactory = function (configuration?: Configuratio
         },
         /**
          * 
+         * @summary List all fill access tokens of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -4462,7 +4645,8 @@ export const FillAccessTokensApiFactory = function (configuration?: Configuratio
  */
 export class FillAccessTokensApi extends BaseAPI {
     /**
-     * 
+     * \\ These tokens are included in fill URLs, which allows end-users to fill in forms. Each form can\\ have multiple fill access tokens, which allows segmenting submissions based on their source.
+     * @summary Create a new fill access token.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {NewTokenRequest} newTokenRequest 
@@ -4474,7 +4658,8 @@ export class FillAccessTokensApi extends BaseAPI {
     }
 
     /**
-     * 
+     * \\ The responses created with this token will not be deleted, but the token will be disassociated\\ from them. URLs containing this token will stop working immediately.
+     * @summary Delete a fill access token.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {string} tokenId 
@@ -4487,6 +4672,7 @@ export class FillAccessTokensApi extends BaseAPI {
 
     /**
      * 
+     * @summary List all fill access tokens of a form.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {*} [options] Override http request option.
@@ -5705,7 +5891,7 @@ export class FormTemplatesApi extends BaseAPI {
 export const FormsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * \\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.
+         * \\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.\\ \\ The responses and the fill access tokens of the form will not be copied.
          * @summary Creates a copy of a form and its question groups and questions.
          * @param {string} formId 
          * @param {string} orgId 
@@ -5756,7 +5942,7 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
-         * \\ The form will be created in the specified team. It will not be initialised with\\ any questions.
+         * \\ The form will be created in the specified team. It will not be initialised with any questions.\\ Some settings can be updated after creation.
          * @summary Create a new form.
          * @param {string} orgId 
          * @param {CreateFormRequest} createFormRequest 
@@ -5886,7 +6072,7 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
-         * 
+         * \\ The submission will be associated with the fill access token.\\ \\ The message is validated on the backend to ensure it is parseable before it gets saved to\\ the database, but of course it is not decrypted, so no validation on the underlying data is\\ performed.
          * @summary Submit a response to a form.
          * @param {string} formId 
          * @param {string} orgId 
@@ -5935,6 +6121,7 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Get the metadata of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -5979,7 +6166,8 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
-         * 
+         * \\ This will return all of the non-expired public keys of all of the users who are members of the form\'s team. In\\ general, responses to the form should be encrypted for all of these keys, such that any one of\\ them can decrypt the response.
+         * @summary Get a list of PGP keys that responses to a form should be encrypted with.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -6020,6 +6208,7 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary List all forms that the user has access to within an organisation.
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -6060,7 +6249,8 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
-         * 
+         * \\ The user performing this operation must have at least Editor access to both the form\'s current\\ and target teams. The form\'s branding will be reset to the default, since branding\\ configurations are team-specific.
+         * @summary Move a form to another team.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {FormsRelocateRequest} formsRelocateRequest 
@@ -6109,7 +6299,8 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
-         * 
+         * \\ Forms with this feature enabled will have all responses created a certain number of days ago get\\ automatically deleted. This is done by a scheduled job on the backend, so the time of deletion\\ won\'t be exactly `days * 24` hours after the submission is created.\\ \\ If there are responses older than the configured number of days when this feature is enabled,\\ they will be deleted whenever the scheduled job next runs.
+         * @summary Configure the auto-deletion policy of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {SetSubmissionAutoDeleteRequest} setSubmissionAutoDeleteRequest 
@@ -6159,6 +6350,7 @@ export const FormsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Update the metadata of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {UpdateFormRequest} updateFormRequest 
@@ -6256,7 +6448,7 @@ export const FormsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = FormsApiAxiosParamCreator(configuration)
     return {
         /**
-         * \\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.
+         * \\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.\\ \\ The responses and the fill access tokens of the form will not be copied.
          * @summary Creates a copy of a form and its question groups and questions.
          * @param {string} formId 
          * @param {string} orgId 
@@ -6271,7 +6463,7 @@ export const FormsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * \\ The form will be created in the specified team. It will not be initialised with\\ any questions.
+         * \\ The form will be created in the specified team. It will not be initialised with any questions.\\ Some settings can be updated after creation.
          * @summary Create a new form.
          * @param {string} orgId 
          * @param {CreateFormRequest} createFormRequest 
@@ -6313,7 +6505,7 @@ export const FormsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * \\ The submission will be associated with the fill access token.\\ \\ The message is validated on the backend to ensure it is parseable before it gets saved to\\ the database, but of course it is not decrypted, so no validation on the underlying data is\\ performed.
          * @summary Submit a response to a form.
          * @param {string} formId 
          * @param {string} orgId 
@@ -6329,6 +6521,7 @@ export const FormsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get the metadata of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -6341,7 +6534,8 @@ export const FormsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * \\ This will return all of the non-expired public keys of all of the users who are members of the form\'s team. In\\ general, responses to the form should be encrypted for all of these keys, such that any one of\\ them can decrypt the response.
+         * @summary Get a list of PGP keys that responses to a form should be encrypted with.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -6355,6 +6549,7 @@ export const FormsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary List all forms that the user has access to within an organisation.
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -6366,7 +6561,8 @@ export const FormsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * \\ The user performing this operation must have at least Editor access to both the form\'s current\\ and target teams. The form\'s branding will be reset to the default, since branding\\ configurations are team-specific.
+         * @summary Move a form to another team.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {FormsRelocateRequest} formsRelocateRequest 
@@ -6380,7 +6576,8 @@ export const FormsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * \\ Forms with this feature enabled will have all responses created a certain number of days ago get\\ automatically deleted. This is done by a scheduled job on the backend, so the time of deletion\\ won\'t be exactly `days * 24` hours after the submission is created.\\ \\ If there are responses older than the configured number of days when this feature is enabled,\\ they will be deleted whenever the scheduled job next runs.
+         * @summary Configure the auto-deletion policy of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {SetSubmissionAutoDeleteRequest} setSubmissionAutoDeleteRequest 
@@ -6395,6 +6592,7 @@ export const FormsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Update the metadata of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {UpdateFormRequest} updateFormRequest 
@@ -6430,7 +6628,7 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
     const localVarFp = FormsApiFp(configuration)
     return {
         /**
-         * \\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.
+         * \\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.\\ \\ The responses and the fill access tokens of the form will not be copied.
          * @summary Creates a copy of a form and its question groups and questions.
          * @param {string} formId 
          * @param {string} orgId 
@@ -6442,7 +6640,7 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
             return localVarFp.formsClone(formId, orgId, formsCloneRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * \\ The form will be created in the specified team. It will not be initialised with\\ any questions.
+         * \\ The form will be created in the specified team. It will not be initialised with any questions.\\ Some settings can be updated after creation.
          * @summary Create a new form.
          * @param {string} orgId 
          * @param {CreateFormRequest} createFormRequest 
@@ -6475,7 +6673,7 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
             return localVarFp.formsExchangeShortLink(shortLink, subdomain, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * \\ The submission will be associated with the fill access token.\\ \\ The message is validated on the backend to ensure it is parseable before it gets saved to\\ the database, but of course it is not decrypted, so no validation on the underlying data is\\ performed.
          * @summary Submit a response to a form.
          * @param {string} formId 
          * @param {string} orgId 
@@ -6488,6 +6686,7 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary Get the metadata of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -6497,7 +6696,8 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
             return localVarFp.formsGet(formId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * \\ This will return all of the non-expired public keys of all of the users who are members of the form\'s team. In\\ general, responses to the form should be encrypted for all of these keys, such that any one of\\ them can decrypt the response.
+         * @summary Get a list of PGP keys that responses to a form should be encrypted with.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -6508,6 +6708,7 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary List all forms that the user has access to within an organisation.
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -6516,7 +6717,8 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
             return localVarFp.formsList(orgId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * \\ The user performing this operation must have at least Editor access to both the form\'s current\\ and target teams. The form\'s branding will be reset to the default, since branding\\ configurations are team-specific.
+         * @summary Move a form to another team.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {FormsRelocateRequest} formsRelocateRequest 
@@ -6527,7 +6729,8 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
             return localVarFp.formsRelocate(formId, orgId, formsRelocateRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * \\ Forms with this feature enabled will have all responses created a certain number of days ago get\\ automatically deleted. This is done by a scheduled job on the backend, so the time of deletion\\ won\'t be exactly `days * 24` hours after the submission is created.\\ \\ If there are responses older than the configured number of days when this feature is enabled,\\ they will be deleted whenever the scheduled job next runs.
+         * @summary Configure the auto-deletion policy of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {SetSubmissionAutoDeleteRequest} setSubmissionAutoDeleteRequest 
@@ -6539,6 +6742,7 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary Update the metadata of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {UpdateFormRequest} updateFormRequest 
@@ -6566,7 +6770,7 @@ export const FormsApiFactory = function (configuration?: Configuration, basePath
  */
 export class FormsApi extends BaseAPI {
     /**
-     * \\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.
+     * \\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.\\ \\ The responses and the fill access tokens of the form will not be copied.
      * @summary Creates a copy of a form and its question groups and questions.
      * @param {string} formId 
      * @param {string} orgId 
@@ -6579,7 +6783,7 @@ export class FormsApi extends BaseAPI {
     }
 
     /**
-     * \\ The form will be created in the specified team. It will not be initialised with\\ any questions.
+     * \\ The form will be created in the specified team. It will not be initialised with any questions.\\ Some settings can be updated after creation.
      * @summary Create a new form.
      * @param {string} orgId 
      * @param {CreateFormRequest} createFormRequest 
@@ -6615,7 +6819,7 @@ export class FormsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * \\ The submission will be associated with the fill access token.\\ \\ The message is validated on the backend to ensure it is parseable before it gets saved to\\ the database, but of course it is not decrypted, so no validation on the underlying data is\\ performed.
      * @summary Submit a response to a form.
      * @param {string} formId 
      * @param {string} orgId 
@@ -6629,6 +6833,7 @@ export class FormsApi extends BaseAPI {
 
     /**
      * 
+     * @summary Get the metadata of a form.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {*} [options] Override http request option.
@@ -6639,7 +6844,8 @@ export class FormsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * \\ This will return all of the non-expired public keys of all of the users who are members of the form\'s team. In\\ general, responses to the form should be encrypted for all of these keys, such that any one of\\ them can decrypt the response.
+     * @summary Get a list of PGP keys that responses to a form should be encrypted with.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {*} [options] Override http request option.
@@ -6651,6 +6857,7 @@ export class FormsApi extends BaseAPI {
 
     /**
      * 
+     * @summary List all forms that the user has access to within an organisation.
      * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -6660,7 +6867,8 @@ export class FormsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * \\ The user performing this operation must have at least Editor access to both the form\'s current\\ and target teams. The form\'s branding will be reset to the default, since branding\\ configurations are team-specific.
+     * @summary Move a form to another team.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {FormsRelocateRequest} formsRelocateRequest 
@@ -6672,7 +6880,8 @@ export class FormsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * \\ Forms with this feature enabled will have all responses created a certain number of days ago get\\ automatically deleted. This is done by a scheduled job on the backend, so the time of deletion\\ won\'t be exactly `days * 24` hours after the submission is created.\\ \\ If there are responses older than the configured number of days when this feature is enabled,\\ they will be deleted whenever the scheduled job next runs.
+     * @summary Configure the auto-deletion policy of a form.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {SetSubmissionAutoDeleteRequest} setSubmissionAutoDeleteRequest 
@@ -6685,6 +6894,7 @@ export class FormsApi extends BaseAPI {
 
     /**
      * 
+     * @summary Update the metadata of a form.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {UpdateFormRequest} updateFormRequest 
@@ -7456,10 +7666,6 @@ export const OrganisationDeletionRequestsApiAxiosParamCreator = function (config
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
-            // authentication service_account_token required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -7495,10 +7701,6 @@ export const OrganisationDeletionRequestsApiAxiosParamCreator = function (config
             // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
-
-            // authentication service_account_token required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -7540,10 +7742,6 @@ export const OrganisationDeletionRequestsApiAxiosParamCreator = function (config
             // authentication personal_token required
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
-
-            // authentication service_account_token required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -8026,7 +8224,8 @@ export class OrganisationInvitesApi extends BaseAPI {
 export const OrganisationKeysApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
+         * \\ Expired keys will be included in the list.
+         * @summary List all keys for all users within an organisation.
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -8068,6 +8267,7 @@ export const OrganisationKeysApiAxiosParamCreator = function (configuration?: Co
         },
         /**
          * 
+         * @summary List the fingerprints of all keys owned by all members of a team.
          * @param {string} orgId 
          * @param {string} teamId 
          * @param {*} [options] Override http request option.
@@ -8121,7 +8321,8 @@ export const OrganisationKeysApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = OrganisationKeysApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
+         * \\ Expired keys will be included in the list.
+         * @summary List all keys for all users within an organisation.
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -8134,6 +8335,7 @@ export const OrganisationKeysApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary List the fingerprints of all keys owned by all members of a team.
          * @param {string} orgId 
          * @param {string} teamId 
          * @param {*} [options] Override http request option.
@@ -8155,7 +8357,8 @@ export const OrganisationKeysApiFactory = function (configuration?: Configuratio
     const localVarFp = OrganisationKeysApiFp(configuration)
     return {
         /**
-         * 
+         * \\ Expired keys will be included in the list.
+         * @summary List all keys for all users within an organisation.
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -8165,6 +8368,7 @@ export const OrganisationKeysApiFactory = function (configuration?: Configuratio
         },
         /**
          * 
+         * @summary List the fingerprints of all keys owned by all members of a team.
          * @param {string} orgId 
          * @param {string} teamId 
          * @param {*} [options] Override http request option.
@@ -8181,7 +8385,8 @@ export const OrganisationKeysApiFactory = function (configuration?: Configuratio
  */
 export class OrganisationKeysApi extends BaseAPI {
     /**
-     * 
+     * \\ Expired keys will be included in the list.
+     * @summary List all keys for all users within an organisation.
      * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -8192,6 +8397,7 @@ export class OrganisationKeysApi extends BaseAPI {
 
     /**
      * 
+     * @summary List the fingerprints of all keys owned by all members of a team.
      * @param {string} orgId 
      * @param {string} teamId 
      * @param {*} [options] Override http request option.
@@ -9526,7 +9732,8 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
             };
         },
         /**
-         * 
+         * \\ This operation is currently irreversible. Once configured, the organisation\'s subdomain cannot\\ be changed or removed.
+         * @summary Configure a subdomain for an organisation.
          * @param {string} orgId 
          * @param {CreateSubdomainRequest} createSubdomainRequest 
          * @param {*} [options] Override http request option.
@@ -9599,10 +9806,6 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
             // http basic authentication required
             setBasicAuthToObject(localVarRequestOptions, configuration)
 
-            // authentication service_account_token required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -9618,6 +9821,7 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
         },
         /**
          * 
+         * @summary Get metadata about an organisation.
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -9658,8 +9862,8 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
             };
         },
         /**
-         * \\ List all the organisations that the authenticated user is a member of
-         * @summary List organisation
+         * \\ List all the organisations that the authenticated user is a member of.
+         * @summary List organisations
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -9697,6 +9901,7 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
         },
         /**
          * 
+         * @summary Update the metadata of an organisation.
          * @param {string} orgId 
          * @param {PatchOrgRequest} patchOrgRequest 
          * @param {*} [options] Override http request option.
@@ -9742,6 +9947,7 @@ export const OrganisationsApiAxiosParamCreator = function (configuration?: Confi
         },
         /**
          * 
+         * @summary Return an organisation\'s metadata by its subdomain.
          * @param {string} subdomain 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -9798,7 +10004,8 @@ export const OrganisationsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * \\ This operation is currently irreversible. Once configured, the organisation\'s subdomain cannot\\ be changed or removed.
+         * @summary Configure a subdomain for an organisation.
          * @param {string} orgId 
          * @param {CreateSubdomainRequest} createSubdomainRequest 
          * @param {*} [options] Override http request option.
@@ -9825,6 +10032,7 @@ export const OrganisationsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get metadata about an organisation.
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -9836,8 +10044,8 @@ export const OrganisationsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * \\ List all the organisations that the authenticated user is a member of
-         * @summary List organisation
+         * \\ List all the organisations that the authenticated user is a member of.
+         * @summary List organisations
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -9849,6 +10057,7 @@ export const OrganisationsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Update the metadata of an organisation.
          * @param {string} orgId 
          * @param {PatchOrgRequest} patchOrgRequest 
          * @param {*} [options] Override http request option.
@@ -9862,6 +10071,7 @@ export const OrganisationsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Return an organisation\'s metadata by its subdomain.
          * @param {string} subdomain 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -9891,7 +10101,8 @@ export const OrganisationsApiFactory = function (configuration?: Configuration, 
             return localVarFp.orgsCreate(newOrganisationRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * \\ This operation is currently irreversible. Once configured, the organisation\'s subdomain cannot\\ be changed or removed.
+         * @summary Configure a subdomain for an organisation.
          * @param {string} orgId 
          * @param {CreateSubdomainRequest} createSubdomainRequest 
          * @param {*} [options] Override http request option.
@@ -9912,6 +10123,7 @@ export const OrganisationsApiFactory = function (configuration?: Configuration, 
         },
         /**
          * 
+         * @summary Get metadata about an organisation.
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -9920,8 +10132,8 @@ export const OrganisationsApiFactory = function (configuration?: Configuration, 
             return localVarFp.orgsGet(orgId, options).then((request) => request(axios, basePath));
         },
         /**
-         * \\ List all the organisations that the authenticated user is a member of
-         * @summary List organisation
+         * \\ List all the organisations that the authenticated user is a member of.
+         * @summary List organisations
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -9930,6 +10142,7 @@ export const OrganisationsApiFactory = function (configuration?: Configuration, 
         },
         /**
          * 
+         * @summary Update the metadata of an organisation.
          * @param {string} orgId 
          * @param {PatchOrgRequest} patchOrgRequest 
          * @param {*} [options] Override http request option.
@@ -9940,6 +10153,7 @@ export const OrganisationsApiFactory = function (configuration?: Configuration, 
         },
         /**
          * 
+         * @summary Return an organisation\'s metadata by its subdomain.
          * @param {string} subdomain 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -9965,7 +10179,8 @@ export class OrganisationsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * \\ This operation is currently irreversible. Once configured, the organisation\'s subdomain cannot\\ be changed or removed.
+     * @summary Configure a subdomain for an organisation.
      * @param {string} orgId 
      * @param {CreateSubdomainRequest} createSubdomainRequest 
      * @param {*} [options] Override http request option.
@@ -9988,6 +10203,7 @@ export class OrganisationsApi extends BaseAPI {
 
     /**
      * 
+     * @summary Get metadata about an organisation.
      * @param {string} orgId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -9997,8 +10213,8 @@ export class OrganisationsApi extends BaseAPI {
     }
 
     /**
-     * \\ List all the organisations that the authenticated user is a member of
-     * @summary List organisation
+     * \\ List all the organisations that the authenticated user is a member of.
+     * @summary List organisations
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -10008,6 +10224,7 @@ export class OrganisationsApi extends BaseAPI {
 
     /**
      * 
+     * @summary Update the metadata of an organisation.
      * @param {string} orgId 
      * @param {PatchOrgRequest} patchOrgRequest 
      * @param {*} [options] Override http request option.
@@ -10019,6 +10236,7 @@ export class OrganisationsApi extends BaseAPI {
 
     /**
      * 
+     * @summary Return an organisation\'s metadata by its subdomain.
      * @param {string} subdomain 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -10198,6 +10416,7 @@ export const QuestionGroupsApiAxiosParamCreator = function (configuration?: Conf
     return {
         /**
          * 
+         * @summary List all question groups in a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -10252,6 +10471,7 @@ export const QuestionGroupsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary List all question groups in a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -10274,6 +10494,7 @@ export const QuestionGroupsApiFactory = function (configuration?: Configuration,
     return {
         /**
          * 
+         * @summary List all question groups in a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -10291,6 +10512,7 @@ export const QuestionGroupsApiFactory = function (configuration?: Configuration,
 export class QuestionGroupsApi extends BaseAPI {
     /**
      * 
+     * @summary List all question groups in a form.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {*} [options] Override http request option.
@@ -10310,6 +10532,7 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
     return {
         /**
          * 
+         * @summary Get a specific question.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {string} questionGroupId 
@@ -10363,6 +10586,7 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
         },
         /**
          * 
+         * @summary List all questions in a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -10407,7 +10631,8 @@ export const QuestionsApiAxiosParamCreator = function (configuration?: Configura
             };
         },
         /**
-         * 
+         * \\ This configures the questions, question groups, and stepping configuration for a form all in one\\ go. It diffs the questions and question groups you provide with the current state of the form in\\ the DB. It creates questions/question groups where they don\'t yet exist (by ID), updates their\\ metadata if they have changed, updates their positions if they have changed, and deletes them if\\ they are not in the request.\\ \\ Therefore, the questions and groups must be provided in full on each request. A question that\\ exists in the form but is not sent in this request will be deleted. The comparison checking\\ works by ID.\\ \\ Note that deleted questions will be completely deleted immediately and will not be served to new\\ respondents. Existing responses will retain the values for deleted questions of course, since\\ Palform can\'t view or edit end-to-end-encrypted response data.
+         * @summary Set the questions and grouos of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {APISaveQuestionsRequest} aPISaveQuestionsRequest 
@@ -10466,6 +10691,7 @@ export const QuestionsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary Get a specific question.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {string} questionGroupId 
@@ -10481,6 +10707,7 @@ export const QuestionsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary List all questions in a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -10493,7 +10720,8 @@ export const QuestionsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * \\ This configures the questions, question groups, and stepping configuration for a form all in one\\ go. It diffs the questions and question groups you provide with the current state of the form in\\ the DB. It creates questions/question groups where they don\'t yet exist (by ID), updates their\\ metadata if they have changed, updates their positions if they have changed, and deletes them if\\ they are not in the request.\\ \\ Therefore, the questions and groups must be provided in full on each request. A question that\\ exists in the form but is not sent in this request will be deleted. The comparison checking\\ works by ID.\\ \\ Note that deleted questions will be completely deleted immediately and will not be served to new\\ respondents. Existing responses will retain the values for deleted questions of course, since\\ Palform can\'t view or edit end-to-end-encrypted response data.
+         * @summary Set the questions and grouos of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {APISaveQuestionsRequest} aPISaveQuestionsRequest 
@@ -10517,6 +10745,7 @@ export const QuestionsApiFactory = function (configuration?: Configuration, base
     return {
         /**
          * 
+         * @summary Get a specific question.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {string} questionGroupId 
@@ -10529,6 +10758,7 @@ export const QuestionsApiFactory = function (configuration?: Configuration, base
         },
         /**
          * 
+         * @summary List all questions in a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -10538,7 +10768,8 @@ export const QuestionsApiFactory = function (configuration?: Configuration, base
             return localVarFp.questionsList(formId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * \\ This configures the questions, question groups, and stepping configuration for a form all in one\\ go. It diffs the questions and question groups you provide with the current state of the form in\\ the DB. It creates questions/question groups where they don\'t yet exist (by ID), updates their\\ metadata if they have changed, updates their positions if they have changed, and deletes them if\\ they are not in the request.\\ \\ Therefore, the questions and groups must be provided in full on each request. A question that\\ exists in the form but is not sent in this request will be deleted. The comparison checking\\ works by ID.\\ \\ Note that deleted questions will be completely deleted immediately and will not be served to new\\ respondents. Existing responses will retain the values for deleted questions of course, since\\ Palform can\'t view or edit end-to-end-encrypted response data.
+         * @summary Set the questions and grouos of a form.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {APISaveQuestionsRequest} aPISaveQuestionsRequest 
@@ -10557,6 +10788,7 @@ export const QuestionsApiFactory = function (configuration?: Configuration, base
 export class QuestionsApi extends BaseAPI {
     /**
      * 
+     * @summary Get a specific question.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {string} questionGroupId 
@@ -10570,6 +10802,7 @@ export class QuestionsApi extends BaseAPI {
 
     /**
      * 
+     * @summary List all questions in a form.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {*} [options] Override http request option.
@@ -10580,7 +10813,8 @@ export class QuestionsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * \\ This configures the questions, question groups, and stepping configuration for a form all in one\\ go. It diffs the questions and question groups you provide with the current state of the form in\\ the DB. It creates questions/question groups where they don\'t yet exist (by ID), updates their\\ metadata if they have changed, updates their positions if they have changed, and deletes them if\\ they are not in the request.\\ \\ Therefore, the questions and groups must be provided in full on each request. A question that\\ exists in the form but is not sent in this request will be deleted. The comparison checking\\ works by ID.\\ \\ Note that deleted questions will be completely deleted immediately and will not be served to new\\ respondents. Existing responses will retain the values for deleted questions of course, since\\ Palform can\'t view or edit end-to-end-encrypted response data.
+     * @summary Set the questions and grouos of a form.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {APISaveQuestionsRequest} aPISaveQuestionsRequest 
@@ -10793,7 +11027,8 @@ export class SubmissionAssetApi extends BaseAPI {
 export const SubmissionsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
+         * \\ This extracts the recipient keys of the submission\'s PGP message and tries to match each one to\\ a key of a known Palform user. If it succeeds, it returns the full details of the matched key.\\ Otherwise, it just returns the key\'s fingerprint.
+         * @summary List all the keys that are able to decrypt a given form response.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {string} submissionId 
@@ -10842,7 +11077,8 @@ export const SubmissionsApiAxiosParamCreator = function (configuration?: Configu
             };
         },
         /**
-         * 
+         * \\ The response will be fully deleted, but its ID and deletion time will be retained to allow\\ tracking the fact that a submission was deleted.
+         * @summary Delete a form response.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {string} submissionId 
@@ -10891,9 +11127,10 @@ export const SubmissionsApiAxiosParamCreator = function (configuration?: Configu
         },
         /**
          * 
+         * @summary List all changes to responses to a form.
          * @param {string} formId 
          * @param {string} orgId 
-         * @param {string | null} [since] 
+         * @param {string | null} [since] If specified, only list new changes made since this date.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -10943,6 +11180,7 @@ export const SubmissionsApiAxiosParamCreator = function (configuration?: Configu
         },
         /**
          * 
+         * @summary List the number of new responses to all forms in an organisation since a given date.
          * @param {string} orgId 
          * @param {SubmissionCountSinceRequest} submissionCountSinceRequest 
          * @param {*} [options] Override http request option.
@@ -10997,7 +11235,8 @@ export const SubmissionsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = SubmissionsApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
+         * \\ This extracts the recipient keys of the submission\'s PGP message and tries to match each one to\\ a key of a known Palform user. If it succeeds, it returns the full details of the matched key.\\ Otherwise, it just returns the key\'s fingerprint.
+         * @summary List all the keys that are able to decrypt a given form response.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {string} submissionId 
@@ -11011,7 +11250,8 @@ export const SubmissionsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * \\ The response will be fully deleted, but its ID and deletion time will be retained to allow\\ tracking the fact that a submission was deleted.
+         * @summary Delete a form response.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {string} submissionId 
@@ -11026,9 +11266,10 @@ export const SubmissionsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary List all changes to responses to a form.
          * @param {string} formId 
          * @param {string} orgId 
-         * @param {string | null} [since] 
+         * @param {string | null} [since] If specified, only list new changes made since this date.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -11040,6 +11281,7 @@ export const SubmissionsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary List the number of new responses to all forms in an organisation since a given date.
          * @param {string} orgId 
          * @param {SubmissionCountSinceRequest} submissionCountSinceRequest 
          * @param {*} [options] Override http request option.
@@ -11061,7 +11303,8 @@ export const SubmissionsApiFactory = function (configuration?: Configuration, ba
     const localVarFp = SubmissionsApiFp(configuration)
     return {
         /**
-         * 
+         * \\ This extracts the recipient keys of the submission\'s PGP message and tries to match each one to\\ a key of a known Palform user. If it succeeds, it returns the full details of the matched key.\\ Otherwise, it just returns the key\'s fingerprint.
+         * @summary List all the keys that are able to decrypt a given form response.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {string} submissionId 
@@ -11072,7 +11315,8 @@ export const SubmissionsApiFactory = function (configuration?: Configuration, ba
             return localVarFp.submissionsCrypto(formId, orgId, submissionId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * \\ The response will be fully deleted, but its ID and deletion time will be retained to allow\\ tracking the fact that a submission was deleted.
+         * @summary Delete a form response.
          * @param {string} formId 
          * @param {string} orgId 
          * @param {string} submissionId 
@@ -11084,9 +11328,10 @@ export const SubmissionsApiFactory = function (configuration?: Configuration, ba
         },
         /**
          * 
+         * @summary List all changes to responses to a form.
          * @param {string} formId 
          * @param {string} orgId 
-         * @param {string | null} [since] 
+         * @param {string | null} [since] If specified, only list new changes made since this date.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -11095,6 +11340,7 @@ export const SubmissionsApiFactory = function (configuration?: Configuration, ba
         },
         /**
          * 
+         * @summary List the number of new responses to all forms in an organisation since a given date.
          * @param {string} orgId 
          * @param {SubmissionCountSinceRequest} submissionCountSinceRequest 
          * @param {*} [options] Override http request option.
@@ -11111,7 +11357,8 @@ export const SubmissionsApiFactory = function (configuration?: Configuration, ba
  */
 export class SubmissionsApi extends BaseAPI {
     /**
-     * 
+     * \\ This extracts the recipient keys of the submission\'s PGP message and tries to match each one to\\ a key of a known Palform user. If it succeeds, it returns the full details of the matched key.\\ Otherwise, it just returns the key\'s fingerprint.
+     * @summary List all the keys that are able to decrypt a given form response.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {string} submissionId 
@@ -11123,7 +11370,8 @@ export class SubmissionsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * \\ The response will be fully deleted, but its ID and deletion time will be retained to allow\\ tracking the fact that a submission was deleted.
+     * @summary Delete a form response.
      * @param {string} formId 
      * @param {string} orgId 
      * @param {string} submissionId 
@@ -11136,9 +11384,10 @@ export class SubmissionsApi extends BaseAPI {
 
     /**
      * 
+     * @summary List all changes to responses to a form.
      * @param {string} formId 
      * @param {string} orgId 
-     * @param {string | null} [since] 
+     * @param {string | null} [since] If specified, only list new changes made since this date.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -11148,6 +11397,7 @@ export class SubmissionsApi extends BaseAPI {
 
     /**
      * 
+     * @summary List the number of new responses to all forms in an organisation since a given date.
      * @param {string} orgId 
      * @param {SubmissionCountSinceRequest} submissionCountSinceRequest 
      * @param {*} [options] Override http request option.
@@ -11577,7 +11827,7 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * \\ Lists the public keys associated with the currently authenticated user\'s account in PEM-encoded\\ format.
+         * \\ Lists the public keys associated with the currently user\'s account within the\\ specified organisation, in PEM-encoded format. Expired keys will also be included in the list.
          * @summary List user keys
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -11619,7 +11869,7 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * \\ Registers a new public to the authenticated user\'s account. The key is stored in DER-encoded\\ binary in the database and can be retrieved using the GET /users/me/key endpoint.
+         * \\ Registers a new public key to the authenticated user\'s account. New responses to forms that are\\ in teams that the user is a member of will start being encrypted with the new key immediately.
          * @summary Register new public key
          * @param {string} orgId 
          * @param {RegisterKeyRequest} registerKeyRequest 
@@ -11666,7 +11916,8 @@ export const UserKeysApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
+         * \\ The provided secret key should be encrypted with a passphrase. The unencrypted secret key should\\ never under any circumstances be uploaded to the server.\\ \\ Using key backups is completely optional; all other Palform features will work as normal if your\\ key is not backed up. However, it is highly recommended for most users to avoid data loss.
+         * @summary Register or delete an encrypted backup of an existing public key.
          * @param {string} keyId 
          * @param {string} orgId 
          * @param {RegisterBackupKeyRequest} registerBackupKeyRequest 
@@ -11763,7 +12014,7 @@ export const UserKeysApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * \\ Lists the public keys associated with the currently authenticated user\'s account in PEM-encoded\\ format.
+         * \\ Lists the public keys associated with the currently user\'s account within the\\ specified organisation, in PEM-encoded format. Expired keys will also be included in the list.
          * @summary List user keys
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -11776,7 +12027,7 @@ export const UserKeysApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * \\ Registers a new public to the authenticated user\'s account. The key is stored in DER-encoded\\ binary in the database and can be retrieved using the GET /users/me/key endpoint.
+         * \\ Registers a new public key to the authenticated user\'s account. New responses to forms that are\\ in teams that the user is a member of will start being encrypted with the new key immediately.
          * @summary Register new public key
          * @param {string} orgId 
          * @param {RegisterKeyRequest} registerKeyRequest 
@@ -11790,7 +12041,8 @@ export const UserKeysApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * \\ The provided secret key should be encrypted with a passphrase. The unencrypted secret key should\\ never under any circumstances be uploaded to the server.\\ \\ Using key backups is completely optional; all other Palform features will work as normal if your\\ key is not backed up. However, it is highly recommended for most users to avoid data loss.
+         * @summary Register or delete an encrypted backup of an existing public key.
          * @param {string} keyId 
          * @param {string} orgId 
          * @param {RegisterBackupKeyRequest} registerBackupKeyRequest 
@@ -11843,7 +12095,7 @@ export const UserKeysApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.keysGetBackup(keyId, orgId, options).then((request) => request(axios, basePath));
         },
         /**
-         * \\ Lists the public keys associated with the currently authenticated user\'s account in PEM-encoded\\ format.
+         * \\ Lists the public keys associated with the currently user\'s account within the\\ specified organisation, in PEM-encoded format. Expired keys will also be included in the list.
          * @summary List user keys
          * @param {string} orgId 
          * @param {*} [options] Override http request option.
@@ -11853,7 +12105,7 @@ export const UserKeysApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.keysList(orgId, options).then((request) => request(axios, basePath));
         },
         /**
-         * \\ Registers a new public to the authenticated user\'s account. The key is stored in DER-encoded\\ binary in the database and can be retrieved using the GET /users/me/key endpoint.
+         * \\ Registers a new public key to the authenticated user\'s account. New responses to forms that are\\ in teams that the user is a member of will start being encrypted with the new key immediately.
          * @summary Register new public key
          * @param {string} orgId 
          * @param {RegisterKeyRequest} registerKeyRequest 
@@ -11864,7 +12116,8 @@ export const UserKeysApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.keysRegister(orgId, registerKeyRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * \\ The provided secret key should be encrypted with a passphrase. The unencrypted secret key should\\ never under any circumstances be uploaded to the server.\\ \\ Using key backups is completely optional; all other Palform features will work as normal if your\\ key is not backed up. However, it is highly recommended for most users to avoid data loss.
+         * @summary Register or delete an encrypted backup of an existing public key.
          * @param {string} keyId 
          * @param {string} orgId 
          * @param {RegisterBackupKeyRequest} registerBackupKeyRequest 
@@ -11915,7 +12168,7 @@ export class UserKeysApi extends BaseAPI {
     }
 
     /**
-     * \\ Lists the public keys associated with the currently authenticated user\'s account in PEM-encoded\\ format.
+     * \\ Lists the public keys associated with the currently user\'s account within the\\ specified organisation, in PEM-encoded format. Expired keys will also be included in the list.
      * @summary List user keys
      * @param {string} orgId 
      * @param {*} [options] Override http request option.
@@ -11926,7 +12179,7 @@ export class UserKeysApi extends BaseAPI {
     }
 
     /**
-     * \\ Registers a new public to the authenticated user\'s account. The key is stored in DER-encoded\\ binary in the database and can be retrieved using the GET /users/me/key endpoint.
+     * \\ Registers a new public key to the authenticated user\'s account. New responses to forms that are\\ in teams that the user is a member of will start being encrypted with the new key immediately.
      * @summary Register new public key
      * @param {string} orgId 
      * @param {RegisterKeyRequest} registerKeyRequest 
@@ -11938,7 +12191,8 @@ export class UserKeysApi extends BaseAPI {
     }
 
     /**
-     * 
+     * \\ The provided secret key should be encrypted with a passphrase. The unencrypted secret key should\\ never under any circumstances be uploaded to the server.\\ \\ Using key backups is completely optional; all other Palform features will work as normal if your\\ key is not backed up. However, it is highly recommended for most users to avoid data loss.
+     * @summary Register or delete an encrypted backup of an existing public key.
      * @param {string} keyId 
      * @param {string} orgId 
      * @param {RegisterBackupKeyRequest} registerBackupKeyRequest 

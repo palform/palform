@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**target_team_id** | **string** |  | [default to undefined]
+**target_team_id** | **string** | The team to move the form to. | [default to undefined]
 
 ## Example
 

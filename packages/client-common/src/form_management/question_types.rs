@@ -109,6 +109,9 @@ pub enum APIQuestionConfiguration {
         options: Vec<String>,
         /// Support multiple options in a submission (i.e. checkboxes instead of radio buttons)
         multi: bool,
+        /// Show an "Other" option at the end, which allows the user to enter a custom value when selected
+        #[serde(default)]
+        show_other: bool,
     },
     #[serde(rename = "scale")]
     #[cfg_attr(feature = "backend", schemars(title = "config_scale"))]
@@ -244,6 +247,7 @@ impl APIQuestionConfiguration {
                     "Option 3".to_string(),
                 ],
                 multi: false,
+                show_other: false,
             }),
             "choice_matrix" | "ChoiceMatrix" => Ok(APIQuestionConfiguration::ChoiceMatrix {
                 columns: vec![

@@ -29,29 +29,49 @@
                 )
         )
     );
+    let containsForbiddenLabel = $derived(
+        config.choice.options.some((e) => e === "__other__")
+    );
 </script>
 
 <Toggle class="mb-4" bind:checked={config.choice.multi} disabled={$ctx.loading}>
     Multi select
 </Toggle>
 
+<Toggle
+    class="mb-4"
+    bind:checked={config.choice.show_other}
+    disabled={$ctx.loading}
+>
+    Show "other" option
+</Toggle>
+
 {#if !isUnique}
     <Alert color="red" border class="mb-2">Options must be unique!</Alert>
 {/if}
 
+{#if containsForbiddenLabel}
+    <Alert color="red" border class="mb-2"
+        >__other__ is a reserved value and is not allowed. Please remove it.</Alert
+    >
+{/if}
+
 <div class="space-y-2">
     {#each config.choice.options as _, index}
-        <div class="flex gap-x-2">
-            <ButtonInput
-                bind:value={config.choice.options[index]}
-                disabled={$ctx.loading}
-                hideButton={index === 0}
-                onclick={() => onOptionRemove(config.choice.options[index])}
-            >
-                <FontAwesomeIcon icon={faTrash} />
-            </ButtonInput>
-        </div>
+        <ButtonInput
+            bind:value={config.choice.options[index]}
+            disabled={$ctx.loading}
+            hideButton={index === 0}
+            onclick={() => onOptionRemove(config.choice.options[index])}
+        >
+            <FontAwesomeIcon icon={faTrash} />
+        </ButtonInput>
     {/each}
+    {#if config.choice.show_other}
+        <div class="flex gap-x-2">
+            <Input value="Other" disabled />
+        </div>
+    {/if}
 </div>
 
 <Button size="sm" class="mt-3" onclick={onOptionAdd} disabled={$ctx.loading}>

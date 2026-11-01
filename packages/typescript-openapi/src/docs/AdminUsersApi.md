@@ -4,13 +4,14 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**adminUsersServiceAccountsCreate**](#adminusersserviceaccountscreate) | **POST** /api/org/{org_id}/users/service-accounts | |
-|[**adminUsersServiceAccountsDelete**](#adminusersserviceaccountsdelete) | **DELETE** /api/org/{org_id}/users/service-accounts/{admin_user_id} | |
+|[**adminUsersServiceAccountsCreate**](#adminusersserviceaccountscreate) | **POST** /api/org/{org_id}/users/service-accounts | Create a service account.|
+|[**adminUsersServiceAccountsDelete**](#adminusersserviceaccountsdelete) | **DELETE** /api/org/{org_id}/users/service-accounts/{admin_user_id} | Delete a service account.|
 |[**adminUsersUpdate**](#adminusersupdate) | **PATCH** /api/users/me | |
 
 # **adminUsersServiceAccountsCreate**
 > APIServiceAccountAdminUser adminUsersServiceAccountsCreate()
 
+\\ The service account will be added as a non-admin member of the organisation and a Viewer member\\ of its default team. This can be changed after creation.
 
 ### Example
 

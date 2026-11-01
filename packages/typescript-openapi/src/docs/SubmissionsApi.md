@@ -4,14 +4,15 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**submissionsCrypto**](#submissionscrypto) | **GET** /api/org/{org_id}/form/{form_id}/submissions/{submission_id}/crypto | |
-|[**submissionsDelete**](#submissionsdelete) | **DELETE** /api/org/{org_id}/form/{form_id}/submissions/{submission_id} | |
-|[**submissionsList**](#submissionslist) | **GET** /api/org/{org_id}/form/{form_id}/submissions | |
-|[**submissionsNumSince**](#submissionsnumsince) | **POST** /api/org/{org_id}/submissions | |
+|[**submissionsCrypto**](#submissionscrypto) | **GET** /api/org/{org_id}/form/{form_id}/submissions/{submission_id}/crypto | List all the keys that are able to decrypt a given form response.|
+|[**submissionsDelete**](#submissionsdelete) | **DELETE** /api/org/{org_id}/form/{form_id}/submissions/{submission_id} | Delete a form response.|
+|[**submissionsList**](#submissionslist) | **GET** /api/org/{org_id}/form/{form_id}/submissions | List all changes to responses to a form.|
+|[**submissionsNumSince**](#submissionsnumsince) | **POST** /api/org/{org_id}/submissions | List the number of new responses to all forms in an organisation since a given date.|
 
 # **submissionsCrypto**
 > SubmissionCryptoDetailsResponse submissionsCrypto()
 
+\\ This extracts the recipient keys of the submission\'s PGP message and tries to match each one to\\ a key of a known Palform user. If it succeeds, it returns the full details of the matched key.\\ Otherwise, it just returns the key\'s fingerprint.
 
 ### Example
 
@@ -74,6 +75,7 @@ const { status, data } = await apiInstance.submissionsCrypto(
 # **submissionsDelete**
 > submissionsDelete()
 
+\\ The response will be fully deleted, but its ID and deletion time will be retained to allow\\ tracking the fact that a submission was deleted.
 
 ### Example
 
@@ -150,7 +152,7 @@ const apiInstance = new SubmissionsApi(configuration);
 
 let formId: string; // (default to undefined)
 let orgId: string; // (default to undefined)
-let since: string; // (optional) (default to undefined)
+let since: string; //If specified, only list new changes made since this date. (optional) (default to undefined)
 
 const { status, data } = await apiInstance.submissionsList(
     formId,
@@ -165,7 +167,7 @@ const { status, data } = await apiInstance.submissionsList(
 |------------- | ------------- | ------------- | -------------|
 | **formId** | [**string**] |  | defaults to undefined|
 | **orgId** | [**string**] |  | defaults to undefined|
-| **since** | **string** |  | (optional) defaults to undefined|
+| **since** | **string** | If specified, only list new changes made since this date. | (optional) defaults to undefined|
 
 
 ### Return type

@@ -10,7 +10,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, JsonSchema, Clone, ApiComponent)]
 pub enum APIEntitlementRequest {
     UserCount,
-    ResponseCount,
     QuestionPerFormCount(PalformDatabaseID<IDForm>),
     FormCount,
     TeamCount,
@@ -32,7 +31,6 @@ impl Display for APIEntitlementRequest {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.to_owned() {
             Self::UserCount => write!(f, "Too many users"),
-            Self::ResponseCount => write!(f, "Too many responses/month"),
             Self::QuestionPerFormCount(_) => write!(f, "Too many questions in form"),
             Self::FormCount => write!(f, "Too many forms"),
             Self::TeamCount => write!(f, "Too many teams"),
@@ -54,6 +52,7 @@ impl Display for APIEntitlementRequest {
 #[derive(Deserialize, Serialize, FromQueryResult, JsonSchema, ApiComponent)]
 pub struct APIEntitlementInfo {
     pub user_count: Option<i32>,
+    #[deprecated(note = "Responses on Palform are now always unlimited")]
     pub response_count: Option<i32>,
     pub question_per_form_count: Option<i32>,
     pub form_count: Option<i32>,
@@ -71,11 +70,13 @@ pub struct APIEntitlementInfo {
     pub service_account: bool,
 }
 
+/// Entitlements for the free plan
 impl Default for APIEntitlementInfo {
     fn default() -> Self {
         Self {
             user_count: Some(1),
-            response_count: Some(250),
+            #[allow(deprecated)]
+            response_count: None,
             question_per_form_count: Some(20),
             form_count: Some(10),
             team_count: Some(0),
@@ -98,6 +99,7 @@ impl APIEntitlementInfo {
     pub fn to_active_model(&self) -> organisation_feature_entitlement::ActiveModel {
         organisation_feature_entitlement::ActiveModel {
             user_count: Set(self.user_count),
+            #[allow(deprecated)]
             response_count: Set(self.response_count),
             question_per_form_count: Set(self.question_per_form_count),
             form_count: Set(self.form_count),

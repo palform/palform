@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**groups** | [**Array&lt;APIQuestionGroup&gt;**](APIQuestionGroup.md) |  | [default to undefined]
-**questions** | [**Array&lt;APIQuestion&gt;**](APIQuestion.md) |  | [default to undefined]
+**groups** | [**Array&lt;APIQuestionGroup&gt;**](APIQuestionGroup.md) | The full list of question groups. | [default to undefined]
+**questions** | [**Array&lt;APIQuestion&gt;**](APIQuestion.md) | The full list of questions. Their group ID must be one of the specified groups. | [default to undefined]
 
 ## Example
 

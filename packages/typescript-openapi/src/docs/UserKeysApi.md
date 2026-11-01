@@ -9,7 +9,7 @@ All URIs are relative to *http://localhost*
 |[**keysGetBackup**](#keysgetbackup) | **GET** /api/org/{org_id}/keys/{key_id}/backup | |
 |[**keysList**](#keyslist) | **GET** /api/org/{org_id}/keys/my | List user keys|
 |[**keysRegister**](#keysregister) | **POST** /api/org/{org_id}/keys/my | Register new public key|
-|[**keysRegisterBackup**](#keysregisterbackup) | **PUT** /api/org/{org_id}/keys/{key_id}/backup | |
+|[**keysRegisterBackup**](#keysregisterbackup) | **PUT** /api/org/{org_id}/keys/{key_id}/backup | Register or delete an encrypted backup of an existing public key.|
 
 # **keysDelete**
 > keysDelete()
@@ -191,7 +191,7 @@ const { status, data } = await apiInstance.keysGetBackup(
 # **keysList**
 > Array<APIUserKey> keysList()
 
-\\ Lists the public keys associated with the currently authenticated user\'s account in PEM-encoded\\ format.
+\\ Lists the public keys associated with the currently user\'s account within the\\ specified organisation, in PEM-encoded format. Expired keys will also be included in the list.
 
 ### Example
 
@@ -248,7 +248,7 @@ const { status, data } = await apiInstance.keysList(
 # **keysRegister**
 > string keysRegister(registerKeyRequest)
 
-\\ Registers a new public to the authenticated user\'s account. The key is stored in DER-encoded\\ binary in the database and can be retrieved using the GET /users/me/key endpoint.
+\\ Registers a new public key to the authenticated user\'s account. New responses to forms that are\\ in teams that the user is a member of will start being encrypted with the new key immediately.
 
 ### Example
 
@@ -309,6 +309,7 @@ const { status, data } = await apiInstance.keysRegister(
 # **keysRegisterBackup**
 > keysRegisterBackup(registerBackupKeyRequest)
 
+\\ The provided secret key should be encrypted with a passphrase. The unencrypted secret key should\\ never under any circumstances be uploaded to the server.\\ \\ Using key backups is completely optional; all other Palform features will work as normal if your\\ key is not backed up. However, it is highly recommended for most users to avoid data loss.
 
 ### Example
 

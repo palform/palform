@@ -41,6 +41,7 @@
 	"address_zip_code": "PLZ",
 	"address_city": "Stadt",
 	"address_country": "Land",
+	"choice_other": "Sonstiges",
 	"phone_pls_choose_country": "Bitte wählen Sie ein Land aus",
 	"phone_choose_country": "Wählen",
 	"phone_enter_number": "Bitte geben Sie eine Telefonnummer ein",
@@ -54,5 +55,7 @@
 	"file_too_large": "Diese Datei ist zu groß.",
 	"form_end_continue": "Weiter",
 	"form_end_restart": "Erneut ausfüllen",
-	"form_end_attribution": "Mit Palform kostenlos sichere Formulare erstellen"
+	"form_end_attribution": "Mit Palform kostenlos sichere Formulare erstellen",
+	"legal_terms": "Bedingungen",
+	"legal_privacy": "Datenschutz"
 }

@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **created_at** | **string** |  | [default to undefined]
 **email** | **string** |  | [default to undefined]
 **id** | **string** |  | [default to undefined]
-**service_account_auth_token** | **string** |  | [optional] [default to undefined]
+**service_account_auth_token** | **string** | The service account\&#39;s token, to be used as a bearer credential when making API requests. Only returned once when the service account is created. | [optional] [default to undefined]
 
 ## Example
 

@@ -9,18 +9,18 @@ All URIs are relative to *http://localhost*
 |[**formsDelete**](#formsdelete) | **DELETE** /api/org/{org_id}/form/forms/{form_id} | Deletes a form and all of its questions, question groups, submissions, settings, etc.|
 |[**formsExchangeShortLink**](#formsexchangeshortlink) | **GET** /api/fill/form/forms/short_link/{subdomain}/{short_link} | Resolve a short link on an organisational subdomain to an organisation ID, a form ID, and a fill|
 |[**formsFill**](#formsfill) | **POST** /api/fill/form/forms/{form_id}/org/{org_id} | Submit a response to a form.|
-|[**formsGet**](#formsget) | **GET** /api/org/{org_id}/form/forms/{form_id} | |
-|[**formsKeys**](#formskeys) | **GET** /api/fill/form/forms/{form_id}/org/{org_id}/keys | |
-|[**formsList**](#formslist) | **GET** /api/org/{org_id}/form/forms | |
-|[**formsRelocate**](#formsrelocate) | **PATCH** /api/org/{org_id}/form/forms/{form_id}/location | |
-|[**formsSetAutoDelete**](#formssetautodelete) | **PUT** /api/org/{org_id}/form/forms/{form_id}/auto-delete | |
-|[**formsUpdate**](#formsupdate) | **PUT** /api/org/{org_id}/form/forms/{form_id} | |
+|[**formsGet**](#formsget) | **GET** /api/org/{org_id}/form/forms/{form_id} | Get the metadata of a form.|
+|[**formsKeys**](#formskeys) | **GET** /api/fill/form/forms/{form_id}/org/{org_id}/keys | Get a list of PGP keys that responses to a form should be encrypted with.|
+|[**formsList**](#formslist) | **GET** /api/org/{org_id}/form/forms | List all forms that the user has access to within an organisation.|
+|[**formsRelocate**](#formsrelocate) | **PATCH** /api/org/{org_id}/form/forms/{form_id}/location | Move a form to another team.|
+|[**formsSetAutoDelete**](#formssetautodelete) | **PUT** /api/org/{org_id}/form/forms/{form_id}/auto-delete | Configure the auto-deletion policy of a form.|
+|[**formsUpdate**](#formsupdate) | **PUT** /api/org/{org_id}/form/forms/{form_id} | Update the metadata of a form.|
 |[**formsView**](#formsview) | **GET** /api/fill/form/forms/{form_id}/org/{org_id} | |
 
 # **formsClone**
 > APIForm formsClone(formsCloneRequest)
 
-\\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.
+\\ The copy is created in the specified team. The user calling this method must have read\\ permissions on the form (i.e. the `Viewer` role in its team) and the `Editor` role on the team\\ into which the form is being copied.\\ \\ The responses and the fill access tokens of the form will not be copied.
 
 ### Example
 
@@ -84,7 +84,7 @@ const { status, data } = await apiInstance.formsClone(
 # **formsCreate**
 > APIForm formsCreate(createFormRequest)
 
-\\ The form will be created in the specified team. It will not be initialised with\\ any questions.
+\\ The form will be created in the specified team. It will not be initialised with any questions.\\ Some settings can be updated after creation.
 
 ### Example
 
@@ -264,6 +264,7 @@ No authorization required
 # **formsFill**
 > formsFill(formsFillRequest)
 
+\\ The submission will be associated with the fill access token.\\ \\ The message is validated on the backend to ensure it is parseable before it gets saved to\\ the database, but of course it is not decrypted, so no validation on the underlying data is\\ performed.
 
 ### Example
 
@@ -386,6 +387,7 @@ const { status, data } = await apiInstance.formsGet(
 # **formsKeys**
 > FormsKeysResponse formsKeys()
 
+\\ This will return all of the non-expired public keys of all of the users who are members of the form\'s team. In\\ general, responses to the form should be encrypted for all of these keys, such that any one of\\ them can decrypt the response.
 
 ### Example
 
@@ -501,6 +503,7 @@ const { status, data } = await apiInstance.formsList(
 # **formsRelocate**
 > formsRelocate(formsRelocateRequest)
 
+\\ The user performing this operation must have at least Editor access to both the form\'s current\\ and target teams. The form\'s branding will be reset to the default, since branding\\ configurations are team-specific.
 
 ### Example
 
@@ -564,6 +567,7 @@ void (empty response body)
 # **formsSetAutoDelete**
 > formsSetAutoDelete(setSubmissionAutoDeleteRequest)
 
+\\ Forms with this feature enabled will have all responses created a certain number of days ago get\\ automatically deleted. This is done by a scheduled job on the backend, so the time of deletion\\ won\'t be exactly `days * 24` hours after the submission is created.\\ \\ If there are responses older than the configured number of days when this feature is enabled,\\ they will be deleted whenever the scheduled job next runs.
 
 ### Example
 

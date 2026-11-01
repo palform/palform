@@ -25,7 +25,11 @@ impl Featureable for QuestionSubmissionData {
                 max_label: _,
                 icon: _,
             } => vec![String::default()],
-            APIQuestionConfiguration::Choice { options, multi: _ } => options.clone(),
+            APIQuestionConfiguration::Choice {
+                options,
+                multi: _,
+                show_other: _,
+            } => options.clone(),
             APIQuestionConfiguration::ChoiceMatrix {
                 columns,
                 rows,
@@ -86,8 +90,13 @@ impl Featureable for QuestionSubmissionData {
                     None
                 }
             }
-            QuestionSubmissionData::Choice { option } => {
-                if let APIQuestionConfiguration::Choice { options, multi: _ } = configuration {
+            QuestionSubmissionData::Choice { option, other: _ } => {
+                if let APIQuestionConfiguration::Choice {
+                    options,
+                    multi: _,
+                    show_other: _,
+                } = configuration
+                {
                     let selected_option = options.get(index);
 
                     if let Some(selected_option) = selected_option {

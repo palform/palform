@@ -27,6 +27,7 @@
         class?: string;
         icon?: IconProp;
         children?: Snippet;
+        for?: string;
     }
 
     let {
@@ -37,6 +38,7 @@
         class: className,
         icon,
         children,
+        for: htmlFor,
     }: Props = $props();
 
     const brandCtx = getBrandCtx();
@@ -65,7 +67,7 @@
 </script>
 
 <label
-    for={generateFormListItemId(questionId, option)}
+    for={htmlFor ?? generateFormListItemId(questionId, option)}
     class={[
         "flex items-center border border-slate-200 dark:border-slate-800 text-gray-800 dark:text-gray-300 block p-4 text-sm cursor-pointer transition-colors bg-slate-50/50 dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800/80",
         isActive && $brandCtx === undefined

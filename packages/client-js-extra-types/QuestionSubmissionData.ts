@@ -2,7 +2,7 @@
 import type { APIGenericAddress } from "./APIGenericAddress";
 import type { APIGenericLocation } from "./APIGenericLocation";
 
-export type QuestionSubmissionData = { "Text": { value: string, } } | { "Choice": { option: Array<string>, } } | { "Scale": { value: number | null, } } | { "Address": { address: APIGenericAddress, point: APIGenericLocation, } } | { "PhoneNumber": { calling_code: string, number: string, } } | { "FileUpload": { file_id: string, content_type: string, } } | { "Signature": { freeform: Array<Array<Array<number>>>, initial: string, full_name: string, } } | { "ChoiceMatrix": { options: Map<string, string[]>, } } | { "DateTime": { value: string | null | undefined, } } | { "Rank": { 
+export type QuestionSubmissionData = { "Text": { value: string, } } | { "Choice": { option: Array<string>, other: string | null, } } | { "Scale": { value: number | null, } } | { "Address": { address: APIGenericAddress, point: APIGenericLocation, } } | { "PhoneNumber": { calling_code: string, number: string, } } | { "FileUpload": { file_id: string, content_type: string, } } | { "Signature": { freeform: Array<Array<Array<number>>>, initial: string, full_name: string, } } | { "ChoiceMatrix": { options: Map<string, string[]>, } } | { "DateTime": { value: string | null | undefined, } } | { "Rank": { 
 /**
  * Options listed in rank order
  */

@@ -37,6 +37,8 @@ pub enum QuestionSubmissionData {
     },
     Choice {
         option: Vec<String>,
+        #[serde(default)]
+        other: Option<String>,
     },
     Scale {
         value: Option<i32>,
@@ -79,7 +81,9 @@ impl QuestionSubmissionData {
     pub fn is_empty(&self) -> bool {
         match self {
             QuestionSubmissionData::Text { value } => value.trim().is_empty(),
-            QuestionSubmissionData::Choice { option } => option.is_empty(),
+            QuestionSubmissionData::Choice { option, other } => {
+                option.is_empty() && other.as_ref().is_none_or(|v| v.is_empty())
+            }
             QuestionSubmissionData::ChoiceMatrix { options } => {
                 options.iter().all(|(_, v)| v.is_empty())
             }
@@ -122,8 +126,12 @@ impl Display for QuestionSubmissionData {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             QuestionSubmissionData::Text { value } => write!(f, "{}", value),
-            QuestionSubmissionData::Choice { option } => {
-                write!(f, "{}", option.join(","))
+            QuestionSubmissionData::Choice { option, other } => {
+                write!(f, "{}", option.join(","))?;
+                if let Some(other) = other {
+                    write!(f, "{}", other)?;
+                }
+                Ok(())
             }
             QuestionSubmissionData::ChoiceMatrix { options } => {
                 for (index, (column, items)) in options.iter().enumerate() {
@@ -214,7 +222,11 @@ impl TryFrom<APIQuestion> for QuestionSubmission {
             APIQuestionConfiguration::Choice {
                 options: _,
                 multi: _,
-            } => QuestionSubmissionData::Choice { option: vec![] },
+                show_other: _,
+            } => QuestionSubmissionData::Choice {
+                option: vec![],
+                other: None,
+            },
             APIQuestionConfiguration::ChoiceMatrix {
                 columns: _,
                 rows: _,

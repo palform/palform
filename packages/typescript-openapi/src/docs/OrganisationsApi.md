@@ -5,12 +5,12 @@ All URIs are relative to *http://localhost*
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
 |[**orgsCreate**](#orgscreate) | **POST** /api/org/orgs | |
-|[**orgsCreateSubdomain**](#orgscreatesubdomain) | **POST** /api/org/orgs/{org_id}/subdomain | |
+|[**orgsCreateSubdomain**](#orgscreatesubdomain) | **POST** /api/org/orgs/{org_id}/subdomain | Configure a subdomain for an organisation.|
 |[**orgsDelete**](#orgsdelete) | **DELETE** /api/org/orgs/{org_id} | |
-|[**orgsGet**](#orgsget) | **GET** /api/org/orgs/{org_id} | |
-|[**orgsList**](#orgslist) | **GET** /api/org/orgs | List organisation|
-|[**orgsRename**](#orgsrename) | **PATCH** /api/org/orgs/{org_id} | |
-|[**orgsResolveSubdomain**](#orgsresolvesubdomain) | **GET** /api/org/orgs/for-subdomain | |
+|[**orgsGet**](#orgsget) | **GET** /api/org/orgs/{org_id} | Get metadata about an organisation.|
+|[**orgsList**](#orgslist) | **GET** /api/org/orgs | List organisations|
+|[**orgsRename**](#orgsrename) | **PATCH** /api/org/orgs/{org_id} | Update the metadata of an organisation.|
+|[**orgsResolveSubdomain**](#orgsresolvesubdomain) | **GET** /api/org/orgs/for-subdomain | Return an organisation\&#39;s metadata by its subdomain.|
 
 # **orgsCreate**
 > string orgsCreate(newOrganisationRequest)
@@ -72,6 +72,7 @@ const { status, data } = await apiInstance.orgsCreate(
 # **orgsCreateSubdomain**
 > orgsCreateSubdomain(createSubdomainRequest)
 
+\\ This operation is currently irreversible. Once configured, the organisation\'s subdomain cannot\\ be changed or removed.
 
 ### Example
 
@@ -168,7 +169,7 @@ const { status, data } = await apiInstance.orgsDelete(
 
 ### Authorization
 
-[personal_token](../README.md#personal_token), [service_account_token](../README.md#service_account_token)
+[personal_token](../README.md#personal_token)
 
 ### HTTP request headers
 
@@ -248,7 +249,7 @@ const { status, data } = await apiInstance.orgsGet(
 # **orgsList**
 > Array<APIOrganisation> orgsList()
 
-\\ List all the organisations that the authenticated user is a member of
+\\ List all the organisations that the authenticated user is a member of.
 
 ### Example
 

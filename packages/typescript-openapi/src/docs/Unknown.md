@@ -1,5 +1,6 @@
 # Unknown
 
+The key was not matched to a Palform user, so only its fingerprint is known
 
 ## Properties
 

@@ -4,7 +4,7 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**auditList**](#auditlist) | **GET** /api/org/{org_id}/audit | |
+|[**auditList**](#auditlist) | **GET** /api/org/{org_id}/audit | List all audit logs for an organisation.|
 
 # **auditList**
 > Array<APIAuditLogEntry> auditList()

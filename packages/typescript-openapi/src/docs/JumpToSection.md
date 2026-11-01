@@ -1,6 +1,6 @@
 # JumpToSection
 
-Jump to one of a list of sections, based on which one\'s condition is the first to match
+Jump to one of a list of sections. Each jump case is evaluated one-by-one in order, and the first one to match will be selected as the next question group to take the user to. If none of them match, the action will be to submit the form. Specifying an empty list here will mean that the action is always to submit the form.
 
 ## Properties
 

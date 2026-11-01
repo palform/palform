@@ -4,7 +4,7 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**questionGroupsList**](#questiongroupslist) | **GET** /api/org/{org_id}/form/{form_id}/groups | |
+|[**questionGroupsList**](#questiongroupslist) | **GET** /api/org/{org_id}/form/{form_id}/groups | List all question groups in a form.|
 
 # **questionGroupsList**
 > Array<APIQuestionGroup> questionGroupsList()

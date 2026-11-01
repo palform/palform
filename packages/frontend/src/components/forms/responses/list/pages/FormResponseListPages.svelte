@@ -28,7 +28,7 @@
     const cryptoDetailsEntitled = isEntitled("crypto_details");
 
     interface Props {
-        selectedSubmissionIndex?: number;
+        selectedSubmissionIndex: number;
     }
 
     let { selectedSubmissionIndex = $bindable(0) }: Props = $props();

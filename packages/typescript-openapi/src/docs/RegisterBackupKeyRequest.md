@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**key_data** | **string** | PEM-encoded encrypted secret key | [optional] [default to undefined]
+**key_data** | **string** | PEM-encoded encrypted secret key (&#x60;null&#x60; to delete the existing backup) | [optional] [default to undefined]
 
 ## Example
 

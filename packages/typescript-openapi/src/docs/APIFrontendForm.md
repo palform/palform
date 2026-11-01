@@ -1,5 +1,6 @@
 # APIFrontendForm
 
+A stripped-down version of the form\'s metadata shown to non-admin users filling the form
 
 ## Properties
 

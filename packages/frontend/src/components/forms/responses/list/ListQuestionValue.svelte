@@ -56,15 +56,26 @@
         {sGetText(questionSubmission.data).value}
     </p>
 {:else if qIsChoice(question.configuration)}
+    {@const s = sGetChoice(questionSubmission.data)}
     {#if compact}
         <p class="dark:text-gray-400 text-xs text-ellipsis line-clamp-2">
-            {sGetChoice(questionSubmission.data).option.join(", ")}
+            {[s.option, s.other ? [s.other] : []].flat().join(", ")}
         </p>
     {:else}
-        <ul class="list-disc list-inside">
-            {#each sGetChoice(questionSubmission.data).option as option}
+        <ul class="list-disc list-inside inline-block">
+            {#each s.option as option}
                 <li class="dark:text-gray-400">{option}</li>
             {/each}
+            {#if s.other}
+                <li
+                    class="dark:text-gray-400 underline decoration-dashed cursor-help"
+                >
+                    {s.other}
+                </li>
+                <Tooltip placement="right-end">
+                    Custom response entered as Other
+                </Tooltip>
+            {/if}
         </ul>
     {/if}
 {:else if qIsRank(question.configuration)}

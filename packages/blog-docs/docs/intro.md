@@ -34,7 +34,7 @@ If you'd just like to give us anonymous feedback (good or bad!) but don't need a
 
 ### Subject Access Requests
 
-Please send all Subject Access Requests under UK and EU law to **dpo@palform.app**. Please note, as per our privacy policy, we _cannot_ provide access to or rectify data you submitted in a Palform, as this is encrypted in a way that means we don't have access to it. For data pertaining to a Palform you submitted, please contact the organisation operating the form.
+Please send all Subject Access Requests under UK and EU law to **dpa@palform.app**. Please note, as per our privacy policy, we _cannot_ provide access to or rectify data you submitted in a Palform, as this is encrypted in a way that means we don't have access to it. For data pertaining to a Palform you submitted, please contact the organisation operating the form.
 
 ### Priority Support guarantee
 

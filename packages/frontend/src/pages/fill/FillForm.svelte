@@ -150,7 +150,7 @@
 
         <FormFillFooter
             class={$formFillStore?.form.f.one_question_per_page
-                ? "mt-6 lg:fixed lg:mt-0 bottom-4 left-4 md:w-full w-40"
+                ? "mt-6 lg:fixed lg:mt-0 bottom-4 left-4 w-40"
                 : "mt-6"}
         />
     </Main>

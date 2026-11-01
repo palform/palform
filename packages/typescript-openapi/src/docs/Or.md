@@ -1,5 +1,6 @@
 # Or
 
+The case matches if any of these conditions match
 
 ## Properties
 

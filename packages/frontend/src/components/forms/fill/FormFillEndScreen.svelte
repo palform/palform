@@ -67,7 +67,6 @@
             {#if endConfiguration.show_restart}
                 <BrandedButton
                     class="mt-2"
-                    outline
                     onclick={() => onrestart()}
                     disabled={redirecting}
                 >

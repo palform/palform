@@ -288,6 +288,7 @@ impl APIQuestionGroupStepStrategyJumpCaseCondition {
             } => {
                 if let QuestionSubmissionData::Choice {
                     option: selected_options,
+                    other: _,
                 } = submission.data
                 {
                     let target_options_set: HashSet<String> =

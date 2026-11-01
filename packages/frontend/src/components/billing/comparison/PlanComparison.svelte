@@ -32,13 +32,17 @@
         onselect,
     }: Props = $props();
 
-    let plans: APIBillingPlan[] | undefined = $state([]);
+    let plans: APIBillingPlan[] = $state([]);
     let plansLoading = $state(true);
+    // svelte-ignore state_referenced_locally
     let currency: string | undefined = $state(fixCurrency);
 
     $effect(() => {
+        if (plans.length !== 0 && currency === plans[0].currency) {
+            return;
+        }
+
         plansLoading = true;
-        currency;
 
         APIs.billingPlans()
             .then((a) => a.billingPlanList(currency))

@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**keys** | **Array&lt;string&gt;** |  | [default to undefined]
+**keys** | **Array&lt;string&gt;** | A list of PGP public keys in armored ASCII form | [default to undefined]
 
 ## Example
 

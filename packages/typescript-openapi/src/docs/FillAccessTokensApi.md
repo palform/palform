@@ -4,13 +4,14 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**fillAccessTokensCreate**](#fillaccesstokenscreate) | **POST** /api/org/{org_id}/form/{form_id}/fill_access_tokens | |
-|[**fillAccessTokensDelete**](#fillaccesstokensdelete) | **DELETE** /api/org/{org_id}/form/{form_id}/fill_access_tokens/{token_id} | |
-|[**fillAccessTokensList**](#fillaccesstokenslist) | **GET** /api/org/{org_id}/form/{form_id}/fill_access_tokens | |
+|[**fillAccessTokensCreate**](#fillaccesstokenscreate) | **POST** /api/org/{org_id}/form/{form_id}/fill_access_tokens | Create a new fill access token.|
+|[**fillAccessTokensDelete**](#fillaccesstokensdelete) | **DELETE** /api/org/{org_id}/form/{form_id}/fill_access_tokens/{token_id} | Delete a fill access token.|
+|[**fillAccessTokensList**](#fillaccesstokenslist) | **GET** /api/org/{org_id}/form/{form_id}/fill_access_tokens | List all fill access tokens of a form.|
 
 # **fillAccessTokensCreate**
 > APIFillToken fillAccessTokensCreate(newTokenRequest)
 
+\\ These tokens are included in fill URLs, which allows end-users to fill in forms. Each form can\\ have multiple fill access tokens, which allows segmenting submissions based on their source.
 
 ### Example
 
@@ -74,6 +75,7 @@ const { status, data } = await apiInstance.fillAccessTokensCreate(
 # **fillAccessTokensDelete**
 > fillAccessTokensDelete()
 
+\\ The responses created with this token will not be deleted, but the token will be disassociated\\ from them. URLs containing this token will stop working immediately.
 
 ### Example
 

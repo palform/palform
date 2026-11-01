@@ -4,9 +4,9 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**questionsGet**](#questionsget) | **GET** /api/org/{org_id}/form/{form_id}/content/groups/{question_group_id}/questions/{question_id} | |
-|[**questionsList**](#questionslist) | **GET** /api/org/{org_id}/form/{form_id}/content/groups/all/questions | |
-|[**questionsSave**](#questionssave) | **POST** /api/org/{org_id}/form/{form_id}/content/save | |
+|[**questionsGet**](#questionsget) | **GET** /api/org/{org_id}/form/{form_id}/content/groups/{question_group_id}/questions/{question_id} | Get a specific question.|
+|[**questionsList**](#questionslist) | **GET** /api/org/{org_id}/form/{form_id}/content/groups/all/questions | List all questions in a form.|
+|[**questionsSave**](#questionssave) | **POST** /api/org/{org_id}/form/{form_id}/content/save | Set the questions and grouos of a form.|
 
 # **questionsGet**
 > APIQuestion questionsGet()
@@ -135,6 +135,7 @@ const { status, data } = await apiInstance.questionsList(
 # **questionsSave**
 > questionsSave(aPISaveQuestionsRequest)
 
+\\ This configures the questions, question groups, and stepping configuration for a form all in one\\ go. It diffs the questions and question groups you provide with the current state of the form in\\ the DB. It creates questions/question groups where they don\'t yet exist (by ID), updates their\\ metadata if they have changed, updates their positions if they have changed, and deletes them if\\ they are not in the request.\\ \\ Therefore, the questions and groups must be provided in full on each request. A question that\\ exists in the form but is not sent in this request will be deleted. The comparison checking\\ works by ID.\\ \\ Note that deleted questions will be completely deleted immediately and will not be served to new\\ respondents. Existing responses will retain the values for deleted questions of course, since\\ Palform can\'t view or edit end-to-end-encrypted response data.
 
 ### Example
 

@@ -1,5 +1,6 @@
 # APIFormWithQuestions
 
+A full dump of all the information needed to fully display a form, in a compressed format with shortened keys.
 
 ## Properties
 

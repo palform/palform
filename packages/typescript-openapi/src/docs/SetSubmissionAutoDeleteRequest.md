@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**days** | **number** |  | [optional] [default to undefined]
+**days** | **number** | The number of days, or &#x60;null&#x60; to disable this feature for this form. | [optional] [default to undefined]
 
 ## Example
 

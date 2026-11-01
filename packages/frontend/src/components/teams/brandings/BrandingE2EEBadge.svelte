@@ -71,6 +71,6 @@
     <p>
         {t("encrypted_modal_5")}{$formFillStore?.form.o}{t(
             "encrypted_modal_6"
-        )}<strong>dpo@palform.app</strong>{t("encrypted_modal_7")}.
+        )}<strong>dpa@palform.app</strong>{t("encrypted_modal_7")}.
     </p>
 </Modal>

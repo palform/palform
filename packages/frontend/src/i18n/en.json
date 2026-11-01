@@ -41,6 +41,7 @@
 	"address_zip_code": "Postal/zip code",
 	"address_city": "City",
 	"address_country": "Country",
+	"choice_other": "Other",
 	"phone_pls_choose_country": "Please choose a country",
 	"phone_choose_country": "Choose",
 	"phone_enter_number": "Please enter a phone number",
@@ -54,5 +55,7 @@
 	"file_too_large": "That file is too large.",
 	"form_end_continue": "Continue",
 	"form_end_restart": "Complete again",
-	"form_end_attribution": "Create secure forms for free with Palform"
+	"form_end_attribution": "Create secure forms for free with Palform",
+	"legal_terms": "Terms",
+	"legal_privacy": "Privacy"
 }

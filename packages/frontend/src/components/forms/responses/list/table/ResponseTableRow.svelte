@@ -10,10 +10,10 @@
 
     interface Props {
         submission: DecryptedSubmission;
-        submissionIndex: number;
+        openIndividualSubmissionModal: () => void;
     }
 
-    let { submission, submissionIndex }: Props = $props();
+    let { submission, openIndividualSubmissionModal }: Props = $props();
     const formAdminCtx = getFormAdminContext();
 
     let observer: IntersectionObserver;
@@ -66,7 +66,11 @@
     >
         {#if inView}
             {#each $formAdminCtx.questions as question (question.id)}
-                <ResponseTableField {question} {submission} {submissionIndex} />
+                <ResponseTableField
+                    {question}
+                    {submission}
+                    {openIndividualSubmissionModal}
+                />
             {/each}
         {/if}
     </tr>

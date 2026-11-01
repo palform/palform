@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**display_name** | **string** |  | [default to undefined]
+**display_name** | **string** | The name of the organisation, visible to admins and anyone filling any of the organisation\&#39;s forms. | [default to undefined]
 
 ## Example
 
