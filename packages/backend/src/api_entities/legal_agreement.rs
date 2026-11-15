@@ -5,11 +5,13 @@ use palform_tsid::{resources::IDLegalAgreement, tsid::PalformDatabaseID};
 use schemars::JsonSchema;
 use serde::Serialize;
 
+/// A generated legal agreement.
 #[derive(Serialize, JsonSchema, ApiComponent)]
 pub struct APILegalAgreement {
     pub id: PalformDatabaseID<IDLegalAgreement>,
     pub agreement_type: LegalAgreementTypeEnum,
     pub created_at: DateTime<Utc>,
+    /// A presigned S3 URL for the PDF file of the agreement.
     pub document_url: String,
 }
 
@@ -24,6 +26,7 @@ impl APILegalAgreement {
     }
 }
 
+/// A variable needed to fill in a legal agreement.
 #[derive(Serialize, JsonSchema, ApiComponent, Clone)]
 pub struct APILegalAgreementVariable {
     pub id: String,

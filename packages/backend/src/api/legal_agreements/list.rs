@@ -20,6 +20,7 @@ pub struct LegalAgreementListPath {
     org_id: PalformDatabaseID<IDOrganisation>,
 }
 
+/// List all legal agreements created within the organisation.
 #[api_operation(tag = "Legal Agreements", operation_id = "legal_agreements.list")]
 pub async fn legal_agreements_list(
     _path: Path<LegalAgreementListPath>,

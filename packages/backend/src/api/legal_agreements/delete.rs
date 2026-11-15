@@ -14,7 +14,7 @@ use crate::{
     actix_util::from_org_id::FromOrgId,
     audit::{id_chains::IDChainEmpty, manager::AuditManager},
     auth::{
-        rbac::requests::{APITokenOrgAdmin, OrgRoleToken, TeamRoleNone, TokenTargetOrgAdmin},
+        rbac::requests::{OrgRoleToken, TeamRoleNone, TokenTargetOrgAdmin},
         tokens::{APIAuthTokenSource, APIAuthTokenSourcePersonal},
     },
     entity_managers::legal_agreements::manager::LegalAgreementsManager,

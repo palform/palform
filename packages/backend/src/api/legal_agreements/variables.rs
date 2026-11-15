@@ -19,6 +19,7 @@ pub struct LegalAgreementListPath {
     agreement_type: LegalAgreementTypeEnum,
 }
 
+/// List all variables needed to fill in a specific type of legal agreement.
 #[api_operation(
     tag = "Legal Agreements",
     operation_id = "legal_agreements.list_variables"

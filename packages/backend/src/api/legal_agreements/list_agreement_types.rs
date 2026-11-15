@@ -20,6 +20,7 @@ pub struct LegalAgreementsListAgreementTypesResponse {
     types: HashMap<String, String>,
 }
 
+/// List all available agreement types in the form {"id": "human_readable_name"}.
 #[api_operation(
     tag = "Legal Agreements",
     operation_id = "legal_agreements.list_agreement_types"
