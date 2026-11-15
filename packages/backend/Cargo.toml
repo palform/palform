@@ -67,7 +67,7 @@ clap = { default-features = false, features = [
 ], version = "4.5.21" }
 faster-hex = "1.0.0"
 ring = "0.17"
-webauthn-rs = { version = "0.5", features = [
+webauthn-rs = { version = "0.6", features = [
     "danger-allow-state-serialisation",
 ] }
 altcha = "1.1"
