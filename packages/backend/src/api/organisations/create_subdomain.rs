@@ -30,7 +30,7 @@ fn validate_subdomain(value: &str) -> Result<(), ValidationError> {
         .next()
         .ok_or(ValidationError::new("not enough characters"))?;
 
-    if first_char == '-' || first_char.is_ascii_digit() {
+    if first_char == '-' {
         return Err(ValidationError::new("invalid first character"));
     }
 
