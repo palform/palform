@@ -30,6 +30,8 @@ pub enum Relation {
     AdminUser,
     #[sea_orm(has_many = "super::audit_log_entry::Entity")]
     AuditLogEntry,
+    #[sea_orm(has_many = "super::legal_agreement::Entity")]
+    LegalAgreement,
     #[sea_orm(
         belongs_to = "super::organisation_auth_config::Entity",
         from = "Column::AuthConfig",
@@ -55,6 +57,12 @@ impl Related<super::admin_public_key::Entity> for Entity {
 impl Related<super::audit_log_entry::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::AuditLogEntry.def()
+    }
+}
+
+impl Related<super::legal_agreement::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::LegalAgreement.def()
     }
 }
 

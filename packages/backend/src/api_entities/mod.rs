@@ -9,6 +9,7 @@ pub mod form;
 pub mod form_brandings;
 pub mod form_template;
 pub mod key;
+pub mod legal_agreement;
 pub mod org;
 pub mod organisation_auth_config;
 pub mod organisation_auth_team_mapping;

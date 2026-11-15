@@ -11,6 +11,7 @@ pub mod forms;
 pub mod health;
 pub mod induction;
 pub mod keys;
+pub mod legal_agreements;
 pub mod organisation_auth_config;
 pub mod organisation_auth_team_mappings;
 pub mod organisation_deletion_requests;

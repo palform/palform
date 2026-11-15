@@ -16,6 +16,7 @@ import {
     FormTemplatesApi,
     FormsApi,
     InductionApi,
+    LegalAgreementsApi,
     OrganisationAuthenticationConfigurationApi,
     OrganisationAuthenticationTeamMappingsApi,
     OrganisationDeletionRequestsApi,
@@ -74,6 +75,7 @@ export const APIs = {
     orgTeams: () => apiWithAuth(OrganisationTeamsApi, baseAPIConfig),
     orgTeamMembers: () =>
         apiWithAuth(OrganisationTeamMembersApi, baseAPIConfig),
+    legalAgreements: () => apiWithAuth(LegalAgreementsApi, baseAPIConfig),
     formBrandings: () => apiWithAuth(FormBrandingsApi, baseAPIConfig),
     teamAssets: () => apiWithAuth(TeamAssetsApi, baseAPIConfig),
     forms: () => apiWithAuth(FormsApi, baseAPIConfig),

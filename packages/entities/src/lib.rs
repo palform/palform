@@ -18,6 +18,7 @@ pub mod form_branding_team_access;
 pub mod form_template;
 pub mod form_template_category;
 pub mod form_template_category_assignment;
+pub mod legal_agreement;
 pub mod organisation;
 pub mod organisation_auth_config;
 pub mod organisation_auth_team_mapping;

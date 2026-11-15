@@ -39,6 +39,8 @@ docs/APIFormTemplateCategory.md
 docs/APIFormWithQuestions.md
 docs/APIFrontendForm.md
 docs/APIGenericLocation.md
+docs/APILegalAgreement.md
+docs/APILegalAgreementVariable.md
 docs/APIOrgMemberHuman.md
 docs/APIOrgMemberServiceAccount.md
 docs/APIOrganisation.md
@@ -157,6 +159,9 @@ docs/JoinOrganisationRequest.md
 docs/JumpToSection.md
 docs/KeysTeamFingerprintsResponse.md
 docs/Known.md
+docs/LegalAgreementCreateRequest.md
+docs/LegalAgreementTypeEnum.md
+docs/LegalAgreementsApi.md
 docs/ListSocialAuthProvidersResponse.md
 docs/MatcherAddress.md
 docs/MatcherAddressAddress.md

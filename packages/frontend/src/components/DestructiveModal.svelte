@@ -29,6 +29,11 @@
         await ondelete();
         loading = false;
     });
+
+    $effect(() => {
+        if (show) return;
+        confirmationValue = "";
+    });
 </script>
 
 <Modal bind:open={show} title="Confirm deletion" permanent={loading}>

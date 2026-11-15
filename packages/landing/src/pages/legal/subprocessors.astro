@@ -1,0 +1,87 @@
+---
+import InfoPageHeading from "../../components/info/InfoPageHeading.astro";
+import InfoPageParagraph from "../../components/info/InfoPageParagraph.astro";
+import InfoPageTitle from "../../components/info/InfoPageTitle.astro";
+import Navbar from "../../components/navbar/Navbar.svelte";
+import ResponsivePadding from "../../components/ResponsivePadding.astro";
+import Html from "../../layouts/Html.astro";
+---
+
+<Html title="Privacy Policy">
+	<Navbar />
+
+	<main class="w-full">
+		<ResponsivePadding class="mt-36">
+			<InfoPageTitle>List of subprocessors</InfoPageTitle>
+
+			<InfoPageParagraph>
+				Palform uses these subprocessors to process personal data.
+				Please note that Data Processing Agreements (DPAs) for each of
+				these entities are available on request by emailing
+				<a
+					href="mailto:dpa@palform.app"
+					target="_blank"
+					class="underline">dpa@palform.app</a
+				>.
+			</InfoPageParagraph>
+
+			<InfoPageHeading>Hetzner Online GmbH</InfoPageHeading>
+			<InfoPageParagraph>
+				<strong>Purpose:</strong> providing web hosting services, database
+				and file storage, and DNS resolution.
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				<strong>Types of data processed:</strong> unencrypted data about administrative
+				users and their organisations and metadata about forms and questions,
+				as well as encrypted form response data (not visible to Hetzner).
+				Also processes user IP addresses in order to service DNS requests.
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				<strong>Processing location:</strong> Germany (EU)
+			</InfoPageParagraph>
+
+			<InfoPageHeading>Scaleway, S.A.S.</InfoPageHeading>
+			<InfoPageParagraph>
+				<strong>Purpose:</strong> file storage.
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				<strong>Types of data processed:</strong> unencrypted files uploaded
+				by form owners (for example, logos) and encrypted files uploaded as
+				part of form submissions (not visible to Scaleway).
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				<strong>Processing location:</strong> France (EU)
+			</InfoPageParagraph>
+
+			<InfoPageHeading
+				>Stripe Technology Company, Limited and Stripe Payment Europe,
+				Limited</InfoPageHeading
+			>
+			<InfoPageParagraph>
+				<strong>Purpose:</strong> payments processing.
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				<strong>Types of data processed:</strong> payment details of users
+				with paid plans or free trials.
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				<strong>Processing location:</strong> United States and the EU
+			</InfoPageParagraph>
+
+			<InfoPageHeading
+				>Mailgun Technologies, Inc. and Sinch AB</InfoPageHeading
+			>
+			<InfoPageParagraph>
+				<strong>Purpose:</strong> automated transactional emails related to
+				actions taken on Palform as well as legal notices. Not used for sending
+				marketing materials.
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				<strong>Types of data processed:</strong> user email addresses
+			</InfoPageParagraph>
+			<InfoPageParagraph>
+				<strong>Processing location:</strong> EU
+			</InfoPageParagraph>
+		</ResponsivePadding>
+	</main>
+</Html>

@@ -193,6 +193,9 @@ export interface APIEntitlementInfo {
     'oidc': boolean;
     'priority_support': boolean;
     'question_per_form_count'?: number | null;
+    /**
+     * @deprecated
+     */
     'response_count'?: number | null;
     'service_account': boolean;
     'subdomain': boolean;
@@ -378,6 +381,19 @@ export interface APIFrontendForm {
 export interface APIGenericLocation {
     'lat': number;
     'lng': number;
+}
+export interface APILegalAgreement {
+    'agreement_type': LegalAgreementTypeEnum;
+    'created_at': string;
+    'document_url': string;
+    'id': string;
+}
+
+
+export interface APILegalAgreementVariable {
+    'id': string;
+    'is_standard': boolean;
+    'name': string;
 }
 export interface APIOrgMemberHuman {
     'is_admin': boolean;
@@ -1104,6 +1120,17 @@ export interface KeysTeamFingerprintsResponse {
 export interface Known {
     'Known': APIUserKeyWithIdentity;
 }
+export interface LegalAgreementCreateRequest {
+    'values': { [key: string]: string; };
+}
+
+export const LegalAgreementTypeEnum = {
+    DataProcessing: 'DataProcessing',
+} as const;
+
+export type LegalAgreementTypeEnum = typeof LegalAgreementTypeEnum[keyof typeof LegalAgreementTypeEnum];
+
+
 export interface ListSocialAuthProvidersResponse {
     'available_providers': Array<SocialAuthService>;
 }
@@ -7181,6 +7208,427 @@ export class InductionApi extends BaseAPI {
      */
     public inductionStatus(orgId: string, options?: RawAxiosRequestConfig) {
         return InductionApiFp(this.configuration).inductionStatus(orgId, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * LegalAgreementsApi - axios parameter creator
+ */
+export const LegalAgreementsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {LegalAgreementTypeEnum} agreementType 
+         * @param {string} orgId 
+         * @param {LegalAgreementCreateRequest} legalAgreementCreateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        legalAgreementsCreate: async (agreementType: LegalAgreementTypeEnum, orgId: string, legalAgreementCreateRequest: LegalAgreementCreateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'agreementType' is not null or undefined
+            assertParamExists('legalAgreementsCreate', 'agreementType', agreementType)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('legalAgreementsCreate', 'orgId', orgId)
+            // verify required parameter 'legalAgreementCreateRequest' is not null or undefined
+            assertParamExists('legalAgreementsCreate', 'legalAgreementCreateRequest', legalAgreementCreateRequest)
+            const localVarPath = `/api/org/{org_id}/legal_agreements/variables/{agreement_type}`
+                .replace('{agreement_type}', encodeURIComponent(String(agreementType)))
+                .replace('{org_id}', encodeURIComponent(String(orgId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication personal_token required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(legalAgreementCreateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} agreementId 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        legalAgreementsDelete: async (agreementId: string, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'agreementId' is not null or undefined
+            assertParamExists('legalAgreementsDelete', 'agreementId', agreementId)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('legalAgreementsDelete', 'orgId', orgId)
+            const localVarPath = `/api/org/{org_id}/legal_agreements/{agreement_id}`
+                .replace('{agreement_id}', encodeURIComponent(String(agreementId)))
+                .replace('{org_id}', encodeURIComponent(String(orgId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication personal_token required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        legalAgreementsList: async (orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('legalAgreementsList', 'orgId', orgId)
+            const localVarPath = `/api/org/{org_id}/legal_agreements`
+                .replace('{org_id}', encodeURIComponent(String(orgId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication personal_token required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        legalAgreementsListAgreementTypes: async (orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('legalAgreementsListAgreementTypes', 'orgId', orgId)
+            const localVarPath = `/api/org/{org_id}/legal_agreements/types`
+                .replace('{org_id}', encodeURIComponent(String(orgId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication personal_token required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {LegalAgreementTypeEnum} agreementType 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        legalAgreementsListVariables: async (agreementType: LegalAgreementTypeEnum, orgId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'agreementType' is not null or undefined
+            assertParamExists('legalAgreementsListVariables', 'agreementType', agreementType)
+            // verify required parameter 'orgId' is not null or undefined
+            assertParamExists('legalAgreementsListVariables', 'orgId', orgId)
+            const localVarPath = `/api/org/{org_id}/legal_agreements/variables/{agreement_type}`
+                .replace('{agreement_type}', encodeURIComponent(String(agreementType)))
+                .replace('{org_id}', encodeURIComponent(String(orgId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication personal_token required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication service_account_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * LegalAgreementsApi - functional programming interface
+ */
+export const LegalAgreementsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = LegalAgreementsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {LegalAgreementTypeEnum} agreementType 
+         * @param {string} orgId 
+         * @param {LegalAgreementCreateRequest} legalAgreementCreateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async legalAgreementsCreate(agreementType: LegalAgreementTypeEnum, orgId: string, legalAgreementCreateRequest: LegalAgreementCreateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APILegalAgreement>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.legalAgreementsCreate(agreementType, orgId, legalAgreementCreateRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LegalAgreementsApi.legalAgreementsCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} agreementId 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async legalAgreementsDelete(agreementId: string, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.legalAgreementsDelete(agreementId, orgId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LegalAgreementsApi.legalAgreementsDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async legalAgreementsList(orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APILegalAgreement>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.legalAgreementsList(orgId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LegalAgreementsApi.legalAgreementsList']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async legalAgreementsListAgreementTypes(orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.legalAgreementsListAgreementTypes(orgId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LegalAgreementsApi.legalAgreementsListAgreementTypes']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {LegalAgreementTypeEnum} agreementType 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async legalAgreementsListVariables(agreementType: LegalAgreementTypeEnum, orgId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<APILegalAgreementVariable>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.legalAgreementsListVariables(agreementType, orgId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LegalAgreementsApi.legalAgreementsListVariables']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * LegalAgreementsApi - factory interface
+ */
+export const LegalAgreementsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = LegalAgreementsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {LegalAgreementTypeEnum} agreementType 
+         * @param {string} orgId 
+         * @param {LegalAgreementCreateRequest} legalAgreementCreateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        legalAgreementsCreate(agreementType: LegalAgreementTypeEnum, orgId: string, legalAgreementCreateRequest: LegalAgreementCreateRequest, options?: RawAxiosRequestConfig): AxiosPromise<APILegalAgreement> {
+            return localVarFp.legalAgreementsCreate(agreementType, orgId, legalAgreementCreateRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} agreementId 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        legalAgreementsDelete(agreementId: string, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.legalAgreementsDelete(agreementId, orgId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        legalAgreementsList(orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APILegalAgreement>> {
+            return localVarFp.legalAgreementsList(orgId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        legalAgreementsListAgreementTypes(orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<object> {
+            return localVarFp.legalAgreementsListAgreementTypes(orgId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {LegalAgreementTypeEnum} agreementType 
+         * @param {string} orgId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        legalAgreementsListVariables(agreementType: LegalAgreementTypeEnum, orgId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<APILegalAgreementVariable>> {
+            return localVarFp.legalAgreementsListVariables(agreementType, orgId, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * LegalAgreementsApi - object-oriented interface
+ */
+export class LegalAgreementsApi extends BaseAPI {
+    /**
+     * 
+     * @param {LegalAgreementTypeEnum} agreementType 
+     * @param {string} orgId 
+     * @param {LegalAgreementCreateRequest} legalAgreementCreateRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public legalAgreementsCreate(agreementType: LegalAgreementTypeEnum, orgId: string, legalAgreementCreateRequest: LegalAgreementCreateRequest, options?: RawAxiosRequestConfig) {
+        return LegalAgreementsApiFp(this.configuration).legalAgreementsCreate(agreementType, orgId, legalAgreementCreateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} agreementId 
+     * @param {string} orgId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public legalAgreementsDelete(agreementId: string, orgId: string, options?: RawAxiosRequestConfig) {
+        return LegalAgreementsApiFp(this.configuration).legalAgreementsDelete(agreementId, orgId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} orgId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public legalAgreementsList(orgId: string, options?: RawAxiosRequestConfig) {
+        return LegalAgreementsApiFp(this.configuration).legalAgreementsList(orgId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} orgId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public legalAgreementsListAgreementTypes(orgId: string, options?: RawAxiosRequestConfig) {
+        return LegalAgreementsApiFp(this.configuration).legalAgreementsListAgreementTypes(orgId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {LegalAgreementTypeEnum} agreementType 
+     * @param {string} orgId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public legalAgreementsListVariables(agreementType: LegalAgreementTypeEnum, orgId: string, options?: RawAxiosRequestConfig) {
+        return LegalAgreementsApiFp(this.configuration).legalAgreementsListVariables(agreementType, orgId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

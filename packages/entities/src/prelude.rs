@@ -16,6 +16,7 @@ pub use super::form_branding_team_access::Entity as FormBrandingTeamAccess;
 pub use super::form_template::Entity as FormTemplate;
 pub use super::form_template_category::Entity as FormTemplateCategory;
 pub use super::form_template_category_assignment::Entity as FormTemplateCategoryAssignment;
+pub use super::legal_agreement::Entity as LegalAgreement;
 pub use super::organisation::Entity as Organisation;
 pub use super::organisation_auth_config::Entity as OrganisationAuthConfig;
 pub use super::organisation_auth_team_mapping::Entity as OrganisationAuthTeamMapping;

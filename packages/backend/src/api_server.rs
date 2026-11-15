@@ -19,7 +19,7 @@ use crate::{
     memory_db::memory_db::MemoryDB,
     openapi::get_openapi_spec,
     palform_s3::{
-        buckets::{S3BucketSubmissionAssets, S3BucketTeamAssets},
+        buckets::{S3BucketLegalAgreements, S3BucketSubmissionAssets, S3BucketTeamAssets},
         client::PalformS3Client,
     },
     routes::{legacy_compat_routes, main_routes},
@@ -39,6 +39,8 @@ pub async fn run_api_server(
         .expect("init submission assets s3");
     let s3_team_assets =
         PalformS3Client::<S3BucketTeamAssets>::init(&config).expect("init team assets s3");
+    let s3_legal_agreements = PalformS3Client::<S3BucketLegalAgreements>::init(&config)
+        .expect("init legal agreements s3");
     let geo = IPGeolocator::new().await.expect("geolocator init");
     let captcha_header_name = CAPTCHA_HEADER.clone();
     let stripe = stripe.clone();
@@ -68,6 +70,7 @@ pub async fn run_api_server(
             .app_data(web::Data::new(mail.clone()))
             .app_data(web::Data::new(s3_submission_assets.clone()))
             .app_data(web::Data::new(s3_team_assets.clone()))
+            .app_data(web::Data::new(s3_legal_agreements.clone()))
             .app_data(web::Data::new(stripe.clone()))
             .app_data(web::Data::new(geo.clone()))
             .app_data(web::Data::new(memory_db.clone()))

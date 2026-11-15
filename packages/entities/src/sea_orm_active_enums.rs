@@ -209,6 +209,26 @@ pub enum FormBrandingSpacingEnum {
 #[sea_orm(
     rs_type = "String",
     db_type = "Enum",
+    enum_name = "legal_agreement_type_enum"
+)]
+pub enum LegalAgreementTypeEnum {
+    #[sea_orm(string_value = "data_processing")]
+    DataProcessing,
+}
+#[derive(
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    EnumIter,
+    DeriveActiveEnum,
+    Serialize,
+    Deserialize,
+    schemars :: JsonSchema,
+)]
+#[sea_orm(
+    rs_type = "String",
+    db_type = "Enum",
     enum_name = "organisation_deletion_request_status_enum"
 )]
 pub enum OrganisationDeletionRequestStatusEnum {

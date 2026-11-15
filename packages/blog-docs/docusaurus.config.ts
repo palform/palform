@@ -79,6 +79,9 @@ const config: Config = {
         [
             "classic",
             {
+                theme: {
+                    customCss: ["./src/css/index.css"],
+                },
                 docs: {
                     sidebarPath: "./sidebars.ts",
                     routeBasePath: "/",

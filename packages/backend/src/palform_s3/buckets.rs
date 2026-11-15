@@ -19,3 +19,11 @@ impl PalformS3Bucket for S3BucketSubmissionAssets {
         config.s3_submission_assets_bucket.clone()
     }
 }
+
+#[derive(Clone)]
+pub struct S3BucketLegalAgreements;
+impl PalformS3Bucket for S3BucketLegalAgreements {
+    fn name(config: &Config) -> String {
+        config.s3_legal_agreements_bucket.clone()
+    }
+}

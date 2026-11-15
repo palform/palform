@@ -34,6 +34,7 @@ pub struct Config {
     pub s3_secret_key: String,
     pub s3_team_assets_bucket: String,
     pub s3_submission_assets_bucket: String,
+    pub s3_legal_agreements_bucket: String,
     pub s3_path_style: bool,
 
     pub captcha_secret_key: String,
@@ -95,6 +96,7 @@ impl Default for Config {
             s3_secret_key: String::default(),
             s3_team_assets_bucket: "team-assets".to_string(),
             s3_submission_assets_bucket: "submission-assets".to_string(),
+            s3_legal_agreements_bucket: "legal-agreements".to_string(),
             s3_path_style: true,
             captcha_secret_key: String::default(),
             captcha_cost_scaler_bucket_mins: 60,
