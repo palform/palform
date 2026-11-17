@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import LogoType from "../../branding/LogoType.astro";
 import ComparisonTableCol from "./ComparisonTableCol.astro";
 import ComparisonTableMark from "./ComparisonTableMark.astro";
@@ -13,14 +14,27 @@ const { class: className } = Astro.props;
 
 <div class="overflow-y-auto">
     <div
-        class={`w-full min-w-[500px] px-6 border border-slate-300 dark:border-slate-600 rounded-2xl ${className}`}
+        class={`w-full min-w-125 px-6 border border-slate-300 dark:border-slate-600 rounded-2xl ${className}`}
     >
         <ComparisonTableRow>
             <ComparisonTableCol />
             <ComparisonTableCol center large><LogoType /></ComparisonTableCol>
             <ComparisonTableCol center large>Typeform</ComparisonTableCol>
             <ComparisonTableCol center large>Jotform</ComparisonTableCol>
-            <ComparisonTableCol center large>Google Forms</ComparisonTableCol>
+            <ComparisonTableCol center large>
+                <a
+                    href="https://docs.palform.app/blog/2026/05/15/google-forms-secure"
+                    target="_blank"
+                    class="underline"
+                    title="Read our full comparison"
+                >
+                    Google Forms
+                    <Icon
+                        class="ms-2 inline-block"
+                        name="fa6-solid:arrow-up-right-from-square"
+                    />
+                </a>
+            </ComparisonTableCol>
         </ComparisonTableRow>
         <ComparisonTableRow>
             <ComparisonTableCol>

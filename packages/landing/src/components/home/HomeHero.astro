@@ -1,10 +1,10 @@
 ---
-import { Icon } from "astro-icon/components";
 import HeroContent from "../hero/HeroContent.astro";
 import HeroHeader from "../hero/HeroHeader.astro";
 import HeroParagraph from "../hero/HeroParagraph.astro";
 import HeroTitle from "../hero/HeroTitle.astro";
 import HeroButtons from "../hero/HeroButtons.astro";
+import HeroIframe from "../hero/HeroIframe.astro";
 import HomeTrustedBy from "./HomeTrustedBy.astro";
 ---
 
@@ -30,20 +30,8 @@ import HomeTrustedBy from "./HomeTrustedBy.astro";
         <HeroButtons />
     </HeroContent>
     <HeroContent class="flex-1 justify-end relative md:flex hidden">
-        <iframe
-            src="https://dash.palform.app/fill/org_0GYDWW6VM4C0E/form_0H6KNG7R9X8N5?f=fat_0H6KNK8BSXFKE"
-            height="650px"
-            class="border dark:border-gray-600 shadow-md dark:bg-slate-800/40 rounded-2xl p-4 2xl:w-150 xl:w-125 lg:w-100 w-87.5"
-        ></iframe>
-
-        <div class="absolute right-12 -bottom-12 text-xl font-display">
-            <p class="align-middle text-gray-600 dark:text-gray-400">
-                Live demo!
-                <Icon
-                    name="fa6-solid:arrow-turn-up"
-                    class="inline-block ms-3 mb-1"
-                />
-            </p>
-        </div>
+        <HeroIframe
+            url="https://dash.palform.app/fill/org_0GYDWW6VM4C0E/form_0H6KNG7R9X8N5?f=fat_0H6KNK8BSXFKE"
+        />
     </HeroContent>
 </HeroHeader>

@@ -1,0 +1,55 @@
+---
+import { Icon } from "astro-icon/components";
+import MockCard from "../mocks/MockCard.astro";
+import MockContainer from "../mocks/MockContainer.astro";
+import MockInput from "../mocks/MockInput.astro";
+import MockStepArrow from "../mocks/MockStepArrow.astro";
+import FeatureVisCard from "./FeatureVisCard.astro";
+import MockText from "../mocks/MockText.astro";
+---
+
+<FeatureVisCard>
+    <MockContainer>
+        <MockInput
+            label="How did you hear about our website?"
+            value="Social Media"
+        />
+        <MockStepArrow>Encrypted with your key</MockStepArrow>
+        <MockCard lessPadding>
+            <MockText darker>
+                <Icon
+                    name="fa6-solid:lock"
+                    class="inline-block me-2 text-xl text-primary-600 dark:text-primary-300"
+                />
+                Stored securely on our servers with zero visibility
+            </MockText>
+        </MockCard>
+        <MockStepArrow>
+            Decrypted and turned into beautiful graphs in your browser
+        </MockStepArrow>
+        <MockCard class="grid grid-cols-4 gap-x-4">
+            <div class="flex flex-col items-center justify-end">
+                <div class="bg-red-400 dark:bg-red-800 w-8 h-30 rounded-lg">
+                </div>
+                <MockText class="mt-1 text-center">Social media</MockText>
+            </div>
+            <div class="flex flex-col items-center justify-end">
+                <div
+                    class="bg-yellow-300 dark:bg-yellow-800 w-8 h-14 rounded-lg"
+                >
+                </div>
+                <MockText class="mt-1 text-center">Referral</MockText>
+            </div>
+            <div class="flex flex-col items-center justify-end">
+                <div class="bg-green-400 dark:bg-green-800 w-8 h-22 rounded-lg">
+                </div>
+                <MockText class="mt-1 text-center">Search engine</MockText>
+            </div>
+            <div class="flex flex-col items-center justify-end">
+                <div class="bg-blue-400 dark:bg-blue-800 w-8 h-8 rounded-lg">
+                </div>
+                <MockText class="mt-1 text-center">Advert</MockText>
+            </div>
+        </MockCard>
+    </MockContainer>
+</FeatureVisCard>

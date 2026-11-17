@@ -1,11 +1,19 @@
 ---
 interface Props {
+    darker?: boolean;
     class?: string;
 }
 
-const { class: className } = Astro.props;
+const { darker, class: className } = Astro.props;
 ---
 
-<p class:list={["text-gray-500 dark:text-gray-400", className]}>
+<p
+    class:list={[
+        darker
+            ? "text-gray-700 dark:text-gray-200"
+            : "text-gray-500 dark:text-gray-400",
+        className,
+    ]}
+>
     <slot />
 </p>

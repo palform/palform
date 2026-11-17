@@ -1,0 +1,166 @@
+---
+import Html from "../../layouts/Html.astro";
+import Navbar from "../../components/navbar/Navbar.svelte";
+import MainContainer from "../../components/MainContainer.astro";
+import FeaturePageHero from "../../components/features/FeaturePageHero.astro";
+import HeroContent from "../../components/hero/HeroContent.astro";
+import HeroIframe from "../../components/hero/HeroIframe.astro";
+import ResponsivePadding from "../../components/ResponsivePadding.astro";
+import HomeSecHeading from "../../components/home/HomeSecHeading.astro";
+import HomeSecParagraph from "../../components/home/HomeSecParagraph.astro";
+import HomeSecTriFeature from "../../components/home/HomeSecTriFeature.astro";
+import HomeSecTriFeatureItem from "../../components/home/HomeSecTriFeatureItem.astro";
+import RowCustomisation from "../../components/home/reusable/RowCustomisation.astro";
+import RowConfiguration from "../../components/home/reusable/RowConfiguration.astro";
+import HomeSecComparisonTable from "../../components/home/comparisonTable/HomeSecComparisonTable.astro";
+import PricingSection from "../../components/pricing/PricingSection.astro";
+import HomeSecContact from "../../components/home/reusable/HomeSecContact.astro";
+---
+
+<Html
+    title="End-to-end encrypted forms for your healthcare practice"
+    description="Build secure intake forms your patients can trust in just a few minutes with Palform. Get secure end-to-end encryption and simplified GDPR compliance, along with beautiful designs and a user-friendly interface."
+>
+    <Navbar />
+
+    <MainContainer>
+        <FeaturePageHero
+            title="Secure intake forms your patients can trust"
+            description="Build end-to-end encrypted intake and assessment forms in minutes, and give client data the protection it needs. Nobody can read stored response data; not even us."
+        >
+            <HeroContent class="relative md:flex hidden">
+                <HeroIframe url="https://pf.palform.app/home-page-healthcare" />
+            </HeroContent>
+        </FeaturePageHero>
+
+        <ResponsivePadding class="mt-32">
+            <HomeSecHeading size="big">
+                Your patients deserve privacy
+            </HomeSecHeading>
+            <HomeSecParagraph class="mt-4">
+                When you're processing sensitive medical information that's
+                considered a special category of personal data by the GDPR,
+                ensuring you have appropriate safeguards and security measures
+                is essential. The law requires it, and your patients expect it.
+                Palform lets you provide a level of security above the industry
+                standard with end-to-end encryption on all responses.
+            </HomeSecParagraph>
+
+            <HomeSecTriFeature class="mt-16">
+                <HomeSecTriFeatureItem
+                    title="Simplified GDPR compliance"
+                    icon="fa6-solid:section"
+                    link="https://docs.palform.app/orgs/agreements/"
+                >
+                    Use our handy data retention tools and self-service Data
+                    Processing Agreement to ensure thorough compliance with the
+                    GDPR and other data protection laws.
+                </HomeSecTriFeatureItem>
+                <HomeSecTriFeatureItem
+                    title="Reduced data breach risk"
+                    icon="fa6-solid:shield-halved"
+                    link="https://docs.palform.app/keys/technical"
+                >
+                    Only you and the colleagues you choose can read your
+                    clients' answers. We can't, and neither could anyone who
+                    breached our servers.
+                </HomeSecTriFeatureItem>
+                <HomeSecTriFeatureItem
+                    title="Multi-user permission system"
+                    icon="fa6-solid:sitemap"
+                    link="https://docs.palform.app/orgs/teams"
+                >
+                    Configure hierarchical access to data and use audit logging
+                    for a multi-layered security approach.
+                </HomeSecTriFeatureItem>
+            </HomeSecTriFeature>
+        </ResponsivePadding>
+
+        <ResponsivePadding class="mt-32">
+            <HomeSecHeading size="big">
+                Perfect for medical clinics and therapists
+            </HomeSecHeading>
+            <HomeSecParagraph class="mt-4">
+                Palform makes it easy to build secure, reliable client intake
+                and assessment forms, pre-session questionnaires, consent forms,
+                and more. Not only will your patients love the user experience,
+                they'll also be reassured by the strong security and privacy
+                guarantees. This fosters an environment of strong patient trust,
+                helping you build a long-term relationship with your clients.
+            </HomeSecParagraph>
+            <HomeSecParagraph class="mt-4">
+                Collect only the data you need, store it encrypted on our
+                servers, set your own retention period, and self-sign a DPA in
+                just a few minutes. While GDPR compliance is ultimately your
+                responsibility, we do everything to make our side of it as
+                smooth and easy as possible.
+            </HomeSecParagraph>
+            <HomeSecParagraph class="mt-4">
+                Our servers are hosted in Germany, an EU member state. If you're
+                in the UK, the UK-EU adequacy decision makes it painless for
+                your client data to be processed on our infrastructure.
+            </HomeSecParagraph>
+
+            <HomeSecTriFeature class="mt-16">
+                <HomeSecTriFeatureItem
+                    title="Fully anonymous"
+                    icon="fa6-solid:mask"
+                >
+                    Absolutely zero tracking, ads, or analytics in your form
+                    fill pages. Gain stronger trust and avoid breaches.
+                </HomeSecTriFeatureItem>
+                <HomeSecTriFeatureItem
+                    title="Easy link sharing"
+                    icon="fa6-solid:qrcode"
+                    link="https://docs.palform.app/forms/publishing/"
+                >
+                    Generate a QR code or a powerful short link in just 2
+                    clicks, making your branding super powerful.
+                </HomeSecTriFeatureItem>
+                <HomeSecTriFeatureItem
+                    title="Versatile question types"
+                    icon="fa6-solid:gear"
+                    link="https://docs.palform.app/forms/questions/#question-types"
+                >
+                    E-signatures, address search, secure file uploads, and more:
+                    all for no extra charge.
+                </HomeSecTriFeatureItem>
+            </HomeSecTriFeature>
+        </ResponsivePadding>
+
+        <ResponsivePadding class="mt-32">
+            <HomeSecHeading size="big">Secure ≠ ugly</HomeSecHeading>
+            <HomeSecParagraph class="mt-4">
+                Our ultra-high security standards don't mean the user experience
+                is any worse. In fact, Palform lets you build beautiful, highly
+                customisable forms that fit your branding perfectly. You can get
+                started in a few clicks and share your first form in just a few
+                minutes. The encryption runs in the background, with as little
+                input needed from you as possible.
+            </HomeSecParagraph>
+        </ResponsivePadding>
+
+        <RowCustomisation class="mt-20" />
+        <RowConfiguration class="mt-20" />
+
+        <ResponsivePadding class="mt-32">
+            <HomeSecHeading size="big"> Save time and costs </HomeSecHeading>
+            <HomeSecParagraph class="mt-4">
+                Palform is not only more secure than competitors, it's also much
+                cheaper. With unlimited responses included for free (forever!),
+                you'll never have to stress about limits and quotas again.
+                Upgrade to our fairly-priced plans for more advanced features
+                and brand customisation.
+            </HomeSecParagraph>
+            <HomeSecComparisonTable class="mt-8" />
+        </ResponsivePadding>
+
+        <ResponsivePadding class="mt-32">
+            <PricingSection />
+        </ResponsivePadding>
+
+        <ResponsivePadding class="mt-32">
+            <HomeSecContact />
+        </ResponsivePadding>
+    </MainContainer>
+</Html>

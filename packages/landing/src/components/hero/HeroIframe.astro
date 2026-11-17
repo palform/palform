@@ -1,0 +1,32 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+    url: string;
+    class?: string;
+}
+
+const { url, class: className } = Astro.props;
+---
+
+<iframe
+    src={url}
+    height="650px"
+    class:list={[
+        "border dark:border-gray-600 shadow-md dark:bg-slate-800/40 rounded-2xl p-4 2xl:w-150 xl:w-125 lg:w-100 w-87.5",
+        className,
+    ]}></iframe>
+
+<div class="absolute right-10 -bottom-16 text-xl font-display">
+    <p class="align-middle text-gray-600 dark:text-gray-400">
+        <span class="inline-block">
+            <span>Live demo!</span>
+            <span
+                class="block text-xs hover:underline dark:text-primary-500 text-primary-700"
+            >
+                <a href={url} target="_blank">open in new tab</a>
+            </span>
+        </span>
+        <Icon name="fa6-solid:arrow-turn-up" class="inline-block ms-3 mb-12" />
+    </p>
+</div>

@@ -1,16 +1,25 @@
 ---
+import MockText from "./MockText.astro";
+
 interface Props {
     long?: boolean;
+    label?: string;
+    value?: string;
     class?: string;
 }
 
-const { long, class: className } = Astro.props;
+const { long, label, value, class: className } = Astro.props;
 const Element = long ? "textarea" : "input";
 ---
 
+{label && <MockText class="mb-1">{label}</MockText>}
+
 <Element
     class:list={[
-        "block w-full bg-transparent border-2 dark:border-slate-600 resize-none rounded-lg min-h-10",
+        "block w-full bg-transparent border dark:border-slate-700 dark:text-gray-300 px-4 resize-none rounded-lg min-h-10",
         className,
     ]}
-/>
+    value={Element === "input" ? value : undefined}
+>
+    {Element === "textarea" ? value : undefined}
+</Element>

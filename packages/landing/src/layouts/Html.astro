@@ -6,47 +6,58 @@ import "../styles/global.css";
 import DarkModeWatcher from "@palform/palform-frontend-common/src/darkMode/DarkModeWatcher.svelte";
 
 interface Props {
-	title: string;
-	description?: string;
+    title: string;
+    description?: string;
+    canonical?: string | URL;
 }
 
-const { title, description } = Astro.props;
+const {
+    title,
+    description = "Build end-to-end encrypted forms with advanced enterprise-grade features in just a few simple clicks; no coding required.",
+    canonical,
+} = Astro.props;
+
+const siteOrigin = Astro.site ?? Astro.url.origin;
+const canonicalURL = new URL(canonical ?? Astro.url.pathname, siteOrigin).href;
+const fullTitle = `${title} — Palform`;
 ---
 
 <!doctype html>
 <html lang="en" class="scroll-smooth">
-	<head>
-		<meta charset="UTF-8" />
-		<meta
-			name="description"
-			content={description ??
-				"Build end-to-end encrypted forms with advanced enterprise-grade features in just a few simple clicks; no coding required."}
-		/>
-		<meta name="viewport" content="width=device-width" />
-		<slot name="canonical">
-			<link rel="canonical" href={Astro.url} />
-		</slot>
-		<link rel="icon" href="/favicon.ico" />
-		<link rel="sitemap" href="/sitemap-index.xml" />
-		<meta name="generator" content={Astro.generator} />
-		<script
-			defer
-			data-domain="palform.app"
-			src="https://plausible.io/js/script.tagged-events.js"
-			is:inline></script>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="description" content={description} />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="canonical" href={canonicalURL} />
 
-		<!-- Makes sure we don't have any non-dark-mode moment during page load -->
-		<script is:inline>
-			if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-				window.document.documentElement.classList.add("dark");
-			}
-		</script>
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Palform" />
+        <meta property="og:locale" content="en_GB" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalURL} />
 
-		<title>{title} &mdash; Palform</title>
-	</head>
-	<body class="bg-slate-50/50 dark:bg-slate-900">
-		<slot />
-		<Footer />
-		<DarkModeWatcher client:only="svelte" />
-	</body>
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="sitemap" href="/sitemap-index.xml" />
+        <meta name="generator" content={Astro.generator} />
+        <script
+            defer
+            data-domain="palform.app"
+            src="https://plausible.io/js/script.tagged-events.js"
+            is:inline></script>
+
+        <!-- Makes sure we don't have any non-dark-mode moment during page load -->
+        <script is:inline>
+            if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                window.document.documentElement.classList.add("dark");
+            }
+        </script>
+
+        <title>{fullTitle}</title>
+    </head>
+    <body class="bg-slate-50/50 dark:bg-slate-900">
+        <slot />
+        <Footer />
+        <DarkModeWatcher client:only="svelte" />
+    </body>
 </html>

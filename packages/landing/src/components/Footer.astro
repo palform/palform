@@ -2,6 +2,7 @@
 import ResponsivePadding from "./ResponsivePadding.astro";
 import FooterText from "./FooterText.astro";
 import FooterLink from "./FooterLink.astro";
+import FooterHeading from "./FooterHeading.astro";
 import LogoType from "./branding/LogoType.astro";
 ---
 
@@ -15,14 +16,22 @@ import LogoType from "./branding/LogoType.astro";
                 class="lg:pt-2 flex justify-end gap-4 md:gap-10 flex-col md:flex-row"
             >
                 <div>
+                    <FooterHeading>Made for...</FooterHeading>
+                    <FooterLink href="/use-cases/healthcare"
+                        >Therapists and medical clinics</FooterLink
+                    >
+                </div>
+                <div>
+                    <FooterHeading>Social</FooterHeading>
                     <FooterLink href="https://linkedin.com/company/palform"
                         >LinkedIn</FooterLink
                     >
                     <FooterLink href="https://github.com/palform/palform"
-                        >GitHub</FooterLink
+                        >Source code (GitHub)</FooterLink
                     >
                 </div>
                 <div>
+                    <FooterHeading>Documentation</FooterHeading>
                     <FooterLink href="https://docs.palform.app"
                         >Docs & Support</FooterLink
                     >
@@ -35,6 +44,7 @@ import LogoType from "./branding/LogoType.astro";
                     >
                 </div>
                 <div>
+                    <FooterHeading>Legal</FooterHeading>
                     <FooterLink href="/legal/terms">Terms of Use</FooterLink>
                     <FooterLink href="/legal/privacy">Privacy Policy</FooterLink
                     >
