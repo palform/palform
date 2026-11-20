@@ -2,7 +2,7 @@
 authors: [pal]
 ---
 
-# How secure are Google Forms?
+# How secure is Google Forms?
 
 Data breaches and security vulnerabilities are becoming more and more commonplace.
 Last year alone, [over 375 million people](https://privacyrights.org/resources-tools/reports/2025-data-breach-report) were in at least some way impacted by a data breach, and this number shows no signs of decreasing in the near future.
