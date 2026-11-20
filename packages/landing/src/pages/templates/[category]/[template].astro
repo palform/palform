@@ -13,7 +13,7 @@ const templateResp = await formTemplatesAPI.formTemplatesGet(templateId!);
 
 await formTemplatesAPI.formTemplatesReportView(templateId!);
 
-const canonicalURL = new URL(`/templates/_/${templateId!}`, Astro.url.origin);
+const canonicalURL = `/templates/_/${templateId!}`;
 ---
 
 <Html
