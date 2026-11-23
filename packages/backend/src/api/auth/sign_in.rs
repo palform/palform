@@ -66,20 +66,27 @@ pub async fn auth_sign_in(
 
     let mut org_id = None::<PalformDatabaseID<IDOrganisation>>;
     if request.create_initial_org {
-        let new_org_id = OrganisationManager::create(&txn, "Unnamed organisation".to_string())
+        // Only create the initial org if the user isn't yet a member of an org
+        let existing_orgs = OrganisationManager::list_orgs_for_user(&txn, user.id)
             .await
             .map_internal_error()?;
-        org_id = Some(new_org_id);
 
-        OrganisationManager::bootstrap_new_org(
-            &txn,
-            new_org_id,
-            user.id,
-            #[cfg(feature = "saas")]
-            stripe.as_ref(),
-        )
-        .await
-        .map_err(|e| APIError::report_internal_error("bootstrap error", e))?;
+        if existing_orgs.is_empty() {
+            let new_org_id = OrganisationManager::create(&txn, "Unnamed organisation".to_string())
+                .await
+                .map_internal_error()?;
+            org_id = Some(new_org_id);
+
+            OrganisationManager::bootstrap_new_org(
+                &txn,
+                new_org_id,
+                user.id,
+                #[cfg(feature = "saas")]
+                stripe.as_ref(),
+            )
+            .await
+            .map_err(|e| APIError::report_internal_error("bootstrap error", e))?;
+        }
     }
 
     let tfa_manager = AdminUserSecondFactorManager::new(user.id, config.as_ref())
