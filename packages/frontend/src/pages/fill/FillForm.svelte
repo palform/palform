@@ -23,7 +23,6 @@
     import FormFillLoading from "../../components/forms/fill/FormFillLoading.svelte";
     import BrandingBackgroundColor from "../../components/teams/brandings/BrandingBackgroundColor.svelte";
     import { isActive, route } from "../../router";
-    import { showFailureToast } from "../../data/toast";
 
     let pathVars = $derived.by(() => {
         if (isActive("/fill/:orgId/:formId")) {

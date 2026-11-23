@@ -1,96 +1,77 @@
-import { createRouter, type Navigation } from "sv-router";
-import OrganisationSwitcher from "./pages/orgs/OrganisationSwitcher.svelte";
-import NewOrganisation from "./pages/orgs/NewOrganisation.svelte";
-import JoinOrganisation from "./pages/orgs/JoinOrganisation.svelte";
+import {
+    createRouter,
+    type LazyRouteComponent,
+    type Navigation,
+} from "sv-router";
 import FillForm from "./pages/fill/FillForm.svelte";
 
+type AdminPages = typeof import("./adminPages");
+type RouteComponent = Awaited<ReturnType<LazyRouteComponent>>["default"];
+function admin(name: keyof AdminPages): LazyRouteComponent {
+    return () =>
+        import("./adminPages").then((m) => ({
+            default: m[name] as RouteComponent,
+        }));
+}
+
 const routerApi = createRouter({
-    "/": OrganisationSwitcher,
-    "/orgs/new": NewOrganisation,
-    "/orgs/join/:orgId/:inviteId": JoinOrganisation,
+    "/": admin("OrganisationSwitcher"),
+    "/orgs/new": admin("NewOrganisation"),
+    "/orgs/join/:orgId/:inviteId": admin("JoinOrganisation"),
     "/orgs/:orgId": {
-        layout: () => import("./layouts/OrganisationLayout.svelte"),
-        "/": () => import("./pages/orgs/OrganisationHome.svelte"),
-        "/induction": () =>
-            import("./pages/induction/InductionResources.svelte"),
-        "/induction/billing": () =>
-            import("./pages/induction/InductionBilling.svelte"),
-        "/induction/billing-complete": () =>
-            import("./pages/induction/InductionBillingComplete.svelte"),
-        "/induction/key": () => import("./pages/induction/InductionKey.svelte"),
-        "/induction/member": () =>
-            import("./pages/induction/InductionNewMember.svelte"),
-        "/settings/teams": () =>
-            import("./pages/orgs/teams/OrganisationTeams.svelte"),
+        layout: admin("OrganisationLayout"),
+        "/": admin("OrganisationHome"),
+        "/induction": admin("InductionResources"),
+        "/induction/billing": admin("InductionBilling"),
+        "/induction/billing-complete": admin("InductionBillingComplete"),
+        "/induction/key": admin("InductionKey"),
+        "/induction/member": admin("InductionNewMember"),
+        "/settings/teams": admin("OrganisationTeams"),
         "/settings/teams/:teamId": {
-            layout: () =>
-                import("./pages/orgs/teams/OrganisationTeamManage.svelte"),
-            "/members": () => import("./pages/orgs/teams/TeamMembers.svelte"),
-            "/brandings": () =>
-                import("./pages/orgs/teams/TeamBrandings.svelte"),
-            "/settings": () => import("./pages/orgs/teams/TeamSettings.svelte"),
+            layout: admin("OrganisationTeamManage"),
+            "/members": admin("TeamMembers"),
+            "/brandings": admin("TeamBrandings"),
+            "/settings": admin("TeamSettings"),
         },
-        "/settings/members": () =>
-            import("./pages/orgs/OrganisationMembers.svelte"),
-        "/settings/members/invite": () =>
-            import("./pages/orgs/OrganisationInvites.svelte"),
-        "/settings/keys": () =>
-            import("./pages/orgs/OrganisationKeyManager.svelte"),
-        "/settings/audit": () =>
-            import("./pages/orgs/OrganisationAudit.svelte"),
-        "/settings/subdomain": () =>
-            import("./pages/orgs/subdomain/OrganisationSubdomainConfig.svelte"),
-        "/settings/auth": () =>
-            import("./pages/orgs/auth/OrganisationAuthManager.svelte"),
-        "/settings/auth/mappings": () =>
-            import("./pages/orgs/auth/OrganisationAuthTeamMappings.svelte"),
-        "/settings/billing": () =>
-            import("./pages/orgs/billing/OrganisationBillingEntry.svelte"),
-        "/settings/org": () =>
-            import("./pages/orgs/OrganisationMetadata.svelte"),
-        "/settings/service-accounts": () =>
-            import("./pages/orgs/OrganisationServiceAccounts.svelte"),
-        "/user/keys": () => import("./pages/orgs/user/UserKeys.svelte"),
-        "/user/keys/register": () =>
-            import("./pages/orgs/user/UserKeyRegister.svelte"),
-        "/user/keys/import": () =>
-            import("./pages/orgs/user/UserKeyImport.svelte"),
-        "/user/keys/:keyId/backup": () =>
-            import("./pages/orgs/user/UserKeyBackup.svelte"),
-        "/user/settings": () => import("./pages/orgs/user/UserSettings.svelte"),
+        "/settings/members": admin("OrganisationMembers"),
+        "/settings/members/invite": admin("OrganisationInvites"),
+        "/settings/keys": admin("OrganisationKeyManager"),
+        "/settings/audit": admin("OrganisationAudit"),
+        "/settings/subdomain": admin("OrganisationSubdomainConfig"),
+        "/settings/auth": admin("OrganisationAuthManager"),
+        "/settings/auth/mappings": admin("OrganisationAuthTeamMappings"),
+        "/settings/billing": admin("OrganisationBillingEntry"),
+        "/settings/org": admin("OrganisationMetadata"),
+        "/settings/service-accounts": admin("OrganisationServiceAccounts"),
+        "/user/keys": admin("UserKeys"),
+        "/user/keys/register": admin("UserKeyRegister"),
+        "/user/keys/import": admin("UserKeyImport"),
+        "/user/keys/:keyId/backup": admin("UserKeyBackup"),
+        "/user/settings": admin("UserSettings"),
         "/forms/templates": {
-            "/": () => import("./pages/forms/new/MostPopularTemplates.svelte"),
-            "/categories/:categoryId": () =>
-                import("./pages/forms/new/CategoryTemplates.svelte"),
-            "/:templateId": () =>
-                import("./pages/forms/new/FormTemplatePreview.svelte"),
+            "/": admin("MostPopularTemplates"),
+            "/categories/:categoryId": admin("CategoryTemplates"),
+            "/:templateId": admin("FormTemplatePreview"),
         },
-        "/forms/new": () => import("./pages/forms/FormNew.svelte"),
-        "/forms/new/:initialTeamId": () =>
-            import("./pages/forms/FormNew.svelte"),
+        "/forms/new": admin("FormNew"),
+        "/forms/new/:initialTeamId": admin("FormNew"),
         "/forms/:formId": {
-            layout: () => import("./pages/forms/FormAdmin.svelte"),
-            "/overview": () =>
-                import("./components/forms/responses/overview/FormResponseOverview.svelte"),
-            "/responses": () =>
-                import("./components/forms/responses/list/FormResponseList.svelte"),
-            "/edit": () => import("./pages/forms/FormEditor.svelte"),
-            "/tokens": () => import("./pages/forms/FormTokens.svelte"),
-            "/export": () => import("./pages/forms/FormExport.svelte"),
-            "/settings": () => import("./pages/forms/FormSettings.svelte"),
+            layout: admin("FormAdmin"),
+            "/overview": admin("FormResponseOverview"),
+            "/responses": admin("FormResponseList"),
+            "/edit": admin("FormEditor"),
+            "/tokens": admin("FormTokens"),
+            "/export": admin("FormExport"),
+            "/settings": admin("FormSettings"),
         },
     },
-    "/auth/login": () => import("./pages/auth/Login.svelte"),
-    "/auth/callback": () => import("./pages/auth/Callback.svelte"),
-    "/auth/social/:providerName/callback": () =>
-        import("./pages/auth/SocialCallback.svelte"),
-    "/auth/signup": () => import("./pages/auth/Signup.svelte"),
-    "/auth/verify/:verificationId": () =>
-        import("./pages/auth/VerifyEmailCallback.svelte"),
-    "/auth/reset/password": () =>
-        import("./pages/auth/StartPasswordReset.svelte"),
-    "/auth/reset/password/:verificationId": () =>
-        import("./pages/auth/ResetPassword.svelte"),
+    "/auth/login": admin("Login"),
+    "/auth/callback": admin("Callback"),
+    "/auth/social/:providerName/callback": admin("SocialCallback"),
+    "/auth/signup": admin("Signup"),
+    "/auth/verify/:verificationId": admin("VerifyEmailCallback"),
+    "/auth/reset/password": admin("StartPasswordReset"),
+    "/auth/reset/password/:verificationId": admin("ResetPassword"),
     "/fill/:orgId/:formId": FillForm,
     "/:fillShortLink": FillForm,
 });
